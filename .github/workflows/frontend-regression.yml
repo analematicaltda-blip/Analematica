@@ -26,7 +26,7 @@ jobs:
           node-version: '24'
       - name: Install browser test tools
         run: |
-          npm install --prefix "$RUNNER_TEMP/sgacd-browser" --no-package-lock playwright@1.60.0
+          npm install --prefix "$RUNNER_TEMP/sgacd-browser" --no-package-lock playwright@1.60.0 gsap@3.12.5
           "$RUNNER_TEMP/sgacd-browser/node_modules/.bin/playwright" install --with-deps chromium
       - name: Test landing and offline updates
         shell: bash
@@ -43,3 +43,5 @@ jobs:
           PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing.cjs
           SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing-resilience.cjs
           SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing-order.cjs
+          SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" GSAP_DIST="$RUNNER_TEMP/sgacd-browser/node_modules/gsap/dist" node tests/frontend/monitor-animations.cjs
+          SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/oauth.cjs

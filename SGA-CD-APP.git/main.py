@@ -14,6 +14,7 @@ from views.setup_online_mode_view import setup_online_mode_view
 from views.setup_api_key_view import setup_api_key_view
 from views.setup_local_model_view import setup_local_model_view
 from views.login import login_view
+from utils.sso_client import account_view
 from views.shared.dashboard_view import dashboard_view
 from views.jefe_area.jefe_area_principal import jefe_area_principal_view
 from views.profesor_principal import profesor_principal
@@ -59,6 +60,13 @@ def main(page: ft.Page):
     # --- Main Router Logic ---
     def route_change(route):
         page.views.clear()
+
+        if page.route == '/sso/account' and page.session.get('sso_session'):
+            view = account_view(page)
+            apply_sky_palette(view)
+            page.views.append(view)
+            page.update()
+            return
 
         # Primero, comprobar si el modo ha sido seleccionado.
         mode_selected = page.session.get("mode_selected")
@@ -139,7 +147,11 @@ def main(page: ft.Page):
     page.on_view_pop = view_pop
 
     # Iniciar la aplicación en la ruta de selección.
-    page.go("/selection")
+    if os.getenv("SGACD_API_BASE_URL"):
+        page.session.set("mode_selected", "online")
+        page.go("/login")
+    else:
+        page.go("/selection")
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")

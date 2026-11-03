@@ -45,6 +45,7 @@ const expected=['carrusel-moderno','admin-territorial-control','presentacion','p
    assert.ok((await page.locator('#clients-grid').textContent()).includes('Academia Central'));
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
    assert.notEqual(await page.locator('.stat-number').first().textContent(),'0');
+   assert.ok(await page.locator('.stat-number').evaluateAll(nodes=>nodes.every(n=>n.scrollWidth<=n.clientWidth+1)),'Statistics must not overflow or break numbers across lines');
    assert.equal(await page.locator('#main-footer .floating-social-bar a').count(),3);
    assert.deepEqual(errors,[]);
    if(process.env.SGA_SCREENSHOTS){

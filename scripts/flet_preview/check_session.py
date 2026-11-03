@@ -24,7 +24,7 @@ with connect(f'ws://127.0.0.1:{port}/ws',open_timeout=15,proxy=None) as ws:
         if isinstance(response_payload,dict) and response_payload.get('error'):
             raise RuntimeError('Flet devolvió un error al iniciar la sesión')
         text+=message
-        if 'Bienvenido al Sistema' in text and '38bdf8' in text.lower():
+        if any(label in text for label in ['Bienvenido al Sistema', 'Iniciar sesi', 'Iniciar Sesi']) and '38bdf8' in text.lower():
             print(f'OK {port}: HTTP 200, sesión WebSocket, vista inicial y paleta azul cielo')
             break
     else:

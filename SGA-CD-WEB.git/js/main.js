@@ -450,16 +450,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Feature & Plan Cards Reveal
         if (typeof ScrollTrigger !== 'undefined') {
-            gsap.from('.feature-card, .plan-card', {
-                scrollTrigger: {
-                    trigger: '#funcionalidades',
-                    start: 'top 80%'
-                },
-                duration: 0.8,
-                y: 40,
-                opacity: 0,
-                stagger: 0.1,
-                ease: 'power2.out'
+            [['#funcionalidades .feature-card', '#funcionalidades'], ['#planes .plan-card', '#planes']].forEach(([cards, section]) => {
+                gsap.from(cards, {
+                    scrollTrigger: { trigger: section, start: 'top 90%', once: true },
+                    duration: 0.6, y: 20, opacity: 0, stagger: 0.06, ease: 'power2.out'
+                });
             });
         }
     }

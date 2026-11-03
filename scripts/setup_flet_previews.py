@@ -37,6 +37,9 @@ for name, folder, port in [('flet-desktop','SGA-CD-APP.git',8501),('flet-mobile'
         'restart':'unless-stopped'
     }
     if name=='flet-desktop': service['build']={'context':'./flet-image'}
+    existing_api = config['services'].get(name,{}).get('environment',{}).get('SGACD_API_BASE_URL')
+    if existing_api:
+        service['environment']['SGACD_API_BASE_URL'] = existing_api
     if name in config['services'] and config['services'][name] != service:
         raise SystemExit(f'{name} tiene otra configuración. Se conservó sin cambios.')
     config['services'][name]=service
@@ -60,4 +63,4 @@ if config != original:
 else:
     print('Los nodos ya estaban configurados; se conservaron sus servicios y volúmenes.')
 print('Previsualizaciones preparadas: escritorio 8501, móvil 8502.')
-print('Mantén ambos puertos privados. La conexión de login Flet con la API sigue pendiente.')
+print('Mantén ambos puertos privados. El acceso Google/Microsoft requiere configurar SSO; los módulos locales conservan su SQLite.')

@@ -176,3 +176,8 @@ html { scroll-padding-top: 110px; }
 #main-footer #dynamic-island-container:has(.expanded) { position:fixed; bottom:16px; top:auto; left:50%; transform:translateX(-50%); margin:0; }
 #main-footer .dynamic-island.expanded { min-width:0; width:min(380px,calc(100vw - 32px)); }
 #main-footer .dynamic-island.expanded .dynamic-island-text { white-space:normal; }
+/* Keep public figures on one line instead of splitting a number between rows. */
+.site-wrapper .stat-card { padding:1.25rem; }
+.site-wrapper .stat-number { font-size:clamp(1.2rem,2.8vw,2.75rem); white-space:nowrap; overflow-wrap:normal; font-variant-numeric:tabular-nums; letter-spacing:-.04em; }
+@media (max-width:900px) { .site-wrapper .hero-stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:480px) { .site-wrapper .stat-card { padding:1rem; } .site-wrapper .stat-number { font-size:clamp(1.2rem,5vw,1.5rem); } }
