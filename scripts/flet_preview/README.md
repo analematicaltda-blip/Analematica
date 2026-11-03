@@ -26,8 +26,8 @@ Estos son servidores de vista previa web de las aplicaciones Flet, no
 instaladores Android/iOS/Windows/macOS/Linux. El login SQLite heredado sigue
 independiente del backend. El acceso central Google/Microsoft tiene su pantalla
 de cuenta verificada; requiere configurar los proveedores según
-[la guía SSO](../../docs/SSO-GOOGLE-MICROSOFT.md). Los módulos locales todavía no
-se unificaron con la API.
+[la guía SSO](../../docs/SSO-GOOGLE-MICROSOFT.md). Las bases locales se conservan para trabajar sin conexión y sincronizar
+posteriormente; esta integración de acceso no sustituye ni certifica ese mecanismo.
 No se descargan modelos LLM al arrancar. La comprobación de sesión no sustituye
 la revisión visual ni valida todos los módulos. CanvasKit y recursos externos
 pueden requerir acceso desde el navegador.

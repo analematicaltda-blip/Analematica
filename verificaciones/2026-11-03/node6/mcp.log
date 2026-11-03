@@ -1,0 +1,2 @@
+PASS MCP initialize/listTools/callTool with Matrix-installed SDK; no provider call
+PASS MCP stdio bridge with Matrix-installed SDK; credential kept outside client config

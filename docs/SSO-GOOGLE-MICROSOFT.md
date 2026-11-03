@@ -89,10 +89,11 @@ El estado temporal SQLite compartido corresponde a una demo en un solo servidor;
 no es una solución distribuida entre varios servidores independientes.
 
 En Flet, la sesión central se muestra en una pantalla de cuenta verificada.
-Los módulos locales y su SQLite heredado **todavía no están unificados con la API**;
-no se transfieren IDs centrales a esos módulos para evitar acceder a datos locales
-que puedan pertenecer a otra persona. El modo local anterior se conserva.
-Esto no empaqueta aplicaciones nativas ni completa su sincronización de datos.
+Los módulos conservan su SQLite para trabajar sin internet y sincronizar
+posteriormente con el servidor. La autenticación central no sustituye esa base
+ni transfiere IDs sin una correspondencia de usuarios válida. Esta entrega no
+modifica ni certifica la sincronización existente. Tampoco empaqueta aplicaciones
+nativas.
 
 Pruebas:
 
