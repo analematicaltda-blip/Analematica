@@ -1,0 +1,15 @@
+{
+  "id": "workspace.notebooklm",
+  "version": "1.0.0",
+  "description": "---",
+  "archetype": "Generalist",
+  "capabilities": [
+    "text-processing"
+  ],
+  "xp": {
+    "usage_cost": 5,
+    "success_reward": 20
+  },
+  "tools_required": [],
+  "last_updated": 1776618163.5257034
+}

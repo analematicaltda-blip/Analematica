@@ -1,0 +1,104 @@
+name: Recipe Validation
+
+# v0.31.0 — runs the per-recipe validation suite on every PR + push to main.
+#
+# Each recipe in src/soup_cli/recipes/catalog.py is parsed, loaded as a
+# SoupConfig, and asserted to match its RecipeMeta declaration. Catches
+# regressions when an upstream model id is renamed or removed, or when the
+# config schema changes in a backward-incompatible way.
+#
+# A 100-step live smoke train per recipe is on the v0.31.1 roadmap and will
+# require a self-hosted GPU runner; this workflow is the CPU-only validation
+# tier that runs on every PR.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/soup_cli/recipes/**'
+      - 'src/soup_cli/config/**'
+      - 'src/soup_cli/data/formats.py'
+      - 'src/soup_cli/data/loader.py'
+      - 'tests/test_recipes_v031.py'
+      - 'tests/test_recipes.py'
+      - '.github/workflows/recipe-validation.yml'
+      - '.github/constraints/pinned-upstream.txt'
+  pull_request:
+    branches: [main]
+    # `ready_for_review` is what starts the first run of a draft pull request: a draft
+    # is skipped by the job's own `if:` (2026-10-19; see the job).
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'src/soup_cli/recipes/**'
+      - 'src/soup_cli/config/**'
+      - 'src/soup_cli/data/formats.py'
+      - 'src/soup_cli/data/loader.py'
+      - 'tests/test_recipes_v031.py'
+      - 'tests/test_recipes.py'
+      - '.github/workflows/recipe-validation.yml'
+      - '.github/constraints/pinned-upstream.txt'
+
+# Supersede, do not queue.
+#
+# Measured 2026-09-14: 49 of 83 queued runs were already obsolete -- a newer run
+# existed on the same branch -- because no workflow declared a concurrency group,
+# so every push left its predecessor queued forever. Arrival was 8.3 runs/hour
+# against a service rate of 4.6, i.e. the queue diverged rather than backed up.
+#
+# Cancellation is deliberately PULL-REQUEST ONLY, and the GROUP KEY is what
+# enforces that -- not `cancel-in-progress`. Measured 2026-09-14, after the
+# first version of this block shipped: `cancel-in-progress: false` protects a
+# run that is already RUNNING and does nothing for one still PENDING on the
+# group. Four consecutive pushes to `main` lost their runs that way, each
+# cancelled within two seconds of the next one starting (b0a63382 cancelled at
+# 14:17:33, 52641e99 started 14:17:31), which is the exact opposite of what the
+# comment here used to claim. So a push keys the group on the COMMIT and is
+# therefore alone in it; a pull request keys on the ref and supersedes itself.
+# The release checklist requires a green matrix on the exact commit being
+# tagged, and that now survives a later push instead of depending on a freeze.
+#
+# What this costs: per-commit CI history WITHIN a pull request. Three pushes in
+# a row now leave results for the third only. That is a signal the review rule
+# already discards -- merge requires green on the CURRENT head -- which is why
+# it is the right thing to trade.
+#
+# 2026-09-28: pushes to `main` now share ONE group, keyed 'main-push'. Measured
+# that morning: 24 of 70 queued runs were full matrices for main commits (about
+# 15 merges plus credit commits in a day), each alone in its per-commit group,
+# so main's own history consumed roughly a third of the queue while every
+# merged change had already passed the matrix on its pull request. In the shared
+# group a RUNNING main run still finishes (cancel-in-progress stays PR-only), and
+# a newer push supersedes only the PENDING one, so main carries at most one
+# running and one pending run and the newest commit always gets a result.
+# What this costs: intermediate main commits may show 'cancelled' instead of a
+# result, so a breakage is bisected over a range rather than read off one
+# commit. `release/**` keeps the per-commit key, because the release checklist
+# needs a green matrix on the exact commit being tagged.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || (github.ref == 'refs/heads/main' && 'main-push' || github.sha) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  validate-recipes:
+    # Not on a draft pull request (not a required check). Measured 2026-10-19 over 7
+    # days: 15 runs on a head whose CI run was a skipped draft, 32 job-minutes. Marking
+    # the pull request ready runs it (`ready_for_review` above).
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        # The pinned stack of ci.yml's pull-request cells: this workflow runs on pull requests and pushes only.
+        # CPU-only torch, as in ci.yml's `test` job (2026-10-21): the runner has no GPU, and the
+        # CUDA wheels are 2.4 GB more to download.
+        env:
+          PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+        run: pip install -e ".[dev]" -c .github/constraints/pinned-upstream.txt
+      - name: Validate every recipe (parameterised pytest)
+        run: pytest tests/test_recipes_v031.py tests/test_recipes.py -v --tb=short --no-cov

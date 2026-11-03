@@ -1,0 +1,30 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Tool artifacts
+.playwright-cli/
+.claude/
+
+# Environment
+.env
+.env.local
+
+# Generated images (don't commit test outputs)
+output/
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Node (future VS Code extension)
+node_modules/
+dist/
+*.vsix

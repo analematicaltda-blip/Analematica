@@ -1,0 +1,17 @@
+{
+  "name": "instagram-landing-generator",
+  "version": "1.0.0",
+  "description": "Genera landing pages premium desde perfiles públicos de Instagram",
+  "main": "generator.js",
+  "scripts": {
+    "generate": "node generator.js",
+    "generate:dark": "node generator.js --theme dark-luxury",
+    "generate:neon": "node generator.js --theme neon-glow",
+    "generate:minimal": "node generator.js --theme minimal-clean",
+    "preview": "npx -y serve output -p 3000",
+    "demo": "node generator.js --demo"
+  },
+  "keywords": ["instagram", "landing-page", "generator"],
+  "author": "gegeusus",
+  "license": "MIT"
+}

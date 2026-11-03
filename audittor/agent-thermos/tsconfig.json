@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"declaration": false,
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"noEmit": true,
+		"noUncheckedIndexedAccess": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "ES2022",
+		"types": ["bun-types", "node"]
+	},
+	"include": ["packages/**/*.ts", "scripts/**/*.ts"]
+}

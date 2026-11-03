@@ -1,0 +1,12 @@
+# 🚀 "ms365-tenant-manager"
+
+Microsoft 365 tenant administration for Global Administrators. Automate M365 tenant setup, Office 365 admin tasks, Azure AD user management, Exchange Online configuration, Teams administration, and security policies. Generate PowerShell scripts for bulk operations, Conditional Access policies, license management, and compliance reporting. Use for M365 tenant manager, Office 365 admin, Azure AD users, Global Administrator, tenant configuration, or Microsoft 365 automation.
+
+## 🎯 About
+This is an autonomous AI Agent Skill. It acts as a strict operational guideline for AI assistants.
+
+## 🛠️ How to use
+Add this folder to your agent's skills directory (e.g., .codex/skills).
+
+## 📜 License
+MIT

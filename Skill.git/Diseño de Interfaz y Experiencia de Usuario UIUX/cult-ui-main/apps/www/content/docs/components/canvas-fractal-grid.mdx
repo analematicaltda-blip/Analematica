@@ -1,0 +1,71 @@
+---
+title: Canvas Fractal Grid
+description: Interactive canvas dot grid hero background for React and shadcn/ui with animated gradients, noise, glow, and performance presets.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="canvas-fractal-grid-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="All variations"
+/>
+
+CanvasFractalGrid is a canvas-rendered React background component for shadcn/ui, animated with Motion. Use it as a hero or section background on landing pages and product sites.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/canvas-fractal-grid
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="canvas-fractal-grid" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+function CanvasFractalGridExample() {
+  return (
+    <div className="grid h-screen w-full pl-[56px] relative">
+      <CanvasFractalGrid
+        dotSize={3}
+        dotSpacing={20}
+        dotOpacity={0.4}
+        gradientAnimationDuration={6}
+        waveIntensity={60}
+        waveRadius={250}
+        enableGradient={true}
+        enableMouseGlow={true}
+        enableNoise={true}
+      />
+    </div>
+  );
+}
+
+export default CanvasFractalGridExample;
+```

@@ -1,0 +1,12 @@
+# 🚀 "competitive-teardown"
+
+"Analyzes competitor products and companies by synthesizing data from pricing pages, app store reviews, job postings, SEO signals, and social media into structured competitive intelligence. Produces feature comparison matrices scored across 12 dimensions, SWOT analyses, positioning maps, UX audits, pricing model breakdowns, action item roadmaps, and stakeholder presentation templates. Use when conducting competitor analysis, comparing products against competitors, researching the competitive landscape, building battle cards for sales, preparing for a product strategy or roadmap session, responding to a competitor's new feature or pricing change, or performing a quarterly competitive review."
+
+## 🎯 About
+This is an autonomous AI Agent Skill. It acts as a strict operational guideline for AI assistants.
+
+## 🛠️ How to use
+Add this folder to your agent's skills directory (e.g., .codex/skills).
+
+## 📜 License
+MIT

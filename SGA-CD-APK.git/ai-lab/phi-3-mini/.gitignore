@@ -1,0 +1,4 @@
+ai-lab/phi-3-mini/weights/
+*.onnx
+*.onnx.data
+*.bin

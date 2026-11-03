@@ -1,0 +1,33 @@
+{
+	"name": "@thinkscape/codex-thermos",
+	"version": "0.1.4",
+	"description": "Thermos plugin for OpenAI Codex: deep correctness/security and strict code-quality branch reviews.",
+	"type": "module",
+	"license": "MIT",
+	"author": {
+		"name": "Thinkscape"
+	},
+	"homepage": "https://github.com/Thinkscape/agent-thermos#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Thinkscape/agent-thermos.git",
+		"directory": "packages/codex-thermos"
+	},
+	"keywords": [
+		"codex",
+		"plugin",
+		"thermos",
+		"code-review",
+		"subagents"
+	],
+	"files": [
+		".codex-plugin",
+		"assets",
+		"skills",
+		"README.md"
+	],
+	"scripts": {
+		"build": "bun test tests/integration.test.ts",
+		"test": "bun test tests"
+	}
+}

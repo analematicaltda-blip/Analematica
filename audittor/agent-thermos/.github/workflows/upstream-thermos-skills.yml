@@ -1,0 +1,199 @@
+name: Watch upstream Thermos skills
+
+on:
+  schedule:
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: upstream-thermos-skills
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check upstream and maintain review issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("node:fs");
+
+            const marker = "<!-- upstream-thermos-skills-watch -->";
+            const issueTitle = "[upstream] Review Cursor Thermos skills updates";
+            const baselinePath = ".github/upstream/thermos-skills.json";
+            const code = String.fromCharCode(96);
+            const baseline = JSON.parse(fs.readFileSync(baselinePath, "utf8"));
+
+            if (
+              typeof baseline.repository !== "string" ||
+              typeof baseline.path !== "string" ||
+              typeof baseline.ref !== "string" ||
+              typeof baseline.lastReviewedCommit !== "string"
+            ) {
+              throw new Error(`${baselinePath} must define repository, path, ref, and lastReviewedCommit`);
+            }
+
+            const [sourceOwner, sourceRepo] = baseline.repository.split("/");
+            if (!sourceOwner || !sourceRepo || baseline.repository.split("/").length !== 2) {
+              throw new Error(`${baselinePath}.repository must be in owner/repository form`);
+            }
+
+            const baselineCommit = baseline.lastReviewedCommit;
+            if (!/^[0-9a-f]{40}$/i.test(baselineCommit)) {
+              throw new Error(`${baselinePath}.lastReviewedCommit must be a 40-character commit SHA`);
+            }
+
+            const commitsResponse = await github.rest.repos.listCommits({
+              owner: sourceOwner,
+              repo: sourceRepo,
+              path: baseline.path,
+              sha: baseline.ref,
+              per_page: 1,
+            });
+            const latestCommit = commitsResponse.data[0];
+            if (!latestCommit?.sha) {
+              throw new Error(`No commits found for ${baseline.repository}/${baseline.path} at ${baseline.ref}`);
+            }
+
+            const latestSha = latestCommit.sha;
+            const compareUrl = `https://github.com/${baseline.repository}/compare/${baselineCommit}...${latestSha}`;
+            const sourcePathUrl = `https://github.com/${baseline.repository}/tree/${latestSha}/${baseline.path}`;
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const watcherIssue = openIssues.find(
+              (issue) => !issue.pull_request && issue.body?.includes(marker),
+            );
+
+            if (latestSha.toLowerCase() === baselineCommit.toLowerCase()) {
+              if (watcherIssue) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: watcherIssue.number,
+                  body: `The reviewed baseline now matches upstream ${code}${latestSha}${code}. Closing this watcher issue.`,
+                });
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: watcherIssue.number,
+                  state: "closed",
+                });
+                core.info(`Closed stale watcher issue #${watcherIssue.number}.`);
+              } else {
+                core.info(`No upstream Thermos skill changes since ${baselineCommit}.`);
+              }
+              return;
+            }
+
+            let comparison;
+            try {
+              comparison = await github.rest.repos.compareCommits({
+                owner: sourceOwner,
+                repo: sourceRepo,
+                base: baselineCommit,
+                head: latestSha,
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+              throw new Error(
+                `Unable to compare reviewed baseline ${baselineCommit} with upstream ${latestSha}. ` +
+                  `Check that the baseline is still reachable in ${baseline.repository}. ` +
+                  `Compare URL: ${compareUrl}. Original error: ${message}`,
+              );
+            }
+
+            const changedFiles = (comparison.data.files ?? [])
+              .filter(
+                (file) =>
+                  file.filename === baseline.path ||
+                  file.filename.startsWith(`${baseline.path}/`),
+              )
+              .map(
+                (file) =>
+                  `| ${code}${file.status}${code} | ${code}${file.filename}${code} | ${file.additions ?? 0} | ${file.deletions ?? 0} |`,
+              );
+            const changedFilesTable = changedFiles.length
+              ? [
+                  "| Status | Path | Additions | Deletions |",
+                  "| --- | --- | ---: | ---: |",
+                  ...changedFiles,
+                ].join("\n")
+              : "GitHub did not return a file list for this comparison; inspect the compare link directly.";
+
+            const commitsTable = (comparison.data.commits ?? [])
+              .map((commit) => {
+                const shortSha = commit.sha.slice(0, 12);
+                const subject = commit.commit.message.split("\n", 1)[0];
+                return `- [${code}${shortSha}${code}](https://github.com/${baseline.repository}/commit/${commit.sha}) ${subject}`;
+              })
+              .join("\n");
+
+            const body = [
+              marker,
+              "",
+              "## Action required",
+              "",
+              "Upstream Cursor Thermos skills changed after the last reviewed baseline. This is a review notification only; it does not modify local skill files or open a pull request automatically.",
+              "",
+              `- **Source:** [${code}${baseline.repository}/${baseline.path}${code}](${sourcePathUrl})`,
+              `- **Last reviewed commit:** [${code}${baselineCommit}${code}](https://github.com/${baseline.repository}/commit/${baselineCommit})`,
+              `- **Latest upstream commit:** [${code}${latestSha}${code}](https://github.com/${baseline.repository}/commit/${latestSha})`,
+              `- **Compare:** [View the upstream diff](${compareUrl})`,
+              "",
+              "### Upstream commits",
+              "",
+              commitsTable || "No commit summaries were returned; inspect the compare link directly.",
+              "",
+              "### Changed skill paths",
+              "",
+              changedFilesTable,
+              "",
+              "### Local adaptation map",
+              "",
+              `- ${code}thermo-nuclear-review/SKILL.md${code} → ${code}packages/core/skills/thermo-nuclear-review/SKILL.md${code} → generated Codex reference.`,
+              `- ${code}thermo-nuclear-code-quality-review/SKILL.md${code} → ${code}packages/core/skills/thermo-nuclear-code-quality-review/SKILL.md${code} → generated Codex reference.`,
+              `- ${code}thermos/SKILL.md${code} → ${code}packages/core/src/content.ts${code} and generated host files; preserve host-specific adaptations.`,
+              "",
+              "### Maintainer close-out",
+              "",
+              "- [ ] Review the upstream diff and decide which changes apply to this adaptation.",
+              "- [ ] Update the canonical local sources, not generated package output by hand.",
+              `- [ ] Run ${code}bun run sync:skills${code} to regenerate Codex references.`,
+              `- [ ] Run ${code}bun run test:ci${code} and resolve any generated-file or package failures.`,
+              `- [ ] Update ${code}lastReviewedCommit${code} in ${code}${baselinePath}${code} to the latest reviewed upstream commit in a normal pull request.`,
+              "- [ ] Close this issue after that baseline update lands.",
+            ].join("\n");
+
+            if (watcherIssue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: watcherIssue.number,
+                title: issueTitle,
+                body,
+                state: "open",
+              });
+              core.info(`Updated watcher issue #${watcherIssue.number}.`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body,
+              });
+              core.info(`Created watcher issue #${created.data.number}.`);
+            }

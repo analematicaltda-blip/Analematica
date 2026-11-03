@@ -1,0 +1,620 @@
+"""Cross-platform path containment helpers.
+
+Uses ``os.path.realpath`` + ``os.path.commonpath`` rather than
+``Path.resolve() + relative_to()`` to survive Windows 8.3 short names
+(e.g. ``C:\\Users\\RUNNER~1``) that can appear in one of the two paths
+but not the other on older Python.
+
+Why this lives in one place: the same helper is needed by autopilot,
+registry, cans, eval-gate, quant-check, and trace harvesting. Keeping it
+in a single module guarantees a single behaviour across the CLI.
+"""
+
+from __future__ import annotations
+
+import errno
+import ntpath
+import os
+import stat
+import tempfile
+from pathlib import Path
+from typing import Iterable, Optional, Union
+
+
+def quote_path(path: str) -> str:
+    """Quote a path for an error message as it was typed, not as ``repr`` renders it.
+
+    ``repr`` doubles every backslash of a Windows path, and an operator who copies the
+    entry out of the message copies the doubled, non-working spelling back into the
+    variable (#1611). The path is shown inside single quotes so leading and trailing
+    spaces stay visible, backslashes stay single, and the control characters the
+    validation rules refuse (C0, DEL, C1) are escaped as ``\\xNN`` so they never reach
+    the terminal as raw bytes.
+    """
+    escaped = "".join(
+        f"\\x{ord(ch):02x}" if (ord(ch) < 0x20 or 0x7F <= ord(ch) <= 0x9F) else ch
+        for ch in path
+    )
+    return f"'{escaped}'"
+
+
+def is_under(path: Union[str, Path], base: Union[str, Path]) -> bool:
+    """Return True when ``path`` resolves inside ``base``."""
+    try:
+        resolved_path = os.path.realpath(str(path))
+        resolved_base = os.path.realpath(str(base))
+    except (OSError, ValueError):
+        return False
+    if os.name == "nt":
+        resolved_path = resolved_path.lower()
+        resolved_base = resolved_base.lower()
+    try:
+        return os.path.commonpath([resolved_path, resolved_base]) == resolved_base
+    except ValueError:
+        return False
+
+
+def is_under_cwd(path: Union[str, Path]) -> bool:
+    """Whether ``path`` is inside the current working directory."""
+    return is_under(path, Path.cwd())
+
+
+# DOS device names. Windows opens the device whatever the directory, extension
+# or trailing spaces: "clips/nul.png" and "CON .wav" both name one.
+_DOS_DEVICE_NAMES = frozenset(
+    {"CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"}
+    | {
+        f"{port}{digit}"
+        for port in ("COM", "LPT")
+        for digit in "123456789" + chr(0xB9) + chr(0xB2) + chr(0xB3)
+    }
+)
+
+
+def _names_dos_device(value: str) -> bool:
+    """Whether any component of ``value`` is a DOS device name."""
+    for part in value.replace("\\", "/").split("/"):
+        stem = part.partition(".")[0].partition(":")[0].rstrip(" ")
+        if stem.upper() in _DOS_DEVICE_NAMES:
+            return True
+    return False
+
+
+def is_network_or_device_path(
+    value: str, *, dos_device_names: bool = os.name == "nt"
+) -> bool:
+    """Whether ``value`` names a network share or a device, not a local file.
+
+    True for two leading separators in any mix of ``\\`` and ``/`` -- a UNC
+    share (``\\\\host\\share``, ``//host/share``) and the ``\\\\?\\``
+    extended-length and ``\\\\.\\`` device prefixes -- and for the ``\\??\\``
+    object-manager prefix. ``pathlib`` and ``os.path.realpath`` collapse ``.``
+    and ``..`` segments first, so the value is tested both as written and in
+    its normalised form. With ``dos_device_names`` (the default on Windows), a
+    component naming a DOS device (``NUL``, ``CON``, ``COM1``, ``LPT1``, ...)
+    counts too.
+
+    A pure string test: it never touches the filesystem, and for the same
+    arguments it gives the same answer on every platform.
+    """
+    for text in (value, ntpath.normpath(value)):
+        head = text[:4].replace("/", "\\")
+        if head.startswith("\\\\") or head == "\\??\\":
+            return True
+        if dos_device_names and _names_dos_device(text):
+            return True
+    return False
+
+
+def is_device_namespace_path(value: str) -> bool:
+    """Whether ``value`` starts with the ``\\\\.\\`` device or ``\\??\\``
+    object-manager prefix, written with either separator, as is or once
+    normalised. A pure string test.
+
+    Narrower than :func:`is_network_or_device_path`: a UNC or extended-length
+    (``\\\\?\\``) path is not matched, because ``os.path.realpath`` returns one
+    for a directory on a mapped drive.
+    """
+    for text in (value, ntpath.normpath(value)):
+        if text[:4].replace("/", "\\") in ("\\\\.\\", "\\??\\"):
+            return True
+    return False
+
+
+def require_regular_file(path: str) -> str:
+    """Return ``path`` when it is an absolute path to a regular file.
+
+    Raises :exc:`OSError` otherwise, without opening anything: for a NUL byte,
+    a device or object-manager path (:func:`is_device_namespace_path`), a
+    relative path, or anything ``os.stat`` reports as other than a regular
+    file (a directory, a FIFO, a device). A missing file raises
+    :exc:`FileNotFoundError` from ``os.stat``. A UNC or extended-length path
+    is accepted: the loader stores one for a media directory on a mapped
+    drive, and it has already skipped every row that names one itself.
+
+    For readers that would block or never finish on a FIFO or a device. This
+    is a check made before the open, not a guard of the open: a path that
+    changes in between is not caught.
+    """
+    if "\x00" in path or is_device_namespace_path(path) or not Path(path).is_absolute():
+        raise OSError(errno.EINVAL, "not an absolute local file path", path)
+    if not stat.S_ISREG(os.stat(path).st_mode):
+        raise OSError(errno.EINVAL, "not a regular file", path)
+    return path
+
+
+def enforce_under_cwd_and_no_symlink(path: str, field: str) -> str:
+    """Apply cwd containment + ``os.lstat + S_ISLNK`` rejection (TOCTOU defence).
+
+    Shared helper for v0.53.1 export / merge / advanced-GGUF dispatch.
+    Mirrors v0.33.0 #22 / v0.43.0 Part C / v0.46.0 Part A / v0.47.0 TOCTOU
+    policy: rejects symlinks at the target path before any open/write so a
+    pre-placed symlink cannot redirect a write to ``/etc/cron.d``.
+    """
+    if not isinstance(path, str):
+        raise TypeError(f"{field} must be str, got {type(path).__name__}")
+    if not path:
+        raise ValueError(f"{field} must be non-empty")
+    if "\x00" in path:
+        raise ValueError(f"{field} must not contain null bytes")
+    if not is_under_cwd(path):
+        # The path as typed, not its basename: for ``../out.json`` the basename alone
+        # reads ``'out.json'``, which looks like a path under cwd and hides the reason.
+        raise ValueError(f"{field} {quote_path(path)} must stay under cwd")
+    if os.path.lexists(path):
+        try:
+            st = os.lstat(path)
+        except OSError as exc:
+            raise ValueError(
+                f"{field} unreadable: {type(exc).__name__}"
+            ) from exc
+        if stat.S_ISLNK(st.st_mode):
+            raise ValueError(
+                f"{field} must not be a symlink (TOCTOU defence)"
+            )
+        # Windows junctions / mount-point reparse points do NOT report
+        # S_ISLNK (they carry IO_REPARSE_TAG_MOUNT_POINT, not _SYMLINK), so
+        # the check above misses them — yet shutil.rmtree would happily delete
+        # the junction TARGET's contents. Refuse any reparse point on Windows.
+        if os.name == "nt":
+            reparse = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+            if getattr(st, "st_file_attributes", 0) & reparse:
+                raise ValueError(
+                    f"{field} must not be a reparse point / junction "
+                    "(TOCTOU defence)"
+                )
+    return path
+
+
+def check_report_output_path(path: str, field: str = "--output") -> str:
+    """Validate, before any work starts, a path a command will write its report to.
+
+    :func:`enforce_under_cwd_and_no_symlink` plus a refusal of a directory. An
+    existing regular file is allowed: a report is replaced atomically by
+    :func:`atomic_write_text`, as ``soup attest emit -o`` replaces its statement.
+    Call it as the first thing a command does, so a refused path fails in
+    milliseconds instead of after a model has been loaded and a run has finished.
+    """
+    enforce_under_cwd_and_no_symlink(path, field)
+    if os.path.isdir(path):
+        raise ValueError(f"{field} {quote_path(path)} must name a file, not a directory")
+    return path
+
+
+def _same_file(first: str, second: str) -> bool:
+    """Whether two existing paths are one file, hard links included."""
+    try:
+        return os.path.samefile(first, second)
+    except (OSError, ValueError):
+        # A path that does not exist yet cannot be a hard link to anything.
+        return False
+
+
+def ensure_distinct_paths(
+    inputs: Iterable[tuple[str, str]],
+    outputs: Iterable[tuple[str, str]],
+    *,
+    reject_nested: bool = False,
+) -> None:
+    """Refuse outputs aliasing inputs, optionally including nested directories.
+
+    Items are (field, path) pairs. Identity uses normcase(realpath(...))
+    and samefile for existing paths, including hard links.
+    With reject_nested=True, neither path may contain the other.
+    Opens and creates nothing.
+    """
+    input_list = list(inputs)
+    for out_field, out_path in outputs:
+        out_identity = os.path.normcase(os.path.realpath(out_path))
+        for in_field, in_path in input_list:
+            in_identity = os.path.normcase(os.path.realpath(in_path))
+            if out_identity == in_identity or _same_file(out_path, in_path):
+                raise ValueError(
+                    f"{out_field} {quote_path(out_path)} is the same file as "
+                    f"{in_field} {quote_path(in_path)}; choose a different {out_field}"
+                )
+
+            if reject_nested:
+                try:
+                    common = os.path.commonpath([in_identity, out_identity])
+                except ValueError:
+                    # Paths on different drives cannot contain each other.
+                    continue
+                if common in (in_identity, out_identity):
+                    raise ValueError(
+                        f"{out_field} {quote_path(out_path)} overlaps "
+                        f"{in_field} {quote_path(in_path)}; "
+                        "choose separate, non-nested output directories"
+                    )
+
+
+def atomic_write_text(
+    text: str,
+    output_path: str,
+    *,
+    prefix: str = ".soup.",
+    suffix: str = ".tmp",
+    field: str = "output",
+) -> str:
+    """Atomically write ``text`` to ``output_path`` under cwd containment.
+
+    Pipeline: ``enforce_under_cwd_and_no_symlink`` -> ``mkstemp`` in the
+    parent dir -> write -> ``os.replace`` -> best-effort cleanup of the
+    tmp file on failure. Returns the realpath of the written file.
+
+    Centralised in v0.59.0 from four separate copies in
+    ``bom.py`` / ``attest.py`` / ``annex_xi.py`` / ``repro_receipt.py``
+    so the TOCTOU defence stays single-source-of-truth (code-review
+    HIGH fix mirrors v0.40.6 / v0.53.5 peft_wiring centralisation policy).
+    """
+    enforce_under_cwd_and_no_symlink(output_path, field)
+    parent = os.path.dirname(os.path.abspath(output_path)) or "."
+    os.makedirs(parent, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        os.replace(tmp_path, output_path)
+    finally:
+        if os.path.exists(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+    return os.path.realpath(output_path)
+
+
+def atomic_write_lines(
+    lines: Iterable[str],
+    output_path: str,
+    *,
+    prefix: str = ".soup.",
+    suffix: str = ".tmp",
+    field: str = "output",
+) -> str:
+    """Stream ``lines`` into ``output_path`` atomically under cwd containment.
+
+    Streaming sibling of :func:`atomic_write_text` (#204 ``soup ingest --pull``):
+    each line is written to the staging file as the iterable yields it, so a
+    large result is never held in memory, and the target is replaced only once
+    the iterable is exhausted. An exception raised while iterating removes the
+    staging file and leaves any existing target untouched. Same TOCTOU-safe
+    pipeline.
+    """
+    enforce_under_cwd_and_no_symlink(output_path, field)
+    parent = os.path.dirname(os.path.abspath(output_path)) or "."
+    os.makedirs(parent, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            for line in lines:
+                fh.write(line)
+        os.replace(tmp_path, output_path)
+    finally:
+        if os.path.exists(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+    return os.path.realpath(output_path)
+
+
+def atomic_write_bytes(
+    data: bytes,
+    output_path: str,
+    *,
+    prefix: str = ".soup.",
+    suffix: str = ".tmp",
+    field: str = "output",
+) -> str:
+    """Atomically write ``data`` (bytes) to ``output_path`` under cwd containment.
+
+    Binary sibling of :func:`atomic_write_text` (v0.71.3 #181 — used by the
+    Annex XI/XII PDF renderer). Same TOCTOU-safe pipeline.
+    """
+    if not isinstance(data, (bytes, bytearray)):
+        raise TypeError("data must be bytes")
+    enforce_under_cwd_and_no_symlink(output_path, field)
+    parent = os.path.dirname(os.path.abspath(output_path)) or "."
+    os.makedirs(parent, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(prefix=prefix, suffix=suffix, dir=parent)
+    try:
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(bytes(data))
+        os.replace(tmp_path, output_path)
+    finally:
+        if os.path.exists(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+    return os.path.realpath(output_path)
+
+
+def atomic_write_bytes_group(
+    outputs: list[tuple[bytes, str, str]],
+    *,
+    removals: list[tuple[str, str]] | None = None,
+) -> list[str]:
+    """Publish a group of byte outputs atomically as one logical generation.
+
+    Every payload is staged before an existing target is moved aside. If any
+    replacement fails, newly published targets are removed and every previous
+    target is restored. ``removals`` participate in the same transaction: they
+    disappear only after every replacement succeeds and are restored on
+    failure. This gives multi-file commands an all-new-or-all-old result
+    instead of exposing a partial generation.
+    """
+    if not isinstance(outputs, list) or not outputs:
+        raise ValueError("outputs must be a non-empty list")
+
+    prepared: list[tuple[bytes, str, str]] = []
+    identities: set[str] = set()
+    for item in outputs:
+        if not isinstance(item, tuple) or len(item) != 3:
+            raise TypeError("each output must be a (data, path, field) tuple")
+        data, output_path, field = item
+        if not isinstance(data, (bytes, bytearray)):
+            raise TypeError("output data must be bytes")
+        enforce_under_cwd_and_no_symlink(output_path, field)
+        identity = os.path.normcase(os.path.realpath(output_path))
+        if identity in identities:
+            raise ValueError("output paths must be distinct")
+        identities.add(identity)
+        prepared.append((bytes(data), output_path, field))
+
+    prepared_removals: list[tuple[str, str]] = []
+    if removals is not None and not isinstance(removals, list):
+        raise TypeError("removals must be a list")
+    for item in removals or []:
+        if not isinstance(item, tuple) or len(item) != 2:
+            raise TypeError("each removal must be a (path, field) tuple")
+        removal_path, field = item
+        enforce_under_cwd_and_no_symlink(removal_path, field)
+        identity = os.path.normcase(os.path.realpath(removal_path))
+        if identity in identities:
+            raise ValueError("output and removal paths must be distinct")
+        identities.add(identity)
+        prepared_removals.append((removal_path, field))
+
+    staged: dict[str, str] = {}
+    backups: dict[str, str] = {}
+    committed: set[str] = set()
+    try:
+        for data, output_path, _field in prepared:
+            parent = os.path.dirname(os.path.abspath(output_path)) or "."
+            os.makedirs(parent, exist_ok=True)
+            fd, tmp_path = tempfile.mkstemp(
+                prefix=".soup.group.", suffix=".tmp", dir=parent
+            )
+            try:
+                with os.fdopen(fd, "wb") as fh:
+                    fh.write(data)
+            except Exception:
+                if os.path.exists(tmp_path):
+                    os.unlink(tmp_path)
+                raise
+            staged[output_path] = tmp_path
+
+        existing = [
+            (output_path, field) for _data, output_path, field in prepared
+        ] + prepared_removals
+        for output_path, field in existing:
+            if not os.path.lexists(output_path):
+                continue
+            st = os.lstat(output_path)
+            if not stat.S_ISREG(st.st_mode):
+                raise ValueError(f"{field} must be a regular file")
+            parent = os.path.dirname(os.path.abspath(output_path)) or "."
+            fd, backup_path = tempfile.mkstemp(
+                prefix=".soup.backup.", suffix=".tmp", dir=parent
+            )
+            os.close(fd)
+            try:
+                os.replace(output_path, backup_path)
+            except Exception:
+                os.unlink(backup_path)
+                raise
+            backups[output_path] = backup_path
+
+        for _data, output_path, _field in prepared:
+            os.replace(staged[output_path], output_path)
+            committed.add(output_path)
+            del staged[output_path]
+    except Exception as exc:
+        rollback_failed = False
+        for output_path in committed:
+            if output_path in backups:
+                continue
+            try:
+                os.unlink(output_path)
+            except FileNotFoundError:
+                pass
+            except OSError:
+                rollback_failed = True
+        for output_path, backup_path in backups.items():
+            try:
+                os.replace(backup_path, output_path)
+            except OSError:
+                rollback_failed = True
+        if rollback_failed:
+            raise OSError("failed to restore a previous output generation") from exc
+        raise
+    finally:
+        for tmp_path in staged.values():
+            try:
+                os.unlink(tmp_path)
+            except FileNotFoundError:
+                pass
+
+    for backup_path in backups.values():
+        try:
+            os.unlink(backup_path)
+        except FileNotFoundError:
+            pass
+
+    return [os.path.realpath(output_path) for _data, output_path, _field in prepared]
+
+
+def refuse_linked_dirs(
+    path: Union[str, Path],
+    *,
+    stop_at: Union[str, Path, None] = None,
+) -> None:
+    """Inspect directory hierarchy from ``path`` up to ``stop_at`` for symlinks and
+    junctions (#1158).
+
+    Raises :exc:`OSError` with :data:`errno.ELOOP` if any directory component
+    between ``path`` and ``stop_at`` is a symbolic link or junction / reparse point.
+    """
+    if not isinstance(path, (str, Path)):
+        raise TypeError(f"path must be str or Path, got {type(path).__name__}")
+    p = str(path)
+    if not p:
+        raise ValueError("path must be non-empty")
+    if "\x00" in p:
+        raise ValueError("path must not contain null bytes")
+
+    curr = os.path.abspath(p)
+    stop: Optional[str] = None
+    if stop_at is not None:
+        stop = os.path.abspath(str(stop_at))
+    elif is_under_cwd(curr):
+        stop = os.path.abspath(os.getcwd())
+
+    stop_norm = os.path.normcase(stop) if stop is not None else None
+
+    while curr and curr != os.path.dirname(curr):
+        curr_norm = os.path.normcase(curr)
+        if stop_norm is not None and curr_norm == stop_norm:
+            break
+        if os.path.lexists(curr):
+            st = os.lstat(curr)
+            if stat.S_ISLNK(st.st_mode):
+                raise OSError(
+                    errno.ELOOP, f"Directory symbolic link not allowed: {curr!r}"
+                )
+            if os.name == "nt":
+                reparse = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+                if getattr(st, "st_file_attributes", 0) & reparse:
+                    raise OSError(
+                        errno.ELOOP, f"Directory reparse point not allowed: {curr!r}"
+                    )
+        if stop is not None:
+            try:
+                if os.path.samefile(curr, stop):
+                    break
+            except OSError:
+                pass
+        curr = os.path.dirname(curr)
+
+
+def open_no_follow(
+    path: Union[str, Path],
+    flags: int,
+    mode: int = 0o600,
+    *,
+    check_parent: bool = False,
+    refuse_hardlink: bool = False,
+) -> int:
+    """Open ``path`` refusing to follow symlinks across all platforms (#820).
+
+    On POSIX, applies ``O_NOFOLLOW`` at open time. On Windows (where
+    ``os.O_NOFOLLOW`` is absent from the OS open flags), performs pre-open
+    ``os.lstat`` inspection for ``S_ISLNK`` and reparse points, and post-open
+    ``os.fstat`` cross-validation against the opened file descriptor to detect
+    a TOCTOU swap.
+
+    When ``check_parent`` is True (#1158), inspects parent directory components
+    for symlinks and reparse points. When ``refuse_hardlink`` is True (#1158),
+    rejects hardlinked regular files (``st_nlink > 1``) with :data:`errno.EMLINK`.
+
+    Raises :exc:`OSError` with :data:`errno.ELOOP` if ``path`` is a symlink or
+    reparse point, or :data:`errno.EMLINK` if hardlinked.
+    """
+    if not isinstance(path, (str, Path)):
+        raise TypeError(f"path must be str or Path, got {type(path).__name__}")
+    p = str(path)
+    if not p:
+        raise ValueError("path must be non-empty")
+    if "\x00" in p:
+        raise ValueError("path must not contain null bytes")
+
+    pre_st: Optional[os.stat_result] = None
+    try:
+        pre_st = os.lstat(p)
+    except FileNotFoundError:
+        pre_st = None
+
+    if pre_st is not None:
+        if stat.S_ISLNK(pre_st.st_mode):
+            raise OSError(errno.ELOOP, f"Symbolic link not allowed: {p!r}")
+        if os.name == "nt":
+            reparse = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+            if getattr(pre_st, "st_file_attributes", 0) & reparse:
+                raise OSError(errno.ELOOP, f"Reparse point not allowed: {p!r}")
+
+    if check_parent:
+        refuse_linked_dirs(os.path.dirname(os.path.abspath(p)))
+
+    open_flags = flags | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(p, open_flags, mode)
+    try:
+        post_fst = os.fstat(fd)
+        if (
+            refuse_hardlink
+            and stat.S_ISREG(post_fst.st_mode)
+            and post_fst.st_nlink > 1
+        ):
+            raise OSError(errno.EMLINK, f"Hard link not allowed: {p!r}")
+        if os.name == "nt":
+            if pre_st is not None:
+                if (
+                    pre_st.st_ino != 0
+                    and post_fst.st_ino != 0
+                    and (pre_st.st_ino, pre_st.st_dev)
+                    != (post_fst.st_ino, post_fst.st_dev)
+                ):
+                    raise OSError(errno.ELOOP, f"File swapped during open: {p!r}")
+            else:
+                post_lst = os.lstat(p)
+                if stat.S_ISLNK(post_lst.st_mode):
+                    raise OSError(
+                        errno.ELOOP, f"Symbolic link created during open: {p!r}"
+                    )
+                reparse = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400)
+                if getattr(post_lst, "st_file_attributes", 0) & reparse:
+                    raise OSError(
+                        errno.ELOOP, f"Reparse point created during open: {p!r}"
+                    )
+                if (
+                    post_lst.st_ino != 0
+                    and post_fst.st_ino != 0
+                    and (post_lst.st_ino, post_lst.st_dev)
+                    != (post_fst.st_ino, post_fst.st_dev)
+                ):
+                    raise OSError(errno.ELOOP, f"File swapped during open: {p!r}")
+    except Exception:
+        os.close(fd)
+        raise
+    return fd

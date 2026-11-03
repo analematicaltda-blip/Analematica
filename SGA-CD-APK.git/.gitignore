@@ -1,0 +1,20 @@
+# Configuration files
+config.json
+*.env
+
+# Database files
+*.db
+*.sqlite3
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.venv/
+
+# Local AI Lab Weights
+/ai-lab/phi-3-mini/weights/
+*.onnx
+*.onnx.data

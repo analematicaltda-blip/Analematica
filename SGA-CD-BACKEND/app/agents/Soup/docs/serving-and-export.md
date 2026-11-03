@@ -1,0 +1,1074 @@
+# Serving, Inference & Export
+
+[← Back to the Soup README](../README.md)
+
+> The OpenAI-compatible inference server, batch inference, benchmarking, merge/export (GGUF/ONNX/TensorRT/BitNet/TorchAO), the Anthropic Messages endpoint, speculative decoding, deploy autopilot, the Web UI, and Agent Forge.
+
+**Contents:**
+
+- [Merge LoRA Adapter](#merge-lora-adapter)
+- [Export to GGUF](#export-to-gguf)
+- [Batch Inference](#batch-inference)
+- [Inference Benchmarking](#inference-benchmarking)
+- [Inference Server](#inference-server)
+- [Web UI](#web-ui)
+- [Inference Server Trace Log](#inference-server-trace-log)
+- [Soup Quantize — Ergonomic Export Alias](#soup-quantize--ergonomic-export-alias)
+- [Llama.cpp Proxy](#llamacpp-proxy)
+- [Tail-Latency Stats + Tool-Call Timer](#tail-latency-stats--tool-call-timer)
+- [Deploy Autopilot](#deploy-autopilot)
+- [Agent Forge](#agent-forge)
+- [HF Space SDK Auto-Pick](#hf-space-sdk-auto-pick)
+- [Anthropic Messages API Converter](#anthropic-messages-api-converter)
+- [Server-Side Tools](#server-side-tools)
+- [Anthropic Messages Endpoint](#anthropic-messages-endpoint)
+- [Train + measure your own draft (`soup draft`)](#train--measure-your-own-draft-soup-draft)
+- [N-gram Speculative Decoding](#n-gram-speculative-decoding)
+- [Server-Side Tool Endpoints](#server-side-tool-endpoints)
+
+---
+
+## Merge LoRA Adapter
+
+Merge a LoRA adapter with its base model into a standalone model:
+
+```bash
+# Auto-detect base model from adapter_config.json
+soup merge --adapter ./output --output ./merged
+
+# Specify base model and dtype
+soup merge --adapter ./output --base meta-llama/Llama-3.1-8B --dtype bfloat16
+
+# Merge tensor by tensor without loading the model into RAM
+soup merge --adapter ./output --output ./merged --low-memory
+```
+
+`--low-memory` reads the base `.safetensors` files and writes the merged files
+one tensor at a time, so peak RAM is about one shard (the largest `.safetensors`
+file; a single-file model is memory-mapped as a whole, so it saves little). The
+tensor values are the same as the regular merge, but the output keeps the base's
+shard layout instead of a single `model.safetensors`. It needs the default
+`fp16` save format and a plain LoRA adapter; DoRA, `modules_to_save`, rank or
+alpha patterns, adapters on embeddings or `lm_head`, and base weights stored in a
+quantized dtype are refused with a message to run the regular merge. The merge is
+written to a staging directory next to `--output` and moved into place only when
+complete; an existing non-empty `--output` is not overwritten, and base-model
+files that are symlinks pointing outside the model directory (other than a
+Hugging Face cache snapshot) are refused. Only tokenizer and config files
+(`.json`, `.model`, `.txt`, `.tiktoken`, `.jinja`) are copied from the base, plus
+`.py` files when `--trust-remote-code` is given. Adapter values that cannot be
+used safely (a non-positive `r`, a non-finite `lora_alpha`, non-boolean flags,
+mismatched LoRA shapes) are refused before anything is written.
+Measured on a 1.4 GB Llama-shaped model: 1635 MiB of working memory for the
+regular merge against about 190 MiB with `--low-memory`.
+
+ReLoRA training outputs are already standalone dense models: Soup merges the
+final active adapter into the accumulated in-memory base before writing the
+training output. Load or export that directory directly; `soup merge` is only
+for adapter-only outputs and must not be used to reconstruct a ReLoRA run.
+
+
+## Export to GGUF
+
+Export models to GGUF format for use with [Ollama](https://ollama.com/) and [llama.cpp](https://github.com/ggerganov/llama.cpp):
+
+```bash
+# Export LoRA adapter (auto-merges with base, then converts)
+soup export --model ./output --format gguf --quant q4_k_m
+
+# Export with different quantizations
+soup export --model ./output --format gguf --quant q8_0
+soup export --model ./output --format gguf --quant f16
+
+# Export a full (already merged) model
+soup export --model ./merged --format gguf
+
+# Specify llama.cpp path manually
+soup export --model ./output --format gguf --llama-cpp /path/to/llama.cpp
+
+# Show the converter and quantizer's stdout/stderr while they run
+soup export --model ./output --format gguf --verbose
+
+# The environment manages its own conversion packages: never attempt pip
+soup export --model ./output --format gguf --no-install-deps --verbose
+```
+
+Supported quantizations: `q4_0`, `q4_k_m`, `q5_k_m`, `q8_0`, `f16`, `f32`
+
+GGUF export prints phase lines for toolchain lookup, dependency checking, adapter
+merge when needed, conversion and quantization when needed. `--verbose` additionally
+streams the converter and quantizer's combined stdout/stderr as lines arrive; the
+child tool may buffer its own output. Without the flag, successful child-tool logs
+stay quiet. Both modes retain a failure summary; verbose mode keeps a bounded tail
+of the last 100 lines (up to 2,000 characters per line) for that summary.
+
+`--no-install-deps` checks `gguf`, `sentencepiece` and `protobuf` in Soup's Python
+environment and refuses with the missing package names before merging an adapter
+or cloning/running the toolchain. It never runs pip. Install the packages through
+your environment manager and retry. This flag does not disable toolchain lookup or
+cloning; use `--llama-cpp` to supply your own checkout. Both new flags apply only to
+`--format gguf`; other formats refuse them rather than ignore them.
+
+### MTP checkpoint inspection
+
+When a model declares `mtp_num_hidden_layers` but its saved safetensors headers
+contain no `mtp.*` or `model.mtp.*` tensors, Soup passes `--no-mtp` to conversion
+(including the f16 intermediate for quantized exports). It reads headers only,
+including indexed shards, and leaves the model/config unchanged. Actual MTP tensors
+are preserved. Malformed or missing checkpoint metadata is refused rather than
+treated as absent weights. The selected converter must advertise `--no-mtp` in a
+successful `--help` probe; otherwise choose a compatible checkout with
+`--llama-cpp`. The default `b5270` pin does not support this flag.
+The shared safetensors header reader currently refuses unsupported dtypes such as
+`F8_E4M3`; this inspection can therefore refuse an FP8 checkpoint even when its MTP
+tensors are present.
+
+### Converter compatibility
+
+For a fresh default auto-clone, Soup checks the effective text architecture in
+`config.json` against capability data generated from the exact `b5270` converter.
+`text_config.architectures`, when present, takes precedence over the root's
+architecture, as in that converter. Known unsupported architectures are refused
+before cloning, installing dependencies, converting or quantizing, with a
+`--llama-cpp <dir>` hint. Malformed metadata has a separate diagnostic; metadata
+reads are limited to 1 MiB. An adapter is checked after its temporary merge, and
+that temporary directory is cleaned up on refusal.
+
+Explicit `--llama-cpp`, `LLAMA_CPP_PATH` and cached checkouts can be newer than the
+default pin. Soup probes their own `--print-supported-models` output (TEXT group,
+including stderr), with a 15-second timeout. A failed or unrecognized probe is
+inconclusive: conversion remains the final check, without applying the default
+pin's capability set to that checkout. No runtime network lookup is added.
+
+The shared pin remains `b5270`; this diagnostic does not enable Qwen3.5 export on
+that version. A compatible selected converter may need additional handling such
+as the MTP boundary tracked in [#1912](https://github.com/MakazhanAlpamys/Soup/issues/1912).
+
+To regenerate capabilities when changing the pin, obtain the unmodified
+`convert_hf_to_gguf.py` from its immutable upstream commit, then run:
+
+```bash
+python scripts/gen_llama_cpp_capabilities.py --converter /path/to/convert_hf_to_gguf.py \
+  --tag b5270 --commit 3bf785f3efa89ed28294fbf73054558a2b034bfb
+```
+
+The generated `src/soup_cli/utils/llama_cpp_capabilities.json` records the tag,
+commit, source URL, SHA-256 and Git blob identity. The generator parses registered
+classes and inherited model kinds without importing or executing upstream code.
+The pin/data guard rejects a changed pin until its capabilities are regenerated.
+
+### Building llama.cpp (required for quantized GGUF)
+
+Soup auto-clones llama.cpp (pinned tag `b5270`) to `~/.soup/llama.cpp` on first use,
+but it does **not** build it. The conversion step (`f16` / `f32`) works from the
+Python script alone; every *quantized* type additionally needs the `llama-quantize`
+binary, so build it once:
+
+```bash
+cd ~/.soup/llama.cpp
+cmake -B build -DGGML_NATIVE=OFF -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release --target llama-quantize -j 4
+```
+
+Soup finds the binary in both single-config (`build/bin/llama-quantize`, Make/Ninja)
+and multi-config (`build/bin/Release/llama-quantize.exe`, MSVC/Xcode) layouts, or on
+`PATH`. Point at an existing checkout with `--llama-cpp /path/to/llama.cpp` or the
+`LLAMA_CPP_PATH` env var.
+
+**Toolchain validated on Windows** (all six quants, then `soup deploy ollama` →
+inference): Visual Studio 2022 Build Tools with the *Desktop development with C++*
+workload (`Microsoft.VisualStudio.Component.VC.Tools.x86.x64`) + CMake ≥ 3.14, CPU-only.
+Linux/macOS need only a C++ toolchain + CMake. CUDA llama.cpp builds are untested
+(see [#144](https://github.com/MakazhanAlpamys/Soup/issues/144)).
+
+> Do **not** run `pip install -r ~/.soup/llama.cpp/requirements.txt` — it pins
+> `torch~=2.2.1` against the CPU wheel index and will downgrade a CUDA PyTorch,
+> breaking training. Soup deliberately installs only the convert script's extra
+> dependencies (`gguf`, `sentencepiece`, `protobuf`), unpinned.
+
+### ONNX Export
+
+Export models to ONNX format for use with [ONNX Runtime](https://onnxruntime.ai/):
+
+```bash
+pip install "soup-cli[onnx]"
+soup export --model ./output --format onnx
+soup export --model ./output --format onnx --output ./model_onnx
+```
+
+### TensorRT-LLM Export
+
+Export models to TensorRT-LLM format for high-throughput GPU inference:
+
+```bash
+pip install "soup-cli[tensorrt]"
+soup export --model ./output --format tensorrt
+soup export --model ./output --format tensorrt --output ./model_trt
+```
+
+`pip install tensorrt_llm` pins its own `torch`/`transformers`/`numpy`/`datasets`
+versions, which can downgrade a training environment's stack. Install it in a
+separate environment from the one you trained in, and export there.
+
+### BitNet 1.58 TQ1_0 GGUF Export (live in v0.71.20)
+
+Export a BitNet 1.58-bit model as a `TQ1_0` (1.58-bit ternary) GGUF via
+llama.cpp's convert→quantize pipeline. Both the `bitnet` alias and the explicit
+`tq1_0` flavour map to the same `TQ1_0` quantization (no importance matrix is
+needed — ternary weights export directly):
+
+```bash
+soup export --model ./output --format bitnet   # → TQ1_0 ternary GGUF
+soup export --model ./output --format tq1_0     # same flavour
+soup export --model ./output --format bitnet --llama-cpp /path/to/llama.cpp
+```
+
+A built llama.cpp toolchain is required; LoRA adapters are auto-merged before
+export. See [Performance & Quantization → BitNet](performance-and-quantization.md)
+for the training side.
+
+After export, use with Ollama manually or auto-deploy:
+```bash
+# Manual (3-step)
+echo 'FROM ./my-model.q4_k_m.gguf' > Modelfile
+ollama create my-model -f Modelfile
+ollama run my-model
+
+# Auto-deploy (1-step)
+soup export --model ./output --format gguf --deploy ollama --deploy-name my-model
+```
+
+### Deploy to Ollama
+
+Deploy a GGUF model directly to your local [Ollama](https://ollama.com/) instance:
+
+```bash
+# Deploy a GGUF model
+soup deploy ollama --model ./output/model.q4_k_m.gguf --name soup-my-model
+
+# Deploy with system prompt and parameters
+soup deploy ollama --model ./model.gguf --name soup-chat \
+  --system "You are a helpful assistant." \
+  --template chatml \
+  --parameter temperature=0.7 \
+  --parameter top_p=0.9
+
+# Export + deploy in one command
+soup export --model ./output --format gguf --deploy ollama
+
+# List Soup-deployed models
+soup deploy ollama --list
+
+# Remove a model
+soup deploy ollama --remove soup-my-model
+```
+
+Auto-detected chat templates: `chatml`, `llama`, `mistral`, `vicuna`, `zephyr` (or `auto` to infer from soup.yaml).
+
+### Registry Attachment and Deploy Options
+
+`soup export` integrates with Soup's local artifact registry and deployment workflows:
+
+- **Deploying on export (`--deploy`)**: `--deploy ollama` is supported for GGUF-family formats (`gguf`, `gguf-ud`, `bitnet`, `tq1_0`). For non-GGUF formats (`onnx`, `tensorrt`, `torchao`), `--deploy` fails fast with an informative error because Ollama cannot load non-GGUF weight files. Use `--deploy-name` to assign a custom model name in Ollama.
+- **Registering exports (`--registry-id`)**: Pass `--registry-id <id>` to record and attach exported artifacts to a local registry entry across all export formats (`gguf`, `gguf-ud`, `bitnet`, `tq1_0`, `onnx`, `tensorrt`, `torchao`). When an export produces a directory (such as multi-shard safetensors, ONNX data, or TensorRT engine files in `<output>/engine/*.engine`), all produced weight and engine files are discovered and attached to the registry entry.
+
+
+## Batch Inference
+
+Run a model on a list of prompts and save results:
+
+```bash
+# JSONL input (each line: {"prompt": "..."})
+soup infer --model ./output --input prompts.jsonl --output results.jsonl
+
+# Plain text input (one prompt per line)
+soup infer --model ./output --input prompts.txt --output results.jsonl
+
+# Custom generation settings
+soup infer --model ./output --input prompts.jsonl --output results.jsonl \
+  --max-tokens 512 --temperature 0.3
+```
+
+Output is JSONL with `prompt`, `response`, and `tokens_generated` fields. Shows a progress bar and throughput summary.
+
+
+## Inference Benchmarking
+
+Quickly measure your model's generation speed and memory footprint before deployment:
+
+```bash
+# Benchmark local speed and VRAM usage on 3 automatically generated prompts
+soup bench ./output
+
+# Customizing benchmarking parameters
+soup bench ./output --num-prompts 5 --max-tokens 256
+
+# Use custom prompts from a text file (one per line) or JSONL
+soup bench ./output --prompts-file my_prompts.txt
+soup bench ./output --prompts-file bench_suite.jsonl
+```
+
+This acts as a built-in "speedometer," outputting Tokens-Per-Second (TPS), Total Latency, and Peak VRAM allocations into a clean status table.
+
+`soup bench <model>` is shorthand for `soup bench infer <model>`; both take the same flags.
+
+### Training benchmark
+
+`soup bench train` runs a short, fixed-length SFT job from your config and writes a JSON report.
+It exists so a throughput number carries evidence that the model was training while it was
+measured (#836):
+
+```bash
+soup bench train --config soup.yaml --steps 20 --warmup 3 -o bench-train.json
+```
+
+The run trains for exactly `--steps` optimizer steps, logs every step, saves nothing, and writes
+into a scratch directory, not the config's `output`. The first `--warmup` steps are measured but
+left out of the timing. It measures `task: sft` on the transformers backend and refuses any other
+task or backend by name.
+
+It exits **1** in two different ways, and only one of them leaves a report:
+
+- **Pre-flight refusals write no report.** A task or backend it does not measure, `--steps` not
+  above `--warmup`, and a model with zero trainable parameters are all refused before training
+  starts. Nothing is written to `-o`; the reason is printed.
+- **Post-run check failures write the report**, with `valid: false` and one entry per failed
+  check in `failures`. A run that did not train is a result, and the file keeps the evidence.
+
+The checks, all run on the finished report (`trainable_parameters` is also the pre-flight
+refusal above, so in ordinary use it fires there and writes nothing):
+
+| check | fails when |
+|---|---|
+| `trainable_parameters` | no `requires_grad` tensor has real storage (`meta` ones are counted apart). Checked before training too, because the Trainer would otherwise die in autograd without naming the cause |
+| `grad_norm` | a counted step logged `grad_norm == 0.0` or a non-finite norm. A backend that logs no norm is `"not reported by this backend"`, never `0.0` |
+| `parameters_changed` | the trainable parameters are bit-identical before the first step and after the last. This check needs no `grad_norm`, so it also covers backends that log none |
+| `step_count` | fewer optimizer steps ran than were requested |
+
+Only post-warm-up steps are checked for `grad_norm`. Under fp16 the GradScaler can skip its first
+steps on overflow and log a non-finite norm; raise `--warmup` past them rather than reading that
+as divergence.
+
+Report fields:
+
+| field | meaning |
+|---|---|
+| `valid`, `failures` | the verdict, and one `{check, message}` per failed check |
+| `checks` | `trainable_parameters` (count), `grad_norm` (state), `parameters_changed` (bool) |
+| `timing` | `median_seconds`, `p95_seconds` (nearest-rank), `counted_steps`, `warmup_steps_discarded`, `total_seconds`, and `step_seconds`: every counted step's time in run order, so a run that changed mode mid-flight shows where |
+| `tokens` | `useful` (supervised: `labels != -100`), `total`, and `utilisation` (`useful / total`), counted from the batches `training_step` received |
+| `throughput` | `useful_tokens_per_second` and `total_tokens_per_second` |
+| `memory` | `max_memory_allocated_bytes` and `max_memory_reserved_bytes`, kept separate and read after `reset_peak_memory_stats`. Both are `null` off CUDA. Never read from `nvidia-smi` |
+| `provenance` | device, card, CUDA runtime, compute capability, driver version, SM clock during the counted steps (`sm_clock_mhz_busy`: `min`, `median`, `max` and `sample_count` of `nvidia-smi` samples kept only from the post-warm-up steps. Queries start on a 100 ms schedule, and a slower query skips ticks. Each is timestamped at the midpoint of its query, taken for torch's own device by PCI bus id (nvidia-smi's first GPU when torch does not report one); memory is never read this way. With no sample in the window the numbers are `null`, and `unavailable_reason` says why: `"not a CUDA run"`, `"no nvidia-smi tool found"`, `"nvidia-smi returned no readable SM clock"`, or `"no sample fell inside the counted steps"` (a run too short for the schedule). It is `null` whenever there are numbers), platform, Python, package versions (torch, transformers, peft, trl, bitsandbytes, accelerate), dtype, optimizer, seed, data seed |
+| `config_hash`, `resolved_config` | sha256 of the fully resolved config, and the config itself, so a schema-default change that moves a run shows up (#716) |
+| `steps_requested`, `steps_measured` | what was asked for and what ran |
+
+A step's time runs from the previous step's end to its own end, so data loading counts. The first
+step runs from its own start. On CUDA each boundary is read after `torch.cuda.synchronize()`.
+`parameters_changed` proves that something moved, not that the model learned anything useful. It
+is a floor, not a quality gate.
+
+
+## Inference Server
+
+`--auto-quant` currently refuses with exit code 2. Soup cannot compare GGUF, AWQ,
+GPTQ, FP8, and an unquantized baseline before a serving engine has loaded them;
+timing an unevaluated stub would make the result depend on timer noise and could
+force a format the checkpoint does not contain. Quantize the checkpoint explicitly,
+then serve that checkpoint without `--auto-quant`.
+
+Start a local OpenAI-compatible inference server:
+
+```bash
+# Install server dependencies
+pip install "soup-cli[serve]"
+
+# Start server
+soup serve --model ./output --port 8000
+
+# With custom settings
+soup serve --model ./output --port 8080 --host 127.0.0.1 --max-tokens 1024
+```
+
+Endpoints:
+- `POST /v1/chat/completions` — chat completions (streaming supported)
+- `GET /v1/models` — list available models
+- `GET /health` — health check
+
+Compatible with OpenAI SDK:
+```python
+from openai import OpenAI
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="unused")
+response = client.chat.completions.create(
+    model="output",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+```
+
+### KV Cache Quantization (`soup serve --kv-cache-type`)
+
+Shrink the inference-time KV cache on the transformers backend:
+
+```bash
+soup serve --model ./output --kv-cache-type bf16   # cache in the model compute dtype
+soup serve --model ./output --kv-cache-type q8_0   # 8-bit quantized cache (needs `hqq`)
+```
+
+`bf16`/`f16` need no extra dependency; `q8_0` requires a quant backend (`hqq` / `optimum-quanto`) or the CLI exits with an install hint; `fp8` is Hopper-only. Full detail and the vLLM/SGLang status live in [Performance & Quantization → KV Cache Types](performance-and-quantization.md#kv-cache-types-v0530).
+
+### vLLM Backend (2-4x Faster Inference)
+
+Use [vLLM](https://github.com/vllm-project/vllm) for significantly better throughput in production:
+
+> **Install `[serve-fast]` in a separate environment from `[train]`.** Their
+> accelerator stacks can still resolve different `torch` builds. `soup env
+> check` flags an installed package that violates this distribution's declared
+> bounds (exit code 3), so you can catch a contaminated venv before a run relies
+> on it.
+
+```bash
+# Install vLLM support (in its own environment, not the training one)
+pip install "soup-cli[serve-fast]"
+
+# Start with vLLM backend
+soup serve --model ./output --backend vllm
+
+# Multi-GPU with tensor parallelism
+soup serve --model ./output --backend vllm --tensor-parallel 2
+
+# Control GPU memory usage
+soup serve --model ./output --backend vllm --gpu-memory 0.8
+
+# Cap the sequence length when the KV cache does not fit
+soup serve --model ./output --backend vllm --max-model-len 8192
+```
+
+> **Tip:** Soup auto-detects vLLM. When installed, you'll see a hint during `soup serve` if you haven't enabled it yet.
+
+The vLLM backend applies the **model's own chat template**, exactly like the
+transformers backend, and encodes the rendered prompt itself so the engine
+receives the same token ids Soup trains on rather than re-tokenizing the string.
+(The MII backend also tokenizes through a wrapper around the same tokenizer, so
+a templated prompt reaches its engine with the ids the template implies, #891.)
+A model that ships no chat template falls back to a generic `User:` /
+`Assistant:` prompt, and the server says so at startup. `finish_reason` reports `"length"` when a response
+hits `max_tokens` and `"stop"` otherwise (`/v1/messages` maps those to
+`max_tokens` / `end_turn`).
+
+### SGLang Backend
+
+Use [SGLang](https://github.com/sgl-project/sglang) as an alternative high-throughput backend:
+
+```bash
+# Install SGLang support
+pip install "soup-cli[sglang]"
+
+# Start with SGLang backend
+soup serve --model ./output --backend sglang
+
+# Multi-GPU with tensor parallelism
+soup serve --model ./output --backend sglang --tensor-parallel 2
+```
+
+The backend needs SGLang 0.5.1 or later, which the `[sglang]` extra installs: older
+releases refuse to start an engine with a LoRA adapter unless its radix cache is turned
+off, and Soup leaves it on.
+
+Like the transformers and vLLM backends, the SGLang backend applies the
+**model's own chat template** via the same shared prompt builder (falling back
+to a generic `User:` / `Assistant:` prompt for template-less models). When the
+template rendered the prompt, Soup encodes it itself and posts the token ids to
+the runtime's `/generate` endpoint, so the engine cannot add a second BOS to
+the one the template already rendered (#890); the template-less fallback is
+still sent as a string and tokenized by the engine as before. `finish_reason`
+reports `"length"` when a response hits `max_tokens` and `"stop"` otherwise, so
+a client doing continue-on-length can tell a truncated answer from a completed
+one (#360).
+
+A LoRA adapter passed as `--model` is served on its base model (read from
+`adapter_config.json`, or `--base`), with the adapter registered in the engine
+under the name `adapter`. SGLang applies an adapter only to the requests that
+name it and runs every other request on the base weights, so the backend names
+it in every request, streaming or not. **This changed:** the adapter used to be
+registered but never named, so every answer came from the base model while the
+response reported the adapter's name (#1724). A full model's requests name no
+adapter.
+
+It also honours `--trust-remote-code` like every other backend. **This changed:**
+the SGLang runtime and its tokenizer previously loaded with `trust_remote_code`
+hardcoded on, so a model's custom repo code executed whether or not you opted in
+— the pre-flight panel announced it but offered no way to decline. A model that
+needs custom code now **fails to load** on this backend unless you pass the flag:
+
+```bash
+soup serve --model ./output --backend sglang --trust-remote-code
+```
+
+### Speculative Decoding
+
+Use a smaller draft model to speed up generation. **Measure before you trust it** — see
+[Train + measure your own draft](#train--measure-your-own-draft-soup-draft) below. Speculative
+decoding is only a win when the draft agrees with the target often enough to pay for its own
+forward pass; on a small target it is frequently a *slowdown*.
+
+```bash
+# Transformers backend — uses HF assisted generation
+soup serve --model ./output --speculative-decoding small-draft-model --num-speculative-tokens 5
+
+# vLLM backend — uses vLLM native speculative decoding
+soup serve --model ./output --backend vllm --speculative-decoding small-draft-model
+
+# Auto-pair: Soup picks the draft for you based on the target family
+soup serve --model meta-llama/Llama-3.1-70B-Instruct --backend vllm --auto-spec
+# → auto-paired: meta-llama/Llama-3.2-1B-Instruct (target: Llama-3.1-70B-Instruct)
+```
+
+`--auto-spec` handles Llama 3.1/3.3/4, Qwen 2.5/3, Mistral Large, Mixtral, DeepSeek V3/R1, and Gemma 2/3. Models without a known draft pairing (e.g. 8B-or-smaller targets where draft+target overhead outweighs the gain) print a yellow "no draft" note and fall back to standard decoding. A draft you trained yourself with `soup draft distill` is picked up **before** this built-in table.
+
+Cross-tokenizer speculative decoding is supported on the Transformers backend via Universal Assisted Decoding (UAD). When target and draft models use different tokenizers, Soup loads the draft tokenizer and routes through Transformers' cross-tokenizer candidate generator. This requires a `transformers` version supporting cross-tokenizer assisted decoding (Soup raises a clear error if the installed version lacks this capability). Same-tokenizer pairs continue using the native single-tokenizer assisted generation path.
+
+### Train + measure your own draft (`soup draft`)
+
+The question nobody answers before enabling speculative decoding: *would the draft actually
+propose the tokens my model is going to emit?* `soup draft measure` answers it.
+
+```bash
+# Would this draft pay off? Acceptance rate + REAL plain-vs-assisted throughput.
+soup draft measure --target ./my-tuned-model \
+  --draft HuggingFaceTB/SmolLM2-135M-Instruct \
+  --prompts prod-prompts.jsonl
+
+# Distil a draft from your own target, then serve it automatically.
+soup draft distill --target ./my-tuned-model \
+  --draft-base HuggingFaceTB/SmolLM2-135M-Instruct \
+  --data traffic.jsonl -o draft/
+soup serve --model ./my-tuned-model --auto-spec     # picks up ./draft
+soup draft list
+```
+
+**Acceptance rate** is the fraction of the target's own greedy tokens the draft would have
+proposed correctly (teacher-forced argmax agreement — the metric the Medusa/EAGLE papers report).
+Higher is better, and the STRONG / MODERATE / WEAK band (≥70% / ≥50%) grades the rate alone. **It
+does not say whether the pair is faster.** That depends on how much faster the draft is than its
+target: on the one pair measured at scale (Llama-3.1-8B target, Llama-3.2-1B draft, one H100),
+81.3% acceptance was STRONG and assisted generation ran at 0.48x of plain.
+`--min-acceptance 0.6` exits **2** below the floor, so CI can gate on it (exit 0 = ok, 2 = below
+floor, 1 = error).
+
+**Break-even and draft length.** `measure` also times the draft decoding alone and reports:
+
+- **Latency ratio** `c` = plain tok/s ÷ draft-alone tok/s: what one draft token costs in target
+  steps.
+- **Break-even acceptance** at the `--num-assistant-tokens` in use: the rate at which assisted
+  generation would stop being slower. "None" means no rate pays, which is always the case once the
+  draft is no faster than the target.
+- **Best k**: the draft length in 1..64 that maximises the modelled speedup at your measured
+  acceptance.
+
+These three are **modelled, not measured**. They use the standard expected-tokens model:
+per-position acceptance `a` independent across positions, `E = (1 − a^(k+1)) / (1 − a)` tokens per
+step at a cost of `k·c + 1` target steps. So they're a ceiling that excludes framework overhead.
+On the H100 pair above the model gave 0.955x at k=5 against a measured 0.481x. To measure
+instead, add `--sweep-k 1,2,3,5,8` (at most 8 values). It times assisted generation at each k and
+reports the measured best k beside the modelled one. The numbers are a single greedy run, and
+`soup serve` samples at temperature 0.7 by default, so treat the best k as a starting point.
+
+*Note: For cross-tokenizer drafts, the measured acceptance rate is a strict lower bound. A token boundary merge between the prompt and the first generated token can cause the score to read up to `1/n_gen` lower than its true value, but it will never over-report.*
+
+`distill` runs logit KD through the existing `task: distill` trainer and emits a **dense** model
+(a PEFT adapter directory cannot be loaded as an `assistant_model`). When draft and target share a
+tokenizer, standard distillation is used. When tokenizers or vocabularies differ, `soup draft distill`
+automatically routes through cross-tokenizer Universal Logit Distillation (`uld_strategy: wasserstein_aligned`).
+A `soup shrink` output makes a good draft base: same tokenizer by construction.
+
+**Cross-tokenizer measurement.** When tokenizers differ, raw token IDs cannot be compared directly.
+`soup draft measure` automatically detects mismatched tokenizers and evaluates acceptance by aligning
+decoded character spans (`count_accepted_spans`). For both same-tokenizer and cross-tokenizer pairs,
+target generation neutralizes only `repetition_penalty` with `repetition_penalty=1.0` (Refs #345) so that draft proposals
+and target continuations are evaluated under consistent argmax rules; other generation processors
+(`no_repeat_ngram_size`, `encoder_repetition_penalty`, `min_new_tokens`, `bad_words_ids`, `suppress_tokens`,
+and `sequence_bias`) are left untouched. Cross-tokenizer support expands the choice of draft models,
+but cross-tokenizer speculative decoding adds tokenization alignment overhead and does not guarantee
+a speedup — use `soup draft measure` to verify real throughput on your specific pair.
+
+**Measured reality check (be sceptical of speedup claims, including ours).** On
+`SmolLM2-360M-Instruct` with a `SmolLM2-135M-Instruct` draft, the *stock* draft already scored
+**69.3%** acceptance, distilling it changed nothing (69.7% after 2 epochs, 69.3% after 10), and
+assisted decoding came out **0.55–0.64×** — a net slowdown. A small same-family draft is already
+near its ceiling for agreeing with the target, and the draft's forward pass costs more than the
+tokens it saves. Whether distillation pays off on a larger or genuinely diverged target/draft pair
+is unproven on a 4 GB box. Run `soup draft measure` on *your* pair rather than assuming.
+
+### Prefix Caching
+
+For RAG and agent workloads with a shared system prompt, enable vLLM's automatic prefix cache:
+
+```bash
+soup serve --model ./output --backend vllm --prefix-cache
+```
+
+The first request with a given prefix warms the cache; subsequent requests skip the shared prefix compute entirely. Big latency win when 100+ requests share the same system prompt.
+
+### Dynamic LoRA Hot-Swap
+
+Switch the active adapter at runtime without restarting the server:
+
+```bash
+soup serve --model base-model --adapters chat=./chat-adapter --adapters code=./code-adapter
+```
+
+```bash
+# Activate an adapter
+curl -X POST http://localhost:8000/v1/adapters/activate/chat
+# → {"active": "chat", "status": "ok"}
+
+# Return to base model
+curl -X POST http://localhost:8000/v1/adapters/deactivate
+# → {"active": null, "status": "ok"}
+
+# List loaded adapters with active flag
+curl http://localhost:8000/v1/adapters
+# → {"adapters": [{"name": "chat", "active": true}, ...], "active": "chat"}
+```
+
+A server started with `--tool-auth-token` requires that token on all three adapter
+routes, loopback included, and answers 401 without it. A non-loopback bind always has
+one, since `soup serve` refuses to start there without it:
+
+```bash
+soup serve --model base-model --adapters chat=./chat-adapter --host 0.0.0.0 --tool-auth-token "$TOKEN"
+
+curl -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8000/v1/adapters/activate/chat
+curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8000/v1/adapters
+```
+
+Names are validated against `^[a-zA-Z0-9][a-zA-Z0-9-]*$`; activate/deactivate calls are thread-safe behind a lock. Activate/deactivate also check the `Host` and `Origin` headers (see [Server-Side Tool Endpoints](#server-side-tool-endpoints)).
+
+### Multi-Tenant Vector Bank (`soup serve --bank`)
+
+Serve many per-user personas from one model at KB-per-user instead of a full LoRA each.
+A VeRA / VB-LoRA bank stores a shared random projection (reconstructed deterministically
+from a seed — never stored on disk) plus a small per-user scaling vector. The active user
+is chosen **per request** via the `X-User-Id` header:
+
+```bash
+# bank.json carries {name, base_model, projection_seed, vector_dim, entries: [{user_id, scaling}, ...]}
+soup serve --model base-model --bank ./bank.json --bank-strength 1.0
+```
+
+```bash
+# Apply alice's persona to this request
+curl -X POST http://localhost:8000/v1/chat/completions \
+  -H "X-User-Id: alice" \
+  -d '{"messages": [{"role": "user", "content": "hi"}]}'
+
+# No / unknown X-User-Id → zero-delta no-op (plain base model, no cross-request leak)
+curl -X POST http://localhost:8000/v1/chat/completions \
+  -d '{"messages": [{"role": "user", "content": "hi"}]}'
+```
+
+The per-token delta is `v_user ⊙ (x @ Pᵀ)`, added to the last decoder layer's residual by a
+decode-time forward hook. `--bank-strength` scales the delta (magnitude capped at 100). The
+`--bank` path must live under your cwd. The active user is resolved **per request** via a
+`contextvars.ContextVar`, so concurrent requests on a threaded server never race on shared state
+— each request (streaming and non-streaming) gets its own isolated active-user selection, and an
+absent / unknown id self-clears to the clean baseline. (v0.71.12 / per-request v0.71.17)
+
+### Serve a Trained MoLE (`soup serve --mole`)
+
+Serve a Mixture-of-LoRA-Experts adapter trained with `task=moe_lora_routing`. The training run
+writes a self-describing `mole_manifest.json` next to `mole_gate.pt`; `soup serve --mole <dir>`
+loads the base model + the N frozen task LoRAs + the trained gate and blends them **per token**
+at decode time (a custom blend loop — both non-streaming and SSE streaming):
+
+```bash
+# <dir> is the MoLE training output (contains mole_gate.pt + mole_manifest.json)
+soup serve --model ./mole_out --mole ./mole_out --device cuda
+```
+
+The base model comes from `--base` if set, otherwise the base recorded in the manifest. `--mole`
+requires `--backend transformers` and is mutually exclusive with `--bank` / `--steer` /
+`--adapters` / `--speculative-decoding`. The manifest + gate are cwd-contained, symlink-rejected,
+and size-capped, and the gate loads with `weights_only=True`. Because the blend recomputes the
+sequence each step (no KV cache), this path is best for small / demo models. (v0.71.17)
+
+### Structured Output (JSON Schema / Regex)
+
+Constrain model output to a valid JSON schema or regex pattern:
+
+```bash
+# JSON schema (schema file must live under your cwd)
+soup serve --model ./output --structured-output json --json-schema product.json
+
+# Regex (length-capped at 2048 chars, null bytes rejected)
+soup serve --model ./output --structured-output regex --regex-pattern '\d{3}-\d{4}'
+```
+
+The `validate_json_schema` helper caps serialised size at 64KB and requires a top-level `type` field so malformed schemas fail fast at server startup, not per-request.
+
+### Continuous-Batching Dashboard + `/metrics`
+
+Track live server health:
+
+```bash
+soup serve --model ./output --dashboard
+```
+
+```bash
+curl http://localhost:8000/metrics
+# → {
+#   "requests_total": 1234,
+#   "tokens_generated_total": 456789,
+#   "active_requests": 3,
+#   "latency_p50_ms": 185.2,
+#   "latency_p95_ms": 720.0,
+#   "latency_samples": 1000
+# }
+```
+
+`/metrics` is served by the **transformers** and **vLLM** backends (on both,
+whether or not `--dashboard` is passed — the flag only records intent). The
+**SGLang** and **MII** backends do not expose it; passing `--dashboard` there
+prints a warning at startup rather than silently collecting nothing.
+
+Latency percentiles are computed from the last 1000 requests; counters include failure paths so the dashboard shows true reliability, not just success rate.
+
+### OpenTelemetry Request Tracing
+
+Emit per-request spans to your OTLP collector:
+
+```bash
+pip install opentelemetry-sdk opentelemetry-exporter-otlp
+
+soup serve --model ./output \
+  --trace \
+  --trace-endpoint http://localhost:4317
+```
+
+The OTLP endpoint is SSRF-hardened: only http/https schemes, plain HTTP only for loopback (`localhost`/`127.0.0.1`/`::1`), and RFC1918 / link-local / shared `100.64.0.0/10` / site-local `fec0::/10` / `0.0.0.0` all rejected via `ipaddress.ip_address`; a host written only as numbers that is not a valid IPv4 address is rejected too. When the SDK is missing the flag is a no-op with a warning — the server starts fine without spans.
+
+> **Note:** `max_tokens` is capped at 16,384 per request. Error details are never exposed in HTTP responses.
+
+
+## Web UI
+
+Launch a local web interface to manage experiments, start training, explore data, and chat with models — all from your browser.
+
+```bash
+pip install "soup-cli[ui]"
+soup ui
+# -> opens http://127.0.0.1:7860/?token=<token> in your browser
+# -> prints the same URL and the token in the startup panel (also with --no-browser)
+```
+
+The URL `soup ui` opens and prints already carries the token, so the first tab
+authenticates on its own. On a loopback bind the server swaps that token for an
+HttpOnly session cookie and redirects, as described below, so the address bar
+ends up clean and a reload or a new tab stays signed in. Your browser's history
+still records the URL it was given.
+
+> **v0.75.0 through v0.75.2: add the token to the URL yourself.** In these
+> releases the tab `soup ui` opens carries no token, so it shows
+> `Error loading dashboard: Unauthorized` and no page can load data (#1194).
+> Open `http://127.0.0.1:<PORT>/?token=<TOKEN>` instead, with the port from
+> the startup panel's `URL:` line and the value on its `Token:` line. The page
+> keeps the token for that tab, so a reload works, and removes it from the
+> address bar; your browser's history still records the URL. A new tab or
+> another browser needs the URL again, and the token changes every time
+> `soup ui` starts unless you pass `--auth-token`. Releases with the session
+> cookie keep a new tab signed in as well; see "Session cookie on a loopback
+> bind" below. Later versions open and print that URL themselves.
+
+**Pages:**
+- **Dashboard** — view all experiment runs, loss charts, system info, multi-run comparison
+- **New Training** — create configs from templates or 171 ready-made recipes, validate, start training with live SSE log streaming and progress bar
+- **Data Explorer** — browse and inspect datasets (JSONL, JSON, CSV, Parquet)
+- **Model Chat** — chat with streaming responses, configurable temperature/top_p/max_tokens, system prompt, adapter selection, markdown rendering, chat export
+
+**Live monitoring + enhanced UX:**
+- **Training Live Monitor** — real-time SSE log streaming, live metrics, progress bar with ETA
+- **Enhanced Metrics** — 2x2 chart grid (loss, LR, grad_norm, throughput) + GPU memory chart, eval results table
+- **Multi-Run Compare** — overlay loss curves from up to 5 runs side-by-side
+- **Chat Upgrade** — SSE streaming via proxy, typing indicator, cancel button, markdown renderer (bold, italic, code blocks), chat export as JSON
+- **Config Builder** — recipe dropdown (171 recipes), config schema API for dynamic form generation
+
+Gradient norm is nullable: backends or steps that do not report it store and
+stream `null`, and the Web UI chart leaves a gap instead of drawing a false
+zero. An actually logged `0.0` remains a measured value and appears in the
+terminal panel.
+
+**Security:** The Web UI generates a random auth token at startup (printed to console). Every private endpoint — mutating (start/stop training, delete runs, inspect data, validate config) and reading (runs, metrics, system, recipes, SSE streams) — requires an `Authorization: Bearer <token>` header. `/` and `/api/health` stay open so the dashboard can load. CORS is restricted to the served origin. Data inspection is sandboxed to the working directory.
+
+**The page never stores the token.** The page reads the token from `?token=…` — the URL `soup ui` opens and prints, and the `--public` phone URL — whenever a non-loopback bind leaves that parameter in the URL; on a loopback bind the cookie below has already consumed it. Otherwise it asks for the token the first time a request is refused, then holds it in page memory only: never `sessionStorage`, `localStorage`, a cookie or a `window` property. Without the session cookie below, a reload or a new tab therefore asks for it again; paste the token `soup ui` printed (the whole `Authorization: Bearer …` line works too). If you cancel the prompt, the page stays signed out until your next click, which asks again. That is deliberate: a token persisted where page script can read it would turn a future rendering mistake into a token disclosure. It does not protect against script already running in the page; the content policy below is the defence there.
+
+**Session cookie on a loopback bind (#1191).** Opening `http://127.0.0.1:<PORT>/?token=<TOKEN>` checks the token, sets an `HttpOnly; SameSite=Strict; Path=/` cookie named `soup_ui_session_<PORT>` and redirects to the same URL without `token`. The cookie holds a random session id, never the token, so page script cannot read a credential, and a reload or a new tab in that browser stays signed in. The cookie belongs to the hostname you opened: signing in at `127.0.0.1` does not sign in `localhost`, so keep using the same one. It has no expiry, so it ends when the browser session does, and the server keeps the ids only in memory, so every `soup ui` restart ends every session; open the `?token=` URL again to sign back in. A request authenticated by the cookie that is not a `GET` or `HEAD` must carry an `Origin` naming this exact server (scheme, host and port) or it is refused with 403: every port of `127.0.0.1` counts as one site, so `SameSite=Strict` alone would let a page served by another local app on a different port use the cookie. The `Authorization: Bearer` header works exactly as before and needs no `Origin`, so scripts and API clients are unchanged. A wrong token sets nothing and loads the page as before. A browser that blocks cookies for `127.0.0.1` gets the token prompt after the redirect, because the token has already left the URL; paste the token there. With `--public` (or any non-loopback `--host`) no cookie is set or accepted: the phone page keeps the token in page memory, and a reload asks for it again or you re-scan the QR code. **What this does not cover:** cookies are not isolated by port, so any other server on `127.0.0.1` that your browser sends a same-site request to also receives the session cookie. Such a server can replay it outside a browser with any `Origin`, since the `Origin` check only stops browsers, and act as you in the UI, including starting training, until `soup ui` restarts.
+
+YAML-entry request bodies are capped at 1 MiB on `/api/config/validate`,
+`/api/train/start`, and `/api/config/from-form`. Larger bodies return HTTP 413
+before JSON/YAML validation. The server checks both `Content-Length` and the
+bytes actually received, so chunked requests and understated headers cannot
+bypass the limit.
+
+**Content policy.** Every Web UI response carries a `Content-Security-Policy` that allows scripts only from the UI's own origin and the pinned Chart.js file (no inline script, no `eval`), plus `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` and `X-Frame-Options: DENY`. Chart.js is loaded with a Subresource Integrity hash, so the browser refuses it if the CDN serves different bytes. The UI's markup carries no inline event handlers, and every server- or dataset-derived value is escaped before it is rendered. The loopback-only `/docs`, `/docs/oauth2-redirect` and `/redoc` pages are the one exception to the policy header, because FastAPI's interactive docs start from an inline script.
+
+**Interactive API docs are loopback-only.** `/openapi.json`, `/docs`, `/docs/oauth2-redirect` and `/redoc` serve on a loopback bind and are **absent** (404) on any other, including `soup ui --public`. This is deliberate rather than incidental: the schema exposes no run data, configuration or logs, but it does describe every route, parameter and request/response shape, and on a LAN bind that is free reconnaissance. Gating them behind the token instead was rejected — `/docs` is a browser navigation and Swagger cannot attach a Bearer header to it, so gating would break the page for a developer while leaving `/openapi.json` readable by any HTTP client. If you need the schema while bound publicly, read it from a loopback instance of the same version.
+
+**Host names on a loopback bind (#1829).** Use the bound host or `localhost`,
+`127.0.0.1` or `[::1]`, with the bound port. An omitted port means HTTP port 80;
+on any other port it must be included. Any other name or port gets
+`403 {"detail": "Host not allowed"}` before authentication, body reads or routes.
+This includes a proxy that rewrites `Host`, an SSH tunnel whose local port differs
+from the server's, or a custom DNS name. Missing, malformed or duplicate `Host`
+headers are also refused. These refusals carry the same security headers as other
+UI responses, including on the interactive docs paths. `--public` and other
+non-loopback binds keep the Bearer gate and do not apply this Host allow-list.
+
+```bash
+# Custom port, don't auto-open browser
+soup ui --port 8080 --no-browser
+```
+
+
+## Inference Server Trace Log
+
+`soup serve --trace-log <path>` writes a passive append-only JSONL log per chat completion:
+
+```bash
+soup serve --model ./out --trace-log ./serve-trace.jsonl --trace-log-cap-mb 100
+```
+
+Each line: `{"ts": ..., "prompt": ..., "response": ..., "latency_ms": ..., "tokens": ...}`. Path-containment validated, hard rotation cap (default 100 MB, one backup retained), symlink-reject on the backup path (TOCTOU defence), and `hf_*` / `sk-*` / `Bearer …` token shapes redacted to `<redacted>` before write. Failures (disk full, serialisation errors) never crash the request handler.
+
+
+## Soup Quantize — Ergonomic Export Alias
+
+```bash
+soup quantize ./out --to gguf --bits 4
+soup quantize ./out --to onnx -o ./out-onnx
+```
+
+Prints the equivalent `soup export …` invocation (escaped via `shlex.quote`) for copy-paste. Intentionally does NOT in-process call `soup export` — Typer commands aren't safe to re-enter.
+
+
+## Llama.cpp Proxy
+
+```bash
+soup llama --help                  # list supported subcommands
+soup llama cli -m model.gguf -p "Hello"
+soup llama gguf-split --merge a.gguf b.gguf out.gguf
+soup llama server -m model.gguf
+soup llama quantize model.gguf model-q4_k_m.gguf q4_K_M
+```
+
+### `soup llama quantize`
+
+Forwards every trailing argument to the `llama-quantize` binary on `PATH` (same
+closed allowlist / filtered-env rules as the other `soup llama` subcommands). Use
+it when you already have a GGUF and want llama.cpp's quantizer directly, rather
+than going through `soup export --format gguf` / `soup quantize`.
+
+Closed allowlist: `cli` / `mtmd-cli` / `gguf-split` / `server` / `quantize`. Forwards to `llama-*` binary on PATH (`shutil.which`) with **filtered child env** — `HF_TOKEN` / `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` and other secrets are dropped before exec; only `PATH` / `HOME` / `USER` / locale + llama.cpp-recognised `LLAMA_CPP_HOME` / `GGML_*` / `OMP_NUM_THREADS` are forwarded.
+
+
+## Tail-Latency Stats + Tool-Call Timer
+
+```python
+from soup_cli.utils.tail_latency import summarise_latency
+from soup_cli.utils.tool_outputs import ToolOutputsBuffer, ToolCallTimer
+
+stats = summarise_latency([12.3, 14.1, 9.7, 18.8, 11.2])
+# TailLatencySummary(count=5, mean=..., p50=..., p95=..., p99=..., ema=...)
+
+buffer = ToolOutputsBuffer()
+with ToolCallTimer(buffer, name="fetch_url") as timer:
+    timer.set_output("...")
+```
+
+Pure-Python EMA + linear-interp percentiles (DoS cap: `MAX_SAMPLES=1_000_000`). `ToolOutputsBuffer` is a thread-safe `collections.deque(maxlen=1000)` ring with truncated previews; `ToolCallTimer` records duration / output / error per invocation for tool-calling SFT runs.
+
+
+## Deploy Autopilot
+
+Pick the optimal PEFT + quantisation + speculative-decoding combo for your hardware target in one command:
+
+```bash
+soup deploy autopilot --target rtx-4090-24gb --base meta-llama/Llama-3.2-1B
+# Writes:
+#   deploy_autopilot.yaml  — ready-to-train soup.yaml recipe
+#   deploy_autopilot.sh    — planned deploy shell script
+```
+
+Profiles ship out of the box for Apple Silicon (`mac-m3`, `mac-m4-pro`), consumer NVIDIA (`rtx-3060-12gb`, `rtx-4090-24gb`), mobile (`iphone-16`, `pixel-9`), local runtimes (`ollama-local`, `lm-studio`), and cloud (`runpod-a100`, `hf-jobs-h100`). `--list` shows the full table. Every profile is a frozen dataclass with closed allowlists on runtime / quant / PEFT — bad config values fail at import time. The generated bash uses `shlex.quote` on the model path and writes are protected by cwd containment + `os.lstat + S_ISLNK` TOCTOU rejection.
+
+
+## Agent Forge
+
+Turn an OpenAPI 3.x, MCP server manifest, or GraphQL introspection JSON straight into a tool-calling SFT dataset — no manual labelling, no scaffolding:
+
+```bash
+# 1. Parse spec + synthesise a tool-calling dataset
+soup agent synth --spec api.yaml --output ds.jsonl --examples-per-endpoint 4
+
+# 2. Plan the training run (prints the soup train invocation)
+soup agent train --spec api.yaml --base meta-llama/Llama-3.2-1B
+
+# 3. Score model predictions against the spec catalog
+soup agent eval --spec api.yaml --predictions preds.jsonl
+```
+
+Each row of the synthesised dataset is `{messages: [user, assistant_with_tool_call], tool: <name>, source_endpoint: <path>}`. `$ref` strings in OpenAPI are left opaque (no external resolution — defends against file-read SSRF), `yaml.safe_load` only, 5 MiB spec cap, 10 000-endpoint cap, atomic JSONL write via staged-tempfile + `os.replace`. `eval` enforces a 1 000 000-line cap on predictions and rejects symlinks at every read/write boundary.
+
+
+## HF Space SDK Auto-Pick
+
+When you deploy a custom Space template directory, Soup now picks `space_sdk="streamlit"` / `"gradio"` from the rendered `requirements.txt`:
+
+```bash
+soup deploy hf-space --space my-org/my-app --model my-org/my-model --template-dir ./my-template
+```
+
+If `requirements.txt` lists `streamlit`, the Space is created with the Streamlit SDK. Otherwise (no requirements, gradio listed, etc.), Soup falls back to the Gradio default. The HF Hub allows `docker` and `static` SDKs too, but those cannot be inferred from `requirements.txt` alone — use the built-in templates or supply a custom one with an explicit `--sdk` override.
+
+
+## Anthropic Messages API Converter
+
+Pure-Python converters between OpenAI chat-completions and Anthropic Messages payload shapes:
+
+```python
+from soup_cli.utils.anthropic_messages import to_anthropic, from_anthropic
+
+anthropic_payload = to_anthropic({
+    "model": "claude-3-5-sonnet",
+    "messages": [
+        {"role": "system", "content": "you are helpful"},
+        {"role": "user", "content": "hi"},
+    ],
+    "max_tokens": 256,
+})
+```
+
+Multiple `system` messages join with `\n\n`. `tool` role with structured (list) content is concatenated into a single `tool_result` text block, never silently dropped. `max_tokens` capped at 16384, `temperature` bounded `[0.0, 2.0]`. `soup serve` exposes this converter as a live `POST /v1/messages` endpoint on both the transformers and vLLM backends; with `"stream": true` it answers in the Anthropic event shape.
+
+
+## Server-Side Tools
+
+```python
+from soup_cli.utils.server_tools import (
+    SUPPORTED_TOOLS, WebSearchConfig, is_domain_allowed, validate_web_search_config,
+)
+
+# SUPPORTED_TOOLS == frozenset({"python", "bash", "web_search"})
+config = WebSearchConfig(
+    domain_allowlist=("example.com", ".docs.example.com"),
+    rate_limit_per_minute=30,
+)
+validate_web_search_config(config)
+is_domain_allowed("a.docs.example.com:443", config.domain_allowlist)  # True
+is_domain_allowed("[::1]", config.domain_allowlist)                   # False
+```
+
+`python` and `bash` reuse the v0.25.0 RLVR sandbox; `web_search` is gated by an explicit domain allowlist (default empty = deny all). `is_domain_allowed` strips `:port` suffixes before matching and rejects IPv6 literals so `Host: api.example.com:443` matches `api.example.com`. Live HTTP tool endpoints in v0.45.1.
+
+
+## Anthropic Messages Endpoint
+
+`soup serve --backend transformers` and `soup serve --backend vllm` expose
+a POST `/v1/messages` route that accepts Anthropic Messages-shaped payloads
+(the **SGLang** backend does not — it serves `/v1/chat/completions`, `/v1/models`
+and `/health` only):
+
+```bash
+curl http://localhost:8000/v1/messages -H "Content-Type: application/json" -d '{
+  "model": "my-model",
+  "messages": [{"role": "user", "content": "hello"}],
+  "max_tokens": 64
+}'
+```
+
+Non-streaming requests return Anthropic-shaped envelopes. Streaming (`stream: true`)
+returns Anthropic event-shape SSE with `message_start` → `content_block_delta` →
+`message_delta` + `message_stop` events. Validation errors return a generic
+`"Invalid request"` 400 body with details logged server-side at DEBUG. CORS restricted
+to loopback-only (`localhost` / `127.0.0.1`) on both backends.
+
+
+## N-gram Speculative Decoding
+
+When a server is configured with an `NgramSpecConfig`, every chat completion forwards
+`prompt_lookup_num_tokens=N` into `model.generate(...)` (HF Transformers ≥ 4.38
+prompt-lookup decoding — no draft model required). Mutually exclusive with a real
+`assistant_model`; if both are set, the real draft model wins.
+
+
+## Server-Side Tool Endpoints
+
+v0.53.7 ships live server-side tool calling on `soup serve`.
+Three POST routes are now available on `soup serve`:
+
+- **`POST /v1/tools/python`** — runs caller-supplied Python code in an isolated
+  sub-process. Bounded by 512 MB memory, 5-second wall-clock timeout, and a
+  cap of four concurrent runs (shared with the code-execution rewards). Like `/v1/tools/bash`, it runs the code only under
+  OS-level isolation: on Linux with Python 3.12+ when `os.unshare` creates new user,
+  network and PID namespaces for the run, and on macOS when `sandbox-exec` is on `PATH`.
+  Anywhere else it answers HTTP 501 without running the code, including on Windows, on
+  Linux with Python 3.11, and on a Linux host or container that refuses those namespaces.
+- **`POST /v1/tools/web_search`** — searches the web and returns domain-filtered results
+  as `[{url, title, snippet}]` with snippets sanitized (null bytes stripped).
+  Deny-by-default via `WebSearchConfig.domain_allowlist`.
+
+- **`POST /v1/tools/bash`** — runs a bash command with strict OS-level network
+  isolation (`unshare` on supported Linux runtimes, `sandbox-exec` on macOS).
+  Enforces the `--tool-auth-token` Bearer token on every bind,
+  a 5-second wall-clock timeout, a minimal secret-scrubbed environment, and a combined
+  10KB stdout/stderr streaming kill limit. Returns the real stdout, stderr, exit code,
+  and timeout state. This is not a filesystem sandbox: the child retains the server
+  process's read access to world-readable system files. The endpoint fails closed with
+  HTTP 501 when strict OS isolation is unavailable (including on Windows or restricted
+  Linux containers).
+
+**`/v1/tools/python` and `/v1/tools/bash` need `--tool-auth-token` on every bind.** A
+server started without it answers both routes with 401 on loopback too, as it already did
+on any other bind, and the reply names the fix. The token is checked before the OS-level
+isolation requirement above, so without it the reply is 401 even on a host where the route
+would answer 501; with it, the isolation rule decides. Start the server with a token, from
+the option or from `SOUP_TOOL_AUTH_TOKEN` (which keeps it off the command line and out of
+the shell history), and send it as a Bearer header:
+
+```bash
+export SOUP_TOOL_AUTH_TOKEN="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
+soup serve --model ./output
+
+curl -X POST http://127.0.0.1:8000/v1/tools/python \
+  -H "Authorization: Bearer $SOUP_TOOL_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"code": "print(1)"}'
+```
+
+`/v1/tools/web_search`, `/v1/thumbs` and the adapter routes keep their rule: on a loopback
+bind they take a token only when the server has one.
+
+Tool routes, `/v1/thumbs` and adapter activate/deactivate accept requests only when the
+`Host` header names the bound address (any loopback name for a loopback bind) and any
+`Origin` header names the same; otherwise they answer 421 or 403. That check runs first.
+The tool routes and all three adapter routes (`GET /v1/adapters`, activate, deactivate)
+then also require `Authorization: Bearer <token>` whenever `--tool-auth-token` is set,
+on loopback too, and answer 401 without it.
+
+The generation routes (`/v1/chat/completions`, `/v1/messages`) and the adapter listing
+(`GET /v1/adapters`) carry the narrower half of that check: a request whose `Origin` names
+another site is refused with 403, so a page the operator merely visits cannot drive
+generation on their server or enumerate the loaded adapters — CORS alone would only stop
+that page *reading* the reply, not sending the request. Requests that carry no `Origin` at
+all — curl, the OpenAI/Anthropic SDKs, a reverse proxy — are unaffected, and `Host` is not
+checked on these routes, so a proxy can still front them under its own hostname.
+
+**What `--tool-auth-token` does not cover.** `soup serve` refuses a non-loopback `--host`
+without `--tool-auth-token`, but the token is checked on the tool routes, `/v1/thumbs` and
+the adapter routes only. `/v1/chat/completions`, `/v1/messages`, `/v1/models`, `/health` and
+`/metrics` take no token on any bind, so they answer every client that can reach the port;
+put a proxy that authenticates in front of the server if that is not intended. With
+`--backend vllm`, `sglang` or `mii` there are no tool or adapter routes, so no route checks
+the token. On a wildcard bind (`0.0.0.0`, `::`) there is no single name to compare `Host`
+against, so the routes that otherwise compare it check only that an `Origin` header, when
+sent, names the same host as `Host`. `soup serve` prints these points at startup whenever
+it binds beyond loopback.

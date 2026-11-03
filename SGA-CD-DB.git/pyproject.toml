@@ -1,0 +1,8 @@
+[project]
+name = "sga_cd_db"
+version = "0.1.0"
+description = "Database models and schema for the SGA-CD application."
+authors = [{ name = "Jules", email = "jules@example.com" }]
+
+[tool.setuptools]
+packages = ["models"]

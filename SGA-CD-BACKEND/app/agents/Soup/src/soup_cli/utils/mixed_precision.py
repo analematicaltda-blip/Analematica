@@ -1,0 +1,241 @@
+"""Auto mixed-precision picker (v0.32.0 Part C).
+
+Maps a model + GPU compute capability to the best mixed-precision setting:
+``bf16`` (Ampere+, most modern models), ``fp16`` (Turing or known
+fp16-stable models), or ``no`` (Pascal and older).
+
+Quirk map is keyed on a lower-cased substring of the model id so we catch
+both ``Qwen/Qwen2-7B-Instruct`` and ``alibaba/Qwen2.5-3B`` with one entry.
+"""
+
+from __future__ import annotations
+
+import os
+from typing import Literal
+
+# Compute capability thresholds.
+BF16_MIN_CC = 8.0   # Ampere
+FP16_MIN_CC = 6.0   # Pascal
+MAX_MODEL_NAME_LEN = 200
+
+# Known fp16-stable / bf16-unstable model families.
+# Value: preferred precision when CC supports it.
+KNOWN_PRECISION_QUIRKS: dict[str, str] = {
+    "qwen2": "fp16",
+    "qwen2.5": "fp16",
+    "phi-3": "fp16",
+    "phi-3.5": "fp16",
+    "phi-4": "bf16",
+    "gemma-2": "bf16",
+    "mistral": "bf16",
+    "llama-3": "bf16",
+    "llama-2": "bf16",
+}
+
+
+def pick_mixed_precision(
+    model_name: str, compute_capability: float,
+) -> Literal["bf16", "fp16", "no"]:
+    """Pick mixed-precision mode for a model + GPU.
+
+    - cc < 6.0  → ``"no"`` (Pascal lacks reliable fp16 tensor cores)
+    - cc < 8.0  → ``"fp16"`` (no bf16 support)
+    - cc >= 8.0 → ``"bf16"`` unless model is in the fp16-stable quirks map
+    """
+    if not isinstance(model_name, str) or not model_name:
+        raise ValueError("model_name must be a non-empty string")
+    if "\x00" in model_name:
+        raise ValueError("model_name must not contain null bytes")
+    if len(model_name) > MAX_MODEL_NAME_LEN:
+        raise ValueError(
+            f"model_name must be <= {MAX_MODEL_NAME_LEN} chars, got {len(model_name)}"
+        )
+    if not isinstance(compute_capability, (int, float)):
+        raise ValueError(
+            f"compute_capability must be a number, got {type(compute_capability)}"
+        )
+    if compute_capability < 0:
+        raise ValueError(
+            f"compute_capability must be non-negative, got {compute_capability}"
+        )
+
+    if compute_capability < FP16_MIN_CC:
+        return "no"
+
+    name_lc = model_name.lower()
+    quirk: str | None = None
+    # Sort longer substrings first so multi-version pairs work correctly:
+    # ``qwen2.5`` wins over ``qwen2``, ``phi-3.5`` wins over ``phi-3``.
+    # If you add a new family with multiple versions, the longest substring
+    # always wins — no manual ordering of the dict is required.
+    for substring in sorted(KNOWN_PRECISION_QUIRKS, key=len, reverse=True):
+        if substring in name_lc:
+            quirk = KNOWN_PRECISION_QUIRKS[substring]
+            break
+
+    if compute_capability < BF16_MIN_CC:
+        # Turing / Volta cannot do bf16 — fall back to fp16 regardless.
+        return "fp16"
+
+    if quirk is None:
+        return "bf16"
+    return "bf16" if quirk == "bf16" else "fp16"
+
+
+def align_trainable_dtype_for_fp16(model, *, fp16: bool, bf16: bool) -> int:
+    """Cast bf16 LoRA adapters to fp32 when training in fp16.
+
+    peft creates LoRA adapter weights in the base checkpoint's dtype (bf16 for
+    many models). On pre-Ampere cards (no bf16 hardware) training runs in fp16,
+    and the fp16 GradScaler raises ``_amp_foreach_non_finite_check_and_unscale_cuda
+    not implemented for 'BFloat16'`` on bf16 gradients. Cast the trainable LoRA
+    params to fp32 — matching ``materialize_meta_adapters`` and peft's
+    ``autocast_adapter_dtype`` — before the optimizer is created.
+
+    Only ``*lora_*`` params are touched: under full fine-tuning (``lora.r: 0``),
+    Spectrum ``unfrozen_parameters`` or LISA the trainable set is a large fraction
+    of the model, and casting it would double trainable-weight memory after the
+    VRAM pre-flight has already passed.
+
+    Returns the number of params cast.
+    """
+    if model is None or not fp16 or bf16:
+        # model=None: a trainer object without .model is a shape this codebase
+        # produces (TestAsrTrainSidecar builds one) — cast nothing, loudly 0.
+        return 0
+    import torch
+
+    casted = 0
+    for name, param in model.named_parameters():
+        if param.requires_grad and "lora_" in name and param.dtype == torch.bfloat16:
+            param.data = param.data.to(torch.float32)
+            casted += 1
+    return casted
+
+
+def align_trainable_dtype_for_fsdp_qlora(
+    model,
+    *,
+    fsdp: bool,
+    quantization: str,
+    compute_dtype,
+) -> int:
+    """Cast every trainable floating QLoRA parameter to FSDP's storage dtype.
+
+    ``get_peft_model`` normally promotes LoRA weights to fp32. Under FSDP +
+    BNB 4-bit, the frozen quantized parameters use a floating ``quant_storage``
+    matching BNB's compute dtype, and FSDP requires every floating parameter in
+    a flat unit to share that dtype. Cast only the trainable floating set: the
+    packed 4-bit base stays untouched, as do frozen non-quantized parameters.
+
+    The command calls this after every wrapper's ``setup()`` (and therefore
+    after PEFT creates adapters) but before ``train()`` lets HF wrap the model.
+    Returns the number of parameter tensors cast.
+    """
+    if model is None or not fsdp or quantization != "4bit":
+        return 0
+
+    casted = 0
+    for _name, param in model.named_parameters():
+        if (
+            param.requires_grad
+            and param.is_floating_point()
+            and param.dtype != compute_dtype
+        ):
+            param.data = param.data.to(compute_dtype)
+            casted += 1
+    return casted
+
+
+def keep_trainable_dtype_on_resume(trainer) -> None:
+    """Restore each trainable parameter's dtype after a checkpoint resume reloads it.
+
+    TRL's ``SFTTrainer`` casts the trainable adapter of a 4/8-bit base to bf16 when
+    it is built. On ``train(resume_from_checkpoint=...)``, ``Trainer._load_from_checkpoint``
+    reloads the adapter through ``model.load_adapter``, whose default
+    ``autocast_adapter_dtype=True`` upcasts it to fp32. The resumed run then trains
+    and saves in a different dtype from the uninterrupted one, so it cannot
+    reproduce it. Record the dtypes before the load and cast back right after it:
+    the reload runs before the optimizer is created, so the optimizer only ever sees
+    the original dtype.
+
+    Only parameters that were trainable before the load are touched; frozen
+    (including quantized) base weights keep whatever the loader gives them.
+    """
+    model = getattr(trainer, "model", None)
+    if model is None:
+        return
+    before = {
+        name: param.dtype
+        for name, param in model.named_parameters()
+        if param.requires_grad and param.is_floating_point()
+    }
+    if not before:
+        return
+    original_load = trainer._load_from_checkpoint
+
+    def _load_then_restore(resume_from_checkpoint, model=None):
+        original_load(resume_from_checkpoint, model)
+        target = model if model is not None else trainer.model
+        for name, param in target.named_parameters():
+            dtype = before.get(name)
+            if dtype is not None and param.requires_grad and param.dtype != dtype:
+                param.data = param.data.to(dtype)
+
+    trainer._load_from_checkpoint = _load_then_restore
+
+
+_ADAPTER_WEIGHT_FILES = ("adapter_model.safetensors", "adapter_model.bin")
+_FULL_WEIGHT_FILES = ("model.safetensors", "pytorch_model.bin")
+
+
+def _has_any(folder: str, names: tuple[str, ...]) -> bool:
+    return any(os.path.isfile(os.path.join(folder, name)) for name in names)
+
+
+def _resume_skipped_the_root_adapter(checkpoint: str, model) -> bool:
+    """Whether ``Trainer._load_from_checkpoint`` left the root adapter unread.
+
+    It reads the root adapter only when no subfolder of the checkpoint holds
+    adapter weights. PEFT saves the ``default`` adapter at the root and every
+    other adapter in a subfolder of its own name.
+    """
+    if "default" not in getattr(model, "peft_config", {}):
+        return False
+    if _has_any(checkpoint, _FULL_WEIGHT_FILES) or not _has_any(checkpoint, _ADAPTER_WEIGHT_FILES):
+        return False
+    return any(
+        _has_any(os.path.join(checkpoint, entry), _ADAPTER_WEIGHT_FILES)
+        for entry in os.listdir(checkpoint)
+    )
+
+
+def reload_root_adapter_on_resume(trainer) -> None:
+    """Load the trained adapter that a checkpoint resume leaves out (#1768).
+
+    TRL's DPO and GRPO trainers add a frozen ``ref`` adapter next to the trained
+    ``default`` one, so their checkpoints hold ``default`` at the root and ``ref``
+    in ``checkpoint-N/ref/``. On ``train(resume_from_checkpoint=...)``,
+    ``Trainer._load_from_checkpoint`` loads the subfolder adapters and, when there
+    is one, nothing else: ``default`` keeps the fresh weights it was built with
+    while the optimizer and the step counter are restored, and the run goes on
+    from a new adapter. Load the root into ``default`` right after that load.
+
+    A checkpoint with no adapter subfolder is loaded once, by the Trainer. Call
+    this before ``keep_trainable_dtype_on_resume`` so that the reload is cast
+    back with the rest.
+    """
+    original_load = trainer._load_from_checkpoint
+
+    def _load_then_root_adapter(resume_from_checkpoint, model=None):
+        original_load(resume_from_checkpoint, model)
+        target = model if model is not None else trainer.model
+        if not _resume_skipped_the_root_adapter(resume_from_checkpoint, target):
+            return
+        # The adapter exists, so this only reads the weights into it: which
+        # adapter is active and which parameters train stay as they were.
+        target.load_adapter(
+            resume_from_checkpoint, "default", is_trainable="default" in target.active_adapters
+        )
+
+    trainer._load_from_checkpoint = _load_then_root_adapter

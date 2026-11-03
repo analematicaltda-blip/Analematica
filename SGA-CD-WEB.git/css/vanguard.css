@@ -1,0 +1,429 @@
+/* ==========================================================================
+   SGA-CD Phase 11 Vanguard Styling Extensions
+   - Glassmorphic Dynamic Island
+   - 3D Parallax & GPU Compositing
+   - Specular Metallic Skeleton Loaders
+   - Liquid Responsive Multi-Viewport Grid Clamp
+   ========================================================================== */
+
+/* 1. Dynamic Island Container */
+#dynamic-island-container {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%) translate3d(0, 0, 0);
+    z-index: 10000;
+    pointer-events: auto;
+    will-change: width, height, border-radius, box-shadow;
+}
+
+.dynamic-island {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 220px;
+    height: 44px;
+    padding: 0.5rem 1.25rem;
+    background: rgba(13, 20, 36, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 26px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.15);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    color: #E2E8F0;
+    font-size: 0.88rem;
+    font-weight: 600;
+    overflow: hidden;
+}
+
+.dynamic-island.expanded {
+    min-width: 380px;
+    height: auto;
+    padding: 0.85rem 1.5rem;
+    border-radius: 20px;
+    border-color: rgba(56, 189, 248, 0.6);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.3);
+}
+
+.dynamic-island.alert-breach {
+    border-color: #EF4444;
+    background: rgba(23, 10, 15, 0.95);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    color: #FCA5A5;
+}
+
+.dynamic-island-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    stroke: var(--color-accent-cyan);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.3s ease;
+}
+
+.dynamic-island.alert-breach .dynamic-island-icon {
+    stroke: #EF4444;
+}
+
+.dynamic-island-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 2. Specular Metallic Skeleton Loader Shimmer */
+.skeleton-card {
+    background: linear-gradient(
+        90deg,
+        rgba(13, 20, 36, 0.9) 0%,
+        rgba(56, 189, 248, 0.18) 50%,
+        rgba(13, 20, 36, 0.9) 100%
+    );
+    background-size: 200% 100%;
+    animation: specular-metallic-shimmer 1.6s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    border-radius: 16px;
+    min-height: 220px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+@keyframes specular-metallic-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 3. 3D Parallax GPU Layer Constraints */
+.parallax-layer {
+    will-change: transform;
+    transform-style: preserve-3d;
+}
+
+/* 4. Brand Vector Logo Styles */
+.sga-brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+}
+
+.sga-brand-logo svg {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+    transition: transform 0.3s ease;
+}
+
+.sga-brand-logo:hover svg {
+    transform: scale(1.08) rotate(3deg);
+}
+
+.sga-brand-title {
+    font-size: var(--font-size-h3);
+    font-weight: 800;
+    background: linear-gradient(135deg, #F8FAFC 0%, #38BDF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+}
+
+/* 5. Micro-Carrusel Multifoto (5 Fotos por Tarjeta) */
+.multi-photo-card {
+    position: relative;
+    background: #0D1424;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.multi-photo-card:hover {
+    border-color: #38BDF8;
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.25);
+    transform: translateY(-4px);
+}
+
+.card-gallery-wrapper {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: #070B14;
+}
+
+.card-gallery-strip {
+    display: flex;
+    width: 500%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+.card-gallery-img {
+    width: 20%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.gallery-nav-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+    background: rgba(7, 11, 20, 0.65);
+    padding: 4px 8px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+}
+
+.gallery-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gallery-dot.active {
+    background: #38BDF8;
+    width: 16px;
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+}
+
+.gallery-arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(13, 20, 36, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38BDF8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 6;
+    opacity: 0;
+    transition: opacity 0.3s ease, background 0.2s ease;
+}
+
+.card-gallery-wrapper:hover .gallery-arrow-btn {
+    opacity: 1;
+}
+
+.gallery-arrow-btn.prev { left: 8px; }
+.gallery-arrow-btn.next { right: 8px; }
+
+/* 6. Matriz de Empresas Aliadas Corporativas */
+.allies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.ally-card {
+    background: #0D1424;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ally-card:hover {
+    border-color: #38BDF8;
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+    transform: translateY(-5px);
+}
+
+.ally-card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38BDF8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.ally-logo-container {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    background: rgba(7, 11, 20, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: #38BDF8;
+    font-size: 1.8rem;
+}
+
+.ally-card h3 {
+    color: #E2E8F0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 0.4rem 0;
+}
+
+.ally-card p {
+    color: #94A3B8;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0 0 1rem 0;
+}
+
+/* 7. Panel Administrativo Territorial Styles */
+.admin-panel-card {
+    background: #0D1424;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.admin-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.admin-form-group label {
+    color: #38BDF8;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.admin-input {
+    background: #070B14;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    color: #E2E8F0;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.admin-input:focus {
+    border-color: #38BDF8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+/* ==========================================================================
+   Submenús y Efectos Hover/Rollover Dark Metallic Blue (60-30-10)
+   ========================================================================== */
+.nav-group {
+    margin-bottom: 0.5rem;
+}
+
+.nav-group-title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    min-height: 44px; /* WCAG Touch Target */
+    outline: none;
+}
+
+.nav-group-title span {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-group-title .nav-arrow {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.nav-group-title:hover,
+.nav-group-title:focus-visible {
+    background: rgba(56, 189, 248, 0.12);
+    color: var(--color-accent-cyan);
+    border-color: rgba(56, 189, 248, 0.25);
+    transform: translate3d(4px, 0, 0);
+}
+
+.nav-group.open .nav-group-title {
+    background: rgba(56, 189, 248, 0.15);
+    color: #F8FAFC;
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.nav-group.open .nav-arrow {
+    transform: rotate(180deg);
+    color: var(--color-accent-cyan);
+}
+
+.nav-submenu {
+    display: none;
+    flex-direction: column;
+    padding-left: 1.25rem;
+    margin-top: 0.25rem;
+    gap: 0.25rem;
+}
+
+.nav-group.open .nav-submenu {
+    display: flex;
+}
+
+.nav-subitem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: #94A3B8;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    min-height: 40px;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.nav-subitem:hover,
+.nav-subitem:focus-visible,
+.nav-subitem.active {
+    background: rgba(56, 189, 248, 0.18);
+    color: var(--color-accent-cyan);
+    border-color: rgba(56, 189, 248, 0.3);
+    transform: translate3d(4px, 0, 0);
+}

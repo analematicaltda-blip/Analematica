@@ -1,0 +1,72 @@
+---
+title: Vite
+description: Set up a Vite React project with shadcn/ui, Tailwind CSS, and path aliases, then add Cult UI components with the shadcn CLI.
+---
+
+Most Cult UI components run in a Vite React app without changes. A handful import Next.js modules and need a one-line swap, listed [below](#nextjs-specific-components).
+
+<Steps>
+
+### Set up Vite with shadcn/ui
+
+This scaffolds a Vite, React, and TypeScript app with Tailwind CSS v4, the `@/` alias, `components.json`, and theme tokens:
+
+```bash
+npx shadcn@latest init -t vite
+```
+
+Adding Cult UI to an existing Vite app? Follow the [shadcn Vite guide](https://ui.shadcn.com/docs/installation/vite) to add Tailwind CSS and the alias, then run `npx shadcn@latest init`.
+
+### Add a Cult UI component
+
+```bash
+npx shadcn@latest add @cult-ui/halo-segmented
+```
+
+### Use it
+
+```tsx title="src/App.tsx"
+import { HaloSegmented } from "@/components/ui/halo-segmented"
+
+export default function App() {
+  return (
+    <HaloSegmented
+      defaultValue="monthly"
+      items={[
+        { value: "monthly", label: "Monthly" },
+        { value: "yearly", label: "Yearly" },
+      ]}
+    />
+  )
+}
+```
+
+The `"use client"` line at the top of some components is a Next.js directive. Vite ignores it, so leave it in place.
+
+</Steps>
+
+## Next.js-specific components
+
+These components import `next/image` or `next/link`. After adding one, replace `Image` from `next/image` with a plain `<img>` (drop the `fill`, `priority`, and `sizes` props) and `Link` from `next/link` with `<a>` or your router's link:
+
+- Apple Pro Display XDR
+- Cutout Card
+- Dither Image
+- Feature Carousel
+- Feature Sticky Section
+- Folded Card
+- Hover Video Player
+- Intro Disclosure
+- Kanban Board
+- Loading Carousel
+- Minimal Card
+- Organic Card
+- Organic Card Small
+- Text Gif
+
+Globe, Gradient Button Group, and Shader Lens Blur read the active theme with `useTheme` from `next-themes`. The package works in Vite too. Wrap your app in its `ThemeProvider` with `attribute="class"`, or replace `useTheme` with your own theme state.
+
+## Next steps
+
+- Browse components in the sidebar and copy the install command from any page.
+- Adjust colors and radius in [Theming](/docs/theming).

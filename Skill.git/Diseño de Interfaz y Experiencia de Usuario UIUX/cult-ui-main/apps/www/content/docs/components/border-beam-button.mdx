@@ -1,0 +1,97 @@
+---
+title: Border Beam Button
+description: shadcn/ui Button with an animated border beam, in text and icon variants, for primary calls to action in React apps.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="border-beam-button-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="Outline, secondary, and icon variants"
+/>
+
+BorderBeamButton is a React button component for shadcn/ui built on the border-beam package. Use it for the primary call to action in AI prompt bars, onboarding flows, or upgrade prompts.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/border-beam-button
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>
+  Install the [Border Beam](https://www.npmjs.com/package/border-beam) package.
+</Step>
+
+```bash
+pnpm add border-beam
+```
+
+<Step>
+  Add the [shadcn/ui Button](https://ui.shadcn.com/docs/components/button) if
+  you do not already have it.
+</Step>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="border-beam-button" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+`BorderBeamButton` wraps the standard `Button` with [`BorderBeam`](https://www.npmjs.com/package/border-beam) from the [`border-beam`](https://www.npmjs.com/package/border-beam) package. Pass any `Button` props as usual. Use `className` for the button surface and `borderBeamClassName` (or `borderBeamStyle`) for the beam wrapper.
+
+- **BorderBeamButton** — default `beamSize="sm"` for a tight glow on controls.
+- **BorderBeamIconButton** — same API, with `size` defaulting to `icon-sm` for icon-only actions.
+
+```tsx
+import {
+  BorderBeamButton,
+  BorderBeamIconButton,
+} from "@/components/ui/border-beam-button";
+import { Sparkles } from "lucide-react";
+```
+
+```tsx
+<BorderBeamButton type="button" variant="outline">
+  Outline
+</BorderBeamButton>
+
+<BorderBeamIconButton
+  type="button"
+  variant="outline"
+  aria-label="Sparkles"
+>
+  <Sparkles className="size-3" />
+</BorderBeamIconButton>
+```
+
+### Beam options
+
+The component forwards the main [`BorderBeam`](https://www.npmjs.com/package/border-beam) controls: `beamSize`, `theme`, `colorVariant`, `staticColors`, `duration`, `active`, `borderRadius`, `brightness`, `saturation`, `hueRange`, `strength`, `onActivate`, and `onDeactivate`. See the [Border Beam documentation](https://beam.jakubantalik.com/) for behavior and examples.
+
+## Credits
+
+The animated border effect comes from **Border Beam** by Jakub Antalík. Documentation, demos, and the underlying React package are available at [beam.jakubantalik.com](https://beam.jakubantalik.com/).

@@ -1,0 +1,1059 @@
+# Copyright 2025-2026 Project N.E.K.O. Team
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+ZeroMQ event bus for main_server <-> agent_server communication.
+
+Important: this uses the **synchronous** zmq.Context + zmq.Socket, running
+recv on a background daemon thread. The reason is that zmq.asyncio.Socket.recv
+relies on the event loop's fd polling (add_reader), which is unavailable on
+the Windows ProactorEventLoop. The send side uses zmq.NOBLOCK and is called
+from the asyncio thread (local TCP latency is very low).
+"""
+
+import asyncio
+import concurrent.futures
+import os
+import threading
+import time
+import uuid
+from typing import Any, Awaitable, Callable, Dict, Optional
+
+import orjson
+
+from utils.logger_config import get_module_logger
+
+try:
+    import zmq
+except Exception:  # pragma: no cover - optional dependency at runtime
+    zmq = None
+
+logger = get_module_logger(__name__, "Main")
+
+# ZMQ addresses support environment overrides so launchers can migrate defaults
+# falling within Hyper-V reserved port ranges.
+def _zmq_addr(env_key: str, default_port: int) -> str:
+    raw = os.getenv(env_key, "").strip()
+    if raw:
+        try:
+            val = int(raw)
+            if 1 <= val <= 65535:
+                return f"tcp://127.0.0.1:{val}"
+        except (ValueError, TypeError):
+            pass
+    return f"tcp://127.0.0.1:{default_port}"
+
+SESSION_PUB_ADDR  = _zmq_addr("NEKO_ZMQ_SESSION_PUB_PORT", 48961)   # main -> agent（PUB/SUB）
+AGENT_PUSH_ADDR   = _zmq_addr("NEKO_ZMQ_AGENT_PUSH_PORT", 48962)    # agent -> main（PUSH/PULL）
+ANALYZE_PUSH_ADDR = _zmq_addr("NEKO_ZMQ_ANALYZE_PUSH_PORT", 48963)  # main -> agent (PUSH/PULL, reliable analysis queue).
+
+# Declared here rather than beside its publisher below because the agent-side
+# receive thread needs it to tell a frame apart from every other session event.
+PROVIDER_FRAME_OBSERVED_EVENT = "provider_frame_observed"
+
+
+def _int_env(env_key: str, default: int, *, minimum: int) -> int:
+    try:
+        val = int(os.getenv(env_key, "").strip() or default)
+    except (ValueError, TypeError):
+        return default
+    return max(minimum, val)
+
+
+# How many provider-frame handoffs may sit in flight -- submitted to the agent
+# loop from the receive thread, not yet finished -- before new frames are
+# refused at the handoff itself.
+#
+# This bounds a gap neither neighbouring limit covers. The PUB high-water mark
+# bounds the SENDING side, and plane_bridge refuses a frame once its own send
+# queue is deep -- but that check runs INSIDE the coroutine, i.e. after this
+# handoff already happened. Between the two sits ``run_coroutine_threadsafe``:
+# every call queues a callback into the loop that retains the whole event,
+# base64 image and all. While the loop is busy the receive thread keeps draining
+# the socket at full speed, so a delayed loop accumulates an unbounded number of
+# multi-megabyte payloads in its callback queue.
+#
+# 8 is deliberately small: the ``frames`` store on the far side retains only a
+# handful (MESSAGE_PLANE_FRAMES_STORE_MAXLEN, 4 by default and 8 at most), so a
+# deeper handoff queue could not deliver anything that store would still be
+# holding by the time the loop drained it -- it would buy resident bytes and
+# nothing else. The value is not derived from that setting: main_logic sits
+# below ``plugin`` in the layering and cannot read it.
+# Env: NEKO_AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT, default=8
+# Maximum base64 size of one frame allowed into session PUB.
+#
+# This socket is **shared by session events**, so lowering SNDHWM to constrain frames also
+# drops text prematurely. PUB defaults to 1000 messages; stopped subscribers let multi-megabyte
+# frames pile into hundreds of MB, beyond the in-flight task cap below because every task
+# finishes as soon as send(NOBLOCK) enqueues its message.
+#
+# Gate **before enqueueing**. No behavior is lost: remote bridges already reject frames above the
+# message-plane record cap; early rejection saves transport and residency. Match
+# tool-image delivery limits (tool_calling._TOOL_IMAGE_DELIVER_MAX_B64_BYTES,
+# pinned equal by a test there), staying below the plane's 512KiB limit, which measures whole
+# packed records with mime / turn_id / metadata alongside pixels.
+# The image's own budget, the externally promised 500KiB.
+PROVIDER_FRAME_MAX_IMAGE_B64_BYTES = 500 * 1024
+
+# Events also contain event_id / source / mime / turn_id / generation /
+# metadata / lanlan_name. Measured today at 264 bytes; reserve 1KiB for longer turn_id and
+# metadata。
+PROVIDER_FRAME_ENVELOPE_HEADROOM_BYTES = 1024
+
+# Whole-event limit = image budget + envelope. **Keep the direction straight**: do not deduct the envelope
+# from image budget; add it to event budget. The 12KB gap between image 500KiB and plane record 512KiB
+# already reserves it (see tool_calling's delivery-limit explanation). Deducting it from image budget
+# pays twice and silently shrinks the promised 500KiB to 499KiB.
+#
+# This failed twice: initially both constants were 500KiB, one measuring images and the other entire events,
+# silently dropping images compressed exactly to the cap. After that fix, envelope accounting used the wrong side. The guard
+# therefore **constructs and measures a full-budget event**, through the plane record, rather than comparing constants.
+PROVIDER_FRAME_MAX_B64_BYTES = (
+    PROVIDER_FRAME_MAX_IMAGE_B64_BYTES + PROVIDER_FRAME_ENVELOPE_HEADROOM_BYTES
+)
+
+AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT = _int_env(
+    "NEKO_AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT", 8, minimum=1,
+)
+
+# Drops are always counted (``AgentServerEventBridge.frame_handoff_drops``) and
+# logged on a doubling ladder: the 1st, 2nd, 4th, 8th ... drop. A burst has to
+# stay legible without becoming the flood itself -- shedding 200 frames must not
+# write 200 lines -- but a time window would be worse than no line at all here:
+# a stall shorter than the window would log exactly once, saying "1", and the
+# real scale would never appear anywhere an operator looks. On the ladder the
+# same burst writes 8 lines and the last one says 128, while an hour-long stall
+# dropping millions still writes about twenty.
+
+_main_bridge_ref: Optional["MainServerAgentBridge"] = None
+_ack_waiters: dict[str, asyncio.Future] = {}
+_ack_waiters_lock = threading.Lock()
+
+
+# ---------------------------------------------------------------------------
+# main_server-side bridge.
+# ---------------------------------------------------------------------------
+
+class MainServerAgentBridge:
+    """Runs inside the main_server process; binds PUB, PUSH(analyze), PULL(agent→main)."""
+
+    def __init__(self, on_agent_event: Callable[[Dict[str, Any]], Awaitable[None]]) -> None:
+        self.on_agent_event = on_agent_event
+        self.ctx: Any = None
+        self.pub: Any = None
+        self.analyze_push: Any = None
+        self.pull: Any = None
+        self._recv_thread: Optional[threading.Thread] = None
+        self._stop = threading.Event()
+        self.owner_loop: Optional[asyncio.AbstractEventLoop] = None
+        self.owner_thread_id: Optional[int] = None
+        self.ready = False
+
+    async def start(self) -> None:
+        if zmq is None:
+            logger.warning("pyzmq not installed, event bus disabled on main_server")
+            return
+
+        self.ctx = zmq.Context()
+
+        self.pub = self.ctx.socket(zmq.PUB)
+        self.pub.setsockopt(zmq.LINGER, 1000)
+        self.pub.bind(SESSION_PUB_ADDR)
+
+        self.analyze_push = self.ctx.socket(zmq.PUSH)
+        self.analyze_push.setsockopt(zmq.LINGER, 1000)
+        self.analyze_push.bind(ANALYZE_PUSH_ADDR)
+
+        self.pull = self.ctx.socket(zmq.PULL)
+        self.pull.setsockopt(zmq.LINGER, 1000)
+        self.pull.setsockopt(zmq.RCVTIMEO, 1000)
+        self.pull.bind(AGENT_PUSH_ADDR)
+
+        self.owner_loop = asyncio.get_running_loop()
+        self.owner_thread_id = threading.get_ident()
+        self.ready = True
+
+        self._recv_thread = threading.Thread(
+            target=self._recv_thread_fn, name="zmq-main-recv", daemon=True,
+        )
+        self._recv_thread.start()
+        logger.info("[EventBus] Main bridge started (pid=%s)", os.getpid())
+
+    # -- Background reception (agent -> main) -------------------------------------------
+
+    def _recv_thread_fn(self) -> None:
+        while not self._stop.is_set():
+            try:
+                msg = orjson.loads(self.pull.recv())
+                if isinstance(msg, dict) and self.owner_loop is not None:
+                    asyncio.run_coroutine_threadsafe(
+                        self.on_agent_event(msg), self.owner_loop,
+                    )
+            except zmq.Again:
+                continue
+            except Exception as e:
+                if not self._stop.is_set():
+                    logger.debug("[EventBus] main recv thread error: %s", e)
+                    time.sleep(0.05)
+
+    # -- Sending helpers (called in the asyncio thread) -------------------------------
+
+    async def publish_session_event(self, event: Dict[str, Any]) -> bool:
+        if not self.ready or self.pub is None:
+            return False
+        try:
+            self.pub.send(orjson.dumps(event), zmq.NOBLOCK)
+            return True
+        except Exception:
+            return False
+
+    async def publish_analyze_request(self, event: Dict[str, Any]) -> bool:
+        if not self.ready or self.analyze_push is None:
+            return False
+        try:
+            self.analyze_push.send(orjson.dumps(event), zmq.NOBLOCK)
+            return True
+        except Exception:
+            return False
+
+    async def stop(self) -> None:
+        """Shut down ZMQ resources and background thread."""
+        self._stop.set()
+        self.ready = False
+        if self._recv_thread is not None:
+            await asyncio.to_thread(self._recv_thread.join, 2.0)
+        for sock in (self.pull, self.analyze_push, self.pub):
+            if sock is not None:
+                try:
+                    sock.close(linger=0)
+                except Exception:
+                    pass
+        if self.ctx is not None:
+            _ctx = self.ctx
+            self.ctx = None
+            try:
+                await asyncio.wait_for(asyncio.to_thread(_ctx.term), timeout=3.0)
+            except (asyncio.TimeoutError, Exception):
+                logger.debug("[EventBus] Main bridge ctx.term timed out or failed, skipping")
+        logger.debug("[EventBus] Main bridge stopped")
+
+    async def publish_session_event_threadsafe(self, event: Dict[str, Any]) -> bool:
+        if self.owner_loop is None:
+            return False
+        if threading.get_ident() == self.owner_thread_id:
+            return await self.publish_session_event(event)
+        try:
+            cf = asyncio.run_coroutine_threadsafe(
+                self.publish_session_event(event), self.owner_loop,
+            )
+            return await asyncio.wrap_future(cf)
+        except Exception:
+            return False
+
+
+# ---------------------------------------------------------------------------
+# agent_server-side bridge.
+# ---------------------------------------------------------------------------
+
+class AgentServerEventBridge:
+    """Runs inside the agent_server process; connects SUB, PULL(analyze), PUSH(agent→main)."""
+
+    def __init__(self, on_session_event: Callable[[Dict[str, Any]], Awaitable[None]]) -> None:
+        self.on_session_event = on_session_event
+        self.ctx: Any = None
+        self.sub: Any = None
+        self.analyze_pull: Any = None
+        self.push: Any = None
+        self._recv_thread: Optional[threading.Thread] = None
+        self._analyze_recv_thread: Optional[threading.Thread] = None
+        self._stop = threading.Event()
+        self._owner_loop: Optional[asyncio.AbstractEventLoop] = None
+        self.ready = False
+        # In-flight provider-frame handoffs. A future leaves this set the moment
+        # its coroutine finishes, which is also when the loop stops retaining
+        # that frame's payload -- so the set's size is the live count of frames
+        # this hop is holding, and capping it caps the bytes. Only frames are
+        # tracked: they are lossy by contract, while everything else arriving on
+        # these sockets (acks, lifecycle signals, analyze requests, conversation
+        # turns) is small and must not be dropped.
+        self._inflight_frames: set["concurrent.futures.Future[Any]"] = set()
+        self._inflight_lock = threading.Lock()
+        self.frame_handoff_drops = 0
+
+    async def start(self) -> None:
+        if zmq is None:
+            logger.warning("pyzmq not installed, event bus disabled on agent_server")
+            return
+
+        self.ctx = zmq.Context()
+
+        self.sub = self.ctx.socket(zmq.SUB)
+        self.sub.setsockopt(zmq.LINGER, 1000)
+        self.sub.setsockopt(zmq.RCVTIMEO, 1000)
+        self.sub.connect(SESSION_PUB_ADDR)
+        self.sub.setsockopt_string(zmq.SUBSCRIBE, "")
+
+        self.analyze_pull = self.ctx.socket(zmq.PULL)
+        self.analyze_pull.setsockopt(zmq.LINGER, 1000)
+        self.analyze_pull.setsockopt(zmq.RCVTIMEO, 1000)
+        self.analyze_pull.connect(ANALYZE_PUSH_ADDR)
+
+        self.push = self.ctx.socket(zmq.PUSH)
+        self.push.setsockopt(zmq.LINGER, 1000)
+        self.push.connect(AGENT_PUSH_ADDR)
+
+        self._owner_loop = asyncio.get_running_loop()
+        self.ready = True
+
+        self._recv_thread = threading.Thread(
+            target=self._recv_sub_fn, name="zmq-agent-sub", daemon=True,
+        )
+        self._recv_thread.start()
+
+        self._analyze_recv_thread = threading.Thread(
+            target=self._recv_analyze_fn, name="zmq-agent-analyze", daemon=True,
+        )
+        self._analyze_recv_thread.start()
+        logger.info("[EventBus] Agent bridge started (pid=%s)", os.getpid())
+
+    async def stop(self) -> None:
+        """Shut down ZMQ resources and receiver threads."""
+        self._stop.set()
+        self.ready = False
+
+        recv_threads = [
+            thread
+            for thread in (self._recv_thread, self._analyze_recv_thread)
+            if thread is not None
+        ]
+        if recv_threads:
+            await asyncio.gather(
+                *(asyncio.to_thread(thread.join, 2.0) for thread in recv_threads),
+                return_exceptions=True,
+            )
+        self._recv_thread = None
+        self._analyze_recv_thread = None
+
+        for sock_name in ("sub", "analyze_pull", "push"):
+            sock = getattr(self, sock_name, None)
+            if sock is None:
+                continue
+            try:
+                sock.close(linger=0)
+            except Exception as exc:
+                logger.debug("[EventBus] Agent bridge socket %s close error: %s", sock_name, exc)
+            setattr(self, sock_name, None)
+
+        if self.ctx is not None:
+            ctx = self.ctx
+            self.ctx = None
+            try:
+                await asyncio.wait_for(asyncio.to_thread(ctx.term), timeout=3.0)
+            except asyncio.TimeoutError:
+                logger.warning("[EventBus] Agent bridge ctx.term timed out, skipping")
+            except Exception as exc:
+                logger.debug("[EventBus] Agent bridge ctx.term error: %s", exc)
+
+        self._owner_loop = None
+        with self._inflight_lock:
+            self._inflight_frames.clear()
+        logger.debug("[EventBus] Agent bridge stopped")
+
+    # -- Cross-thread delivery (receive thread -> agent event loop) ---------------------------
+
+    def _discard_inflight_frame(
+        self, fut: "concurrent.futures.Future[Any]",
+    ) -> None:
+        with self._inflight_lock:
+            self._inflight_frames.discard(fut)
+
+    def _submit_to_loop(self, msg: Dict[str, Any]) -> bool:
+        """Hand one received event to the agent loop. ``False`` means dropped.
+
+        Frames are capped and everything else is not, and that asymmetry is the
+        contract talking: ``frames`` promises "the last few the provider
+        received", never a reliable log, so shedding one under pressure is
+        correct -- while shedding an analyze ack or a lifecycle signal would
+        strand the sender waiting on a reply that is never coming.
+
+        The cap drops the NEWEST frame rather than evicting an older queued one.
+        That is not a preference for stale pixels: cancelling an already
+        submitted future does not remove the callback ``run_coroutine_threadsafe``
+        left in the loop's ready queue, so that frame's bytes stay resident until
+        the loop drains regardless. Refusing to submit is the only choice here
+        that actually bounds memory. Recency is preserved where it still can be
+        -- the far side's ``frames`` deque evicts oldest-first -- and the backlog
+        is a handful of frames, so it clears the moment the loop recovers.
+        """
+        loop = self._owner_loop
+        if loop is None:
+            return False
+
+        if msg.get("event_type") != PROVIDER_FRAME_OBSERVED_EVENT:
+            asyncio.run_coroutine_threadsafe(self.on_session_event(msg), loop)
+            return True
+
+        should_log = False
+        drops = 0
+        with self._inflight_lock:
+            if len(self._inflight_frames) >= AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT:
+                self.frame_handoff_drops += 1
+                drops = self.frame_handoff_drops
+                # Powers of two only. ``drops`` is >= 1 here, so this is the
+                # 1st, 2nd, 4th, 8th ... drop since the bridge was built.
+                should_log = (drops & (drops - 1)) == 0
+                fut = None
+            else:
+                # Built only after the cap has let it through: a coroutine
+                # created and then dropped is an un-awaited coroutine warning.
+                coro = self.on_session_event(msg)
+                try:
+                    fut = asyncio.run_coroutine_threadsafe(coro, loop)
+                except Exception as exc:
+                    coro.close()
+                    logger.debug("[EventBus] frame handoff submit failed: %s", exc)
+                    return False
+                self._inflight_frames.add(fut)
+
+        if fut is not None:
+            # Outside the lock on purpose: a future that is already finished runs
+            # the callback inline, and it takes this same non-reentrant lock.
+            fut.add_done_callback(self._discard_inflight_frame)
+            return True
+
+        if should_log:
+            logger.warning(
+                "[EventBus] agent loop behind: provider frame dropped at handoff "
+                "(cap=%d dropped_total=%d)",
+                AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT,
+                drops,
+            )
+        return False
+
+    # -- Background receive thread -------------------------------------------------------
+
+    def _recv_sub_fn(self) -> None:
+        while not self._stop.is_set():
+            try:
+                msg = orjson.loads(self.sub.recv())
+                if isinstance(msg, dict):
+                    self._submit_to_loop(msg)
+            except zmq.Again:
+                continue
+            except Exception as e:
+                if not self._stop.is_set():
+                    logger.debug("[EventBus] agent sub recv thread error: %s", e)
+                    time.sleep(0.05)
+
+    def _recv_analyze_fn(self) -> None:
+        while not self._stop.is_set():
+            try:
+                msg = orjson.loads(self.analyze_pull.recv())
+                if isinstance(msg, dict):
+                    if msg.get("event_type") == "analyze_request":
+                        logger.info(
+                            "[EventBus] analyze_request dequeued on agent: event_id=%s lanlan=%s trigger=%s",
+                            msg.get("event_id"),
+                            msg.get("lanlan_name"),
+                            msg.get("trigger"),
+                        )
+                    self._submit_to_loop(msg)
+            except zmq.Again:
+                continue
+            except Exception as e:
+                if not self._stop.is_set():
+                    logger.debug("[EventBus] agent analyze recv thread error: %s", e)
+                    time.sleep(0.05)
+
+    # -- Sending helpers (called in the asyncio thread) -------------------------------
+
+    async def emit_to_main(self, event: Dict[str, Any]) -> bool:
+        if not self.ready or self.push is None:
+            return False
+        try:
+            self.push.send(orjson.dumps(event), zmq.NOBLOCK)
+            return True
+        except Exception:
+            return False
+
+
+# ---------------------------------------------------------------------------
+# Module-level helpers (unchanged API).
+# ---------------------------------------------------------------------------
+
+def set_main_bridge(bridge: Optional[MainServerAgentBridge]) -> None:
+    global _main_bridge_ref
+    _main_bridge_ref = bridge
+
+
+async def publish_session_event(event: Dict[str, Any]) -> bool:
+    if _main_bridge_ref is None:
+        return False
+    return await _main_bridge_ref.publish_session_event(event)
+
+
+async def publish_session_event_threadsafe(event: Dict[str, Any]) -> bool:
+    if _main_bridge_ref is None:
+        return False
+    bridge = _main_bridge_ref
+    if hasattr(bridge, "publish_session_event_threadsafe"):
+        return await bridge.publish_session_event_threadsafe(event)
+    return await bridge.publish_session_event(event)
+
+
+def notify_analyze_ack(event_id: str) -> None:
+    if not event_id:
+        return
+    waiter = None
+    with _ack_waiters_lock:
+        waiter = _ack_waiters.pop(event_id, None)
+    if waiter is None or waiter.done():
+        return
+    loop = waiter.get_loop()
+
+    def _resolve() -> None:
+        if not waiter.done():
+            waiter.set_result(True)
+
+    loop.call_soon_threadsafe(_resolve)
+
+
+def notify_voice_bridge_result(event_id: str, result: Dict[str, Any]) -> None:
+    """Compatibility sink for old voice bridge replies.
+
+    Voice transcript plugin dispatch is best-effort telemetry now: main never
+    waits for, trusts, or applies plugin-produced actions to the current turn.
+    Late replies from an older agent are intentionally ignored.
+    """
+    if event_id:
+        logger.debug("[EventBus] ignored voice bridge result: event_id=%s", event_id)
+
+
+# ---------------------------------------------------------------------------
+#  Layering-inversion sinks: lower layers (main_logic) emit, higher layers
+#  (plugin / main_routers) register.
+#
+#  Why this exists
+#  ---------------
+#  ``main_logic.core`` used to ``import`` from ``plugin.core.state`` and
+#  ``main_routers.system_router`` to publish user utterances and to consult
+#  the mini-game-invite keyword matcher. Both are layering inversions
+#  (main_logic L2 → plugin L4 / main_routers L3) — banned by
+#  ``scripts/check_module_layering.py``.
+#
+#  Now main_logic emits via ``dispatch_*`` and the higher layers attach via
+#  ``register_*``. The CONSUMERS self-register at module-import time
+#  (plugin/core/state.py and main_routers/system_router.py), so any context
+#  that loads those modules — even directly, without going through the
+#  ``app`` entrypoint — gets its sink wired automatically. This preserves
+#  the side-effect that direct ``main_logic.core`` consumers (testbench /
+#  ad-hoc scripts) used to enjoy via the previous chained import. The
+#  registries dedupe on identity, so ``app/runtime_bindings.py`` calling
+#  ``register_*`` again after the consumer module is loaded is a no-op.
+#
+#  If nothing is registered (e.g. memory_server entrypoint doesn't ship
+#  plugin runtime), the dispatchers silently no-op.
+# ---------------------------------------------------------------------------
+
+# Fire-and-forget user-utterance sink. Plugin's user-context bus subscribes
+# here. Multiple subscribers are allowed; per-sink errors are swallowed so
+# one misbehaving consumer cannot break the chat pipeline.
+_user_utterance_sinks: list[Callable[[str, Dict[str, Any]], None]] = []
+
+
+def register_user_utterance_sink(
+    fn: Callable[[str, Dict[str, Any]], None],
+) -> None:
+    """Subscribe to user-utterance events: ``fn(bucket: str, event: dict)``.
+
+    Dedupes on identity — re-registering the same callable is a no-op.
+    Important because both ``plugin.core.state`` (self-register on import)
+    and ``app.runtime_bindings`` (explicit wiring) call this for the same
+    function; without dedup, every utterance would fire twice.
+    """
+    if fn in _user_utterance_sinks:
+        return
+    _user_utterance_sinks.append(fn)
+
+
+def dispatch_user_utterance(bucket: str, event: Dict[str, Any]) -> None:
+    """Fan a user utterance out to every registered sink."""
+    for fn in _user_utterance_sinks:
+        try:
+            fn(bucket, event)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.debug("[EventBus] user_utterance sink raised: %s", exc)
+
+
+# First-hit-wins text-message hook with optional return value.
+# main_routers' mini-game-invite keyword matcher is the canonical consumer.
+_text_user_message_hooks: list[
+    Callable[[str, str], Optional[Dict[str, Any]]]
+] = []
+
+
+def register_text_user_message_hook(
+    fn: Callable[[str, str], Optional[Dict[str, Any]]],
+) -> None:
+    """Subscribe to text user-message events: ``fn(lanlan_name, text) -> dict?``.
+
+    First hook returning a truthy value wins; later hooks are skipped.
+    Dedupes on identity (see ``register_user_utterance_sink`` rationale).
+    """
+    if fn in _text_user_message_hooks:
+        return
+    _text_user_message_hooks.append(fn)
+
+
+def dispatch_text_user_message(
+    lanlan_name: str, text: str,
+) -> Optional[Dict[str, Any]]:
+    """Run hooks in registration order; return the first truthy result."""
+    for fn in _text_user_message_hooks:
+        try:
+            result = fn(lanlan_name, text)
+            if result:
+                return result
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.debug("[EventBus] text_user_message hook raised: %s", exc)
+    return None
+
+
+async def publish_analyze_request_reliably(
+    lanlan_name: str,
+    trigger: str,
+    messages: list[dict],
+    *,
+    ack_timeout_s: float = 0.8,
+    retries: int = 1,
+    conversation_id: Optional[str] = None,
+    external_intent: Optional[float] = None,
+    proactive: bool = False,
+    language: Optional[str] = None,
+) -> bool:
+    """Reliably publish analyze_request: carries event_id + ack, with short retries.
+
+    ``external_intent`` (0..1, or ``None``) is the cheap pre-gate hint produced by
+    the master-emotion call that already ran at input-time. It rides this same
+    payload so the agent can cheaply decide whether to skip its expensive
+    assessment. ``None`` (reading unavailable / no usable signal) is omitted from
+    the event → the agent gate fails open (runs the assessment).
+
+    ``proactive`` marks a self-initiated (no fresh user input) turn. The agent
+    routes these through a separate throttled path instead of the user-turn
+    dedupe; omitted (not set) for ordinary user turns.
+
+    ``language`` is the live session locale (the frontend i18n truth held in
+    ``session_manager[...].user_language``, a full code like ``zh-TW``). The agent
+    runs in its own process, so it cannot see that value — its own
+    ``get_global_language()`` only derives NEKO_LANGUAGE / Steam / system locale,
+    which is wrong whenever the UI language differs. It rides this payload so the
+    analyzer's prompts follow the language the user is actually reading. Omitted
+    (``None``) → the agent falls back to its process-global value.
+    """
+    event_id = uuid.uuid4().hex
+    sent_at = time.perf_counter()
+
+    for attempt in range(max(retries, 0) + 1):
+        event = {
+            "event_type": "analyze_request",
+            "event_id": event_id,
+            "trigger": trigger,
+            "lanlan_name": lanlan_name,
+            "messages": messages,
+        }
+        if conversation_id:
+            event["conversation_id"] = conversation_id
+        # Only an optimization hint; omitted when None so the agent fails open.
+        if external_intent is not None:
+            event["external_intent"] = external_intent
+        # Self-initiated turn marker; omitted for ordinary user turns so the
+        # agent's user-turn path is byte-for-byte unchanged when disabled.
+        if proactive:
+            event["proactive"] = True
+        # Live session locale; omitted when unknown so the agent keeps its
+        # process-global fallback. Not part of the analyze dedupe fingerprint
+        # (that hashes messages + trigger only), so adding it cannot change
+        # which turns get analyzed.
+        if language:
+            event["language"] = language
+
+        loop = asyncio.get_running_loop()
+        waiter: asyncio.Future = loop.create_future()
+        with _ack_waiters_lock:
+            _ack_waiters[event_id] = waiter
+
+        bridge = _main_bridge_ref
+        if bridge is None:
+            with _ack_waiters_lock:
+                _ack_waiters.pop(event_id, None)
+            return False
+        if bridge.owner_loop is None:
+            with _ack_waiters_lock:
+                _ack_waiters.pop(event_id, None)
+            return False
+
+        if threading.get_ident() == bridge.owner_thread_id:
+            sent = await bridge.publish_analyze_request(event)
+        else:
+            try:
+                if bridge.owner_loop.is_closed():
+                    logger.debug("[EventBus] owner_loop closed, skipping publish")
+                    sent = False
+                else:
+                    coro = bridge.publish_analyze_request(event)
+                    try:
+                        cf = asyncio.run_coroutine_threadsafe(coro, bridge.owner_loop)
+                        sent = await asyncio.wrap_future(cf)
+                    except Exception as e:
+                        coro.close()
+                        logger.debug("[EventBus] publish_analyze_request threadsafe failed: %s", e)
+                        sent = False
+            except Exception as e:
+                logger.debug("[EventBus] publish_analyze_request threadsafe failed: %s", e)
+                sent = False
+
+        if not sent:
+            with _ack_waiters_lock:
+                _ack_waiters.pop(event_id, None)
+            continue
+
+        try:
+            await asyncio.wait_for(waiter, timeout=ack_timeout_s)
+            logger.info(
+                "[EventBus] analyze_request acked: event_id=%s lanlan=%s trigger=%s latency_ms=%.1f",
+                event_id,
+                lanlan_name,
+                trigger,
+                (time.perf_counter() - sent_at) * 1000.0,
+            )
+            return True
+        except asyncio.TimeoutError:
+            with _ack_waiters_lock:
+                _ack_waiters.pop(event_id, None)
+            logger.info(
+                "[EventBus] analyze_request ack timeout (attempt %d): event_id=%s lanlan=%s trigger=%s",
+                attempt + 1,
+                event_id,
+                lanlan_name,
+                trigger,
+            )
+
+    return False
+
+
+async def publish_voice_transcript_observed_best_effort(
+    lanlan_name: str,
+    transcript: str,
+    *,
+    metadata: Optional[Dict[str, Any]] = None,
+) -> bool:
+    """Broadcast a realtime voice transcript to agent/plugins without waiting.
+
+    This is intentionally best-effort. Main voice handling must not be blocked
+    or controlled by plugins; plugin handlers may receive the event late, not at
+    all, or after it is no longer relevant.
+    """
+    text = str(transcript or "").strip()
+    if not text:
+        return False
+    event_id = uuid.uuid4().hex
+    event = {
+        "event_type": "voice_transcript_observed",
+        "event_id": event_id,
+        "lanlan_name": lanlan_name,
+        "transcript": text,
+        "metadata": dict(metadata or {}),
+    }
+    sent = await publish_session_event(event)
+    if not sent:
+        logger.debug(
+            "[EventBus] voice_transcript_observed not sent: no main bridge lanlan=%s",
+            lanlan_name,
+        )
+    return sent
+
+
+async def publish_provider_frame_observed_best_effort(
+    lanlan_name: Optional[str],
+    *,
+    image_base64: str,
+    source: str,
+    captured_at: Optional[float] = None,
+    turn_id: Optional[str] = None,
+    generation: Optional[int] = None,
+    mime: str = "image/jpeg",
+    metadata: Optional[Dict[str, Any]] = None,
+) -> bool:
+    """Copy a frame the provider already received onto the plugin bus.
+
+    Call this only where the frame was genuinely delivered: a frame the
+    session's throttle or delivery-mode fence dropped was never sent, so it
+    must never be copied. Pass the bytes that were actually transmitted --
+    on the paths where compression rewrites the outgoing event in place, that
+    is the compressed copy read back out of the event, not the caller's
+    original ``image_b64``.
+
+    main_server cannot write to the message plane itself: the ingest
+    credential is minted inside the plugin-server process and the runner's
+    port fallback only lands in agent_server's own environment. So this rides
+    the existing session PUB channel and agent_server forwards it into the
+    ``frames`` store (see ``api_runtime._on_session_event``). No new socket.
+
+    Best effort in the strong sense. PUB/SUB drops for a slow joiner and at
+    HWM, the send is NOBLOCK, the far side's receive thread refuses a frame once
+    AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT of them are already waiting on its event
+    loop, and its bridge refuses it again whenever the plane send queue is
+    behind. ``True`` means "handed to the socket", never "a plugin will see it".
+
+    The payload bound is asserted on the agent side against the same constant
+    ingest enforces (MESSAGE_PLANE_PAYLOAD_MAX_BYTES). It is not re-derived
+    here: main_logic sits below ``plugin`` in the layering and cannot read
+    that setting, and a second, guessed bound would be the thing that drifts.
+    """
+    b64 = str(image_base64 or "")
+    if not b64:
+        return False
+    if len(b64) > PROVIDER_FRAME_MAX_B64_BYTES:
+        # Reject before enqueueing; see PROVIDER_FRAME_MAX_B64_BYTES: this shared PUB cannot constrain frames
+        # via SNDHWM without affecting text; remote recipients reject such oversized frames anyway.
+        # Use debug, not warning: all callers perform best-effort copies, invisible to users.
+        logger.debug(
+            "[EventBus] provider frame too large for the session channel: "
+            "%d > %d (source=%s)",
+            len(b64), PROVIDER_FRAME_MAX_B64_BYTES, source,
+        )
+        return False
+    event: Dict[str, Any] = {
+        "event_type": PROVIDER_FRAME_OBSERVED_EVENT,
+        "event_id": uuid.uuid4().hex,
+        "lanlan_name": lanlan_name,
+        "source": str(source or "unknown"),
+        "image_base64": b64,
+        "mime": str(mime or "image/jpeg"),
+    }
+    if captured_at is not None:
+        event["captured_at"] = float(captured_at)
+    if turn_id is not None:
+        event["turn_id"] = str(turn_id)
+    # 0 is a real generation, so test for None rather than truthiness.
+    if generation is not None:
+        event["generation"] = int(generation)
+    if metadata:
+        event["metadata"] = dict(metadata)
+
+    # The preceding gate measures only pixels, while caller-supplied metadata is copied unchanged into the same event;
+    # a 400KiB image plus 1MiB metadata bypasses it, injecting an oversized record into the shared
+    # PUB path. The true criterion is serialized bytes of the **whole event**, exactly what this socket
+    # must hold.
+    #
+    # Serialize once more here. Cost is acceptable: this best-effort copy path is bounded by
+    # AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT; estimating the whole event using another measure
+    # merely introduces another drifting number.
+    try:
+        event_size = len(orjson.dumps(event))
+    except Exception:
+        # Unserializable content would fail remotely anyway; discard locally.
+        return False
+    if event_size > PROVIDER_FRAME_MAX_B64_BYTES:
+        logger.debug(
+            "[EventBus] provider frame event too large for the session channel: "
+            "%d > %d (source=%s)",
+            event_size, PROVIDER_FRAME_MAX_B64_BYTES, source,
+        )
+        return False
+
+    sent = await publish_session_event_threadsafe(event)
+    if not sent:
+        logger.debug(
+            "[EventBus] provider_frame_observed not sent: lanlan=%s source=%s",
+            lanlan_name,
+            event["source"],
+        )
+    return sent
+
+
+_frame_copy_drops: Dict[str, int] = {}
+
+
+def spawn_bounded_frame_copy(coro, inflight: set, *, label: str, spawn=None):
+    """Schedule a best-effort frame copy, refusing new ones once N are pending.
+
+    Both clients publish frames off the turn now, because the hop can cross
+    loops through an un-timed ``run_coroutine_threadsafe`` and must never hold
+    up a reply. That fix has a cost this bounds: while the far loop is stalled,
+    every scheduled copy parks inside the handoff still holding its base64, and
+    the sender keeps scheduling more. ``AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT`` on
+    the agent side cannot help -- it sits on the far side of the stuck hop.
+
+    Reuses that cap rather than deriving a second one. It is the same quantity
+    (multi-megabyte frames retained while a loop cannot drain them), and a
+    second, independently guessed bound is the thing that drifts.
+
+    Refuses the NEW copy rather than evicting an old one, the same direction
+    the rest of this path takes: cancelling an already-scheduled task does not
+    remove its callback from the loop's ready queue, so the bytes stay resident
+    and the eviction buys nothing.
+
+    ``inflight`` doubles as the GC root -- a task nothing references can be
+    collected mid-flight -- so callers need no second set.
+
+    ``spawn`` lets a caller keep its own task-creation seam: the realtime
+    client passes ``_fire_task`` so frame copies stay registered in
+    ``_bg_tasks`` alongside everything else it has to tear down, and so the
+    one place tests reach in to observe or refuse a background task keeps
+    working. The cap wraps that seam rather than replacing it.
+    """
+    if len(inflight) >= AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT:
+        coro.close()
+        drops = _frame_copy_drops.get(label, 0) + 1
+        _frame_copy_drops[label] = drops
+        # Powers of two only, as the agent-side handoff does: a stalled bridge
+        # would otherwise turn one incident into a log flood.
+        if (drops & (drops - 1)) == 0:
+            logger.warning(
+                "[EventBus] %s behind: frame copy dropped (cap=%d dropped_total=%d)",
+                label, AGENT_FRAME_HANDOFF_MAX_IN_FLIGHT, drops,
+            )
+        return None
+    try:
+        task = (spawn or asyncio.create_task)(coro)
+    except RuntimeError:
+        # No running loop (``__new__``-built doubles, teardown), or a spawn
+        # that refused. Close the coroutine so it does not warn -- close is
+        # idempotent, so a spawn that already closed it is fine. A missing
+        # copy is the safe direction.
+        coro.close()
+        return None
+    if task is None:
+        return None
+    inflight.add(task)
+    task.add_done_callback(inflight.discard)
+    return task
+
+
+CONVERSATION_TURN_OBSERVED_EVENT = "conversation_turn_observed"
+
+
+async def publish_conversation_turn_observed_best_effort(
+    lanlan_name: Optional[str],
+    *,
+    content: str,
+    turn_type: str,
+    conversation_id: str,
+    source: str,
+    message_count: int = 0,
+    metadata: Optional[Dict[str, Any]] = None,
+    ts: Optional[float] = None,
+) -> bool:
+    """Copy one message of an already-handled turn onto the plugin bus.
+
+    The dual of :func:`publish_provider_frame_observed_best_effort`, for text
+    instead of pixels, and it carries the same obligation: publish only what
+    actually happened. For offline proactive pairs, an instruction may be
+    copied once the provider has demonstrably received it (the first streamed
+    chunk); a reply may be copied
+    once it is committed. Neither may be copied because it exists in local
+    state -- a turn sitting in ``_conversation_history`` can still die before a
+    request is made, and a half-streamed reply that was discarded was never
+    said.
+
+    Same transport and the same reason for it: main_server cannot write to the
+    message plane (the ingest credential is minted inside the plugin-server
+    process), so this rides the session PUB channel and agent_server forwards
+    it into the ``conversations`` store (see
+    ``api_runtime._forward_conversation_turn``).
+
+    What ``conversation_id`` and ``message_count`` promise depends on the
+    producer:
+
+    - Offline proactive turns (``OmniOfflineClient``) publish the instruction
+      and the reply as one pair. ``conversation_id`` ties the two together:
+      it is the id ``ConversationRecord`` exposes and the one
+      ``bus.conversations.get_by_id()`` passes along. ``message_count`` is how
+      many messages that pair carries as of this record (1 for the
+      instruction, 2 once the reply lands), so a reader holding one record
+      knows whether it has the whole pair.
+    - Host-side records from ``TurnMixin`` (``user_message``,
+      ``assistant_message``, ``proactive_reply``) are single messages.
+      ``message_count`` is always 1, and ``conversation_id`` carries the
+      host speech/turn id as diagnostic context only. It does not pair a user
+      message with the reply to it, and two records that share it are not
+      a promise that they form one turn.
+
+    The plane's ``bus.query`` does not filter on ``conversation_id`` today --
+    grouping happens in the reader's hands -- so this fills the field the
+    schema has, it does not promise a server-side lookup.
+
+    ``ts`` is when the message itself happened (epoch seconds). The forwarder
+    stores it as ``metadata.ts`` for display ordering only; the record's
+    top-level ``timestamp`` stays the forward time, which is what the
+    ``since_ts`` cursor filters on. Omitted, the forwarder uses the forward
+    time for both.
+
+    Best effort in the same strong sense as the frame publisher: ``True`` means
+    "handed to the socket", never "a plugin will see it".
+    """
+    text = str(content or "")
+    if not text.strip():
+        return False
+    event: Dict[str, Any] = {
+        "event_type": CONVERSATION_TURN_OBSERVED_EVENT,
+        "event_id": uuid.uuid4().hex,
+        "lanlan_name": lanlan_name,
+        "source": str(source or "unknown"),
+        "conversation_id": str(conversation_id or ""),
+        "turn_type": str(turn_type or "unknown"),
+        "content": text,
+        "message_count": int(message_count),
+    }
+    if metadata:
+        event["metadata"] = dict(metadata)
+    if ts is not None:
+        try:
+            event["ts"] = float(ts)
+        except (TypeError, ValueError):
+            pass
+
+    sent = await publish_session_event_threadsafe(event)
+    if not sent:
+        logger.debug(
+            "[EventBus] conversation_turn_observed not sent: lanlan=%s turn_type=%s",
+            lanlan_name,
+            event["turn_type"],
+        )
+    return sent
+
+
+async def publish_voice_transcript_request_reliably(
+    lanlan_name: str,
+    transcript: str,
+    *,
+    timeout_s: float = 1.2,
+    retries: int = 0,
+    metadata: Optional[Dict[str, Any]] = None,
+) -> Optional[Dict[str, Any]]:
+    """Backward-compatible wrapper for the old request API.
+
+    The old API waited for a plugin action. Main no longer waits for or applies
+    those actions, so callers get ``None`` after the best-effort broadcast is
+    queued. ``timeout_s`` and ``retries`` are accepted only for source
+    compatibility.
+    """
+    await publish_voice_transcript_observed_best_effort(
+        lanlan_name,
+        transcript,
+        metadata=metadata,
+    )
+    return None

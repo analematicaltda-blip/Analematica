@@ -1,0 +1,81 @@
+---
+title: Family Button
+description: Family app-inspired floating button for React and shadcn/ui that expands from a plus icon into a panel of custom content.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="family-button-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="All variations"
+/>
+
+FamilyButton is a React button component for shadcn/ui, built with Motion. Use it for floating action menus, quick-create shortcuts, or compact share options on mobile-style interfaces.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/family-button
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="family-button" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+<FamilyButton>
+  <FamilyButtonHeader className="flex flex-col gap-4 justify-center items-center  ">
+    <div className="p-3 bg-neutral-950 rounded-full">
+      <Mail className="h-4 w-4 stroke-neutral-200" />
+    </div>
+  </FamilyButtonHeader>
+
+  <FamilyButtonContent className=" w-48 ">
+    <p>
+      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolorum eos quia
+      incidunt perspiciatis, ut, deleniti fugit a aliquam sequi, voluptatum
+      pariatur quaerat. Temporibus sed facere at, voluptas dolorem officiis
+      incidunt!
+    </p>
+  </FamilyButtonContent>
+  <TextureSeparator />
+
+  <div>
+    <div className="dark:bg-neutral-800 bg-stone-100 pt-px rounded-b-[20px] overflow-hidden ">
+      <div className="flex flex-col items-center justify-center">
+        <div className="py-2 px-2">
+          <p className="font-light dark:text-white text-black">
+            Texture <span className="font-medium tracking-wide">card</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</FamilyButton>
+```

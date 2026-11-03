@@ -1,0 +1,73 @@
+---
+title: Fractal Dot Grid
+description: Interactive canvas dot grid background for React and shadcn/ui with a hover wave, optional noise, and a mouse-following glow.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="bg-animated-fractal-dot-grid-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="All variations"
+/>
+
+FractalDotGrid is a canvas-rendered React background component for shadcn/ui. Use it behind landing page heroes or feature sections to add motion without loading images or video.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/bg-animated-fractal-dot-grid
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="bg-animated-fractal-dot-grid" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+function FractalDotGridExample() {
+  return (
+    <div className="h-screen w-screen relative">
+      <FractalDotGrid
+        dotSize={4}
+        dotSpacing={20}
+        dotOpacity={0.3}
+        waveIntensity={30}
+        waveRadius={200}
+        dotColor="rgba(100, 100, 255, 1)"
+        glowColor="rgba(100, 100, 255, 1)"
+        enableNoise={true}
+        noiseOpacity={0.03}
+        enableMouseGlow={true}
+        initialPerformance="medium"
+      />
+    </div>
+  );
+}
+
+export default FractalDotGridExample;
+```

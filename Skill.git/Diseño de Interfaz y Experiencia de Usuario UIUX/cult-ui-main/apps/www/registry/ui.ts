@@ -1,0 +1,2035 @@
+import type { Registry } from "@/registry/schema"
+
+export const ui: Registry["items"] = [
+  {
+    name: "text-animate",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/text-animate.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Animated text component with customizable reveal effects and timing",
+  },
+  {
+    name: "cosmic-button",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/cosmic-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Animated button/link with cosmic gradient border effect, renders as anchor or button",
+  },
+  {
+    name: "texture-button",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-slot"],
+    files: [
+      {
+        path: "registry/default/ui/texture-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Button component with texture overlay effects and customizable variants",
+  },
+  {
+    name: "texture-card",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/texture-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Card component with texture background and customizable styling options",
+  },
+  {
+    name: "timer",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/timer.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Countdown timer component with customizable duration and visual styles",
+  },
+  {
+    name: "shift-card",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/shift-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Card component with shift animation effects and hover interactions",
+  },
+  {
+    name: "minimal-card",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/minimal-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Clean and minimal card component with subtle styling and hover effects",
+  },
+  {
+    name: "cutout-card",
+    type: "registry:ui",
+    dependencies: ["motion", "@radix-ui/react-use-controllable-state"],
+    files: [
+      {
+        path: "registry/default/ui/cutout-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Image card with cutout corners, hover motion, inset labels, pins, and reveal actions",
+  },
+  {
+    name: "dynamic-island",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/dynamic-island.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "iOS-style dynamic island component with expandable content and smooth animations",
+  },
+  {
+    name: "direction-aware-tabs",
+    type: "registry:ui",
+    dependencies: ["motion", "react-use-measure"],
+    files: [
+      {
+        path: "registry/default/ui/direction-aware-tabs.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Tab component with direction-aware animations and smooth transitions",
+  },
+  {
+    name: "bg-animate-button",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/bg-animate-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Button component with animated background effects and gradient transitions",
+  },
+  {
+    name: "border-beam-button",
+    type: "registry:ui",
+    dependencies: ["border-beam"],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "registry/default/ui/border-beam-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Shadcn Button wrapped in Border Beam: animated border glow with compact icon and text variants",
+  },
+  {
+    name: "family-button",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/family-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Button component with family-style design and interactive hover effects",
+  },
+  {
+    name: "side-panel",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/side-panel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Sliding side panel component with customizable positioning and animations",
+  },
+  {
+    name: "bg-media",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/bg-media.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Background media component with video/image support and overlay effects",
+  },
+  {
+    name: "three-d-carousel",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/three-d-carousel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "3D carousel component with perspective effects and smooth item transitions",
+  },
+  {
+    name: "tweet-grid",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/tweet-grid.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Grid layout component for displaying tweet-like content cards",
+  },
+  {
+    name: "gradient-heading",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-slot"],
+    files: [
+      {
+        path: "registry/default/ui/gradient-heading.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Heading component with gradient text effects and customizable styling",
+  },
+  {
+    name: "typewriter",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/typewriter.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Typewriter effect component with customizable typing speed and cursor animation",
+  },
+  {
+    name: "rolling-number",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/rolling-number.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Number component with smooth counting animations and customizable formatting",
+  },
+  {
+    name: "sortable-list",
+    type: "registry:ui",
+    dependencies: ["motion", "react-use-measure"],
+    files: [
+      {
+        path: "registry/default/ui/sortable-list.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Drag-and-drop sortable list component with smooth animations and reordering",
+  },
+  {
+    name: "dock",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/dock.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "macOS-style dock component with hover effects and smooth animations",
+  },
+  {
+    name: "lightboard",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/lightboard.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Interactive lightboard component with customizable grid and lighting effects",
+  },
+  {
+    name: "canvas-fractal-grid",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/canvas-fractal-grid.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Interactive canvas-based fractal dot grid with mouse tracking and wave effects",
+  },
+  {
+    name: "bg-animated-fractal-dot-grid",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/bg-animated-fractal-dot-grid.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Background animated fractal dot grid with performance optimization and responsive design",
+  },
+  {
+    name: "bg-animated-gradient",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/bg-animated-gradient.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Animated gradient background component with customizable color transitions",
+  },
+  {
+    name: "bg-image-texture",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/bg-image-texture.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Background texture component with multiple texture variants and customizable opacity",
+  },
+  {
+    name: "popover",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/popover.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Animated popover component with form support and smooth transitions",
+  },
+  {
+    name: "floating-panel",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/floating-panel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Floating panel component with backdrop blur and position-aware animations",
+  },
+  {
+    name: "color-picker",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/color-picker.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Interactive color picker component with HSL support and preset colors",
+  },
+  {
+    name: "shader-lens-blur",
+    type: "registry:ui",
+    dependencies: ["motion", "three", "jotai"],
+    files: [
+      {
+        path: "registry/default/ui/shader-lens-blur.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "WebGL shader component with lens blur effects and mouse interaction",
+  },
+  {
+    name: "edge-blur",
+    type: "registry:ui",
+    files: [
+      {
+        path: "registry/default/ui/edge-blur.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Stacked backdrop-blur layers with a gradient mask for soft top or bottom screen edges",
+  },
+  {
+    name: "dither-image",
+    type: "registry:ui",
+    dependencies: ["dither-plugin"],
+    files: [
+      {
+        path: "registry/default/ui/dither-image.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Compound Next.js image figure with CSS Bayer dither via dither-plugin, partial reveal overlays, and typed tuning props",
+  },
+  {
+    name: "popover-form",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/popover-form.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Form popover component with success states and animated transitions",
+  },
+  {
+    name: "expandable",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/expandable.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Expandable component system with smooth animations and customizable presets",
+  },
+  {
+    name: "logo-carousel",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/logo-carousel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Animated logo carousel with staggered animations and customizable columns",
+  },
+  {
+    name: "loading-carousel",
+    type: "registry:ui",
+    dependencies: ["embla-carousel-autoplay", "lucide-react", "motion"],
+    registryDependencies: ["carousel"],
+    files: [
+      {
+        path: "registry/default/ui/loading-carousel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Loading carousel component with smooth transitions and customizable content",
+  },
+  {
+    name: "hover-video-player",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/hover-video-player.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Video player component that plays on hover with smooth animations",
+  },
+  {
+    name: "neumorph-eyebrow",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/neumorph-eyebrow.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Neumorphic eyebrow component with soft shadow effects and modern styling",
+  },
+  {
+    name: "neumorph-button",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/neumorph-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Neumorphic button component with soft shadows and tactile interaction effects",
+  },
+  {
+    name: "feature-carousel",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/feature-carousel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Feature carousel component with smooth transitions and customizable layouts",
+  },
+  {
+    name: "choice-poll",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-use-controllable-state", "lucide-react"],
+    files: [
+      {
+        path: "registry/default/ui/choice-poll.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Poll component with single or multiple selection, optional results, and keyboard navigation",
+  },
+  {
+    name: "feature-poll",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-use-controllable-state", "lucide-react"],
+    files: [
+      {
+        path: "registry/default/ui/feature-poll.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Feature poll component with single or multiple selection, optional results, and keyboard navigation",
+  },
+  {
+    name: "feature-voting",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-use-controllable-state"],
+    files: [
+      {
+        path: "registry/default/ui/feature-voting.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "List of features with up-vote support, optional sorting by vote count, and controlled or uncontrolled state",
+  },
+  {
+    name: "vote-tally",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-use-controllable-state"],
+    files: [
+      {
+        path: "registry/default/ui/vote-tally.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "List of items with up-vote support, optional sorting by vote count, and controlled or uncontrolled state",
+  },
+  {
+    name: "poll-widget",
+    type: "registry:ui",
+    dependencies: [
+      "@radix-ui/react-use-controllable-state",
+      "class-variance-authority",
+      "lucide-react",
+      "motion",
+    ],
+    files: [
+      {
+        path: "registry/default/ui/poll-widget.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Poll widget with inline, popover, and dialog modes, optional results, and animations",
+  },
+  {
+    name: "prompt-library",
+    type: "registry:ui",
+    dependencies: ["@hugeicons/core-free-icons", "@hugeicons/react"],
+    files: [
+      {
+        path: "registry/default/ui/prompt-library.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Browse, insert, and manage prompt templates with categories and custom prompts",
+  },
+  {
+    name: "ai-instructions",
+    type: "registry:ui",
+    dependencies: ["@hugeicons/core-free-icons", "@hugeicons/react"],
+    files: [
+      {
+        path: "registry/default/ui/ai-instructions.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Manage and toggle AI instructions with a popover, search, and create-dialog",
+  },
+  {
+    name: "intro-disclosure",
+    type: "registry:ui",
+    registryDependencies: ["button", "aspect-ratio"],
+    dependencies: ["motion", "react-use-measure"],
+    files: [
+      {
+        path: "registry/default/ui/intro-disclosure.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Intro disclosure component with expandable content and smooth animations",
+  },
+  {
+    name: "text-gif",
+    type: "registry:ui",
+    dependencies: [],
+    files: [
+      {
+        path: "registry/default/ui/text-gif.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Text component with GIF-like animation effects and customizable styling",
+  },
+  {
+    name: "stripe-bg-guides",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/stripe-bg-guides.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Stripe-style background guides component with animated patterns and effects",
+  },
+  {
+    name: "svg-shapes",
+    type: "registry:ui",
+    files: [
+      {
+        path: "registry/default/ui/svg-shapes.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Wide-aspect SVG shape and panel components for backgrounds and hero decorations",
+  },
+  {
+    name: "svg-shapes-animated",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/svg-shapes-animated.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Scroll-triggered stroke-draw animations for wide SVG shapes and panels using Motion",
+  },
+  {
+    name: "svg-bands",
+    type: "registry:ui",
+    files: [
+      {
+        path: "registry/default/ui/svg-bands.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Wide SVG section bands, battlement and zigzag trims, steep hero edges, and ornamental frames",
+  },
+  {
+    name: "grid-beam",
+    type: "registry:ui",
+    files: [
+      {
+        path: "registry/default/ui/grid-beam.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Canvas grid beam animation with palette presets, SVG dividers, and composable headless pieces via useGridBeam",
+  },
+  {
+    name: "youtube-video-player",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "registry/default/ui/youtube-video-player.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "YouTube video player component with custom controls and smooth animations",
+  },
+  {
+    name: "toolbar-expandable",
+    type: "registry:ui",
+    dependencies: ["motion", "@radix-ui/react-scroll-area"],
+    registryDependencies: ["badge"],
+    files: [
+      {
+        path: "registry/default/ui/toolbar-expandable.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Expandable toolbar component with step-based navigation, smooth animations, and enhanced scrolling",
+  },
+  {
+    name: "texture-overlay",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/texture-overlay.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Texture overlay component with various CSS gradient patterns for adding visual texture to backgrounds",
+  },
+  {
+    name: "squiggle-arrow",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/squiggle-arrow.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "A playful, hand-drawn squiggly arrow component with customizable variants, directions, and sizes",
+  },
+  {
+    name: "code-block",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/code-block.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "A beautiful code block component with tabs, copy functionality, and smooth animations",
+  },
+  {
+    name: "mock-browser-window",
+    type: "registry:ui",
+    // dependencies: [""],
+    registryDependencies: ["texture-overlay"],
+    files: [
+      {
+        path: "registry/default/ui/mock-browser-window.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "A customizable browser window mockup component with support for Chrome, Safari, and generic styles, customizable sidebars, and themes",
+  },
+  {
+    name: "metal-button",
+    type: "registry:ui",
+    dependencies: ["metal-fx"],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "registry/default/ui/metal-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Shadcn Button wrapped in MetalFx: animated liquid metal ring with text and icon variants",
+  },
+  {
+    name: "morph-surface",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/morph-surface.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "A morphing surface component with smooth animations, customizable dimensions, and configurable content",
+  },
+  {
+    name: "distorted-glass",
+    type: "registry:ui",
+    // dependencies: [""],
+    files: [
+      {
+        path: "registry/default/ui/distorted-glass.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "A glass morphism effect component using SVG filters with fractal noise to create visual transitions between sections",
+  },
+  {
+    name: "family-drawer",
+    type: "registry:ui",
+    dependencies: [
+      "motion",
+      "react-use-measure",
+      "vaul",
+      "@radix-ui/react-slot",
+    ],
+    files: [
+      {
+        path: "registry/default/ui/family-drawer.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "A multi-view drawer component with smooth animations, view navigation, and customizable content views",
+  },
+  {
+    name: "expandable-screen",
+    type: "registry:ui",
+    dependencies: ["motion", "lucide-react"],
+    files: [
+      {
+        path: "registry/default/ui/expandable-screen.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "A full-screen expandable component with morphing animations using shared layout IDs for smooth transitions",
+  },
+  {
+    name: "pixel-heading-character",
+    type: "registry:ui",
+    dependencies: ["geist"],
+    files: [
+      {
+        path: "registry/default/ui/pixel-heading-character.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Per-character pixel-font heading with four animation modes using Geist pixel fonts",
+  },
+  {
+    name: "pixel-heading-word",
+    type: "registry:ui",
+    dependencies: ["geist"],
+    files: [
+      {
+        path: "registry/default/ui/pixel-heading-word.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Whole-word pixel-font heading that swaps or cycles fonts on hover using Geist pixel fonts",
+  },
+  {
+    name: "pixel-paragraph-words-inverse",
+    type: "registry:ui",
+    dependencies: ["geist"],
+    files: [
+      {
+        path: "registry/default/ui/pixel-paragraph-words-inverse.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Paragraph in pixel font where specific words escape into interactive sans/mono with hover swap or cycle",
+  },
+  {
+    name: "pixel-paragraph-words",
+    type: "registry:ui",
+    dependencies: ["geist"],
+    files: [
+      {
+        path: "registry/default/ui/pixel-paragraph-words.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Paragraph where specific words render in an interactive pixel font that swaps or cycles on hover",
+  },
+  {
+    name: "onboarding",
+    type: "registry:ui",
+    dependencies: [
+      "@radix-ui/react-use-controllable-state",
+      "class-variance-authority",
+    ],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "registry/default/ui/onboarding.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Composable multi-step onboarding primitives: Onboarding root with step navigation, FeatureCarousel, ChoiceGroup radio selector, TipsList, and StepIndicator with dots and pills variants",
+  },
+  {
+    name: "gradient-button-group",
+    type: "registry:ui",
+    dependencies: ["motion"],
+    files: [
+      {
+        path: "registry/default/ui/gradient-button-group.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Premium layered button group with animated active state, gradient ring accents, and theme toggle underlay",
+  },
+  {
+    name: "terminal-animation",
+    type: "registry:ui",
+    dependencies: [
+      "@radix-ui/react-slot",
+      "@radix-ui/react-use-controllable-state",
+    ],
+    files: [
+      {
+        path: "registry/default/ui/terminal-animation.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Composable terminal animation primitives with typed command playback, tabbed scenarios, and customizable output rendering",
+  },
+  {
+    name: "hero-dithering",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react"],
+    registryDependencies: ["badge", "button"],
+    files: [
+      {
+        path: "registry/default/ui/hero-dithering.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Split-layout hero section with responsive dithering shader visuals, CTA, and tech stack badges",
+  },
+  {
+    name: "hero-color-panel",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react"],
+    registryDependencies: ["badge", "button"],
+    files: [
+      {
+        path: "registry/default/ui/hero-color-panel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Split-layout hero section with responsive ColorPanels shader visuals, CTA, and tech stack badges",
+  },
+  {
+    name: "hero-static-radial-gradient",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react"],
+    registryDependencies: ["badge", "button"],
+    files: [
+      {
+        path: "registry/default/ui/hero-static-radial-gradient.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Split-layout hero section with responsive StaticRadialGradient shader visuals, CTA, and tech stack badges",
+  },
+  {
+    name: "hero-heatmap",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react"],
+    registryDependencies: ["badge", "button"],
+    files: [
+      {
+        path: "registry/default/ui/hero-heatmap.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Split-layout hero section with responsive Heatmap shader visuals, CTA, and tech stack badges",
+  },
+  {
+    name: "hero-liquid-metal",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react"],
+    registryDependencies: ["badge", "button"],
+    files: [
+      {
+        path: "registry/default/ui/hero-liquid-metal.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Split-layout hero section with responsive LiquidMetal shader visuals, CTA, and tech stack badges",
+  },
+  // Cult Pro migration: shared Base UI primitives
+  {
+    name: "base-select",
+    type: "registry:ui",
+    dependencies: [
+      "@base-ui/react",
+      "@hugeicons/react",
+      "@hugeicons/core-free-icons",
+    ],
+    files: [
+      {
+        path: "registry/default/ui/base-select.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Base UI select primitives used by Halo Select",
+  },
+  {
+    name: "base-tooltip",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "@radix-ui/react-slot"],
+    files: [
+      {
+        path: "registry/default/ui/base-tooltip.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Base UI tooltip primitives used by Apple Pro Display XDR",
+  },
+  // Cult Pro migration
+  {
+    name: "gateway-endpoint-illustration",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/gateway-endpoint-illustration.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Illustration for gateway endpoint concepts",
+  },
+  // Cult Pro migration
+  {
+    name: "gateway-route-illustration",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/gateway-route-illustration.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Illustration for gateway routing",
+  },
+  // Cult Pro migration
+  {
+    name: "gateway-svg-illustration",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/gateway-svg-illustration.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "SVG illustration for gateway overhead",
+  },
+  // Cult Pro migration
+  {
+    name: "illustration-card-grid",
+    type: "registry:ui",
+
+    registryDependencies: [
+      "https://cult-ui.com/r/gateway-endpoint-illustration.json",
+      "https://cult-ui.com/r/gateway-route-illustration.json",
+      "https://cult-ui.com/r/gateway-svg-illustration.json",
+    ],
+    files: [
+      {
+        path: "registry/default/ui/illustration-card-grid.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Grid of cards with gateway illustrations",
+  },
+  // Cult Pro migration
+  {
+    name: "illustration-cursor",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/illustration-cursor.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Cursor illustration and demo for collaboration UI",
+  },
+  // Cult Pro migration
+  {
+    name: "illustration-comment-bubble",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/illustration-comment-bubble.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Comment bubble illustration for code or chat UI",
+  },
+  // Cult Pro migration
+  {
+    name: "illustration-fluid-rendering",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/illustration-fluid-rendering.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Fluid rendering illustration",
+  },
+  // Cult Pro migration
+  {
+    name: "illustration-globe-vercel",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/illustration-globe-vercel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Globe deployment illustration",
+  },
+  // Cult Pro migration
+  {
+    name: "illustration-graph",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/illustration-graph.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Graph illustration component",
+  },
+  // Cult Pro migration
+  {
+    name: "tabs-illustration-vercel",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/tabs-illustration-vercel.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Tabs with Vercel-style illustrations",
+  },
+  // Cult Pro migration
+  {
+    name: "circuit-board",
+    type: "registry:ui",
+    dependencies: ["lucide-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/circuit-board.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Animated SVG circuit illustration with glowing traces and a central chip, for hero or product sections",
+  },
+  // Cult Pro migration
+  {
+    name: "fluid-ai-workloads",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/fluid-ai-workloads.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Fluid visualization for AI workload states",
+  },
+  // Cult Pro migration
+  {
+    name: "security-checkpoint",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/security-checkpoint.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Security checkpoint illustration or component",
+  },
+  // Cult Pro migration
+  {
+    name: "merging-bubbles",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/merging-bubbles.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Merging bubbles visualization",
+  },
+  // Cult Pro migration
+  {
+    name: "ai-blob-warp",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/ai-blob-warp.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Circular avatar with Paper Design Warp shader; motion-safe pulse, pauses off-screen and when reduced motion is preferred",
+  },
+  // Cult Pro migration
+  {
+    name: "folded-card",
+    type: "registry:ui",
+    files: [
+      { path: "registry/default/ui/folded-card.tsx", type: "registry:ui" },
+    ],
+    description: "Card with folded corner clip-path accent",
+  },
+  // Cult Pro migration
+  {
+    name: "shadow-card",
+    type: "registry:ui",
+    dependencies: ["@radix-ui/react-slot"],
+
+    files: [
+      {
+        path: "registry/default/ui/shadow-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Composable marketing card with L-shaped extrusion, optional pixel gradient mesh, and Radix Slot on the root",
+  },
+  // Cult Pro migration
+  {
+    name: "organic-card",
+    type: "registry:ui",
+    dependencies: ["lucide-react"],
+
+    files: [
+      {
+        path: "registry/default/ui/organic-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Composable marketing card with optional link root, image slot, eyebrow/title/body, accent band, and footer CTA",
+  },
+  // Cult Pro migration
+  {
+    name: "organic-card-small",
+    type: "registry:ui",
+    dependencies: ["lucide-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/organic-card-small.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Compact card with SVG silhouette, category and date, motion morph on hover, and optional link",
+  },
+  // Cult Pro migration
+  {
+    name: "organic-button",
+    type: "registry:ui",
+    dependencies: [
+      "@radix-ui/react-slot",
+      "class-variance-authority",
+      "lucide-react",
+    ],
+
+    files: [
+      {
+        path: "registry/default/ui/organic-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Anchor-based CTA with fixed SVG end caps, shared surface colors via CSS variables, and size and animation variants",
+  },
+  // Cult Pro migration
+  {
+    name: "fluted-glass",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react"],
+
+    files: [
+      {
+        path: "registry/default/ui/fluted-glass.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Paper Design fluted-glass image shader with sensible defaults — ribbed, streaked distortions over a source image",
+  },
+  // Cult Pro migration
+  {
+    name: "speech-bubble",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/speech-bubble.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Speech bubble component",
+  },
+  // Cult Pro migration
+  {
+    name: "apple-iphone-17-pro",
+    type: "registry:ui",
+    dependencies: ["lucide-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/apple-iphone-17-pro.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "iPhone-style device frame with Dynamic Island, status bar, and configurable frame colors",
+  },
+  // Cult Pro migration
+  {
+    name: "apple-keyboard",
+    type: "registry:ui",
+    dependencies: ["@tabler/icons-react"],
+
+    files: [
+      {
+        path: "registry/default/ui/apple-keyboard.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Compact Apple-style keyboard with labeled keys and media row",
+  },
+  // Cult Pro migration
+  {
+    name: "apple-watch-ultra",
+    type: "registry:ui",
+    dependencies: ["lucide-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/apple-watch-ultra.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Watch Ultra–style case, complications, crown, and action button",
+  },
+  // Cult Pro migration
+  {
+    name: "mac-screen",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/mac-screen.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Classic Mac frame with an image or GIF composited into the CRT",
+  },
+  // Cult Pro migration
+  {
+    name: "apple-pro-display-xdr",
+    type: "registry:ui",
+    dependencies: ["@tabler/icons-react", "motion"],
+    registryDependencies: ["https://cult-ui.com/r/base-tooltip.json"],
+    files: [
+      {
+        path: "registry/default/ui/apple-pro-display-xdr.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Studio Display–style aluminum frame, screen modes, and interactive macOS dock",
+  },
+  // Cult Pro migration
+  {
+    name: "marketing-hero-analytics",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/marketing-hero-analytics.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Analytics hero section for marketing pages",
+  },
+  // Cult Pro migration
+  {
+    name: "marketing-feature-code",
+    type: "registry:ui",
+    dependencies: ["lucide-react"],
+
+    files: [
+      {
+        path: "registry/default/ui/marketing-feature-code.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Marketing section for code or network policy features",
+  },
+  // Cult Pro migration
+  {
+    name: "feature-sticky-section",
+    type: "registry:ui",
+    dependencies: [
+      "@radix-ui/react-slot",
+      "@radix-ui/react-use-controllable-state",
+    ],
+
+    files: [
+      {
+        path: "registry/default/ui/feature-sticky-section.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Sticky section with controllable panels and scroll behavior",
+  },
+  // Cult Pro migration
+  {
+    name: "analytics-chart",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/analytics-chart.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Vercel-style gradient line chart with floating tooltip cards",
+  },
+  // Cult Pro migration
+  {
+    name: "kanban-board",
+    type: "registry:ui",
+    dependencies: ["motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/kanban-board.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Kanban board with drag-and-drop columns and cards",
+  },
+  // Cult Pro migration
+  {
+    name: "agent-suggest-card-stack",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/agent-suggest-card-stack.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Stack of suggestion cards for AI agent responses",
+  },
+  // Cult Pro migration
+  {
+    name: "collab-avatar",
+    type: "registry:ui",
+    dependencies: ["motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/collab-avatar.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Collaboration avatar with initials and color",
+  },
+  // Cult Pro migration
+  {
+    name: "collab-toolbar",
+    type: "registry:ui",
+
+    files: [
+      {
+        path: "registry/default/ui/collab-toolbar.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Toolbar component for collaborative editing UI",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-dropzone",
+    type: "registry:ui",
+    dependencies: ["lucide-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-dropzone.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "File dropzone with animated rim, frosted fill, moving border trail, and file-type glyphs",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-search",
+    type: "registry:ui",
+    dependencies: ["@paper-design/shaders-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-search.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Search input with animated gradient border, staggered placeholder, blur deletion on clear, loading line, and Warp shader avatar",
+  },
+  // Cult Pro migration
+  {
+    name: "globe",
+    type: "registry:ui",
+    dependencies: ["cobe", "motion", "next-themes"],
+
+    files: [
+      {
+        path: "registry/default/ui/globe.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "COBE-powered 3D globe with showcase presets, markers, arcs, DOM overlays, and theme-aware styling",
+  },
+  // Cult Pro migration
+  {
+    name: "file-icons",
+    type: "registry:ui",
+    dependencies: ["lucide-react"],
+
+    files: [
+      {
+        path: "registry/default/ui/file-icons.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Icon set for file types and languages",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-button",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Primary action button with animated gradient rim, frosted fill, staggered label, and loading spinner",
+  },
+  // Cult Pro migration
+  {
+    name: "copy-button",
+    type: "registry:ui",
+    dependencies: ["lucide-react", "motion"],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "registry/default/ui/copy-button.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description: "Button that copies content to clipboard with feedback",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-card",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Composable card with animated gradient rim, frosted fill, layered shadow, and Base UI button actions",
+  },
+  // Cult Pro migration
+  {
+    name: "border-beam-card",
+    type: "registry:ui",
+    dependencies: ["border-beam"],
+    registryDependencies: ["card"],
+    files: [
+      {
+        path: "registry/default/ui/border-beam-card.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "border-beam around compound Card API with balanced title and description",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-tabs",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-tabs.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Base UI tabs with gradient indicator: underline or pill variant aligned with Halo Card rim colors",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-segmented",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-segmented.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Segmented control with frosted track, gradient rim, and spring sliding thumb",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-toggle-group",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-toggle-group.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Segmented single-select control with frosted track, gradient rim, and spring-driven sliding thumb (aligned with Halo Button)",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-notification",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "lucide-react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-notification.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Polished notification surface for local AnimatePresence use with rim variants and glyph stagger",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-toast",
+    type: "registry:ui",
+    dependencies: ["lucide-react", "motion", "sonner"],
+    registryDependencies: ["button"],
+    files: [
+      {
+        path: "registry/default/ui/halo-toast.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Sonner-backed polished toasts with rim variants; mount PolishedToaster once in the root layout",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-switch",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-switch.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Toggle switch with spring thumb, frosted track, and extended touch hit area",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-input",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-input.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Single-line and multiline inputs with frosted fill and gradient rim for generic forms",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-field",
+    type: "registry:ui",
+
+    registryDependencies: ["field"],
+    files: [
+      {
+        path: "registry/default/ui/halo-field.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Form field layout (label, description, error) for HaloInput and HaloTextarea",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-progress",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "motion"],
+
+    files: [
+      {
+        path: "registry/default/ui/halo-progress.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Progress bar with spring-driven determinate fill and indeterminate gradient strip",
+  },
+  // Cult Pro migration
+  {
+    name: "border-beam-input",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "border-beam"],
+    registryDependencies: ["input-group"],
+    files: [
+      {
+        path: "registry/default/ui/border-beam-input.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "border-beam on Base UI input and input-group primitives with line or full border glow",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-badge",
+    type: "registry:ui",
+    dependencies: ["class-variance-authority", "motion"],
+    registryDependencies: ["badge"],
+    files: [
+      {
+        path: "registry/default/ui/halo-badge.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Badge with optional layout animation, live status dot, and gradient rim aligned with Halo Button / Card",
+  },
+  // Cult Pro migration
+  {
+    name: "halo-select",
+    type: "registry:ui",
+    dependencies: ["@base-ui/react", "lucide-react", "motion"],
+    registryDependencies: ["https://cult-ui.com/r/base-select.json"],
+    files: [
+      {
+        path: "registry/default/ui/halo-select.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Composable animated select with gradient rim, frosted fill, and staggered label",
+  },
+  // Cult Pro migration
+  {
+    name: "prompt-composer",
+    type: "registry:ui",
+    dependencies: [
+      "@base-ui/react",
+      "@paper-design/shaders-react",
+      "lucide-react",
+      "motion",
+    ],
+
+    files: [
+      {
+        path: "registry/default/ui/prompt-composer.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Multiline prompt field with shader avatar, staggered placeholder, loading line, and send/attach chrome",
+  },
+  // Cult Pro migration
+  {
+    name: "wizard-expandable",
+    type: "registry:ui",
+    dependencies: [
+      "@base-ui/react",
+      "@radix-ui/react-use-controllable-state",
+      "motion",
+    ],
+    registryDependencies: ["badge", "button"],
+    files: [
+      {
+        path: "registry/default/ui/wizard-expandable.tsx",
+        type: "registry:ui",
+      },
+    ],
+    description:
+      "Expandable multi-step wizard with optional forward validation, scrollable step rail, and Motion height transitions",
+  },
+  // Deprecated aliases — old animated-* install names resolve to Halo / renamed kits
+  {
+    name: "animated-badge",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-badge.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-badge. Prefer npx shadcn add https://cult-ui.com/r/halo-badge.json",
+  },
+  {
+    name: "animated-button",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-button.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-button. Prefer npx shadcn add https://cult-ui.com/r/halo-button.json",
+  },
+  {
+    name: "animated-card",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-card.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-card. Prefer npx shadcn add https://cult-ui.com/r/halo-card.json",
+  },
+  {
+    name: "animated-composer",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/prompt-composer.json"],
+    files: [],
+    description:
+      "Deprecated alias for prompt-composer. Prefer npx shadcn add https://cult-ui.com/r/prompt-composer.json",
+  },
+  {
+    name: "animated-dropzone",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-dropzone.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-dropzone. Prefer npx shadcn add https://cult-ui.com/r/halo-dropzone.json",
+  },
+  {
+    name: "animated-field",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-field.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-field. Prefer npx shadcn add https://cult-ui.com/r/halo-field.json",
+  },
+  {
+    name: "animated-input",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-input.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-input. Prefer npx shadcn add https://cult-ui.com/r/halo-input.json",
+  },
+  {
+    name: "animated-notification",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-notification.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-notification. Prefer npx shadcn add https://cult-ui.com/r/halo-notification.json",
+  },
+  {
+    name: "animated-number",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/rolling-number.json"],
+    files: [],
+    description:
+      "Deprecated alias for rolling-number. Prefer npx shadcn add https://cult-ui.com/r/rolling-number.json",
+  },
+  {
+    name: "animated-progress",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-progress.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-progress. Prefer npx shadcn add https://cult-ui.com/r/halo-progress.json",
+  },
+  {
+    name: "animated-search",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-search.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-search. Prefer npx shadcn add https://cult-ui.com/r/halo-search.json",
+  },
+  {
+    name: "animated-segmented",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-segmented.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-segmented. Prefer npx shadcn add https://cult-ui.com/r/halo-segmented.json",
+  },
+  {
+    name: "animated-select",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-select.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-select. Prefer npx shadcn add https://cult-ui.com/r/halo-select.json",
+  },
+  {
+    name: "animated-switch",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-switch.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-switch. Prefer npx shadcn add https://cult-ui.com/r/halo-switch.json",
+  },
+  {
+    name: "animated-tabs",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-tabs.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-tabs. Prefer npx shadcn add https://cult-ui.com/r/halo-tabs.json",
+  },
+  {
+    name: "animated-toast",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-toast.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-toast. Prefer npx shadcn add https://cult-ui.com/r/halo-toast.json",
+  },
+  {
+    name: "animated-toggle-group",
+    type: "registry:ui",
+    registryDependencies: ["https://cult-ui.com/r/halo-toggle-group.json"],
+    files: [],
+    description:
+      "Deprecated alias for halo-toggle-group. Prefer npx shadcn add https://cult-ui.com/r/halo-toggle-group.json",
+  },
+]

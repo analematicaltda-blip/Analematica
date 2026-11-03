@@ -1,0 +1,52 @@
+---
+title: Feature Sticky Section
+description: Sticky scroll feature section for React and shadcn/ui that pairs triggers with content panels and tracks the panel in view.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="feature-sticky-section-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+/>
+
+Feature Sticky Section is a set of composable React primitives for shadcn/ui built on IntersectionObserver. Use it for feature walkthroughs or open-source project showcases on marketing pages.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/feature-sticky-section
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Install the required dependencies:</Step>
+
+```bash
+npm install @radix-ui/react-slot @radix-ui/react-use-controllable-state
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="feature-sticky-section" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>

@@ -1,0 +1,12 @@
+# 🚀 blender-mcp
+
+"Blender MCP expert for scene inspection, Python scripting, GLTF export, and material/animation extraction. Activate when: (1) using Blender MCP tools (get_scene_info, execute_python, screenshot, etc.), (2) writing Blender Python scripts for extraction or manipulation, (3) exporting scenes to GLTF/GLB for web (Three.js, R3F), (4) debugging material or texture export losses, (5) optimizing GLB files with gltf-transform, (6) using asset integrations (PolyHaven, Sketchfab, Hyper3D Rodin, Hunyuan3D). Covers critical export gotchas, material mapping survival, texture optimization pipeline, headless CLI patterns, and known failure modes."
+
+## 🎯 About
+This is an autonomous AI Agent Skill. It acts as a strict operational guideline for AI assistants.
+
+## 🛠️ How to use
+Add this folder to your agent's skills directory (e.g., .codex/skills).
+
+## 📜 License
+MIT

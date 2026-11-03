@@ -1,0 +1,28 @@
+{
+  "system_name": "SGA-CD Design System",
+  "version": "2.0.0",
+  "colors": {
+    "bg_deep": "#070B14",
+    "surface_card": "#0D1424",
+    "surface_card_glass": "rgba(13, 20, 36, 0.75)",
+    "border_specular": "#1A2642",
+    "border_hover": "#38BDF8",
+    "accent_cyan": "#38BDF8",
+    "accent_glow": "rgba(56, 189, 248, 0.35)",
+    "text_primary": "#E2E8F0",
+    "text_muted": "#94A3B8",
+    "secondary_gold": "#F59E0B",
+    "danger_red": "#EF4444",
+    "success_green": "#10B981"
+  },
+  "layout": {
+    "max_content_width": 1440,
+    "card_border_radius": 16,
+    "backdrop_blur_px": 12,
+    "touch_target_min_px": 44
+  },
+  "shadows": {
+    "card_default": "0 10px 30px -10px rgba(0, 0, 0, 0.8)",
+    "card_hover": "0 20px 40px -15px rgba(0, 0, 0, 0.9)"
+  }
+}

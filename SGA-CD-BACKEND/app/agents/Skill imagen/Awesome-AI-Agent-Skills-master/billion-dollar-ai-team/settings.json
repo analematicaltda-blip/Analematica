@@ -1,0 +1,12 @@
+{
+  "name": "billion-dollar-ai-team",
+  "displayName": "Billion Dollar AI Team",
+  "version": "1.0.0",
+  "description": "Operator panel for offer, funnel, copy, sales, positioning, and content audits.",
+  "author": "walva",
+  "license": "MIT",
+  "platforms": ["claude-code", "openclaw", "codex"],
+  "category": "marketing",
+  "tags": ["marketing", "sales", "offers", "funnels", "copywriting", "positioning", "content"],
+  "repository": "https://github.com/alirezarezvani/claude-skills"
+}

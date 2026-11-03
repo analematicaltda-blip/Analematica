@@ -1,0 +1,1216 @@
+"""Dataset format detection and conversion.
+
+Supported formats:
+- alpaca: {"instruction": ..., "input": ..., "output": ...}
+- sharegpt: {"conversations": [{"from": "human", "value": ...}, ...]}
+- chatml: {"messages": [{"role": "user", "content": ...}, ...]}
+- dpo: {"prompt": ..., "chosen": ..., "rejected": ...}
+- kto: {"prompt": ..., "completion": ..., "label": true/false}
+- llava: {"image": ..., "conversations": [{"from": "human", "value": ...}, ...]}
+- sharegpt4v: {"image": ..., "conversations": [{"from": "human", "value": ...}, ...]}
+- plaintext: {"text": "..."} — raw text for continued pre-training
+- embedding: {"anchor": ..., "positive": ..., "negative": ...} — sentence embedding pairs/triplets
+- audio: {"audio": ..., "messages": [...]} — audio + conversation for speech models
+- tool-calling: {"messages": [...], "tools": [...], "tool_calls": [...]} — function-calling training
+  (the calls may instead sit on the assistant turns: the OpenAI fine-tuning shape)
+"""
+
+import json
+from typing import Optional
+
+from rich.console import Console
+
+console = Console()
+
+# Required keys per format
+FORMAT_SIGNATURES = {
+    "alpaca": {"instruction", "output"},
+    "sharegpt": {"conversations"},
+    "chatml": {"messages"},
+    "dpo": {"prompt", "chosen", "rejected"},
+    "kto": {"prompt", "completion", "label"},
+    "llava": {"image", "conversations"},
+    "sharegpt4v": {"image", "conversations"},
+    "embedding": {"anchor", "positive"},
+    "audio": {"audio", "messages"},
+    # v0.71.32 — ASR (Whisper): audio path + reference transcript.
+    "asr": {"audio", "text"},
+    "plaintext": {"text"},
+    # #1217: top-level "tool_calls" is optional; the OpenAI fine-tuning shape
+    # carries "tools" at the top level and the calls inside assistant turns.
+    "tool-calling": {"messages", "tools"},
+}
+
+# #1424: detection reads a bounded prefix of the file, not just row 0. A first
+# row that happens to lack an optional key (e.g. a text-only LLaVA row) must
+# not pick the converter for the WHOLE file and silently drop that key from
+# every row that has it. The cap keeps detection O(1)-ish on huge files.
+MAX_DETECT_ROWS = 100
+
+# Check more specific formats first (llava/sharegpt4v before sharegpt).
+# tool-calling (messages+tools) is checked BEFORE audio
+# (audio+messages): a row carrying both would otherwise match audio first
+# and silently drop its tools/tool_calls. tool-calling before chatml
+# (signature is a superset of chatml). asr ({audio, text}) is checked
+# BEFORE plaintext ({text}) — its signature is a superset, so plaintext
+# would otherwise win and silently drop the audio path. plaintext last.
+_CHECK_ORDER = [
+    "alpaca", "llava", "sharegpt4v", "kto", "dpo", "embedding",
+    "tool-calling", "audio", "asr", "sharegpt", "chatml", "plaintext",
+]
+
+
+def _richest_format(keys: set[str]) -> Optional[str]:
+    """First format in :data:`_CHECK_ORDER` whose signature fits ``keys``.
+
+    The check order is most-specific-first, so this is the richest format the
+    row's keys could be: a row with ``image`` + ``conversations`` is ``llava``,
+    a row with only ``conversations`` is ``sharegpt``.
+    """
+    for fmt in _CHECK_ORDER:
+        if FORMAT_SIGNATURES[fmt].issubset(keys):
+            return fmt
+    return None
+
+
+def _richer_family_member(a: str, b: str) -> Optional[str]:
+    """Return ``a`` or ``b`` with the strictly larger signature, else ``None``.
+
+    The richer format's signature is a superset of the poorer one's, so a row
+    matching the richer signature also matches the poorer — that is what defines
+    a richer/poorer pair of the same family (llava/sharegpt,
+    tool-calling/chatml, audio/chatml, asr/plaintext). Two unrelated shapes
+    (e.g. alpaca and chatml) share no such relation and must not be merged.
+    """
+    if FORMAT_SIGNATURES[a] > FORMAT_SIGNATURES[b]:
+        return a
+    if FORMAT_SIGNATURES[b] > FORMAT_SIGNATURES[a]:
+        return b
+    return None
+
+
+def _cannot_detect_message(row: object, index: int) -> str:
+    """The existing unrecognised-keys error, naming the offending row.
+
+    ``row`` may be any JSON value, not just an object, so a bare scalar or array
+    is described by its type rather than by keys it does not have.
+    """
+    if isinstance(row, dict):
+        found = f"Keys found: {set(row.keys())}. "
+    else:
+        found = f"Row is a {type(row).__name__}, not an object. "
+    return (
+        f"Cannot detect format at row {index}. {found}"
+        f"Expected one of: alpaca (instruction, output), "
+        f"sharegpt (conversations), chatml (messages), "
+        f"dpo (prompt, chosen, rejected), "
+        f"kto (prompt, completion, label), "
+        f"llava/sharegpt4v (image, conversations), "
+        f"embedding (anchor, positive), "
+        f"audio (audio, messages), "
+        f"tool-calling (messages, tools), "
+        f"plaintext (text)"
+    )
+
+
+def detect_format(data: list[dict]) -> str:
+    """Auto-detect dataset format from a bounded prefix of rows.
+
+    Reads up to :data:`MAX_DETECT_ROWS` rows — not just the first — because a
+    single first row missing an optional key must not force the poorer
+    converter on the whole file and silently drop that key everywhere (#1424).
+
+    Each sampled row resolves to its richest format (the first match in the
+    check order). If every row agrees, that format is returned — a uniform file
+    detects exactly as before. If they disagree the file is *mixed*:
+
+    - a richer/poorer pair of the same family (llava/sharegpt,
+      tool-calling/chatml, audio/chatml, asr/plaintext) upgrades to the richer
+      format, but only when its converter accepts the poorer rows too;
+    - otherwise (an unrelated pair, or a richer converter that rejects the
+      poorer rows) detection raises, naming both shapes and the row where each
+      was first seen and telling the user to set ``data.format`` explicitly.
+
+    Raises:
+    - ``ValueError`` on empty data, or when no row in the prefix matches any
+      format signature. A row that matches no signature is skipped and reported
+      like the converters do (#1217) rather than refusing the whole file. A file
+      that mixes shapes is also refused, naming both shapes and the row where
+      each was first seen.
+    """
+    if not data:
+        raise ValueError("Empty dataset - cannot detect format")
+
+    sampled = data[:MAX_DETECT_ROWS]
+    # First row index at which each richest format was seen, in sample order.
+    first_seen: dict[str, int] = {}
+    # The richest format of every sampled row, aligned with `sampled`.
+    row_formats: list[str] = []
+    ignored: list[int] = []
+    for index, row in enumerate(sampled):
+        # A JSONL line can be any JSON value, not just an object, so a bare
+        # scalar or array is skipped exactly as the converters drop it (#1217)
+        # instead of crashing on .keys().
+        fmt = _richest_format(set(row.keys())) if isinstance(row, dict) else None
+        if fmt is None:
+            # #1217: a row matching no signature is skipped by the converters
+            # rather than fatal, so detection ignores it here too and drops it
+            # from the decision. Refusing on one bad row would restore the
+            # "zero row stop" behaviour #1217 removed; the loader's own drop
+            # warning is what tells the user which row it was.
+            ignored.append(index)
+            row_formats.append("")
+            continue
+        row_formats.append(fmt)
+        first_seen.setdefault(fmt, index)
+
+    if not first_seen:
+        # Nothing in the prefix matched, so there is no format to resolve.
+        first_ignored = ignored[0]
+        raise ValueError(_cannot_detect_message(sampled[first_ignored], first_ignored))
+
+    if len(first_seen) == 1:
+        return next(iter(first_seen))
+
+    # The sampled rows disagree: this file is mixed.
+    ordered = sorted(first_seen.items(), key=lambda item: item[1])
+    if len(ordered) == 2:
+        (fmt_a, idx_a), (fmt_b, idx_b) = ordered
+        richer = _richer_family_member(fmt_a, fmt_b)
+        if richer is not None:
+            if richer == fmt_a:
+                poorer, poorer_idx, richer_idx = fmt_b, idx_b, idx_a
+            else:
+                poorer, poorer_idx, richer_idx = fmt_a, idx_a, idx_b
+            poorer_rows = [
+                row for row, fmt in zip(sampled, row_formats) if fmt == poorer
+            ]
+            # The richer converter must accept EVERY poorer row, and must
+            # convert it to the same messages the poorer one would: the
+            # tool-calling converter rebuilds each message from role, content,
+            # tool_calls and tool_call_id, so a chatml row whose messages carry
+            # name or weight converts "successfully" but loses them. An upgrade
+            # that silently drops a field is the defect this change exists to fix.
+            upgrades = all(
+                format_to_messages(row, richer) is not None
+                and format_to_messages(row, richer) == format_to_messages(row, poorer)
+                for row in poorer_rows
+            )
+            if upgrades:
+                # The richer converter handles the poorer rows too, so upgrading
+                # keeps every row's fields instead of dropping the poorer ones.
+                return richer
+            missing = sorted(FORMAT_SIGNATURES[richer] - FORMAT_SIGNATURES[poorer])
+            missing_text = ", ".join(f"'{key}'" for key in missing)
+            raise ValueError(
+                f"Cannot detect format: this dataset mixes '{poorer}' (row "
+                f"{poorer_idx}) and '{richer}' (row {richer_idx}). They are the "
+                f"same family, but the richer '{richer}' converter rejects the "
+                f"'{poorer}' rows — they have no {missing_text} key — so no "
+                f"single format covers every row. Set data.format explicitly."
+            )
+
+    shapes = " and ".join(f"'{fmt}' (row {idx})" for fmt, idx in ordered)
+    raise ValueError(
+        f"Cannot detect format: this dataset mixes unrelated shapes {shapes}. "
+        f"Converting every row with one of them would silently drop the other's "
+        f"fields. Set data.format explicitly."
+    )
+
+
+# Every format format_to_messages can convert. Kept as a module constant so
+# the plain and reason-returning entry points share one source of truth.
+VALID_FORMATS = (
+    "chatml", "alpaca", "sharegpt", "dpo", "kto", "llava", "sharegpt4v",
+    "plaintext", "embedding", "audio", "tool-calling",
+    # v0.42.0 Part A
+    "prm", "pre_tokenized", "input_output", "video", "multimodal",
+    # v0.62.0 Part A — RAFT (Retrieval-Augmented Fine-Tuning).
+    "raft",
+    # v0.71.32 — ASR (Whisper): {"audio": path, "text": transcript}.
+    "asr",
+    # Issue #1219 — Cross-encoder paired text classification.
+    "cross_encoder",
+)
+
+# A malformed row makes a converter raise one of these; the drop contract is
+# that format_to_messages turns them into a dropped row (None), which the
+# loader skips. Kept as a constant so validation drops rows on exactly the
+# same conditions the loader does, rather than a re-implementation that drifts.
+_DROP_EXCEPTIONS = (KeyError, TypeError, IndexError, ValueError)
+
+
+def _dispatch_conversion(row: dict, fmt: str) -> dict:
+    """Run the converter for ``fmt``, letting a malformed row raise.
+
+    Separated from :func:`format_to_messages` so callers that need the *reason*
+    a row was dropped (dataset validation) can catch the exception, rather than
+    only seeing the ``None`` that :func:`format_to_messages` returns.
+    """
+    if fmt == "chatml":
+        return _convert_chatml(row)
+    elif fmt == "alpaca":
+        return _convert_alpaca(row)
+    elif fmt == "sharegpt":
+        return _convert_sharegpt(row)
+    elif fmt == "dpo":
+        return _convert_dpo(row)
+    elif fmt == "kto":
+        return _convert_kto(row)
+    elif fmt == "plaintext":
+        return _convert_plaintext(row)
+    elif fmt == "embedding":
+        return _convert_embedding(row)
+    elif fmt == "audio":
+        return _convert_audio(row)
+    elif fmt == "tool-calling":
+        return _convert_tool_calling(row)
+    elif fmt == "prm":
+        return _convert_prm(row)
+    elif fmt == "pre_tokenized":
+        return _convert_pre_tokenized(row)
+    elif fmt == "input_output":
+        return _convert_input_output(row)
+    elif fmt == "video":
+        return _convert_video(row)
+    elif fmt == "multimodal":
+        return _convert_multimodal(row)
+    elif fmt == "raft":
+        return _convert_raft(row)
+    elif fmt == "asr":
+        return _convert_asr(row)
+    elif fmt == "cross_encoder":
+        return _convert_cross_encoder(row)
+    else:
+        return _convert_vision(row)
+
+
+def format_to_messages(row: dict, fmt: str) -> Optional[dict]:
+    """Convert any format to normalized structure for training.
+
+    Returns:
+    - SFT formats: {"messages": [{"role": ..., "content": ...}, ...]}
+    - Vision formats: {"messages": [...], "image": "path"}
+    - DPO format: {"prompt": ..., "chosen": ..., "rejected": ...}, the three all
+      strings or all message lists (see :func:`_convert_dpo`)
+    - KTO format: {"prompt": ..., "completion": ..., "label": bool}, likewise.
+      Labels accept bool, true/1/yes or false/0/no strings (case/space ignored),
+      and integers 1, 0, -1 only; -1 means undesirable. Other values are refused.
+
+    A malformed row is dropped (returns ``None``) rather than raising, so one
+    bad line does not abort a whole dataset load.
+    """
+    if fmt not in VALID_FORMATS:
+        raise ValueError(f"Unknown format: {fmt}")
+    try:
+        return _dispatch_conversion(row, fmt)
+    except _DROP_EXCEPTIONS:
+        return None
+
+
+def format_to_messages_with_reason(
+    row: dict, fmt: str
+) -> tuple[Optional[dict], Optional[str]]:
+    """Like :func:`format_to_messages`, but also report why a row was dropped.
+
+    Returns ``(converted, None)`` for a good row, or ``(None, reason)`` for one
+    that :func:`format_to_messages` would drop, where ``reason`` is the
+    converter's own error message. This lets validation tell a user *which*
+    rows fail and *why*, using the exact same drop decision as the loader.
+    """
+    if fmt not in VALID_FORMATS:
+        raise ValueError(f"Unknown format: {fmt}")
+    try:
+        return _dispatch_conversion(row, fmt), None
+    except _DROP_EXCEPTIONS as exc:
+        return None, str(exc)
+
+
+def _require_str_content(value: object, field: str) -> str:
+    """Reject non-string message content (e.g. a JSON ``null``).
+
+    The older converters passed row values through verbatim, so a JSON
+    ``null`` became literal ``None`` message content. Raising here routes the
+    row to ``format_to_messages``'s drop path instead of silently corrupting
+    the dataset with a ``None``-content turn.
+    """
+    if not isinstance(value, str):
+        raise TypeError(f"{field} must be a string, got {type(value).__name__}")
+    return value
+
+
+def _require_dict_messages(messages: object, kind: str) -> None:
+    """Require a messages list whose elements are all dicts.
+
+    Raising ValueError routes the row to ``format_to_messages``'s drop path
+    instead of passing the malformed element through into training.
+    """
+    if not isinstance(messages, list):
+        raise ValueError(f"{kind} row 'messages' must be a list")
+    for msg in messages:
+        if not isinstance(msg, dict):
+            raise ValueError(f"{kind} message must be a dict")
+
+
+def _convert_alpaca(row: dict) -> dict:
+    instruction = _require_str_content(row["instruction"], "alpaca.instruction")
+    input_text = row.get("input") or ""  # missing / null -> ""
+    output = _require_str_content(row["output"], "alpaca.output")
+
+    user_content = f"{instruction}\n{input_text}".strip() if input_text else instruction
+
+    messages = [
+        {"role": "user", "content": user_content},
+        {"role": "assistant", "content": output},
+    ]
+
+    if row.get("system"):
+        messages.insert(0, {"role": "system", "content": row["system"]})
+
+    return {"messages": messages}
+
+
+def _convert_sharegpt(row: dict) -> dict:
+    conversations = row["conversations"]
+    role_map = {"human": "user", "gpt": "assistant", "system": "system"}
+
+    messages = []
+    for turn in conversations:
+        role = role_map.get(turn["from"], turn["from"])
+        messages.append(
+            {"role": role, "content": _require_str_content(turn["value"], "sharegpt.value")}
+        )
+
+    return {"messages": messages}
+
+
+def _convert_chatml(row: dict) -> dict:
+    messages = row["messages"]
+    _require_dict_messages(messages, "chatml")
+    return {"messages": messages}
+
+
+# --- Preference rows (dpo / kto) ---------------------------------------------
+#
+# trl takes a preference row in one of two layouts. TEXT: the prompt and the
+# answers are strings, concatenated as written. CONVERSATIONAL: each is a list
+# of messages, rendered through the chat template. It decides which one it has
+# by asking ONE field of the row, taken from a set
+# (``trl.data_utils.is_conversational``), so a row whose fields are not all the
+# same kind fails inside the trainer, after the model has loaded, with an error
+# that changes with PYTHONHASHSEED (#1849). ORPO and CPO split a string prompt
+# beside conversations first (``maybe_extract_prompt``); ``DPOTrainer`` does
+# not, and BCO / KTO are handed unpaired rows with nothing left to split.
+# The two converters below therefore emit rows of exactly one kind, with the
+# prompt turns in ``prompt`` and nowhere else, and refuse what they cannot
+# write that way.
+
+
+def _turn(role: str, text: str) -> dict:
+    return {"role": role, "content": text}
+
+
+def _as_messages(value: object, field: str) -> list[dict]:
+    """``value`` as a non-empty list of well-formed messages, or raise.
+
+    One message is read as a list of one. ``content`` is a string, or a list of
+    content blocks (a multimodal turn, prepared by trl), or null or absent: a
+    turn with no text is accepted on any message, with a ``tool_calls`` or
+    ``function_call`` key beside it or without one. Rows with such a turn
+    trained before and still do. Any other type is refused. A JSON object as
+    content (a tool result that was not serialised) never loaded beside string
+    contents: Arrow needs one type per column.
+    """
+    if isinstance(value, dict):
+        value = [value]
+    if not isinstance(value, list):
+        raise TypeError(
+            f"{field} must be a message or a list of messages, got {type(value).__name__}"
+        )
+    if not value:
+        raise ValueError(f"{field} is an empty message list")
+    for index, message in enumerate(value):
+        where = f"{field}[{index}]"
+        if not isinstance(message, dict):
+            raise TypeError(
+                f"{where} must be a message (an object with 'role' and 'content'), "
+                f"got {type(message).__name__}"
+            )
+        role = message.get("role")
+        if not isinstance(role, str) or not role:
+            raise TypeError(f"{where}.role must be a non-empty string")
+        content = message.get("content")
+        if content is None or isinstance(content, (str, list)):
+            continue
+        hint = ""
+        if isinstance(content, dict):
+            hint = " (write a JSON tool result as a JSON string)"
+        raise TypeError(
+            f"{where}.content must be a string or a list of content blocks, "
+            f"got {type(content).__name__}{hint}"
+        )
+    return value
+
+
+def _preference_field(value: object, field: str) -> "str | list[dict]":
+    """A prompt or an answer: its string, or its messages."""
+    if value is None:
+        raise TypeError(f"{field} must not be null")
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (dict, list)):
+        return _as_messages(value, field)
+    raise TypeError(
+        f"{field} must be a string, a message or a list of messages, "
+        f"got {type(value).__name__}"
+    )
+
+
+def _no_prompt(value: object) -> bool:
+    """Missing, null, a blank string or an empty list."""
+    return value is None or value == [] or (isinstance(value, str) and not value.strip())
+
+
+def _shared_leading_turns(chosen: list[dict], rejected: list[dict]) -> int:
+    """How many leading turns the two conversations share: their implicit prompt.
+
+    This is the split ``trl.data_utils.maybe_extract_prompt`` makes for the
+    trainers that call it (ORPO, CPO, BCO), so those see the rows they always
+    did. When one conversation is the start of the other, or the two are the
+    same, the last shared turn is the shorter one's answer if it is an
+    assistant turn (an identical pair still converts, and ``soup data lint``
+    reports it as ``identical_pairs``). Otherwise the shorter conversation
+    stops where the other one answers and has no answer of its own.
+    """
+    common = 0
+    for ours, theirs in zip(chosen, rejected):
+        if ours != theirs:
+            break
+        common += 1
+    if common < min(len(chosen), len(rejected)):
+        return common
+    name, other, shorter = (
+        ("chosen", "rejected", chosen)
+        if len(chosen) <= len(rejected)
+        else ("rejected", "chosen", rejected)
+    )
+    if shorter[-1]["role"] == "assistant":
+        return common - 1
+    raise ValueError(
+        f"dpo.{name} has no turn after the {common} it shares with dpo.{other}: "
+        f"there is no {name} answer"
+    )
+
+
+def _convert_dpo(row: dict) -> dict:
+    """Convert a DPO preference row to ``{prompt, chosen, rejected}`` in ONE layout.
+
+    The result is TEXT (three strings, returned as written) or CONVERSATIONAL
+    (three non-empty message lists, the prompt turns in ``prompt`` only):
+
+    - ``prompt`` / ``chosen`` / ``rejected`` all strings: text.
+    - ``prompt`` a message list (trl's explicit layout): conversational. A
+      string answer becomes one assistant turn; a prompt that both answers
+      repeat and continue is taken out of them.
+    - ``prompt`` a string beside message-list answers (every bundled example,
+      UltraFeedback): the leading turns the two answers share are the prompt
+      and the string is not read, which is what trl's ``maybe_extract_prompt``
+      does for the trainers that call it. With no shared turn the string is
+      the user turn.
+    - no ``prompt``: the shared leading turns (trl's implicit layout), else the
+      row's ``messages``.
+
+    A row that mixes a string answer with a message-list one, has no prompt, or
+    carries a malformed message is refused with a reason that names the field.
+    Other keys (``system``, scores, ids) are not read, as before.
+    """
+    for field in ("chosen", "rejected"):
+        if row.get(field) is None:
+            raise TypeError(f"dpo.{field} must not be null")
+    written = row.get("prompt")
+    # A blank string or an empty list beside conversations is no prompt at all.
+    prompt = None if _no_prompt(written) else _preference_field(written, "dpo.prompt")
+    chosen = _preference_field(row["chosen"], "dpo.chosen")
+    rejected = _preference_field(row["rejected"], "dpo.rejected")
+
+    text_answers = False
+    if isinstance(chosen, str) or isinstance(rejected, str):
+        if not (isinstance(chosen, str) and isinstance(rejected, str)):
+            kind = {True: "a string", False: "a message list"}
+            raise TypeError(
+                f"dpo.chosen is {kind[isinstance(chosen, str)]} and dpo.rejected is "
+                f"{kind[isinstance(rejected, str)]}: give both as strings or both as "
+                "message lists"
+            )
+        if isinstance(written, str):
+            return {"prompt": written, "chosen": chosen, "rejected": rejected}
+        text_answers = True
+        chosen, rejected = [_turn("assistant", chosen)], [_turn("assistant", rejected)]
+
+    if isinstance(prompt, list):
+        size = len(prompt)
+        if all(len(side) > size and side[:size] == prompt for side in (chosen, rejected)):
+            chosen, rejected = chosen[size:], rejected[size:]
+        return {"prompt": prompt, "chosen": chosen, "rejected": rejected}
+
+    # The turns the two answers share are the prompt, and a string beside them
+    # is not read: trl's own reading of this layout (maybe_extract_prompt).
+    shared = 0 if text_answers else _shared_leading_turns(chosen, rejected)
+    lead = chosen[:shared]
+    if not lead and isinstance(prompt, str):
+        lead = [_turn("user", prompt)]
+    elif not lead and not _no_prompt(row.get("messages")):
+        lead = _as_messages(row["messages"], "dpo.messages")
+    elif not lead and text_answers:
+        raise TypeError("dpo.prompt must not be null")
+    elif not lead:
+        raise ValueError(
+            "dpo.prompt is missing and dpo.chosen and dpo.rejected share no leading "
+            "turn to use as the prompt: add 'prompt' (a string or a message list)"
+        )
+    return {"prompt": lead, "chosen": chosen[shared:], "rejected": rejected[shared:]}
+
+
+def unify_preference_layout(rows: list[dict]) -> tuple[list[dict], int]:
+    """Give a set of converted ``dpo`` / ``kto`` rows ONE layout.
+
+    ``Dataset.from_list`` needs one type per column and trl reads the layout
+    off the first row, so text rows beside conversational ones cannot be
+    trained as they are. Each text row is rewritten as one user turn and one
+    assistant turn per answer, the way a ``chatml`` row beside ``tool-calling``
+    ones loads as ``tool-calling``. Returns ``(rows, rewritten)``; a set that
+    already has one layout, or holds no preference rows, is returned as the
+    same object with ``0``.
+    """
+    text: list[tuple[int, tuple[str, ...]]] = []
+    conversational = False
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict) or "prompt" not in row:
+            continue
+        if "chosen" in row and "rejected" in row:
+            answers: tuple[str, ...] = ("chosen", "rejected")
+        elif "completion" in row and "label" in row:
+            answers = ("completion",)
+        else:
+            continue
+        if isinstance(row["prompt"], list):
+            conversational = True
+        elif all(isinstance(row[name], str) for name in ("prompt", *answers)):
+            text.append((index, answers))
+    if not text or not conversational:
+        return rows, 0
+    unified = list(rows)
+    for index, answers in text:
+        row = dict(rows[index])
+        row["prompt"] = [_turn("user", row["prompt"])]
+        for name in answers:
+            row[name] = [_turn("assistant", row[name])]
+        unified[index] = row
+    return unified, len(text)
+
+
+def _convert_kto(row: dict) -> dict:
+    """Convert a KTO row to ``{prompt, completion, label}`` in ONE layout.
+
+    The same contract as :func:`_convert_dpo`, over ``prompt`` and
+    ``completion``: both strings (text, returned as written) or both message
+    lists. A string prompt beside a message-list completion is the user turn,
+    unless the completion leads with turns of its own before its first
+    assistant turn; then those turns are the prompt and the string is not read
+    (the row a paired file with a string ``prompt`` column gives when unpaired).
+    """
+    raw_label = row["label"]
+    if isinstance(raw_label, bool):
+        label = raw_label
+    elif isinstance(raw_label, str):
+        low = raw_label.strip().lower()
+        if low in ("true", "1", "yes"):
+            label = True
+        elif low in ("false", "0", "no"):
+            label = False
+        else:
+            raise ValueError(
+                f"KTO label must be true/false, got string: {raw_label!r}"
+            )
+    elif isinstance(raw_label, int) and raw_label in (-1, 0, 1):
+        # Both the ±1 convention (+1 desirable / -1 undesirable) and the 0/1
+        # convention map "positive == desirable". `bool(-1)` is True, which
+        # would silently INVERT a -1 "bad" label — flip it to False here.
+        label = raw_label > 0
+    else:
+        raise ValueError(
+            f"KTO label must be a bool, true/false string or -1/0/1 integer, got: {raw_label!r}"
+        )
+    prompt = _preference_field(row.get("prompt"), "kto.prompt")
+    completion = _preference_field(row.get("completion"), "kto.completion")
+
+    if isinstance(completion, str):
+        if isinstance(prompt, str):
+            return {"prompt": prompt, "completion": completion, "label": label}
+        completion = [_turn("assistant", completion)]
+    if isinstance(prompt, list):
+        size = len(prompt)
+        if len(completion) > size and completion[:size] == prompt:
+            completion = completion[size:]
+        return {"prompt": prompt, "completion": completion, "label": label}
+
+    lead = next(
+        (index for index, turn in enumerate(completion) if turn["role"] == "assistant"),
+        len(completion),
+    )
+    if lead == 0:
+        return {"prompt": [_turn("user", prompt)], "completion": completion, "label": label}
+    if lead == len(completion):
+        raise ValueError(
+            f"kto.completion has no turn after the {lead} that lead it: there is no "
+            "assistant answer"
+        )
+    return {"prompt": completion[:lead], "completion": completion[lead:], "label": label}
+
+
+def _convert_plaintext(row: dict) -> dict:
+    """Convert plaintext row to {text} for continued pre-training.
+
+    Input: {"text": "raw document text..."}
+    Output: {"text": "raw document text..."}
+    """
+    text = row["text"]
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("Plaintext row must have a non-empty 'text' field")
+    return {"text": text}
+
+
+def _convert_embedding(row: dict) -> dict:
+    """Convert embedding row to {anchor, positive, negative?} for embedding training.
+
+    Input: {"anchor": "query text", "positive": "similar text", "negative": "dissimilar text"}
+    Output: {"anchor": ..., "positive": ..., "negative": ...} (negative is optional)
+    """
+    anchor = row["anchor"]
+    positive = row["positive"]
+    if not isinstance(anchor, str) or not anchor.strip():
+        raise ValueError("Embedding row must have a non-empty 'anchor' field")
+    if not isinstance(positive, str) or not positive.strip():
+        raise ValueError("Embedding row must have a non-empty 'positive' field")
+    result = {"anchor": anchor, "positive": positive}
+    negative = row.get("negative")
+    if isinstance(negative, str) and negative.strip():
+        result["negative"] = negative
+    return result
+
+
+def _convert_audio(row: dict) -> dict:
+    """Convert audio format to unified messages + audio path.
+
+    Input: {"audio": "path.wav", "messages": [{"role": "user", "content": ...}, ...]}
+    Output: {"messages": [...], "audio": "path.wav"}
+    """
+    audio = row["audio"]
+    if not isinstance(audio, str) or not audio.strip():
+        raise ValueError("Audio row must have a non-empty 'audio' field")
+    messages = row["messages"]
+    if not isinstance(messages, list) or len(messages) < 1:
+        raise ValueError("Audio row must have a 'messages' list with at least one message")
+    _require_dict_messages(messages, "audio")
+    return {"messages": messages, "audio": audio}
+
+
+def _convert_asr(row: dict) -> dict:
+    """Convert an ASR row to the pass-through training shape (v0.71.32).
+
+    Input:  {"audio": "path.wav", "text": "transcript"}
+    Output: {"audio": "path.wav", "text": "transcript"}
+
+    Unlike other formats, ASR rows are NOT normalized to messages — the Whisper
+    trainer consumes the raw audio path + reference transcript directly. Row
+    validation delegates to the trainer's ``_validate_asr_row`` so the two never
+    drift (lazy import — the trainer module has no top-level heavy deps).
+    """
+    from soup_cli.trainer.asr import _validate_asr_row
+
+    audio, text = _validate_asr_row(row)
+    return {"audio": audio, "text": text}
+
+
+def _convert_cross_encoder(row: dict) -> dict:
+    """Convert cross-encoder paired row (Issue #1219).
+
+    Input:  {"text_a": ..., "text_b": ..., "label": ...}
+        or: {"question": ..., "answer": ..., "label": ...}
+    Output: dict with the pair fields and optional label preserved.
+    """
+    if "text_a" in row and "text_b" in row:
+        a, b = row["text_a"], row["text_b"]
+        if not isinstance(a, str) or not isinstance(b, str):
+            raise TypeError(
+                "cross_encoder rows require 'text_a' and 'text_b' to be str; "
+                f"got text_a={type(a).__name__}, text_b={type(b).__name__}"
+            )
+        res = {"text_a": a, "text_b": b}
+    elif "question" in row and "answer" in row:
+        q, ans = row["question"], row["answer"]
+        if not isinstance(q, str) or not isinstance(ans, str):
+            raise TypeError(
+                "cross_encoder rows require 'question' and 'answer' to be str; "
+                f"got question={type(q).__name__}, answer={type(ans).__name__}"
+            )
+        res = {"question": q, "answer": ans}
+    else:
+        raise ValueError(
+            "cross_encoder row requires 'text_a' + 'text_b' (or 'question' + "
+            f"'answer'). Row keys: {sorted(row)!r}"
+        )
+    if "label" in row:
+        res["label"] = row["label"]
+    return res
+
+
+def _convert_vision(row: dict) -> dict:
+    """Convert LLaVA / ShareGPT4V vision format to unified messages + image.
+
+    Input: {"image": "path.jpg", "conversations": [{"from": "human", "value": ...}, ...]}
+    Output: {"messages": [...], "image": "path.jpg"}
+    """
+    conversations = row["conversations"]
+    role_map = {"human": "user", "gpt": "assistant", "system": "system"}
+
+    messages = []
+    for turn in conversations:
+        role = role_map.get(turn["from"], turn["from"])
+        messages.append(
+            {"role": role, "content": _require_str_content(turn["value"], "vision.value")}
+        )
+
+    result = {"messages": messages, "image": row["image"]}
+    # Preserve optional id field
+    if "id" in row:
+        result["id"] = row["id"]
+    return result
+
+
+def _normalize_tool_calls(tool_calls: object, field: str) -> list[dict]:
+    """Validate a ``tool_calls`` list and return it in the unified shape.
+
+    Each call keeps ``function.name`` and ``function.arguments`` (a dict is
+    serialized, a string must parse as JSON), plus its ``id`` and ``type`` when
+    the source carries them: a ``tool`` turn's ``tool_call_id`` refers to that
+    ``id``, and some chat templates render it.
+    """
+    if not isinstance(tool_calls, list):
+        raise ValueError(f"tool-calling '{field}' must be a list")
+    normalized = []
+    for call in tool_calls:
+        if not isinstance(call, dict):
+            raise ValueError("tool_calls entries must be dicts")
+        func = call.get("function")
+        if not isinstance(func, dict):
+            raise ValueError("tool_calls entry missing 'function' dict")
+        name = func.get("name")
+        if not isinstance(name, str) or not name:
+            raise ValueError("tool_calls 'function.name' must be a non-empty string")
+        args = func.get("arguments", "{}")
+        if isinstance(args, str):
+            try:
+                json.loads(args)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"tool_calls 'arguments' must be JSON-parseable: {exc}"
+                ) from exc
+            args_str = args
+        elif isinstance(args, dict):
+            args_str = json.dumps(args)
+        else:
+            raise ValueError("tool_calls 'arguments' must be str or dict")
+        entry: dict = {}
+        for key in ("id", "type"):
+            if call.get(key) is not None:
+                if not isinstance(call[key], str):
+                    raise ValueError(f"tool_calls '{key}' must be a string")
+                entry[key] = call[key]
+        entry["function"] = {"name": name, "arguments": args_str}
+        normalized.append(entry)
+    return normalized
+
+
+def _convert_tool_calling(row: dict) -> dict:
+    """Normalize tool-calling row to unified messages format.
+
+    Two input shapes are accepted (#1217):
+
+    - calls nested in the conversation (the OpenAI fine-tuning shape, and what
+      ``soup agent synth`` writes): assistant turns carry their own
+      ``tool_calls`` and ``tool`` turns their ``tool_call_id``;
+    - the legacy single-call shape: the calls sit in a top-level ``tool_calls``
+      list and become one assistant turn appended after ``messages``.
+
+        {
+            "messages": [{"role": "user", "content": ...}, ...],
+            "tools": [{"type": "function", "function": {...}}, ...],  # optional
+            "tool_calls": [{"function": {"name": ..., "arguments": "json-string"}}],
+        }
+
+    Output (unified format: the tool schema, when ``tools`` is non-empty, embedded
+    in a leading system message; messages in source order, each assistant turn
+    keeping its own tool_calls):
+        {
+            "messages": [
+                {"role": "system", "content": "<tool schema description>"},
+                {"role": "user", "content": "..."},
+                {"role": "assistant", "content": "", "tool_calls": [...]},
+                {"role": "tool", "content": "...", "tool_call_id": "..."},
+                {"role": "assistant", "content": "..."},
+            ]
+        }
+
+    The top-level ``tool_calls`` is appended only when no assistant turn
+    already carries calls, so a multi-turn trajectory is never reordered into
+    "answer first, call afterwards".
+
+    Security: every tool_call's 'arguments' must be JSON-parseable. Tool schemas
+    must be a list of dicts. Invalid rows raise ValueError and are mapped to None
+    by the outer handler.
+    """
+    tools = row.get("tools")
+    if isinstance(tools, str):
+        # Some exported datasets store the schema list as a JSON string, since
+        # per-tool parameter schemas differ from row to row.
+        try:
+            tools = json.loads(tools)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"tool-calling 'tools' is a string that is not JSON: {exc}"
+            ) from exc
+    if tools is not None:
+        if not isinstance(tools, list):
+            raise ValueError("tool-calling 'tools' must be a list")
+        for tool in tools:
+            if not isinstance(tool, dict):
+                raise ValueError("tool-calling tool entries must be dicts")
+
+    top_level_calls = row.get("tool_calls")
+    legacy_tool_calls = (
+        [] if top_level_calls is None
+        else _normalize_tool_calls(top_level_calls, "tool_calls")
+    )
+
+    original_messages = row["messages"]
+    if not isinstance(original_messages, list) or not original_messages:
+        raise ValueError("tool-calling 'messages' must be a non-empty list")
+
+    messages: list[dict] = []
+    if tools:
+        tool_schema_descriptions = []
+        for tool in tools:
+            function_def = tool.get("function", {})
+            tool_name = function_def.get("name", "unknown")
+            description = function_def.get("description", "")
+            params = function_def.get("parameters", {})
+            tool_schema_descriptions.append(
+                f"- {tool_name}: {description}\n  parameters: {json.dumps(params)}"
+            )
+        messages.append({
+            "role": "system",
+            "content": (
+                "You have access to the following tools. When a tool call is "
+                "needed, respond with a function call in JSON.\n\n"
+                + "\n".join(tool_schema_descriptions)
+            ),
+        })
+
+    has_nested_calls = False
+    for msg in original_messages:
+        if not isinstance(msg, dict) or "role" not in msg:
+            raise ValueError("tool-calling messages must be dicts with 'role'")
+        role = msg["role"]
+        if role == "system" and tools:
+            # Merge user system message into our synthesized system content
+            messages[0]["content"] = msg.get("content", "") + "\n\n" + messages[0]["content"]
+            continue
+        content = msg.get("content", "")
+        calls = []
+        if role == "assistant" and msg.get("tool_calls") is not None:
+            calls = _normalize_tool_calls(msg["tool_calls"], "messages.tool_calls")
+        if calls and content is None:
+            # The OpenAI shape writes "content": null on a call-only turn.
+            content = ""
+        # Any other null content would render as the literal text "None" in a
+        # chat template, so the row is dropped, as the other converters do.
+        out = {
+            "role": role,
+            "content": _require_str_content(content, f"tool-calling {role} content"),
+        }
+        if calls:
+            has_nested_calls = True
+            out["tool_calls"] = calls
+        elif role == "tool" and msg.get("tool_call_id") is not None:
+            if not isinstance(msg["tool_call_id"], str):
+                raise ValueError("tool-calling 'tool_call_id' must be a string")
+            out["tool_call_id"] = msg["tool_call_id"]
+        messages.append(out)
+
+    if legacy_tool_calls and not has_nested_calls:
+        messages.append({
+            "role": "assistant",
+            "content": "",
+            "tool_calls": legacy_tool_calls,
+        })
+
+    return {"messages": messages}
+
+
+def is_vision_format(fmt: str) -> bool:
+    """Check if a format is a vision/multimodal format."""
+    return fmt in ("llava", "sharegpt4v")
+
+
+def is_audio_format(fmt: str) -> bool:
+    """Check if a format is an audio/speech format."""
+    return fmt in ("audio", "asr")
+
+
+# --- Reverse conversion: messages → target format ---
+
+CONVERTIBLE_FORMATS = ("alpaca", "sharegpt", "chatml")
+
+
+def messages_to_format(row: dict, target_fmt: str) -> Optional[dict]:
+    """Convert unified messages format back to a specific format.
+
+    Input: {"messages": [{"role": ..., "content": ...}, ...]}
+    Output: dict in target format (alpaca, sharegpt, chatml)
+    """
+    try:
+        if target_fmt == "chatml":
+            return row  # already in chatml/messages format
+        elif target_fmt == "alpaca":
+            return _to_alpaca(row["messages"])
+        elif target_fmt == "sharegpt":
+            return _to_sharegpt(row["messages"])
+        else:
+            raise ValueError(f"Cannot convert to format: {target_fmt}")
+    except (KeyError, TypeError, IndexError):
+        return None
+
+
+def _to_alpaca(messages: list[dict]) -> dict:
+    """Convert messages to alpaca format."""
+    result: dict = {"instruction": "", "input": "", "output": ""}
+
+    for msg in messages:
+        if msg["role"] == "system":
+            result["system"] = msg["content"]
+        elif msg["role"] == "user":
+            result["instruction"] = msg["content"]
+        elif msg["role"] == "assistant":
+            result["output"] = msg["content"]
+
+    return result
+
+
+def _to_sharegpt(messages: list[dict]) -> dict:
+    """Convert messages to sharegpt format."""
+    role_map = {"user": "human", "assistant": "gpt", "system": "system"}
+    conversations = []
+    for msg in messages:
+        conversations.append({
+            "from": role_map.get(msg["role"], msg["role"]),
+            "value": msg["content"],
+        })
+    return {"conversations": conversations}
+
+
+# --- v0.42.0 Part A: New format converters ---------------------------------
+
+_MAX_PRM_STEPS = 10_000
+
+# v0.62.0 Part A — RAFT (Retrieval-Augmented Fine-Tuning) caps.
+_MAX_RAFT_DISTRACTORS = 64
+_MAX_RAFT_FIELD_LEN = 65_536  # 64 KiB per document — generous for legal/RAG corpora.
+
+
+def _convert_prm(row: dict) -> dict:
+    """PRM (Process Reward Model) stepwise-supervised format.
+
+    Schema: {"prompt": str, "completions": [str, ...], "labels": [bool, ...]}
+    Each completion is a reasoning step; each label is True if that step is
+    correct. Live PPO/RL wiring lands in v0.50 — v0.42.0 stores the row as-is
+    after schema validation so downstream consumers can opt in.
+    """
+    prompt = row["prompt"]
+    completions = row["completions"]
+    labels = row["labels"]
+    if not isinstance(prompt, str) or not prompt:
+        raise ValueError("PRM 'prompt' must be a non-empty string")
+    if not isinstance(completions, list) or not isinstance(labels, list):
+        raise ValueError("PRM completions/labels must be lists")
+    if len(completions) != len(labels):
+        raise ValueError("PRM completions and labels must be same length")
+    if not completions:
+        raise ValueError("PRM row must have at least one completion")
+    if len(completions) > _MAX_PRM_STEPS:
+        raise ValueError(f"PRM row exceeds {_MAX_PRM_STEPS} steps")
+    for index, comp in enumerate(completions):
+        if not isinstance(comp, str):
+            raise ValueError(f"PRM completions[{index}] must be a string")
+    for index, lab in enumerate(labels):
+        if not isinstance(lab, bool):
+            raise ValueError(f"PRM labels[{index}] must be a bool")
+    return {"prompt": prompt, "completions": completions, "labels": labels}
+
+
+def _convert_pre_tokenized(row: dict) -> dict:
+    """Already-tokenized rows — pass through input_ids / labels / attention_mask."""
+    if "input_ids" not in row:
+        raise ValueError("pre_tokenized row must have 'input_ids'")
+    out: dict = {"input_ids": row["input_ids"]}
+    if "labels" in row:
+        out["labels"] = row["labels"]
+    if "attention_mask" in row:
+        out["attention_mask"] = row["attention_mask"]
+    return out
+
+
+def _convert_input_output(row: dict) -> dict:
+    """Template-free segments+labels format (axolotl `input_output`).
+
+    Schema: {"segments": [{"text": str, "label": bool}, ...]}
+    Each segment is rendered verbatim — no chat template applied — and only
+    segments with label=True contribute to the loss.
+    """
+    segments = row["segments"]
+    if not isinstance(segments, list) or not segments:
+        raise ValueError("input_output row must have non-empty 'segments' list")
+    cleaned: list[dict] = []
+    for seg in segments:
+        if not isinstance(seg, dict):
+            raise ValueError("input_output segment must be a dict")
+        if "text" not in seg or "label" not in seg:
+            raise ValueError("input_output segment must have 'text' and 'label'")
+        if not isinstance(seg["text"], str):
+            raise ValueError("input_output segment.text must be a string")
+        if not isinstance(seg["label"], bool):
+            raise ValueError("input_output segment.label must be a bool")
+        cleaned.append({"text": seg["text"], "label": seg["label"]})
+    return {"segments": cleaned}
+
+
+def _convert_video(row: dict) -> dict:
+    """Video format. Schema: {"video": "path/url", "messages": [...]}."""
+    if "video" not in row:
+        raise ValueError("video row must have 'video' key")
+    video = row["video"]
+    if not isinstance(video, str) or not video:
+        raise ValueError("video row 'video' must be a non-empty string")
+    if "\x00" in video:
+        raise ValueError("video row 'video' must not contain null bytes")
+    if len(video) > 2048:
+        raise ValueError("video row 'video' must be <= 2048 chars")
+    messages = row.get("messages")
+    if messages is None:
+        messages = []
+    _require_dict_messages(messages, "video")
+    return {"video": video, "messages": messages}
+
+
+def _convert_multimodal(row: dict) -> dict:
+    """Axolotl multimodal content-parts schema.
+
+    Schema: {"messages": [{"role": ..., "content": [{"type": "text"|"image"
+    |"audio"|"video", ...}, ...]}, ...]}
+    Each message's content is a list of typed parts. Validates the part
+    types but stores them verbatim.
+    """
+    messages = row["messages"]
+    if not isinstance(messages, list) or not messages:
+        raise ValueError("multimodal row must have non-empty 'messages' list")
+    valid_types = {"text", "image", "audio", "video"}
+    for msg in messages:
+        if not isinstance(msg, dict):
+            raise ValueError("multimodal message must be a dict")
+        content = msg.get("content")
+        if isinstance(content, str):
+            continue  # back-compat with plain strings
+        if not isinstance(content, list):
+            raise ValueError(
+                "multimodal message.content must be a list of parts or a string"
+            )
+        for part in content:
+            if not isinstance(part, dict):
+                raise ValueError("multimodal content part must be a dict")
+            ptype = part.get("type")
+            if ptype not in valid_types:
+                raise ValueError(
+                    f"multimodal content part.type must be in {sorted(valid_types)}"
+                )
+    return {"messages": messages}
+
+
+# --- v0.62.0 Part A: RAFT (Retrieval-Augmented Fine-Tuning) ----------------
+
+
+def _check_raft_string(name: str, value: object) -> str:
+    """Shared validator for RAFT string fields (query / golden_doc / answer).
+
+    Returns the canonical value. Rejects non-string, empty, null-byte, and
+    oversize values (mirrors v0.42.0 `_convert_video` policy). The cap is
+    generous (64 KiB) because legal/RAG corpora frequently embed full
+    paragraphs verbatim in the golden_doc field.
+    """
+    if not isinstance(value, str):
+        raise ValueError(
+            f"RAFT '{name}' must be a string, got {type(value).__name__}"
+        )
+    if not value:
+        raise ValueError(f"RAFT '{name}' must be a non-empty string")
+    if "\x00" in value:
+        raise ValueError(f"RAFT '{name}' must not contain null bytes")
+    if len(value) > _MAX_RAFT_FIELD_LEN:
+        raise ValueError(
+            f"RAFT '{name}' must be <= {_MAX_RAFT_FIELD_LEN} chars"
+        )
+    return value
+
+
+def _convert_raft(row: dict) -> dict:
+    """RAFT (Retrieval-Augmented Fine-Tuning) format — Stanford 2024.
+
+    Schema: ``{"query": str, "golden_doc": str, "distractor_docs": [str, ...],
+    "answer": str}``. The trainer composes the prompt by concatenating the
+    query with the golden doc + N distractor docs in randomised order; the
+    model learns to attend to the relevant doc while ignoring distractors.
+
+    Distractor list MAY be empty (effectively reduces to closed-book QA on
+    the golden doc). Live RAFT training loop ships in v0.62.1; v0.62.0
+    locks the schema + recipe surface.
+    """
+    if "query" not in row:
+        raise ValueError("RAFT row must have 'query'")
+    if "golden_doc" not in row:
+        raise ValueError("RAFT row must have 'golden_doc'")
+    if "answer" not in row:
+        raise ValueError("RAFT row must have 'answer'")
+
+    query = _check_raft_string("query", row["query"])
+    golden_doc = _check_raft_string("golden_doc", row["golden_doc"])
+    answer = _check_raft_string("answer", row["answer"])
+
+    raw_distractors = row.get("distractor_docs", [])
+    if not isinstance(raw_distractors, list):
+        raise ValueError("RAFT 'distractor_docs' must be a list")
+    if len(raw_distractors) > _MAX_RAFT_DISTRACTORS:
+        raise ValueError(
+            f"RAFT 'distractor_docs' must have <= {_MAX_RAFT_DISTRACTORS} entries "
+            f"(got {len(raw_distractors)})"
+        )
+    cleaned_distractors: list[str] = []
+    for index, doc in enumerate(raw_distractors):
+        cleaned_distractors.append(
+            _check_raft_string(f"distractor_docs[{index}]", doc)
+        )
+
+    return {
+        "query": query,
+        "golden_doc": golden_doc,
+        "distractor_docs": cleaned_distractors,
+        "answer": answer,
+    }

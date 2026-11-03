@@ -1,0 +1,483 @@
+"""Tests for soup sweep — hyperparameter search."""
+
+from pathlib import Path
+
+import pytest
+
+
+@pytest.fixture
+def bounded_random_choice(monkeypatch):
+    """Fail a random search that keeps drawing instead of letting it spin forever.
+
+    Every random sweep in these tests needs well under 10 000 draws, so reaching the
+    cap means the sampler cannot finish.
+    """
+    import random
+
+    draw = random.choice
+    calls = {"n": 0}
+
+    def capped(seq):
+        calls["n"] += 1
+        if calls["n"] > 10_000:
+            raise AssertionError("random search kept drawing: it can never finish")
+        return draw(seq)
+
+    monkeypatch.setattr(random, "choice", capped)
+
+
+class TestParseSweepParams:
+    """Test sweep parameter parsing."""
+
+    def test_parse_simple_float_params(self):
+        """Should parse float values like learning rates."""
+        from soup_cli.commands.sweep import _parse_sweep_params
+
+        result = _parse_sweep_params(["lr=1e-5,2e-5,5e-5"])
+        assert "lr" in result
+        assert len(result["lr"]) == 3
+        assert result["lr"][0] == pytest.approx(1e-5)
+        assert result["lr"][1] == pytest.approx(2e-5)
+        assert result["lr"][2] == pytest.approx(5e-5)
+
+    def test_parse_int_params(self):
+        """Should parse integer values."""
+        from soup_cli.commands.sweep import _parse_sweep_params
+
+        result = _parse_sweep_params(["lora_r=8,16,32"])
+        assert result["lora_r"] == [8, 16, 32]
+
+    def test_parse_string_params(self):
+        """Should parse string values."""
+        from soup_cli.commands.sweep import _parse_sweep_params
+
+        result = _parse_sweep_params(["optimizer=adamw_torch,sgd"])
+        assert result["optimizer"] == ["adamw_torch", "sgd"]
+
+    def test_parse_bool_params(self):
+        """Should parse boolean values."""
+        from soup_cli.commands.sweep import _parse_sweep_params
+
+        result = _parse_sweep_params(["some_flag=true,false"])
+        assert result["some_flag"] == [True, False]
+
+    def test_parse_multiple_params(self):
+        """Should parse multiple parameter strings."""
+        from soup_cli.commands.sweep import _parse_sweep_params
+
+        result = _parse_sweep_params(["lr=1e-5,2e-5", "epochs=2,3"])
+        assert "lr" in result
+        assert "epochs" in result
+        assert len(result["lr"]) == 2
+        assert len(result["epochs"]) == 2
+
+    def test_parse_invalid_param_no_equals(self):
+        """Should skip params without equals sign."""
+        from soup_cli.commands.sweep import _parse_sweep_params
+
+        result = _parse_sweep_params(["invalid_param"])
+        assert len(result) == 0
+
+    def test_parse_none_value(self):
+        """Should parse 'none' as None."""
+        from soup_cli.commands.sweep import _parse_sweep_params
+
+        result = _parse_sweep_params(["target_modules=auto,none"])
+        assert result["target_modules"] == ["auto", None]
+
+
+class TestParseValue:
+    """Test individual value parsing."""
+
+    def test_parse_int(self):
+        from soup_cli.commands.sweep import _parse_value
+
+        assert _parse_value("42") == 42
+
+    def test_parse_float(self):
+        from soup_cli.commands.sweep import _parse_value
+
+        assert _parse_value("3.14") == pytest.approx(3.14)
+
+    def test_parse_scientific_notation(self):
+        from soup_cli.commands.sweep import _parse_value
+
+        assert _parse_value("1e-5") == pytest.approx(1e-5)
+
+    def test_parse_bool_true(self):
+        from soup_cli.commands.sweep import _parse_value
+
+        assert _parse_value("true") is True
+
+    def test_parse_bool_false(self):
+        from soup_cli.commands.sweep import _parse_value
+
+        assert _parse_value("false") is False
+
+    def test_parse_none(self):
+        from soup_cli.commands.sweep import _parse_value
+
+        assert _parse_value("none") is None
+
+    def test_parse_string(self):
+        from soup_cli.commands.sweep import _parse_value
+
+        assert _parse_value("adamw_torch") == "adamw_torch"
+
+
+class TestGenerateCombinations:
+    """Test parameter combination generation."""
+
+    def test_grid_search(self):
+        """Grid search should generate all combinations."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        params = {"lr": [1e-5, 2e-5], "epochs": [2, 3]}
+        combos = _generate_combinations(params, "grid", None)
+        assert len(combos) == 4  # 2 x 2
+
+    def test_grid_search_single_param(self):
+        """Grid with one param should equal param count."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        params = {"lr": [1e-5, 2e-5, 5e-5]}
+        combos = _generate_combinations(params, "grid", None)
+        assert len(combos) == 3
+
+    def test_grid_search_max_runs(self):
+        """Grid with max_runs should truncate."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        params = {"lr": [1e-5, 2e-5], "epochs": [2, 3]}
+        combos = _generate_combinations(params, "grid", max_runs=2)
+        assert len(combos) == 2
+
+    def test_random_search(self):
+        """Random search should respect max_runs."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        params = {"lr": [1e-5, 2e-5, 5e-5], "epochs": [2, 3, 5]}
+        combos = _generate_combinations(params, "random", max_runs=3)
+        assert len(combos) == 3
+
+    def test_random_search_no_duplicates(self):
+        """Random search should not produce duplicates."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        params = {"lr": [1e-5, 2e-5], "epochs": [2, 3]}
+        combos = _generate_combinations(params, "random", max_runs=4)
+        combo_tuples = [tuple(sorted(c.items())) for c in combos]
+        assert len(combo_tuples) == len(set(combo_tuples))
+
+    @pytest.mark.parametrize(
+        ("params", "max_runs", "expected_runs"),
+        [
+            # 3 x 4 = 12 list entries but 2 x 4 = 8 distinct arms: the default
+            # min(12, 10) asked for 10 unique arms and never stopped sampling.
+            ({"lr": [1e-5, 2e-5, 1e-5], "lora_r": [8, 16, 32, 64]}, None, 8),
+            # An explicit --max-runs between the distinct count and the product.
+            ({"lr": [1e-5, 2e-5, 1e-5], "lora_r": [8, 16]}, 5, 4),
+            # The same value spelled two ways parses to one float.
+            ({"lr": [1e-5, 0.00001, 2e-5], "epochs": [1, 2, 3, 4]}, 9, 8),
+        ],
+    )
+    def test_random_search_with_repeated_values_terminates(
+        self, bounded_random_choice, params, max_runs, expected_runs
+    ):
+        """A repeated value in a list must not make random search loop forever."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        combos = _generate_combinations(params, "random", max_runs)
+        combo_tuples = [tuple(sorted(c.items())) for c in combos]
+        assert len(combos) == expected_runs
+        assert len(set(combo_tuples)) == expected_runs
+
+    def test_random_search_runs_each_distinct_arm_once(self):
+        """When every arm runs, a repeated value does not run its arms twice."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        combos = _generate_combinations({"lr": [1e-5, 2e-5, 1e-5]}, "random", None)
+        assert sorted(c["lr"] for c in combos) == [1e-5, 2e-5]
+
+    def test_random_search_dedups_every_list_and_keeps_first_seen_order(self, monkeypatch):
+        """Every list is deduplicated, not only the first, and keeps its first-seen order."""
+        import random
+
+        from soup_cli.commands.sweep import _generate_combinations
+
+        drawn = []
+        real_choice = random.choice
+
+        def recording_choice(seq):
+            drawn.append(list(seq))
+            return real_choice(seq)
+
+        monkeypatch.setattr(random, "choice", recording_choice)
+        params = {"epochs": [3, 1, 3, 2], "batch_size": [6, 4, 6, 5]}
+        # 3 x 3 = 9 distinct arms; asking for 4 takes the sampling branch.
+        combos = _generate_combinations(params, "random", 4)
+        assert len(combos) == 4
+        assert drawn[:2] == [[3, 1, 2], [6, 4, 5]]
+
+    def test_random_search_defaults_to_10(self):
+        """Random search without max_runs should default to min(total, 10)."""
+        from soup_cli.commands.sweep import _generate_combinations
+
+        params = {"lr": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+        combos = _generate_combinations(params, "random", max_runs=None)
+        assert len(combos) == 10
+
+
+class TestSetNestedParam:
+    """Test nested parameter setting with shortcuts."""
+
+    def test_set_shortcut_lr(self):
+        """'lr' shortcut should set training.lr."""
+        from soup_cli.commands.sweep import _set_nested_param
+
+        config = {"training": {"lr": 1e-5, "epochs": 3}}
+        _set_nested_param(config, "lr", 2e-5)
+        assert config["training"]["lr"] == pytest.approx(2e-5)
+
+    def test_set_shortcut_epochs(self):
+        """'epochs' shortcut should set training.epochs."""
+        from soup_cli.commands.sweep import _set_nested_param
+
+        config = {"training": {"epochs": 3}}
+        _set_nested_param(config, "epochs", 5)
+        assert config["training"]["epochs"] == 5
+
+    def test_set_shortcut_lora_r(self):
+        """'lora_r' shortcut should set training.lora.r."""
+        from soup_cli.commands.sweep import _set_nested_param
+
+        config = {"training": {"lora": {"r": 64}}}
+        _set_nested_param(config, "lora_r", 32)
+        assert config["training"]["lora"]["r"] == 32
+
+    def test_set_dot_notation(self):
+        """Dot notation should work for custom paths."""
+        from soup_cli.commands.sweep import _set_nested_param
+
+        config = {"training": {"weight_decay": 0.01}}
+        _set_nested_param(config, "training.weight_decay", 0.1)
+        assert config["training"]["weight_decay"] == pytest.approx(0.1)
+
+    def test_set_creates_missing_keys(self):
+        """Should create intermediate keys if missing."""
+        from soup_cli.commands.sweep import _set_nested_param
+
+        config = {}
+        _set_nested_param(config, "training.lr", 1e-5)
+        assert config["training"]["lr"] == pytest.approx(1e-5)
+
+
+class TestEarlyStopping:
+    """Test early stopping logic in sweep."""
+
+    def test_early_stop_flag_in_dry_run(self, tmp_path):
+        """Dry run with early-stop should show plan."""
+        from typer.testing import CliRunner
+
+        from soup_cli.cli import app
+
+        config_file = tmp_path / "soup.yaml"
+        config_file.write_text(
+            "base: test-model\n"
+            "data:\n"
+            "  train: ./data.jsonl\n"
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(app, [
+            "sweep",
+            "--config", str(config_file),
+            "--param", "lr=1e-5,2e-5,5e-5",
+            "--early-stop", "1.5",
+            "--dry-run",
+        ])
+        assert result.exit_code == 0
+        assert "Sweep Plan" in result.output
+
+    def test_early_stop_skips_bad_runs(self):
+        """Early stopping should skip runs when loss exceeds threshold."""
+        # Simulate the early stopping logic directly
+        best_loss = 0.5
+        early_stop = 1.5
+        current_loss = 1.0  # 0.5 * 1.5 = 0.75, current is 1.0 > 0.75
+
+        assert current_loss > best_loss * early_stop
+
+    def test_early_stop_allows_good_runs(self):
+        """Early stopping should NOT skip runs within threshold."""
+        best_loss = 0.5
+        early_stop = 1.5
+        current_loss = 0.6  # 0.5 * 1.5 = 0.75, current is 0.6 < 0.75
+
+        assert current_loss <= best_loss * early_stop
+
+    def test_early_stop_threshold_values(self):
+        """Various threshold values should work correctly."""
+        best_loss = 1.0
+
+        # 1.2 = 20% worse tolerance
+        assert 1.15 <= best_loss * 1.2  # within threshold
+        assert 1.25 > best_loss * 1.2   # exceeds threshold
+
+        # 2.0 = 100% worse tolerance
+        assert 1.99 <= best_loss * 2.0  # within threshold
+        assert 2.01 > best_loss * 2.0   # exceeds threshold
+
+
+class TestSweepCLI:
+    """Test sweep CLI command."""
+
+    def test_sweep_dry_run(self, tmp_path):
+        """Dry run should show plan without executing."""
+        from typer.testing import CliRunner
+
+        from soup_cli.cli import app
+
+        # Create a minimal config
+        config_file = tmp_path / "soup.yaml"
+        config_file.write_text(
+            "base: test-model\n"
+            "data:\n"
+            "  train: ./data.jsonl\n"
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(app, [
+            "sweep",
+            "--config", str(config_file),
+            "--param", "lr=1e-5,2e-5",
+            "--dry-run",
+        ])
+        assert result.exit_code == 0
+        assert "Sweep Plan" in result.output
+        assert "lr" in result.output
+
+    def test_sweep_random_dry_run_with_a_repeated_value(self, tmp_path, bounded_random_choice):
+        """`--strategy random` with a value listed twice plans the distinct arms and exits."""
+        from typer.testing import CliRunner
+
+        from soup_cli.cli import app
+
+        config_file = tmp_path / "soup.yaml"
+        config_file.write_text(
+            "base: test-model\n"
+            "data:\n"
+            "  train: ./data.jsonl\n"
+        )
+
+        result = CliRunner().invoke(app, [
+            "sweep",
+            "--config", str(config_file),
+            "--param", "lr=1e-5,2e-5,1e-5",
+            "--param", "lora_r=8,16",
+            "--strategy", "random",
+            "--max-runs", "5",
+            "--dry-run",
+        ])
+        assert result.exit_code == 0, result.output
+        from .conftest import strip_ansi
+
+        plain = " ".join(strip_ansi(result.output).split())
+        assert "Runs: 4" in plain
+
+    def test_sweep_config_not_found(self):
+        """Should fail if config doesn't exist."""
+        from typer.testing import CliRunner
+
+        from soup_cli.cli import app
+
+        runner = CliRunner()
+        result = runner.invoke(app, [
+            "sweep",
+            "--config", "/nonexistent/soup.yaml",
+            "--param", "lr=1e-5,2e-5",
+        ])
+        assert result.exit_code != 0
+
+    def test_sweep_invalid_strategy(self, tmp_path):
+        """Should fail for invalid strategy."""
+        from typer.testing import CliRunner
+
+        from soup_cli.cli import app
+
+        config_file = tmp_path / "soup.yaml"
+        config_file.write_text(
+            "base: test-model\n"
+            "data:\n"
+            "  train: ./data.jsonl\n"
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(app, [
+            "sweep",
+            "--config", str(config_file),
+            "--param", "lr=1e-5",
+            "--strategy", "bayesian",
+        ])
+        assert result.exit_code != 0
+
+
+def test_a_failed_arm_prints_its_error_verbatim(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`backend: mlx` arms now reach the MLX wrapper, whose install hint has brackets (#1213)."""
+    import re
+
+    from typer.testing import CliRunner
+
+    import soup_cli.commands.sweep as sweep_mod
+    from soup_cli.cli import app
+
+    def fail(*args, **kwargs):
+        raise ImportError('Install with: pip install "soup-cli[mlx]"')
+
+    monkeypatch.setattr(sweep_mod, "_run_single", fail)
+    config = tmp_path / "soup.yaml"
+    config.write_text("base: some-model\ndata:\n  train: ./d.jsonl\n", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app, ["sweep", "--config", str(config), "--param", "lr=1e-5", "--yes"]
+    )
+
+    plain = " ".join(re.sub(r"\x1b\[[0-9;]*m", "", result.output).split())
+    assert 'pip install "soup-cli[mlx]"' in plain, plain
+
+
+@pytest.mark.parametrize("failure_stage", ["construction", "setup"])
+def test_sweep_setup_failure_marks_run_failed(tmp_path, monkeypatch, failure_stage):
+    """An arm that fails before training must not remain running (#1464)."""
+    from unittest.mock import Mock
+
+    from soup_cli.commands.sweep import _run_single
+    from soup_cli.config.schema import SoupConfig
+    from soup_cli.experiment.tracker import ExperimentTracker
+
+    cfg = SoupConfig(base="test/model", data={"train": "data.jsonl"})
+    failure = OSError("repo not found")
+    trainer = Mock()
+    factory = Mock(return_value=trainer)
+    if failure_stage == "construction":
+        factory.side_effect = failure
+    else:
+        trainer.setup.side_effect = failure
+
+    monkeypatch.setattr("soup_cli.trainer.dispatch.build_trainer", factory)
+    monkeypatch.setattr("soup_cli.data.loader.load_dataset", lambda *a, **kw: {"train": [{}]})
+    monkeypatch.setattr("soup_cli.utils.gpu.detect_device", lambda: ("cpu", "CPU"))
+    monkeypatch.setattr("soup_cli.utils.gpu.get_gpu_info", lambda: {})
+
+    with pytest.raises(OSError) as excinfo:
+        _run_single(cfg, {}, "sweep_1", tmp_path / "soup.yaml")
+
+    assert excinfo.value is failure
+    trainer.train.assert_not_called()
+    runs = ExperimentTracker().list_runs()
+    assert len(runs) == 1
+    assert runs[0]["experiment_name"] == "sweep_1"
+    assert runs[0]["status"] == "failed", runs[0]
+    assert runs[0]["error_message"] == "OSError: repo not found", runs[0]

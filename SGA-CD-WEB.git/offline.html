@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGA-CD — Sin Conexión a Internet</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1.5rem;
+        }
+        .offline-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 2.5rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .offline-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #00A651;
+        }
+        .offline-desc {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        .btn-retry {
+            display: inline-block;
+            background-color: #00A651;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.75rem 1.75rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            min-height: 44px;
+            min-width: 44px;
+        }
+        .btn-retry:hover {
+            background-color: #008040;
+        }
+        .status-badge {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #ef4444;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-card" role="main">
+        <div class="offline-icon" aria-hidden="true">📡</div>
+        <h1 class="offline-title">Sin conexión a Internet</h1>
+        <p class="offline-desc">Tu dispositivo ha perdido la conectividad de red. Verifica tu conexión Wi-Fi o datos móviles e intenta de nuevo.</p>
+        <button id="retry-btn" class="btn-retry" onclick="window.location.reload();">Reintentar Conexión</button>
+        <div id="status-badge" class="status-badge">Estado: Desconectado</div>
+    </div>
+
+    <script>
+        window.addEventListener('online', function() {
+            const badge = document.getElementById('status-badge');
+            if (badge) {
+                badge.style.color = '#10b981';
+                badge.textContent = '¡Conexión restablecida! Recargando...';
+            }
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

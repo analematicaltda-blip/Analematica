@@ -1,0 +1,95 @@
+---
+title: Theming
+description: Theme Cult UI components with shadcn/ui CSS variables and Tailwind CSS v4 tokens, including dark mode and custom brand colors.
+---
+
+Cult UI components use the same CSS variables as shadcn/ui, so the theme you already have applies to them. Change a token in your global CSS and every component that reads it updates, in light and dark mode.
+
+## The tokens components read
+
+A fresh `shadcn init` defines all of these. If you write your own theme, these are the ones that change how Cult UI looks:
+
+| Token | What it controls in Cult UI |
+| --- | --- |
+| `--card` | Surfaces of cards, Halo controls, and the frosted fills mixed from it |
+| `--border`, `--input` | Hairline borders, input outlines, and control tracks |
+| `--muted`, `--muted-foreground` | Secondary surfaces, placeholders, captions, and icons |
+| `--foreground`, `--background` | Body text and page-level backgrounds |
+| `--ring` | Focus rings on every interactive component |
+| `--accent`, `--destructive` | Hover states and error states |
+| `--chart-1` to `--chart-5` | Globe marker and arc colors |
+| `--radius` | Corner radius for components that follow your theme's rounding |
+
+## Change your theme
+
+Edit the values in your global CSS. shadcn uses OKLCH colors with Tailwind CSS v4:
+
+```css title="app/globals.css"
+:root {
+  --card: oklch(1 0 0);
+  --border: oklch(0.92 0 0);
+  --ring: oklch(0.55 0.2 260);
+  --radius: 0.75rem;
+}
+
+.dark {
+  --card: oklch(0.2 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --ring: oklch(0.65 0.18 260);
+}
+```
+
+For a complete palette, copy one of the [Cult UI themes](/themes) or generate one with the [shadcn theme editor](https://ui.shadcn.com/themes).
+
+## Dark mode
+
+Components switch to their dark styles when an ancestor has the `.dark` class, which matches shadcn's `@custom-variant dark (&:is(.dark *))`. Use [next-themes](https://ui.shadcn.com/docs/dark-mode) or any toggle that sets that class. Globe, Gradient Button Group, and Shader Lens Blur also read the theme from `next-themes` to pick their canvas colors.
+
+## Style one instance
+
+Every component accepts `className`, merged last with `cn`, so your classes win over the defaults:
+
+```tsx
+<HaloCard className="max-w-sm rounded-3xl" />
+```
+
+Some components expose their own CSS variables for colors that tokens do not cover. Set them through `className` or `style`:
+
+| Component | Variables |
+| --- | --- |
+| Organic Button | `--organic-surface`, `--organic-fg`, `--organic-duration` |
+| Illustration Globe Vercel | `--globe-bg`, `--globe-dot`, `--globe-wire`, `--globe-icon`, `--globe-error` |
+| Tabs Illustration Vercel | `--ga-bg`, `--ga-fg`, `--ga-surface`, `--ga-border`, and related `--ga-*` values |
+
+```tsx
+<OrganicButton className="[--organic-fg:var(--primary-foreground)] [--organic-surface:var(--primary)]">
+  Get started
+</OrganicButton>
+```
+
+## Brand gradients
+
+The animated rims on the Halo kit and Prompt Composer use fixed multicolor gradients so they look the same in any theme. To match your brand, edit the `linear-gradient(...)` values in the component file. The file lives in your project, so the change is yours to keep. Border Beam components get their colors from the `border-beam` package, so change them with the `colorVariant` and `theme` props.
+
+## Add a token
+
+To add a color that your own components can share, define it for both modes and expose it to Tailwind with `@theme inline`:
+
+```css title="app/globals.css"
+:root {
+  --warning: oklch(0.84 0.16 84);
+  --warning-foreground: oklch(0.28 0.07 46);
+}
+
+.dark {
+  --warning: oklch(0.41 0.11 46);
+  --warning-foreground: oklch(0.99 0.02 95);
+}
+
+@theme inline {
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+}
+```
+
+You can then use `bg-warning` and `text-warning-foreground` anywhere.

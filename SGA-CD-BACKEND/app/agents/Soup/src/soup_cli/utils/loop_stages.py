@@ -1,0 +1,607 @@
+"""Pre-wired production stages for `soup loop watch` (v0.71.4 #176).
+
+v0.58.0 shipped the watch daemon with no-op default stage callbacks; this
+module supplies real harvest / train / gate / deploy callables that compose
+the existing v0.26.0 trace-to-preference, eval-gate, and v0.30.0 multi-adapter
+deploy surfaces. Operators opt in via ``soup loop init --pre-wired`` (or
+``soup loop watch --pre-wired``).
+
+Each callable matches the ``HarvestFn`` / ``TrainFn`` / ``GateFn`` /
+``DeployFn`` protocols from ``loop_daemon``. Heavy deps (transformers / peft /
+trl / httpx) are lazy-imported inside the callables so importing this module
+stays cold-start cheap (project lazy-import policy).
+
+Module-level escape hatches (mirrors v0.53.1 #109 deploy_measure) let tests
+and offline smokes inject behaviour without a GPU or a network:
+
+- ``_TRACE_DIR_RESOLVER(state) -> Optional[str]``
+- ``_TRAIN_RUNNER(argv, ...)``               (a ``subprocess.run`` stand-in)
+- ``_GATE_GENERATE_FACTORY(adapter_dir) -> generate_fn``
+- ``_DEPLOY_POSTER(endpoint, name) -> bool``
+"""
+
+from __future__ import annotations
+
+import contextlib
+import json
+import logging
+import os
+import re
+import sqlite3
+import sys
+import uuid
+from pathlib import Path
+from typing import TYPE_CHECKING, Callable, Mapping, Optional, Tuple
+
+from soup_cli.utils.loop_state import LoopState
+from soup_cli.utils.net_guard import LOOPBACK_HOSTS as _LOOPBACK_HOSTS
+from soup_cli.utils.net_guard import parse_ip_literal
+from soup_cli.utils.paths import atomic_write_text, quote_path
+
+if TYPE_CHECKING:
+    from soup_cli.data.traces.pair_builder import PreferencePair
+    from soup_cli.utils.loop_daemon import WatchConfig
+
+_LOG = logging.getLogger(__name__)
+
+_PAIRS_DIR = ".soup-loops/pairs"
+_ADAPTERS_DIR = ".soup-loops/adapters"
+_DEFAULT_TRACE_DIR = ".soup-loops/traces"
+# #1440 — `source` tag on pairs harvested from the `--record-thumbs` database.
+_THUMBS_SOURCE = "soup-serve-thumbs"
+
+# Test / smoke escape hatches (default None → real behaviour).
+_TRACE_DIR_RESOLVER: Optional[Callable[[LoopState], Optional[str]]] = None
+_TRAIN_RUNNER: Optional[Callable[..., object]] = None
+_GATE_GENERATE_FACTORY: Optional[Callable[[str], Callable[[str], str]]] = None
+_DEPLOY_POSTER: Optional[Callable[[str, str], bool]] = None
+
+
+# ---------------------------------------------------------------------------
+# Harvest — production traces → preference pairs (v0.26.0 trace-to-pref)
+# ---------------------------------------------------------------------------
+
+
+def _resolve_trace_dir(state: LoopState) -> Optional[str]:
+    """Resolve the directory of ``*.jsonl`` serve logs to harvest from.
+
+    Resolution order: ``SOUP_LOOP_TRACE_DIR`` env → ``served_model`` if it is
+    an existing local dir → ``.soup-loops/traces``. Returns ``None`` when no
+    usable directory exists.
+
+    Note: this is the one read surface in this module that intentionally does
+    NOT enforce cwd-containment — operators legitimately keep serve logs
+    outside the project dir (e.g. ``/var/log/soup-serve``). The directory is
+    operator-supplied config (env / state), not untrusted input, and harvested
+    content is only used to build DPO pairs (never exec'd).
+    """
+    if _TRACE_DIR_RESOLVER is not None:
+        return _TRACE_DIR_RESOLVER(state)
+    env = os.environ.get("SOUP_LOOP_TRACE_DIR")
+    candidates = []
+    if env:
+        candidates.append(env)
+    if state.served_model and not state.served_model.startswith("registry://"):
+        candidates.append(state.served_model)
+    candidates.append(_DEFAULT_TRACE_DIR)
+    for cand in candidates:
+        if cand and os.path.isdir(cand):
+            return cand
+    return None
+
+
+def _resolve_thumbs_db(state: LoopState) -> Optional[Tuple[str, str]]:
+    """Return ``(path, field)`` for the thumbs database, or ``None``.
+
+    Same precedence as the trace directory: ``SOUP_LOOP_THUMBS_DB`` env, then
+    ``thumbs_db`` from ``loop.yaml`` (``soup loop init --thumbs-db``). The
+    field name travels with the path so a refusal names where it came from.
+    """
+    env = os.environ.get("SOUP_LOOP_THUMBS_DB")
+    if env:
+        return env, "SOUP_LOOP_THUMBS_DB"
+    if state.thumbs_db:
+        return state.thumbs_db, "thumbs_db"
+    return None
+
+
+def checked_thumbs_db(state: LoopState) -> Optional[str]:
+    """Return the configured thumbs database, checked, or ``None`` (#1440).
+
+    The harvest reads a database only when told to, like ``soup serve
+    --record-thumbs`` itself. A configured path that leaves cwd or is a
+    symlink (the rule ``--record-thumbs`` applies on the serve side), or that
+    is not an existing, readable thumbs database, raises ``ValueError`` naming
+    its field instead of harvesting a silent 0. A database that is merely
+    locked (a running serve) passes. ``soup loop watch`` runs this before it
+    starts.
+    """
+    resolved = _resolve_thumbs_db(state)
+    if resolved is None:
+        return None
+    path, field = resolved
+    from soup_cli.utils.local_rl import THUMBS_HARVEST_SELECT, validate_db_path
+
+    try:
+        validate_db_path(path)
+    except (TypeError, ValueError) as exc:
+        msg = str(exc)
+        if "under cwd" in msg or "symlink" in msg:
+            msg += "; move the database under the project directory"
+        raise ValueError(f"{field}: {msg}") from exc
+    if not os.path.isfile(path):
+        raise ValueError(
+            f"{field}: no database file at {quote_path(path)}; "
+            f"soup serve --record-thumbs {quote_path(path)} creates it"
+        )
+    try:
+        # Short timeout: a lock is not a verdict, so do not wait out sqlite's 5 s.
+        with contextlib.closing(sqlite3.connect(os.path.abspath(path), timeout=0.1)) as conn:
+            conn.execute(f"{THUMBS_HARVEST_SELECT} LIMIT 1")
+    except sqlite3.Error as exc:
+        if "locked" in str(exc).lower():
+            return path
+        raise ValueError(
+            f"{field}: {quote_path(path)} is not a readable thumbs database "
+            f"({type(exc).__name__}); soup serve --record-thumbs creates one"
+        ) from exc
+    return path
+
+
+def _thumbs_pairs(state: LoopState) -> "list[PreferencePair]":
+    """Pairs from the ``soup serve --record-thumbs`` database (#1440)."""
+    path = checked_thumbs_db(state)
+    if path is None:
+        return []
+    from soup_cli.data.traces.pair_builder import PreferencePair
+    from soup_cli.utils.local_rl import harvest_dpo_pairs
+
+    try:
+        found = harvest_dpo_pairs(path)
+    except sqlite3.Error as exc:
+        # Passed the check, then failed while reading (lock, corruption).
+        raise ValueError(
+            f"{_resolve_thumbs_db(state)[1]}: {quote_path(path)} could not be read "
+            f"({type(exc).__name__}: {exc})"
+        ) from exc
+    return [
+        PreferencePair(
+            prompt=p.prompt, chosen=p.chosen, rejected=p.rejected, source=_THUMBS_SOURCE
+        )
+        for p in found
+    ]
+
+
+def harvest_from_traces(state: LoopState) -> Mapping[str, object]:
+    """Serve traces and recorded thumbs → preference pairs.
+
+    Reads ``soup serve --trace-log`` directories (thumbs/regeneration signals)
+    and, when one is configured, the ``soup serve --record-thumbs`` database
+    (#1440); the two are unioned without exact duplicates. Writes the pairs to
+    ``.soup-loops/pairs/<uuid>.jsonl`` (cwd-contained) and returns
+    ``{pairs_harvested, pairs_path, traces_collected, thumbs_pairs}``
+    (``thumbs_pairs`` counts the pairs READ from the database, before the union
+    drops any that a trace already supplied). Yields
+    zero pairs (no path) when neither source has any; a configured database
+    that is refused or missing raises (see ``checked_thumbs_db``).
+    """
+    from soup_cli.data.traces.pair_builder import build_pairs
+    from soup_cli.data.traces.parsers import parse_soup_serve
+
+    trace_dir = _resolve_trace_dir(state)
+    traces = list(parse_soup_serve(trace_dir)) if trace_dir else []
+    pairs = list(build_pairs(traces, signal="thumbs_up"))
+    thumbs = _thumbs_pairs(state)
+    seen = {(p.prompt, p.chosen, p.rejected) for p in pairs}
+    for p in thumbs:
+        key = (p.prompt, p.chosen, p.rejected)
+        if key not in seen:  # harvest_dpo_pairs yields one pair per prompt: no self-dupes
+            pairs.append(p)
+    extra = {"thumbs_pairs": len(thumbs)}
+    if not pairs:
+        return {
+            "pairs_harvested": 0,
+            "pairs_path": None,
+            "traces_collected": len(traces),
+            **extra,
+        }
+
+    pairs_dir = Path(_PAIRS_DIR)
+    pairs_dir.mkdir(parents=True, exist_ok=True)
+    pairs_path = str(pairs_dir / f"pairs-{uuid.uuid4().hex[:12]}.jsonl")
+    lines = "\n".join(json.dumps(p.to_jsonl_dict()) for p in pairs) + "\n"
+    # Atomic + cwd-contained + symlink-rejected (mirrors the rest of the
+    # changeset's write policy).
+    atomic_write_text(lines, pairs_path, field="pairs_path")
+    return {
+        "pairs_harvested": len(pairs),
+        "pairs_path": pairs_path,
+        "traces_collected": len(traces),
+        **extra,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Train — generated DPO YAML → `soup train` subprocess
+# ---------------------------------------------------------------------------
+
+
+def _render_dpo_yaml(state: LoopState, pairs_path: str, output_dir: str) -> str:
+    """Render a minimal DPO ``soup.yaml`` referencing the harvested pairs."""
+    import yaml
+
+    base = (
+        state.served_model
+        if state.served_model and not state.served_model.startswith("registry://")
+        else "hf-internal-testing/tiny-random-gpt2"
+    )
+    config = {
+        "base": base,
+        "task": "dpo",
+        # val_split 0: a one- or two-pair harvest would otherwise lose its only
+        # training rows to the schema default 0.1 (#1909).
+        "data": {"train": pairs_path, "format": "dpo", "val_split": 0},
+        "training": {"epochs": 1, "batch_size": 1, "lr": 5.0e-5},
+        "output": output_dir,
+    }
+    return yaml.safe_dump(config, sort_keys=False)
+
+
+def train_dpo_from_pairs(
+    state: LoopState, ctx: Mapping[str, object]
+) -> Mapping[str, object]:
+    """Train a DPO adapter from harvested pairs via a ``soup train`` subprocess.
+
+    Returns ``{run_id, skipped, adapter_path}``. Skips (no run) when the
+    harvest produced no pairs, adding a ``notes`` reason (``no_preference_pairs``
+    with the count, or ``pairs_file_missing``) that the loop saves in the
+    iteration record (#1909). The subprocess is argv-list (no shell);
+    ``_TRAIN_RUNNER`` injects a stand-in for tests.
+    """
+    pairs_path = ctx.get("pairs_path")
+    pairs_n = int(ctx.get("pairs_harvested", 0) or 0)
+    skip = {"run_id": None, "skipped": True, "adapter_path": None}
+    if pairs_n <= 0:
+        return {**skip, "notes": "no_preference_pairs: 0 valid pairs harvested, training skipped"}
+    if not pairs_path:
+        return {**skip, "notes": "pairs_file_missing: no pairs path recorded, training skipped"}
+    if not os.path.isfile(str(pairs_path)):
+        note = f"pairs_file_missing: {quote_path(str(pairs_path))} not found, training skipped"
+        return {**skip, "notes": note}
+
+    run_id = f"loop-train-{uuid.uuid4().hex[:8]}"
+    output_dir = os.path.join(_ADAPTERS_DIR, run_id)
+    yaml_dir = Path(_ADAPTERS_DIR)
+    yaml_dir.mkdir(parents=True, exist_ok=True)
+    yaml_path = str(yaml_dir / f"{run_id}.yaml")
+    atomic_write_text(
+        _render_dpo_yaml(state, str(pairs_path), output_dir),
+        yaml_path,
+        field="train yaml",
+    )
+
+    argv = [
+        sys.executable,
+        "-m",
+        "soup_cli.cli",
+        "train",
+        "--config",
+        yaml_path,
+        "--yes",
+    ]
+    runner = _TRAIN_RUNNER
+    if runner is None:
+        import subprocess  # noqa: S404 — argv list mode, no shell
+
+        runner = subprocess.run
+    try:
+        result = runner(  # noqa: S603 — internal argv, no shell
+            argv, capture_output=True, timeout=24 * 3600, check=False
+        )
+    except Exception as exc:  # noqa: BLE001 — train failure must not crash loop
+        _LOG.warning("train subprocess failed: %s", type(exc).__name__)
+        return {"run_id": None, "skipped": True, "adapter_path": None}
+
+    rc = getattr(result, "returncode", 1)
+    if rc != 0:
+        _LOG.warning("soup train exited rc=%s", rc)
+        return {"run_id": None, "skipped": True, "adapter_path": None}
+    return {"run_id": run_id, "skipped": False, "adapter_path": output_dir}
+
+
+# ---------------------------------------------------------------------------
+# Gate — eval-gate against the registered baseline (v0.26.0 Part B)
+# ---------------------------------------------------------------------------
+
+
+def _build_gate_generator(adapter_dir: str) -> Callable[[str], str]:
+    """Build a ``generate_fn`` for the trained adapter (live model load)."""
+    if _GATE_GENERATE_FACTORY is not None:
+        return _GATE_GENERATE_FACTORY(adapter_dir)
+    # Live default — load the merged/trained adapter as a full model dir.
+    from soup_cli.eval.quant_check import make_model_generator
+
+    return make_model_generator(adapter_dir)
+
+
+def gate_against_baseline(
+    state: LoopState, ctx: Mapping[str, object]
+) -> Mapping[str, object]:
+    """Run the v0.26.0 eval gate for the trained adapter vs the baseline.
+
+    Returns ``{gate_verdict}`` — ``SKIPPED`` when training was skipped or the
+    adapter dir is missing, otherwise ``OK`` / ``MAJOR`` from the gate result.
+    """
+    if ctx.get("skipped"):
+        return {"gate_verdict": "SKIPPED"}
+    adapter_path = ctx.get("adapter_path")
+    if not adapter_path or not os.path.isdir(str(adapter_path)):
+        return {"gate_verdict": "SKIPPED"}
+
+    from soup_cli.eval.gate import load_suite, resolve_baseline, run_gate
+
+    try:
+        suite = load_suite(state.eval_suite)
+    except (FileNotFoundError, ValueError, TypeError, OSError) as exc:
+        _LOG.warning("gate suite load failed: %s", type(exc).__name__)
+        return {"gate_verdict": "SKIPPED"}
+    # An unresolvable baseline degrades to a threshold-only gate (no
+    # regression check) rather than failing the whole stage — the baseline
+    # may not exist yet on the first iteration.
+    try:
+        baseline = resolve_baseline(state.baseline)
+    except (FileNotFoundError, ValueError, TypeError, OSError):
+        baseline = {}
+    try:
+        generate_fn = _build_gate_generator(str(adapter_path))
+        result = run_gate(suite, generate_fn=generate_fn, baseline=baseline)
+    except (FileNotFoundError, ValueError, TypeError, OSError) as exc:
+        _LOG.warning("gate run failed: %s", type(exc).__name__)
+        return {"gate_verdict": "SKIPPED"}
+    verdict = "OK" if result.passed else "MAJOR"
+    return {"gate_verdict": verdict}
+
+
+# ---------------------------------------------------------------------------
+# Deploy — promote to a canary via /v1/adapters/activate (v0.30.0)
+# ---------------------------------------------------------------------------
+
+
+# Adapter-name shape accepted by the v0.30.0 /v1/adapters/activate route.
+_ADAPTER_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._\-]*$")
+
+
+def _endpoint_is_local(endpoint: str) -> bool:
+    """True iff ``endpoint``'s host is loopback or a private/link-local IP.
+
+    The deploy surface must only POST to the operator's own box / LAN, never
+    an arbitrary public host (the webhook validator permits any HTTPS host).
+    Loopback hostnames are accepted by name; any other host must parse as a
+    private / loopback / link-local IP literal. A non-IP public hostname is
+    rejected (we do not resolve DNS — project policy).
+
+    Deliberately narrower than ``net_guard.is_private_or_link_local``: this
+    gates what counts as "the operator's own box / LAN" for an outbound
+    POST, so reserved/multicast ranges stay rejected rather than being
+    treated as trustworthy deploy targets (#616 review). Shares
+    ``parse_ip_literal`` with the wider predicate for the abbreviated /
+    decimal / hex / octal IPv4 parsing only.
+    """
+    from urllib.parse import urlparse
+
+    host = (urlparse(endpoint).hostname or "").strip("[]").lower()
+    if not host:
+        return False
+    if host in _LOOPBACK_HOSTS:
+        return True
+    ip = parse_ip_literal(host)
+    if ip is None:
+        return False
+    return ip.is_loopback or ip.is_private or ip.is_link_local
+
+
+#: Environment variable holding the ``soup serve --tool-auth-token`` value.
+#: ``soup loop watch --tool-auth-token`` sets it, including for a ``--detach``
+#: child, so the token never has to appear in argv (#1139).
+TOOL_AUTH_TOKEN_ENV = "SOUP_TOOL_AUTH_TOKEN"
+
+
+class _ActivateRefusedError(Exception):
+    """The serve endpoint answered the activate POST with 401."""
+
+
+def _post_activate(endpoint: str, name: str) -> bool:
+    """POST to ``<endpoint>/v1/adapters/activate/<name>``; True on 2xx.
+
+    ``endpoint`` is already SSRF-validated by the caller; ``name`` is
+    re-validated here against the activate-route pattern before URL
+    interpolation (defence-in-depth against a crafted adapter dir name).
+    The tool token from ``SOUP_TOOL_AUTH_TOKEN``, when set, goes as a Bearer
+    header: a server started with ``--tool-auth-token`` requires it on this
+    route (#1139). A 401 raises ``_ActivateRefusedError`` so the caller can name
+    the missing credential instead of reporting a bare failure.
+    """
+    if _DEPLOY_POSTER is not None:
+        return _DEPLOY_POSTER(endpoint, name)
+    if not _ADAPTER_NAME_RE.match(name):
+        return False
+    try:
+        import httpx
+    except ImportError:
+        return False
+    url = endpoint.rstrip("/") + f"/v1/adapters/activate/{name}"
+    token = os.environ.get(TOOL_AUTH_TOKEN_ENV)
+    headers = {"Authorization": f"Bearer {token}"} if token else {}
+    try:
+        # A plain-http endpoint (loopback only) ignores HTTP_PROXY / ALL_PROXY, which
+        # would otherwise receive the Bearer token in clear text. An https endpoint keeps
+        # trust_env: a proxy only sees a CONNECT tunnel there, and SSL_CERT_FILE /
+        # SSL_CERT_DIR are how a TLS proxy's private CA gets trusted.
+        plain_http = url.lower().startswith("http://")
+        resp = httpx.post(url, headers=headers, timeout=5.0, trust_env=not plain_http)
+    except Exception:  # noqa: BLE001 — deploy must never crash the loop
+        return False
+    if resp.status_code == 401:
+        raise _ActivateRefusedError()
+    return 200 <= resp.status_code < 300
+
+
+def deploy_to_canary(
+    state: LoopState, ctx: Mapping[str, object]
+) -> Mapping[str, object]:
+    """Promote the trained adapter as a canary when the gate verdict is OK.
+
+    Returns ``{deployed, canary_verdict}``. No-op (not deployed) unless the
+    gate passed, an adapter is available, and a serve endpoint is configured
+    via ``SOUP_LOOP_SERVE_ENDPOINT``. The endpoint is SSRF-validated
+    (loopback-only HTTP, scheme allowlist, private-IP rejection) via the
+    shared ``validate_webhook_url`` helper before any POST.
+    """
+    if ctx.get("gate_verdict") != "OK":
+        return {"deployed": False, "canary_verdict": None}
+    adapter_path = ctx.get("adapter_path")
+    if not adapter_path:
+        return {"deployed": False, "canary_verdict": None}
+    raw_endpoint = os.environ.get("SOUP_LOOP_SERVE_ENDPOINT")
+    if not raw_endpoint:
+        return {
+            "deployed": False,
+            "canary_verdict": None,
+            "notes": "no SOUP_LOOP_SERVE_ENDPOINT configured",
+        }
+    from soup_cli.utils.drift_alarm import validate_webhook_url
+
+    try:
+        # A serve endpoint legitimately targets the operator's own LAN box, so
+        # opt into private hosts here; the deploy surface is then tightened to
+        # loopback/LAN by `_endpoint_is_local` below. The default webhook policy
+        # (allow_private_hosts=False) still blocks private IPs for --slack-url /
+        # --discord-url, where the URL is not operator-trusted.
+        endpoint = validate_webhook_url(raw_endpoint, allow_private_hosts=True)
+    except (TypeError, ValueError):
+        _LOG.warning("SOUP_LOOP_SERVE_ENDPOINT rejected by SSRF guard")
+        return {
+            "deployed": False,
+            "canary_verdict": None,
+            "notes": "SOUP_LOOP_SERVE_ENDPOINT rejected (SSRF guard)",
+        }
+    # A serve endpoint is the operator's own box / LAN, never an arbitrary
+    # remote host. `validate_webhook_url` (a *webhook* policy) permits any
+    # HTTPS host; tighten further for the deploy surface to loopback + RFC1918
+    # private + link-local only, so a poisoned SOUP_LOOP_SERVE_ENDPOINT cannot
+    # POST adapter names to an attacker-controlled HTTPS server (v0.71.4
+    # review MEDIUM-4). Non-IP hostnames can't be verified private without DNS
+    # (project policy: no DNS resolution), so the safe default rejects them.
+    if not _endpoint_is_local(endpoint):
+        _LOG.warning("SOUP_LOOP_SERVE_ENDPOINT must be loopback/LAN (SSRF guard)")
+        return {
+            "deployed": False,
+            "canary_verdict": None,
+            "notes": "SOUP_LOOP_SERVE_ENDPOINT must be loopback/LAN (SSRF guard)",
+        }
+    name = os.path.basename(str(adapter_path).rstrip("/\\")) or "canary"
+    try:
+        ok = _post_activate(endpoint, name)
+    except _ActivateRefusedError:
+        if os.environ.get(TOOL_AUTH_TOKEN_ENV):
+            note = (
+                "activate POST refused (401): the serve endpoint rejected the tool "
+                "token; check soup loop watch --tool-auth-token / SOUP_TOOL_AUTH_TOKEN "
+                "against soup serve --tool-auth-token"
+            )
+        else:
+            note = (
+                "activate POST refused (401): the serve endpoint requires its tool "
+                "token; pass soup loop watch --tool-auth-token or set SOUP_TOOL_AUTH_TOKEN"
+            )
+        _LOG.warning(note)
+        return {"deployed": False, "canary_verdict": None, "notes": note}
+    # activate_adapter is a full hot-swap (100% of traffic), not a canary
+    # split; canary_router.route()/BucketStats never ran, so there is no
+    # verdict to report here even when the POST itself succeeded.
+    return {
+        "deployed": ok,
+        "canary_verdict": None,
+        "notes": "" if ok else "activate POST failed",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Cost — placeholder estimate (v0.34.0 run_cost wiring is a follow-up)
+# ---------------------------------------------------------------------------
+
+
+def estimate_cost(state: LoopState) -> float:
+    """Per-iteration cost estimate (USD) for the v0.58 budget gate (#245).
+
+    Wires the cost gate to v0.34 ``run_cost.estimate_run_cost_usd`` using the
+    most-recent *completed* run's GPU + duration as a forward estimate for the
+    next iteration. ``cost_fn`` runs *pre-flight* (before this iteration
+    trains, so the budget gate can refuse a run before spending) — and a
+    pre-wired loop trains the same model on the same box repeatedly, so the
+    previous run's actual GPU-time is the best forward signal.
+
+    Falls back to ``0.0`` (no cost gate) when there is no prior priced run:
+    the first iteration has no data, and a CPU / unpriced GPU returns ``None``
+    from ``estimate_run_cost_usd`` (so the budget gate trips only on a real
+    dollar estimate, never a fabricated one). Never raises — a tracker error
+    must not crash the daemon.
+    """
+    try:
+        from soup_cli.experiment.tracker import ExperimentTracker
+        from soup_cli.utils.run_cost import estimate_run_cost_usd
+
+        runs = ExperimentTracker().list_runs(limit=10)
+    except Exception:  # noqa: BLE001 - cost estimation must never crash the loop
+        return 0.0
+    for run in runs:
+        if run.get("status") != "completed":
+            continue
+        device = run.get("device_name")
+        duration = run.get("duration_secs")
+        if not device or duration is None:
+            continue
+        try:
+            cost = estimate_run_cost_usd(str(device), float(duration))
+        except (TypeError, ValueError):
+            continue
+        if cost is not None and cost > 0:
+            return float(cost)
+        # Most-recent completed run was on a CPU / unpriced GPU → no dollar
+        # signal; report 0.0 (no cost gate) rather than scanning older runs.
+        return 0.0
+    return 0.0
+
+
+# ---------------------------------------------------------------------------
+# Config builder
+# ---------------------------------------------------------------------------
+
+
+def build_prewired_watch_config(
+    *,
+    max_iterations: Optional[int] = None,
+    poll_interval_sec: float = 60.0,
+    state_path: Optional[str] = None,
+    iteration_dir: Optional[str] = None,
+    pack_iterations: bool = False,
+    served_model: Optional[str] = None,
+    base_model: str = "unknown",
+) -> "WatchConfig":
+    """Return a ``WatchConfig`` wired with the pre-wired production stages."""
+    from soup_cli.utils.loop_daemon import WatchConfig
+
+    return WatchConfig(
+        poll_interval_sec=poll_interval_sec,
+        max_iterations=max_iterations,
+        state_path=state_path,
+        iteration_dir=iteration_dir,
+        harvest_fn=harvest_from_traces,
+        train_fn=train_dpo_from_pairs,
+        gate_fn=gate_against_baseline,
+        deploy_fn=deploy_to_canary,
+        cost_fn=estimate_cost,
+        pack_iterations=pack_iterations,
+        served_model=served_model,
+        base_model=base_model,
+    )

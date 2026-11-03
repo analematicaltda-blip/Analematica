@@ -1,0 +1,33 @@
+{
+  "name": "banana-claude",
+  "displayName": "Banana Claude",
+  "version": "3.0.0",
+  "defaultEnabled": false,
+  "description": "Brief-led image generation, editing, visual review, and bounded multi-model orchestration with current Google Gemini image models. Requires Claude Code 2.1.199+ and Python 3.11+ with python3 on PATH.",
+  "author": {
+    "name": "AgriciDaniel",
+    "url": "https://github.com/AgriciDaniel"
+  },
+  "homepage": "https://github.com/AgriciDaniel/banana-claude",
+  "repository": "https://github.com/AgriciDaniel/banana-claude",
+  "license": "MIT",
+  "keywords": [
+    "image-generation",
+    "ai-art",
+    "gemini",
+    "creative-director",
+    "prompt-engineering",
+    "mcp",
+    "image-editing",
+    "multi-model"
+  ],
+  "userConfig": {
+    "google_ai_api_key": {
+      "type": "string",
+      "title": "Gemini API key",
+      "description": "API key for a billing-enabled Google AI project. Stored as a sensitive Claude Code plugin value.",
+      "sensitive": true,
+      "required": true
+    }
+  }
+}

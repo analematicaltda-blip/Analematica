@@ -1,0 +1,15 @@
+{
+  "id": "workspace.surgical-editor",
+  "version": "1.0.0",
+  "description": "\ufeff# Surgical Editor Skill",
+  "archetype": "Engineer",
+  "capabilities": [
+    "text-processing"
+  ],
+  "xp": {
+    "usage_cost": 5,
+    "success_reward": 40
+  },
+  "tools_required": [],
+  "last_updated": 1776820911.309939
+}

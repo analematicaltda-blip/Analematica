@@ -1,0 +1,63 @@
+---
+title: 3D Carousel
+description: 3D image carousel for React and shadcn/ui that rotates cards around a cylinder with drag momentum and click to expand.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="three-d-carousel-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="All variations"
+/>
+
+3D Carousel is a React image carousel for shadcn/ui built with Motion. Use it for photo galleries, portfolio showcases, or product image browsing on landing pages.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/three-d-carousel
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="three-d-carousel" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+export default function ThreeDPhotoCarouselDemo() {
+  return (
+    <div className="w-full max-w-4xl">
+      <div className="min-h-[500px]  flex flex-col justify-center border border-dashed rounded-lg space-y-4">
+        <div className="p-2">
+          <ThreeDPhotoCarousel />
+        </div>
+      </div>
+    </div>
+  );
+}
+```

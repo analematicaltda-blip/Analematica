@@ -1,0 +1,48 @@
+# Web / ASGI
+fastapi
+uvicorn[standard]
+
+# Database / ORM / Migrations
+sqlalchemy
+alembic
+psycopg2-binary
+
+# Settings & env
+pydantic[email]
+pydantic-settings
+python-dotenv
+
+# Auth / Security / Uploads
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+
+# Payment Gateway SDKs
+stripe
+mercadopago
+# Wompi does not have an official PyPI package in many repos; if you use a specific SDK add it here.
+
+# LangChain / AI Agents
+langchain
+langgraph
+langchain-openai
+langchain-community
+langgraph-checkpoint-sqlite
+
+# AI-related extras (speech, audio, plotting, data)
+SpeechRecognition
+pydub
+matplotlib
+plotly
+pandas
+
+# Testing
+pytest
+httpx
+
+# External Services
+httplib2
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+oauth2client

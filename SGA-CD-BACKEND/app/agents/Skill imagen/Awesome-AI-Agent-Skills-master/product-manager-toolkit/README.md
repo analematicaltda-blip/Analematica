@@ -1,0 +1,12 @@
+# 🚀 "product-manager-toolkit"
+
+Comprehensive toolkit for product managers including RICE prioritization, customer interview analysis, PRD templates, discovery frameworks, and go-to-market strategies. Use for feature prioritization, user research synthesis, requirement documentation, and product strategy development.
+
+## 🎯 About
+This is an autonomous AI Agent Skill. It acts as a strict operational guideline for AI assistants.
+
+## 🛠️ How to use
+Add this folder to your agent's skills directory (e.g., .codex/skills).
+
+## 📜 License
+MIT

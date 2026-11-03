@@ -1,0 +1,81 @@
+---
+title: SVG Shapes
+description: Static SVG shapes for React and shadcn/ui, including polygons, sacred geometry, and Platonic wireframes styled with currentColor.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="svg-shapes-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[90%]"
+  description="Polygons, rounded panels, geometry, solids, and flip variants"
+/>
+
+SVG Shapes is a library of static React SVG components for shadcn/ui. Use them as hero art, section backgrounds, or decorative frames that inherit your text color.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/svg-shapes
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="svg-shapes" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+Import only the shapes you need. Each export is a React component that renders an `<svg>` with a shared wide viewBox (typically 2400×800–1200).
+
+```tsx
+import {
+  TriangleShapeSvg,
+  GothicArchPanelSvg,
+  FlowerOfLifeSvg,
+} from "@/components/ui/svg-shapes";
+
+export function HeroStrip() {
+  return (
+    <div className="text-foreground/20 w-full max-w-4xl">
+      <GothicArchPanelSvg />
+    </div>
+  );
+}
+```
+
+### Props
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | — |
+| `flip` | `"none"` \| `"vertical"` \| `"horizontal"` \| `"both"` | `"none"` |
+
+Stroke and fill use `currentColor` (and tinted fills on filled shapes) so you control appearance with Tailwind classes on a wrapper.
+
+## Notes
+
+- Line-art exports (e.g. bracket, wire solids) use `fill-none` so only strokes show.
+- For localized `fixed` or transform behavior, wrap in a container with `transform-gpu` / `isolate` like other full-bleed effects.

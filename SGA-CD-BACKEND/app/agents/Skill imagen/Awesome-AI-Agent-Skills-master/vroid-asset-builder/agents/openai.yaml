@@ -1,0 +1,3 @@
+interface:
+  display_name: "VRoid Asset Builder"
+  short_description: "Build, validate, and package VRoid-compatible asset projects."

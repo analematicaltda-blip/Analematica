@@ -1,0 +1,80 @@
+---
+title: Gradient Button Group
+description: Layered icon button group for React and shadcn/ui with an animated active ring and a built-in light and dark theme toggle.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="gradient-button-group-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[75%]"
+  description="Layered container and animated active button ring"
+/>
+
+GradientButtonGroup is a React navigation component for shadcn/ui built with Motion and next-themes. Use it as a compact dashboard toolbar or section switcher in app shells.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/gradient-button-group
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Install the following dependency:</Step>
+
+```bash
+npm install motion
+```
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="gradient-button-group" />
+
+<Step>Add the required animation utility to your global styles.</Step>
+
+```css
+@keyframes gold-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility animate-gold-spin {
+  animation: gold-spin 3s linear infinite;
+}
+```
+
+<Step>Update import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+import { GradientButtonGroup } from "@/components/ui/gradient-button-group";
+
+export function Example() {
+  return <GradientButtonGroup />;
+}
+```

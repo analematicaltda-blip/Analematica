@@ -1,0 +1,73 @@
+"""THE ``windows-latest`` illegal-instruction guard (#382). One definition.
+
+Imported by the test files whose native kernels still crash that fleet: the two
+NF4 ``trainer.train()`` tests in ``test_v07202.py``, the CPU bf16-autocast
+case of ``test_expert_stream.py`` and the bfloat16 cases of
+``test_stream_loss_chunk.py``. It lives here rather than in one of them
+because the guard has been needed in four files over time, and
+this repo has been bitten three times by a predicate that was copied instead of
+shared (#372, #392, #424). ``test_windows_ci_guard_is_not_
+duplicated`` fails if a second copy appears.
+
+Before reaching for the skip, look at the crash frame. When it is a CPU bf16 or
+fp16 matmul (a real step under CPU autocast; trl's configs default to
+``bf16=True`` even with ``use_cpu=True``), request the ``aten_half_matmuls``
+fixture from ``tests/conftest.py`` instead. Its half-precision matmuls then run
+on ATen's precompiled kernels, not oneDNN's or MKL's run-time dispatched ones, its
+attention runs in fp32, and the test keeps running on every cell.
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+
+import pytest
+
+
+def _windows_ci() -> bool:
+    """True on a GitHub ``windows-latest`` runner, false on a Windows dev box.
+
+    #382 — part of GitHub's ``windows-latest`` fleet dies with ``Windows fatal
+    exception: code 0xc000001d`` (ILLEGAL_INSTRUCTION) in some real training
+    steps: a faulthandler dump, no Python exception, and a dead interpreter. Two
+    causes are known. For the two NF4 tests in ``test_v07202.py`` it is an
+    instruction the bitsandbytes wheel emits, and those tests still use this skip.
+    For the others it was the first CPU bf16/fp16 matmul in oneDNN or MKL (#1314),
+    which the ``aten_half_matmuls`` fixture avoids, so they request the fixture
+    instead. There are two exceptions. The first is the ``cpu-bf16-autocast`` case of
+    ``test_expert_stream.py::test_streamed_experts_backward_preserves_forward_autocast``
+    (run 40003126970, the crash frame is the eager module's bf16 forward): that
+    single case is skipped here, nothing else in the file. The bfloat16 cases of
+    ``test_stream_loss_chunk.py`` are the second (run 40014485149, the crash
+    frame is a bf16 ``Linear.forward`` with no autocast): those parametrisations
+    are skipped here, the float32 ones are not. Occurrences so far span
+    py3.10, py3.11 and py3.12, so it tracks
+    the runner CPU rather than the interpreter; the control is that ``1715261``
+    is the crashing tree ``7c9a931`` plus one line of markdown and came back
+    green on the same pool.
+
+    Skipping it is not hiding a failure. The crash kills the process, so the
+    cell reports NOTHING about the ~17,000 tests it had not reached — one test
+    censoring the whole Windows matrix, which is the reverse of what a test
+    suite is for. What is skipped stays covered on ubuntu 3.10/3.11/3.12 and
+    macos 3.10/3.11/3.12, and the assertions are platform-independent.
+
+    Deliberately narrow: ``CI`` is set to ``true`` by GitHub Actions and by
+    nothing on a developer's machine, so the maintainer's own Windows box —
+    where the CPU is known — keeps running these tests. What is excluded is an
+    unknown CPU, not a platform.
+    """
+    return sys.platform == "win32" and os.environ.get("CI") == "true"
+
+
+skip_on_windows_ci = pytest.mark.skipif(
+    _windows_ci(),
+    reason=(
+        "#382: a real trainer.train() hits an illegal instruction on part "
+        "of GitHub's windows-latest fleet and kills the interpreter, which "
+        "censors every other test in the cell. NOT a statement about this "
+        "code path on Windows: still covered on ubuntu + macos, and still "
+        "live on a local Windows box."
+    ),
+)

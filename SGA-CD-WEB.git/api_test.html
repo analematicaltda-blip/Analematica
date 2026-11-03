@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Test Bench</title>
+</head>
+<body>
+    <h1>API Test Bench</h1>
+
+    <h2>Login Test</h2>
+    <form id="login-form">
+        <input type="text" id="username" placeholder="Username" value="test_user">
+        <input type="password" id="password" placeholder="Password" value="password">
+        <button type="submit">Login</button>
+    </form>
+
+    <h2>API Endpoint Test</h2>
+    <input type="text" id="api-endpoint" placeholder="Enter API endpoint (e.g., /api/v1/roles)">
+    <button id="test-endpoint">Test Endpoint</button>
+
+    <hr>
+
+    <h2>Results</h2>
+    <pre id="results"></pre>
+
+    <!-- Archivo de configuración global -->
+    <script src="js/config.js"></script>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        const loginForm = document.getElementById('login-form');
+        const testEndpointBtn = document.getElementById('test-endpoint');
+        const apiEndpointInput = document.getElementById('api-endpoint');
+        let authToken = null;
+
+        // --- Login ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Common login endpoints to try
+            const endpoints = ['/api/v1/auth/login', '/api/login', '/api/token'];
+            let success = false;
+
+            for (const endpoint of endpoints) {
+                try {
+                    const fullUrl = config.apiBaseUrl + endpoint;
+                    const response = await fetch(fullUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                    });
+
+                    const data = await response.json();
+                    resultsDiv.textContent = `--- Testing ${endpoint} ---\nStatus: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+
+                    if (response.ok) {
+                        authToken = data.access_token;
+                        resultsDiv.textContent += `\n\nSUCCESS! Auth Token captured.`;
+                        success = true;
+                        break;
+                    }
+                } catch (error) {
+                    resultsDiv.textContent += `\n\nError testing ${endpoint}: ${error.message}`;
+                }
+            }
+            if (!success) {
+                 resultsDiv.textContent += `\n\nLogin failed. Could not find a valid login endpoint.`;
+            }
+        });
+
+        // --- Generic Endpoint Test ---
+        testEndpointBtn.addEventListener('click', async () => {
+            const endpoint = apiEndpointInput.value;
+            if (!endpoint) {
+                resultsDiv.textContent = 'Please enter an endpoint to test.';
+                return;
+            }
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+
+                const fullUrl = config.apiBaseUrl + endpoint;
+                const response = await fetch(fullUrl, { headers });
+                const data = await response.json();
+                resultsDiv.textContent = `--- Testing ${endpoint} ---\nStatus: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                 resultsDiv.textContent = `Error testing ${endpoint}: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

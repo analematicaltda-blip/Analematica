@@ -1,0 +1,1038 @@
+"""ZeroMQ transport for plugin host ↔ child process communication.
+
+Replaces ``multiprocessing.Queue`` with four ZMQ PUSH/PULL channels:
+
+* **Downlink** (host → child): commands, plugin-to-plugin responses
+* **Control uplink** (child → host): size-bounded results, status, and
+  plugin-to-plugin requests — message channels are refused on it
+* **Message uplink** (child → host): size-bounded individual and batched
+  plugin messages
+* **Image uplink** (child → host): bounded raw image uploads
+
+Downlink messages are serialised with :mod:`pickle` for compatibility with
+existing host commands. Uplink messages, which cross from untrusted plugin code
+into the host, use MessagePack so decoding cannot execute plugin-controlled
+objects, and carry a per-host token the host checks before acting on them. Both
+directions carry a *channel tag* so the receiver can demux.
+
+The image uplink keeps its own framing — JSON metadata plus a separate raw
+bytes frame — because re-packing megabytes through MessagePack would buy
+nothing. The same token rides inside its metadata frame instead, so every
+child → host channel is gated by one credential.
+
+Channel tags
+~~~~~~~~~~~~
+- ``cmd``   – commands (downlink)
+- ``res``   – request/response results (uplink)
+- ``sts``   – status updates (uplink)
+- ``msg``   — individual messages (message uplink)
+- ``msg_batch`` — batched messages (message uplink)
+- ``comm``  – plugin-to-plugin requests (uplink)
+- ``resp``  – plugin-to-plugin responses (downlink)
+"""
+from __future__ import annotations
+
+import asyncio
+import json
+import os
+import pickle
+import queue
+import secrets
+import threading
+import time
+import weakref
+from pathlib import PurePath
+from typing import Any, Optional, Tuple
+
+import ormsgpack
+import zmq
+import zmq.asyncio
+
+from plugin.logging_config import logger
+
+# ── Channel constants ──────────────────────────────────────────────
+CH_CMD = "cmd"
+CH_RES = "res"
+CH_STS = "sts"
+CH_MSG = "msg"
+CH_MSG_BATCH = "msg_batch"
+CH_COMM = "comm"
+CH_RESP = "resp"
+
+_LINGER_MS = 1000
+# Which channels each child -> host socket is allowed to carry. Each host
+# socket decodes with its own set, so a plugin holding the control endpoint
+# cannot use it to push message frames around the message plane's own ceiling.
+_CONTROL_UPLINK_CHANNELS = frozenset({CH_RES, CH_STS, CH_COMM})
+_MESSAGE_UPLINK_CHANNELS = frozenset({CH_MSG, CH_MSG_BATCH})
+_UPLINK_CHANNELS = _CONTROL_UPLINK_CHANNELS | _MESSAGE_UPLINK_CHANNELS
+_UPLINK_PACK_OPTIONS = (
+    ormsgpack.OPT_NON_STR_KEYS
+    | ormsgpack.OPT_PASSTHROUGH_TUPLE
+    | ormsgpack.OPT_SERIALIZE_NUMPY
+    | ormsgpack.OPT_SERIALIZE_PYDANTIC
+)
+
+# Unpacking must include OPT_NON_STR_KEYS for symmetry with packing.
+#
+# This is mandatory: ormsgpack uses extension types for nonstring map keys; decoding without
+# this option raises `ValueError: invalid type U16`. A handler returning
+# ``{"by_year": {2024: 3}}`` (or bool/float keys) packs successfully but fails
+# unpacking. _consume_uplink logs and continues, preventing CH_RES from reaching
+# _dispatch_result, so its pending future never resolves and the caller receives
+# an unexplained timeout after PLUGIN_TRIGGER_TIMEOUT.
+#
+# The other three options are packing-only (PASSTHROUGH_TUPLE / SERIALIZE_NUMPY /
+# SERIALIZE_PYDANTIC affect serialization only), so only this one is needed here.
+_UPLINK_UNPACK_OPTIONS = ormsgpack.OPT_NON_STR_KEYS
+
+
+def _normalize_uplink_extension(value: object) -> object:
+    if isinstance(value, PurePath):
+        return str(value)
+    raise TypeError(f"unsupported uplink value type: {type(value).__name__}")
+
+
+def pack_rpc_payload(value: Any) -> bytes:
+    """The control protocol's supported value types, shared by its adapters."""
+    return ormsgpack.packb(value, default=_normalize_uplink_extension, option=_UPLINK_PACK_OPTIONS)
+
+
+def unpack_rpc_payload(raw: bytes) -> Any:
+    return ormsgpack.unpackb(raw, option=_UPLINK_UNPACK_OPTIONS)
+
+
+def _result_fault(payload: dict, code: str, message: str) -> dict:
+    req_id = payload.get("req_id")
+    return {"req_id": req_id if isinstance(req_id, (str, int)) else "unknown", "success": False,
+            "data": None, "error": {"code": code, "message": message}}
+
+
+def _encode_uplink(token: str, channel: str, payload: Any) -> bytes:
+    if not token or channel not in _UPLINK_CHANNELS or not isinstance(payload, dict):
+        raise TypeError("invalid uplink message")
+    try:
+        return pack_rpc_payload([token, channel, payload])
+    except Exception as exc:
+        if channel == CH_RES:
+            return pack_rpc_payload([token, channel, _result_fault(payload, "SERIALIZATION_FAILED",
+                "Plugin result is not MessagePack-serializable")])
+        raise TypeError("uplink payload must be MessagePack-serializable") from exc
+
+
+def _encode_bounded_uplink(token: str, channel: str, payload: Any) -> bytes:
+    data = _encode_uplink(token, channel, payload)
+    try:
+        _refuse_oversized_uplink_frame(channel, data)
+    except ValueError:
+        if channel != CH_RES or not isinstance(payload.get("req_id"), str):
+            raise
+        data = _encode_uplink(token, channel, _result_fault(payload, "RESULT_TOO_LARGE",
+            f"Plugin result exceeds control transport limit: {len(data)} > {_control_uplink_max_bytes()} bytes"))
+        _refuse_oversized_uplink_frame(channel, data)
+    return data
+
+
+def _decode_uplink(
+    raw: bytes,
+    *,
+    expected_token: str,
+    allowed_channels: frozenset,
+) -> Tuple[str, dict]:
+    try:
+        decoded = unpack_rpc_payload(raw)
+    except Exception as exc:
+        raise ValueError("invalid uplink payload") from exc
+    if not isinstance(decoded, list) or len(decoded) != 3:
+        raise ValueError("invalid uplink payload")
+    supplied_token, channel, payload = decoded
+    if (
+        not isinstance(supplied_token, str)
+        or not expected_token
+        or not secrets.compare_digest(
+            supplied_token.encode("utf-8"),
+            expected_token.encode("utf-8"),
+        )
+    ):
+        raise ValueError("invalid uplink credential")
+    if channel not in _UPLINK_CHANNELS or not isinstance(payload, dict):
+        raise ValueError("invalid uplink payload")
+    if channel not in allowed_channels:
+        raise ValueError("invalid uplink channel")
+    return channel, payload
+
+
+_IMAGE_HWM = 8
+_IMAGE_MAX_BYTES = 8 * 1024 * 1024
+_IMAGE_AUTH_KEY = "_auth"
+
+# ── Uplink frame size ceilings ─────────────────────────────────────
+#
+# RCVHWM bounds how MANY frames may queue on a PULL socket, never how large one
+# frame is. Without a size ceiling the host receives and MessagePack-decodes
+# whatever a plugin writes onto the socket, and push_message()'s local size
+# check is no defence: a plugin that writes an authenticated frame onto the
+# socket directly never runs it. The image uplink has carried MAXMSGSIZE from
+# the start; both MessagePack uplinks carry one now too.
+#
+# The number is derived, not chosen. Downstream, ingest measures each delta
+# item against MESSAGE_PLANE_PAYLOAD_MAX_BYTES and drops the whole item when it
+# is over, so a payload above that cap cannot survive ingest no matter what the
+# transport does with it. One frame here is either a single such payload
+# (CH_MSG) or one batch of them (CH_MSG_BATCH), and the batcher flushes at
+# PLUGIN_ZMQ_MESSAGE_PUSH_BATCH_SIZE items, so the largest frame legitimate
+# traffic can produce is batch_size * payload_max. The headroom on top covers
+# the msgpack envelope wrapped around those payloads -- the token, the channel
+# tag, the "items" array header, tens of bytes in practice -- and is generous
+# because the failure mode of a ceiling set too low is silent loss of real
+# traffic (see below), while the cost of extra slack is bounded by the same
+# per-frame allocation this limit exists to bound. Both settings are host-side,
+# so plugin code cannot widen the ceiling by setting an env var.
+#
+# The control uplink used to borrow that same number. It no longer does, and
+# the reason is worth keeping: payload_max * batch_max carries a batch
+# multiplier, and the control channel is never batched -- borrowing it handed
+# every control frame about 128 MiB, which with this socket's high-water mark
+# is not a bound at all. ``_control_uplink_max_bytes`` below now derives its
+# own from the widest legitimate CH_RES (tool images + an output allowance +
+# envelope); see PLUGIN_ZMQ_CONTROL_UPLINK_MAX_BYTES in plugin/settings.py.
+#
+# The CH_COMM EXPORT_PUSH that used to justify the borrowed number -- base64 of
+# at most EXPORT_INLINE_BINARY_MAX_BYTES, roughly 341 KiB on today's defaults --
+# is an order of magnitude below that derivation, so it still clears easily; a
+# test pins that. The ceiling, not the channel check, is what bounds the
+# per-frame allocation: libzmq has already read the frame into memory by the
+# time anything can look at its channel tag.
+#
+# What this does at runtime, because it is easy to expect the wrong thing:
+# libzmq enforces MAXMSGSIZE in the receiving engine, not in the recv() call.
+# An oversized frame is discarded there and the offending peer's connection is
+# torn down (ZMTP 3.x). recv() does NOT raise, and the host never sees the
+# bytes -- so there is no error path to write here. The observable behaviour is
+# that the frame simply never arrives, and the child's PUSH socket reconnects
+# with whatever it had in flight lost.
+_MESSAGE_ENVELOPE_HEADROOM_BYTES = 64 * 1024
+
+
+def _message_uplink_max_bytes() -> int:
+    """Return the byte ceiling for one frame on the message uplink."""
+    from plugin.settings import (
+        MESSAGE_PLANE_PAYLOAD_MAX_BYTES,
+        PLUGIN_ZMQ_MESSAGE_PUSH_BATCH_SIZE,
+    )
+
+    payload_max = max(1, int(MESSAGE_PLANE_PAYLOAD_MAX_BYTES))
+    batch_max = max(1, int(PLUGIN_ZMQ_MESSAGE_PUSH_BATCH_SIZE))
+    return payload_max * batch_max + _MESSAGE_ENVELOPE_HEADROOM_BYTES
+
+
+def _control_uplink_max_bytes() -> int:
+    """Return the byte ceiling for one frame on the control uplink.
+
+    NOT the message plane's ceiling any more. That number is
+    ``payload_max * batch_max``, and the batch multiplier is definitionally
+    wrong for a channel that is never batched -- borrowing it handed every
+    control frame about 128 MiB, which together with this socket's 5,000-message
+    high-water mark is not a bound at all.
+
+    Its own number instead, derived from the widest legitimate control frame.
+    Today that is a CH_RES carrying tool images: at most ``_MAX_TOOL_IMAGES``
+    of ``_MAX_TOOL_IMAGE_B64_BYTES`` each. The other candidate, a CH_COMM
+    EXPORT_PUSH, is an order of magnitude smaller (~341 KiB base64). A test
+    pins the relationship to those tool-image constants, so tightening this
+    cannot silently start deleting real tool results -- which is exactly what
+    the old comment refused to risk, and why it settled for the wrong number.
+    """
+    from plugin.settings import PLUGIN_ZMQ_CONTROL_UPLINK_MAX_BYTES
+
+    return max(1, int(PLUGIN_ZMQ_CONTROL_UPLINK_MAX_BYTES))
+
+
+def _refuse_oversized_uplink_frame(channel: str, data: bytes) -> None:
+    """Fail loudly here rather than letting the receiving engine drop it.
+
+    libzmq enforces MAXMSGSIZE in the receiver's engine, and an oversized frame
+    does not merely get discarded — it takes the offending peer's connection
+    with it (see the note above ``_control_uplink_max_bytes``). So a single
+    valid-but-large tool result would tear down the plugin's control uplink,
+    with nothing on either side saying why.
+
+    The ceiling is a transport fact, not a contract: the SDK places no limit on
+    what a tool may return, so this cannot be "the output limit". It is the
+    point at which the caller has to be told, instead of the host waiting for a
+    result that was destroyed in transit. Callers of ``ChannelSender.put`` all
+    log around it, so this surfaces as a named failure with both numbers in it.
+    """
+    # Handle control channels only. Message-side dropping is intentional and tested; upstream already validates
+    # each record against MESSAGE_PLANE_PAYLOAD_MAX_BYTES, making transport's limit the last defense,
+    # and the test explicitly requires silent dropping with a live connection. Control frames have neither guarantee:
+    # SDK tool output is unbounded and shares one frame with images.
+    if channel in _MESSAGE_UPLINK_CHANNELS:
+        return
+    cap = _control_uplink_max_bytes()
+    if len(data) > cap:
+        raise ValueError(
+            f"uplink frame too large for channel {channel}: "
+            f"{len(data)} > {cap} bytes; the receiving socket would drop it "
+            "and close the connection"
+        )
+
+
+def _authenticate_image_metadata(
+    metadata: dict,
+    *,
+    expected_token: str,
+) -> dict:
+    """Strip and verify the uplink token carried by an image metadata frame.
+
+    The image uplink does not go through ``_decode_uplink`` — re-packing
+    megabytes of pixels through MessagePack would buy nothing — so the same
+    credential check lives here instead. It is the only gate on this socket:
+    without it, this would be the one child → host path any local process that
+    can guess the port could write to.
+    """
+    supplied_token = metadata.pop(_IMAGE_AUTH_KEY, None)
+    if (
+        not isinstance(supplied_token, str)
+        or not expected_token
+        or not secrets.compare_digest(
+            supplied_token.encode("utf-8"),
+            expected_token.encode("utf-8"),
+        )
+    ):
+        raise ValueError("invalid image uplink credential")
+    return metadata
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Host-side transport (runs in the user_plugin_server process)
+# ═══════════════════════════════════════════════════════════════════
+
+_IMG_LOCK_SHUTDOWN_WAIT_S = 2.0
+
+# Time to await exit after abandoning drain, sufficient only for the current send, not another drain budget.
+_BATCHER_ABANDON_JOIN_S = 1.0
+
+# send_uplink_nowait send-lock timeout: enough to yield to one in-flight send, not a queueing budget.
+_UPLINK_NOWAIT_LOCK_WAIT_S = 0.05
+
+# Wait for the uplink send lock before closing; if unavailable, ctx.term() interrupts its owner,
+# which closes the socket itself. This value allows scheduling margin, not draining time.
+_UPLINK_CLOSE_LOCK_WAIT_S = 2.0
+
+
+# Each host has an uplink token (HostTransport.__init__) stored in state.plugin_hosts.
+# Plugins start through bare multiprocessing.Process, using fork on POSIX. When plugin B starts,
+# its child inherits the full table, including A's HostTransport,
+# token, and downlink/uplink endpoints. B can construct ChildTransport with A's
+# credentials and send valid CH_RES/CH_STS/CH_COMM to A's socket, where
+# they appear to originate from A, bypassing this branch's new per-host authentication.
+#
+# plane_bridge's ingest token has a similar hook, but recasts only its own module variable;
+# per-host tokens in shared state need separate erasure here.
+#
+# Defense in depth, not a boundary: token bytes remain in the child's forked heap,
+# accessible to a malicious plugin inspecting its own memory. The structural solution is avoiding fork
+# through spawn/forkserver. Windows already uses spawn, so plugin code already supports
+# it; that performance-affecting architecture change is outside this scope.
+# Track transports before credentials are minted, including hosts still starting.
+# Weak references do not extend socket lifetimes. The child hook runs without
+# inherited locks; only its surviving thread can mutate this registry.
+_HOST_TRANSPORTS: weakref.WeakSet[HostTransport] = weakref.WeakSet()
+
+
+def _scrub_inherited_transport_credentials() -> None:
+    for transport in tuple(_HOST_TRANSPORTS):
+        transport.clear_inherited_credentials()
+    _HOST_TRANSPORTS.clear()
+
+
+_TRANSPORT_CREDENTIAL_FORK_HOOK_REGISTERED = False
+if hasattr(os, "register_at_fork"):
+    os.register_at_fork(after_in_child=_scrub_inherited_transport_credentials)
+    _TRANSPORT_CREDENTIAL_FORK_HOOK_REGISTERED = True
+
+
+class HostTransport:
+    """Async ZMQ transport for the host (main-process) side.
+
+    Create in ``PluginHost.__init__`` — sockets are bound immediately so that
+    the endpoint strings are available for the child process args.
+
+    All public send/recv methods are *coroutines* and must be called from the
+    event loop.
+    """
+
+    def __init__(self) -> None:
+        _HOST_TRANSPORTS.add(self)
+        self._ctx = zmq.asyncio.Context()
+        self._uplink_token = secrets.token_urlsafe(32)
+
+        # Downlink: host → child (PUSH/PULL)
+        self._dl_sock = self._ctx.socket(zmq.PUSH)
+        self._dl_sock.setsockopt(zmq.LINGER, _LINGER_MS)
+        self._dl_sock.setsockopt(zmq.SNDHWM, 5000)
+        self._dl_sock.bind("tcp://127.0.0.1:*")
+        self.downlink_endpoint: str = self._dl_sock.getsockopt(zmq.LAST_ENDPOINT).decode()
+
+        # Uplink: child → host (PUSH/PULL)
+        self._ul_sock = self._ctx.socket(zmq.PULL)
+        self._ul_sock.setsockopt(zmq.LINGER, 0)
+        self._ul_sock.setsockopt(zmq.RCVHWM, 5000)
+        # RCVHWM above is a frame count; this is the frame size. recv() below
+        # refuses CH_MSG/CH_MSG_BATCH on this socket, but that refusal cannot
+        # bound memory on its own: libzmq has already allocated the frame by
+        # the time the channel tag can be read, so without a ceiling a plugin
+        # could aim an arbitrarily large batch at the control endpoint and the
+        # host would pay for it before rejecting it. See
+        # _control_uplink_max_bytes for where the number comes from, and the
+        # note above it for what libzmq does with a frame over it (drops the
+        # frame AND the peer, silently -- recv never raises).
+        self._ul_sock.setsockopt(zmq.MAXMSGSIZE, _control_uplink_max_bytes())
+        self._ul_sock.bind("tcp://127.0.0.1:*")
+        self.uplink_endpoint: str = self._ul_sock.getsockopt(zmq.LAST_ENDPOINT).decode()
+
+        # Message uplink: physically separate plugin traffic from lifecycle,
+        # tool, and status responses so slow message routing cannot create
+        # head-of-line blocking on the control uplink.
+        self._msg_sock = self._ctx.socket(zmq.PULL)
+        self._msg_sock.setsockopt(zmq.LINGER, 0)
+        self._msg_sock.setsockopt(zmq.RCVHWM, 5000)
+        # RCVHWM above is a frame count; this is the frame size. See
+        # _message_uplink_max_bytes for how the bound is derived and what
+        # libzmq does with a frame that exceeds it (it drops the frame and
+        # drops the peer -- recv never raises).
+        self._msg_sock.setsockopt(zmq.MAXMSGSIZE, _message_uplink_max_bytes())
+        self._msg_sock.bind("tcp://127.0.0.1:*")
+        self.message_uplink_endpoint: str = self._msg_sock.getsockopt(
+            zmq.LAST_ENDPOINT
+        ).decode()
+
+        # Bulk image uplink: isolated from status/result/control traffic so a
+        # full media queue cannot head-of-line block the plugin control plane.
+        self._img_sock = self._ctx.socket(zmq.PULL)
+        self._img_sock.setsockopt(zmq.LINGER, 0)
+        self._img_sock.setsockopt(zmq.RCVHWM, _IMAGE_HWM)
+        self._img_sock.setsockopt(zmq.MAXMSGSIZE, _IMAGE_MAX_BYTES)
+        self._img_sock.bind("tcp://127.0.0.1:*")
+        self.image_uplink_endpoint: str = self._img_sock.getsockopt(zmq.LAST_ENDPOINT).decode()
+
+        self._closed = False
+
+    def clear_inherited_credentials(self) -> None:
+        """Erase this transport's copied credential in a forked child."""
+        self._uplink_token = ""
+
+    @property
+    def uplink_token(self) -> str:
+        return self._uplink_token
+
+    # ── send helpers ─────────────────────────────────────────────
+
+    async def send_command(self, msg: dict) -> None:
+        """Send a command on the downlink."""
+        await self._dl_sock.send(pickle.dumps((CH_CMD, msg)))
+
+    async def send_response(self, msg: dict) -> None:
+        """Send a plugin-to-plugin response on the downlink."""
+        await self._dl_sock.send(pickle.dumps((CH_RESP, msg)))
+
+    # ── recv helper ──────────────────────────────────────────────
+
+    async def recv(self, timeout_ms: int = 1000) -> Optional[Tuple[str, dict]]:
+        """Receive one ``(channel, payload)`` from the control uplink.
+
+        Returns *None* on timeout. Message channels are refused here: they have
+        their own socket with its own ceiling, and accepting them on this one
+        would let a plugin route message traffic around that ceiling.
+        """
+        if await self._ul_sock.poll(timeout=timeout_ms):
+            raw = await self._ul_sock.recv()
+            return _decode_uplink(
+                raw,
+                expected_token=self._uplink_token,
+                allowed_channels=_CONTROL_UPLINK_CHANNELS,
+            )
+        return None
+
+    async def recv_message(
+        self,
+        timeout_ms: int = 1000,
+    ) -> Optional[Tuple[str, dict]]:
+        """Receive one authenticated message or message batch."""
+        if await self._msg_sock.poll(timeout=timeout_ms):
+            raw = await self._msg_sock.recv()
+            return _decode_uplink(
+                raw,
+                expected_token=self._uplink_token,
+                allowed_channels=_MESSAGE_UPLINK_CHANNELS,
+            )
+        return None
+
+    async def recv_image(self, timeout_ms: int = 1000) -> Optional[Tuple[dict, bytes]]:
+        """Receive one metadata/raw-bytes upload from the isolated media socket."""
+        if await self._img_sock.poll(timeout=timeout_ms):
+            frames = await self._img_sock.recv_multipart()
+            if len(frames) != 2:
+                raise ValueError("image upload must contain metadata and data frames")
+            try:
+                metadata = json.loads(frames[0].decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                raise ValueError("image upload metadata must be valid JSON") from exc
+            if not isinstance(metadata, dict):
+                raise TypeError("image upload metadata must be a dict")
+            if not all(isinstance(key, str) for key in metadata):
+                raise TypeError("image upload metadata keys must be strings")
+            metadata = _authenticate_image_metadata(
+                metadata,
+                expected_token=self._uplink_token,
+            )
+            return metadata, bytes(frames[1])
+        return None
+
+    # ── lifecycle ────────────────────────────────────────────────
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        for sock in (
+            self._dl_sock,
+            self._ul_sock,
+            self._msg_sock,
+            self._img_sock,
+        ):
+            try:
+                sock.close(linger=0)
+            except Exception:
+                pass
+        try:
+            self._ctx.term()
+        except Exception:
+            pass
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Child-side transport (runs in the plugin child process)
+# ═══════════════════════════════════════════════════════════════════
+
+class ChildTransport:
+    """Transport for the child (plugin-process) side.
+
+    * **Downlink receive** uses ``zmq.asyncio`` for native ``await``.
+    * **Uplink sends** use regular ``zmq.PUSH`` sockets guarded by
+      :class:`threading.Lock` instances so that timer threads can safely call
+      ``channel_sender(...).put_nowait(...)`` without conflicting with the
+      event-loop thread.
+    """
+
+    def __init__(
+        self,
+        downlink_endpoint: str,
+        uplink_endpoint: str,
+        uplink_token: str,
+        *,
+        message_uplink_endpoint: str,
+        image_uplink_endpoint: str | None = None,
+    ) -> None:
+        # Sync context — used for the uplink PUSH socket (thread-safe via lock)
+        self._sync_ctx = zmq.Context()
+
+        self._ul_sock = self._sync_ctx.socket(zmq.PUSH)
+        self._ul_sock.setsockopt(zmq.LINGER, _LINGER_MS)
+        self._ul_sock.setsockopt(zmq.SNDHWM, 5000)
+        self._ul_sock.connect(uplink_endpoint)
+        self._ul_lock = threading.Lock()
+
+        self._msg_sock = self._sync_ctx.socket(zmq.PUSH)
+        self._msg_sock.setsockopt(zmq.LINGER, _LINGER_MS)
+        self._msg_sock.setsockopt(zmq.SNDHWM, 5000)
+        self._msg_sock.connect(message_uplink_endpoint)
+        self._msg_lock = threading.Lock()
+        self._message_batcher = None
+        self._message_batcher_init_lock = threading.Lock()
+
+        # Async context — used for the downlink PULL socket (event-loop only)
+        self._async_ctx = zmq.asyncio.Context()
+        self._dl_sock = self._async_ctx.socket(zmq.PULL)
+        self._dl_sock.setsockopt(zmq.LINGER, 0)
+        self._dl_sock.connect(downlink_endpoint)
+
+        self._img_sock: Any | None = None
+        self._img_lock = threading.Lock()
+        if image_uplink_endpoint:
+            self._img_sock = self._sync_ctx.socket(zmq.PUSH)
+            self._img_sock.setsockopt(zmq.LINGER, 0)
+            self._img_sock.setsockopt(zmq.SNDHWM, _IMAGE_HWM)
+            self._img_sock.connect(image_uplink_endpoint)
+
+        self._downlink_endpoint = downlink_endpoint
+        self._uplink_endpoint = uplink_endpoint
+        self._message_uplink_endpoint = message_uplink_endpoint
+        self._uplink_token = uplink_token
+        self._closed = False
+
+    # ── downlink (async, event-loop only) ────────────────────────
+
+    async def recv_downlink(self, timeout_ms: int = 1000) -> Optional[Tuple[str, dict]]:
+        """Receive ``(channel, payload)`` from the downlink, or *None* on timeout."""
+        if await self._dl_sock.poll(timeout=timeout_ms):
+            raw = await self._dl_sock.recv()
+            return pickle.loads(raw)  # type: ignore[return-value]
+        return None
+
+    async def send_image(
+        self,
+        request_id: str,
+        *,
+        mime: str,
+        data: bytes,
+        timeout: float,
+    ) -> None:
+        """Send raw image bytes without using the shared control uplink."""
+        if self._img_sock is None:
+            raise RuntimeError("image transport is not configured")
+        payload = bytes(data)
+        if len(payload) > _IMAGE_MAX_BYTES:
+            raise ValueError(
+                f"image payload exceeds the {_IMAGE_MAX_BYTES} byte transport limit"
+            )
+        metadata = json.dumps(
+            {
+                "type": "IMAGE_UPLOAD",
+                "request_id": str(request_id),
+                "mime": str(mime),
+                # Same credential the MessagePack uplinks carry, in the frame
+                # the host already parses: one answer to "who is allowed to
+                # write into the host" across all uplinks.
+                _IMAGE_AUTH_KEY: self._uplink_token,
+            },
+            separators=(",", ":"),
+        ).encode("utf-8")
+        await asyncio.to_thread(
+            self._send_image_sync,
+            metadata,
+            payload,
+            timeout,
+        )
+
+    def _send_image_sync(
+        self,
+        metadata: bytes,
+        payload: bytes,
+        timeout: float,
+    ) -> None:
+        """Bound one image send while serialising access across plugin threads."""
+        if timeout <= 0:
+            raise ValueError("image transport timeout must be positive")
+        started_at = time.monotonic()
+        if not self._img_lock.acquire(timeout=timeout):
+            raise TimeoutError(f"image transport send timed out after {timeout}s")
+        try:
+            if self._closed or self._img_sock is None:
+                raise RuntimeError("image transport is closed")
+            remaining = timeout - (time.monotonic() - started_at)
+            if remaining <= 0 or not self._img_sock.poll(
+                timeout=max(1, int(remaining * 1000)),
+                flags=zmq.POLLOUT,
+            ):
+                raise TimeoutError(f"image transport send timed out after {timeout}s")
+            try:
+                self._img_sock.send_multipart([metadata, payload], flags=zmq.NOBLOCK)
+            except zmq.Again:
+                raise TimeoutError(
+                    f"image transport send timed out after {timeout}s"
+                ) from None
+        finally:
+            # If a shutdown started while this send held the lock, the sender
+            # is the last thread that will touch the socket, so the sender
+            # closes it. libzmq sockets are not thread safe: closing one from
+            # another thread while a send or poll is in progress is undefined
+            # behaviour, not merely impolite (CodeRabbit).
+            if self._closed:
+                self._close_img_sock_locked()
+            self._img_lock.release()
+
+    # ── uplink (thread-safe, any thread) ─────────────────────────
+
+    def send_uplink(self, channel: str, msg: Any, *, timeout: float = 10.0) -> None:
+        """Thread-safe bounded send on the uplink.
+
+        ``timeout`` used to be accepted and ignored: the send was a plain
+        blocking ``sock.send``, so a host that stopped draining (or a socket
+        sitting at its 5,000-message HWM) wedged the calling thread for good.
+        That is the plugin event loop, and it is what a bounded shutdown waits
+        on.
+
+        It also held ``lock`` the whole time, which is what made
+        ``send_uplink_nowait`` — the "non-blocking" one — block. Bounding this
+        bounds that.
+
+        Raises ``queue.Full`` when it cannot deliver in time; the context's
+        backpressure handling classifies that as a full uplink.
+        """
+        data = _encode_bounded_uplink(self._uplink_token, channel, msg)
+        sock, lock = self._uplink_socket(channel)
+        budget = max(0.0, float(timeout))
+        deadline = time.monotonic() + budget
+        if budget > 0:
+            acquired = lock.acquire(timeout=budget)
+        else:
+            acquired = lock.acquire(blocking=False)
+        if not acquired:
+            raise queue.Full(f"uplink busy: {channel}")
+        try:
+            remaining_ms = max(0, int((deadline - time.monotonic()) * 1000))
+            # poll before NOBLOCK rather than a plain send: the wait has to be
+            # interruptible by the deadline, and it must happen under the lock
+            # because libzmq sockets are not thread safe.
+            if not sock.poll(remaining_ms, zmq.POLLOUT):
+                raise queue.Full(f"uplink not writable within {budget}s: {channel}")
+            sock.send(data, zmq.NOBLOCK)
+        finally:
+            # During shutdown this thread is the final socket user and must close it, following
+            # the same rule as _send_image_sync's finally.
+            if self._closed:
+                self._close_uplink_sock_locked(sock)
+            lock.release()
+
+    def send_uplink_nowait(self, channel: str, msg: Any) -> None:
+        """Thread-safe non-blocking send on the uplink.
+
+        The lock wait is capped rather than removed. Dropping on the first
+        contended microsecond would lose messages that today only ever wait for
+        one in-flight send; blocking on it without a cap is what made this
+        method's name a lie while a bounded ``send_uplink`` held the lock.
+        """
+        data = _encode_bounded_uplink(self._uplink_token, channel, msg)
+        sock, lock = self._uplink_socket(channel)
+        if not lock.acquire(timeout=_UPLINK_NOWAIT_LOCK_WAIT_S):
+            raise queue.Full(f"uplink busy: {channel}")
+        try:
+            sock.send(data, zmq.NOBLOCK)
+        finally:
+            if self._closed:
+                self._close_uplink_sock_locked(sock)
+            lock.release()
+
+    def _uplink_socket(self, channel: str):
+        if channel in _MESSAGE_UPLINK_CHANNELS:
+            return self._msg_sock, self._msg_lock
+        return self._ul_sock, self._ul_lock
+
+    def send_fast_message_nowait(self, msg: Any) -> None:
+        if self._closed:
+            raise RuntimeError("plugin transport is closed")
+        batcher = self._message_batcher
+        if batcher is None:
+            with self._message_batcher_init_lock:
+                if self._closed:
+                    raise RuntimeError("plugin transport is closed")
+                batcher = self._message_batcher
+                if batcher is None:
+                    from plugin.settings import (
+                        MESSAGE_PLANE_PUSH_BATCHER_ENQUEUE_TIMEOUT_SECONDS,
+                        MESSAGE_PLANE_PUSH_BATCHER_MAX_QUEUE,
+                        MESSAGE_PLANE_PUSH_BATCHER_REJECT_RATIO,
+                        PLUGIN_ZMQ_MESSAGE_PUSH_BATCH_SIZE,
+                        PLUGIN_ZMQ_MESSAGE_PUSH_FLUSH_INTERVAL_MS,
+                    )
+
+                    batcher = _AuthenticatedMessageBatcher(
+                        self,
+                        batch_size=PLUGIN_ZMQ_MESSAGE_PUSH_BATCH_SIZE,
+                        flush_interval_ms=PLUGIN_ZMQ_MESSAGE_PUSH_FLUSH_INTERVAL_MS,
+                        max_queue=MESSAGE_PLANE_PUSH_BATCHER_MAX_QUEUE,
+                        reject_ratio=MESSAGE_PLANE_PUSH_BATCHER_REJECT_RATIO,
+                        enqueue_timeout_s=(
+                            MESSAGE_PLANE_PUSH_BATCHER_ENQUEUE_TIMEOUT_SECONDS
+                        ),
+                    )
+                    batcher.start()
+                    self._message_batcher = batcher
+        batcher.enqueue(msg)
+
+    # ── channel senders ──────────────────────────────────────────
+
+    def channel_sender(self, channel: str) -> "ChannelSender":
+        """Return a :class:`ChannelSender` bound to *channel*."""
+        if channel == CH_MSG:
+            return MessageChannelSender(self, channel)
+        return ChannelSender(self, channel)
+
+    # ── lifecycle ────────────────────────────────────────────────
+
+    def _close_uplink_sock_locked(self, sock: Any) -> None:
+        """Close one uplink socket. Callers decide whether they hold its lock."""
+        if sock is not None:
+            try:
+                sock.close(linger=0)
+            except Exception:
+                pass
+
+    def _close_img_sock_locked(self) -> None:
+        """Close the media socket. Callers decide whether they hold _img_lock."""
+        if self._img_sock is not None:
+            try:
+                self._img_sock.close(linger=0)
+            except Exception:
+                pass
+
+    def close(self) -> None:
+        # getattr guards throughout: unit tests build this object with
+        # ``__new__`` and populate only the members they exercise, so close()
+        # must not assume every field the real ``__init__`` sets.
+        batcher_init_lock = getattr(self, "_message_batcher_init_lock", None)
+        if batcher_init_lock is None:
+            batcher_init_lock = threading.Lock()
+        with batcher_init_lock:
+            if self._closed:
+                return
+            self._closed = True
+            batcher = getattr(self, "_message_batcher", None)
+            self._message_batcher = None
+        batcher_exited = True
+        if batcher is not None:
+            try:
+                batcher_exited = bool(batcher.stop(timeout=2.0))
+            except Exception:
+                batcher_exited = False
+            if not batcher_exited:
+                logger.warning(
+                    "authenticated message batcher still running at shutdown; "
+                    "closing its socket under the send lock"
+                )
+        # Downlink has only recv users without concurrent senders; close directly.
+        dl_sock = getattr(self, "_dl_sock", None)
+        if dl_sock is not None:
+            try:
+                dl_sock.close(linger=0)
+            except Exception:
+                pass
+
+        # Close both uplink sockets under their respective locks, like media sockets
+        # discussed below. libzmq sockets are not thread-safe; closing during another thread's
+        # send/poll causes crashes, not merely impolite behavior.
+        #
+        # If locking fails, do not close, matching media behavior rather than forcing closure:
+        # ctx.term() interrupts the owner's poll/send with ETERM, its finally sees
+        # self._closed and closes the socket, then term returns. Thus deferred closure does not hang termination.
+        # Fetch paired attributes with getattr instead of _uplink_socket: tests construct via __new__ and populate
+        # only needed fields, so close() cannot assume every __init__ field exists,
+        # as documented above.
+        for label, sock_attr, lock_attr in (
+            (CH_STS, "_ul_sock", "_ul_lock"),
+            (CH_MSG, "_msg_sock", "_msg_lock"),
+        ):
+            sock = getattr(self, sock_attr, None)
+            lock = getattr(self, lock_attr, None)
+            if sock is None or lock is None:
+                continue
+            acquired = False
+            try:
+                acquired = lock.acquire(timeout=_UPLINK_CLOSE_LOCK_WAIT_S)
+            except Exception:
+                acquired = False
+            if acquired:
+                try:
+                    self._close_uplink_sock_locked(sock)
+                finally:
+                    try:
+                        lock.release()
+                    except Exception:
+                        pass
+            else:
+                logger.warning(
+                    f"uplink send lock still held at shutdown ({label}); "
+                    "leaving the close to the sender it interrupts"
+                )
+        # Bounded, and deliberately not unconditional. A handler inside
+        # _send_image_sync holds this lock for its whole upload, so an
+        # unconditional acquire made shutdown wait on an in-flight upload
+        # (Codex P2). Closing the socket anyway is not the answer either:
+        # libzmq sockets are not thread safe, so closing one while a send is in
+        # progress is undefined behaviour -- a crash instead of a hang
+        # (CodeRabbit).
+        if self._img_lock.acquire(timeout=_IMG_LOCK_SHUTDOWN_WAIT_S):
+            try:
+                self._close_img_sock_locked()
+            finally:
+                self._img_lock.release()
+
+        # Both contexts terminate here, including the one that may still own
+        # an open media socket.
+        #
+        # This looks like it should block -- term() does wait for every socket
+        # in the context to close. It does not, because zmq_ctx_term first
+        # interrupts blocked calls in that context with ETERM and only then
+        # waits. The in-flight sender's poll/send raises ContextTerminated at
+        # once, its finally closes the media socket, and term returns.
+        # Measured on pyzmq 27.1.0 / libzmq 4.3.5: a poll(30_000) blocked on a
+        # full PUSH socket is interrupted in 0.000s and term returns
+        # immediately.
+        #
+        # An earlier revision deferred this termination to the sender, on the
+        # belief that terminating here would wait out the sender's full upload
+        # timeout. That belief was wrong, and the deferral was worse than the
+        # thing it avoided: the flag was written outside _img_lock and read
+        # inside it, so a sender that finished first read a stale False and
+        # nobody terminated the context -- and the designated hand-off thread
+        # is a daemon the process never joins.
+        for ctx in (self._async_ctx, self._sync_ctx):
+            try:
+                ctx.term()
+            except Exception:
+                pass
+
+
+# ═══════════════════════════════════════════════════════════════════
+# ChannelSender — child-side send handles
+# ═══════════════════════════════════════════════════════════════════
+
+class ChannelSender:
+    """Send-only handle that tags each message with a *channel* and sends it
+    through the shared :class:`ChildTransport` uplink.
+
+    :class:`~plugin.core.context.PluginContext` holds these as
+    ``status_queue`` and ``message_queue``.
+    """
+
+    __slots__ = ("_transport", "_ch")
+
+    def __init__(self, transport: ChildTransport, channel: str) -> None:
+        self._transport = transport
+        self._ch = channel
+
+    def put(self, obj: Any, *, timeout: float | None) -> None:
+        # An unlimited RPC still bounds the frame send itself.
+        if timeout is None:
+            self._transport.send_uplink(self._ch, obj)
+        else:
+            self._transport.send_uplink(self._ch, obj, timeout=timeout)
+
+    def put_nowait(self, obj: Any) -> None:
+        self._transport.send_uplink_nowait(self._ch, obj)
+
+
+class MessageChannelSender(ChannelSender):
+    """Message sender with an authenticated, bounded batching fast path."""
+
+    def put_fast_nowait(self, obj: Any) -> None:
+        self._transport.send_fast_message_nowait(obj)
+
+
+class _AuthenticatedMessageBatcher:
+    def __init__(
+        self,
+        transport: ChildTransport,
+        *,
+        batch_size: int,
+        flush_interval_ms: int,
+        max_queue: int,
+        reject_ratio: float,
+        enqueue_timeout_s: float,
+    ) -> None:
+        self._transport = transport
+        self._batch_size = max(1, int(batch_size))
+        self._flush_interval_s = max(0.001, float(flush_interval_ms) / 1000.0)
+        self._max_queue = int(max_queue)
+        self._queue: queue.Queue[dict] = queue.Queue(maxsize=self._max_queue)
+        self._reject_ratio = min(1.0, max(0.0, float(reject_ratio)))
+        self._enqueue_timeout_s = max(0.0, float(enqueue_timeout_s))
+        self._dropped = 0
+        self._stop = threading.Event()
+        # Hard stop: _run exits immediately without draining once set. Only stop() sets it after join
+        # timeout; normal shutdown still sends the queue. Create it in __init__ like _stop,
+        # because _run can be called directly without start(), as tests do.
+        self._abandon = threading.Event()
+        self._thread: threading.Thread | None = None
+
+    def start(self) -> None:
+        if self._thread is not None and self._thread.is_alive():
+            return
+        # This is also the restart entry, motivating is_alive above, so reset both shutdown flags
+        # here. Otherwise new threads enter _run and immediately exit on _abandon/_stop,
+        # silently sending nothing, consistent with the batcher's fire-and-forget nature.
+        self._stop.clear()
+        self._abandon.clear()
+        self._thread = threading.Thread(
+            target=self._run,
+            name="plugin-authenticated-message-batcher",
+            daemon=True,
+        )
+        self._thread.start()
+
+    def enqueue(self, item: Any) -> None:
+        if self._stop.is_set() or not isinstance(item, dict):
+            raise RuntimeError("authenticated message batcher unavailable")
+        if (
+            self._max_queue > 0
+            and self._reject_ratio > 0
+            and self._queue.qsize() >= self._queue.maxsize * self._reject_ratio
+        ):
+            raise queue.Full
+        self._queue.put(item, timeout=self._enqueue_timeout_s)
+
+    def stop(self, timeout: float = 1.0) -> bool:
+        """Stop the worker. Returns whether it actually exited.
+
+        The drain below is deliberately generous — ``_run`` keeps flushing
+        while the queue is non-empty even after ``_stop`` — and the queue holds
+        up to 100,000 items, so a loaded shutdown can outlast any timeout. The
+        caller closes ``_msg_sock`` next, and libzmq sockets are not thread
+        safe: closing one while this thread is inside ``send_uplink_nowait`` is
+        undefined behaviour, not a lost batch.
+
+        So the timeout escalates instead of being advisory: give up the
+        remaining batches, then join again. The return value tells the caller
+        whether touching the socket is safe.
+        """
+        self._stop.set()
+        t = self._thread
+        if t is None:
+            return True
+        budget = max(0.0, float(timeout))
+        t.join(timeout=budget)
+        if not t.is_alive():
+            return True
+        # Abandon an undrainable queue; discarded batches would not survive shutdown anyway.
+        self._abandon.set()
+        t.join(timeout=_BATCHER_ABANDON_JOIN_S)
+        return not t.is_alive()
+
+    def _run(self) -> None:
+        batch: list[dict] = []
+        deadline = time.monotonic() + self._flush_interval_s
+        while not self._abandon.is_set() and (
+            batch or not self._stop.is_set() or not self._queue.empty()
+        ):
+            remaining = max(0.0, deadline - time.monotonic())
+            try:
+                item = self._queue.get(timeout=remaining)
+            except queue.Empty:
+                item = None
+            if item is not None:
+                batch.append(item)
+            now = time.monotonic()
+            if not batch and item is None:
+                deadline = now + self._flush_interval_s
+                continue
+            if batch and (
+                len(batch) >= self._batch_size
+                or now >= deadline
+                or (self._stop.is_set() and self._queue.empty())
+            ):
+                try:
+                    self._transport.send_uplink_nowait(
+                        CH_MSG_BATCH,
+                        {"items": batch},
+                    )
+                except Exception as exc:
+                    self._dropped += len(batch)
+                    logger.warning(
+                        "Authenticated message batch dropped "
+                        f"(items={len(batch)} total_dropped={self._dropped} "
+                        f"error_type={type(exc).__name__})"
+                    )
+                batch = []
+                deadline = now + self._flush_interval_s

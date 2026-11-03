@@ -1,0 +1,17 @@
+export const siteConfig = {
+  /* ───────────────── Brand & positioning ───────────────── */
+  name: "Cult UI – Shadcn UI Components, Blocks & Templates",
+  description:
+    "Open-source Shadcn UI components, animated blocks, and full templates you can copy-paste into any TypeScript/Next.js project.",
+  url: "https://www.cult-ui.com",
+  ogImage: "https://www.cult-ui.com/og",
+
+  /* ───────────────── Social links ───────────────── */
+  links: {
+    components: "/docs/components/dynamic-island",
+    twitter: "https://x.com/nolansym",
+    github: "https://github.com/nolly-studio/cult-ui",
+  },
+} as const;
+
+export type SiteConfig = typeof siteConfig;

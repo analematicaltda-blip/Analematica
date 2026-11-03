@@ -1,0 +1,89 @@
+---
+title: Lightboard
+description: Canvas LED lightboard for React and shadcn/ui that scrolls text as a grid of lights, with seven-segment font and drawing.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="lightboard-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="All variations"
+/>
+
+LightBoard is a canvas-rendered React component for shadcn/ui. Use it for landing page banners, status tickers, or playful interactive headers.
+
+## References
+
+<Citations>
+
+    <CitationTitle>Inspiration</CitationTitle>
+    <CitationList>
+      <CitationItem>
+
+        <CitationLink
+          href="https://rauno.me/craft/nextjs"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+         Rauno Nextjs Blog
+        </CitationLink>
+      </CitationItem>
+
+    </CitationList>
+
+</Citations>
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/lightboard
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="lightboard" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+// Example usage of the Dock component with animated cards and dividers
+
+const LightBoardDemo = () => {
+  return (
+    <LightBoard
+      size={LightBoardSize.Large}
+      lightSize={4}
+      gap={1}
+      text="Hello World"
+      font="default"
+      updateInterval={100}
+    />
+  );
+};
+
+export default LightBoardDemo;
+```

@@ -1,0 +1,14 @@
+{
+  "name": "multi-model-orchestrator",
+  "description": "Execute tasks with intelligent model routing and decomposition",
+  "parameters": {
+    "type": "object",
+    "required": ["task"],
+    "properties": {
+      "task": {
+        "type": "string",
+        "description": "The task description to execute"
+      }
+    }
+  }
+}

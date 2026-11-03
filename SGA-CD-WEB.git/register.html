@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Institucional — SGA-CD</title>
+    <meta name="description" content="Crea tu cuenta de organización en SGA-CD y administra programas culturales, deportivos y educativos.">
+    <link rel="canonical" href="https://sga-cd.org/register.html">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#070B14">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="site-wrapper">
+        <header role="banner">
+            <h1><a href="index.html" style="color:var(--color-text-primary); text-decoration:none;"><i class="fa-solid fa-trophy"></i> SGA-CD</a></h1>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="login.html">Iniciar Sesión</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <section id="registro-form" style="max-width: 650px; margin: 3rem auto;" class="glass-panel">
+                <h2 style="text-align: center; color: var(--color-accent-cyan);">Registra tu Organización</h2>
+                <p style="text-align: center; color: var(--color-text-muted);">Inicia con el Plan Institucional o explora sedes cercanas a tu ubicación.</p>
+
+                <div id="geolocation-section" style="text-align: center; margin-bottom: 2rem;">
+                    <button id="find-nearby-btn" class="cta-button" style="background: rgba(56, 189, 248, 0.15); color: var(--color-accent-cyan); border: 1px solid var(--color-border-hover);">
+                        <i class="fa-solid fa-location-crosshairs" style="margin-right:0.5rem;"></i> Buscar Sedes Cercanas
+                    </button>
+                    <div id="nearby-results" style="margin-top:1rem;"></div>
+                </div>
+
+                <hr style="border-color: var(--color-border-specular); margin: 2rem 0;">
+
+                <form id="form-registro">
+                    <h3 style="color: var(--color-text-primary);">1. Elige tu Plan de Licenciamiento</h3>
+                    <div class="plan-selection" style="text-align: left; background: rgba(7, 11, 20, 0.6); padding: 1.25rem; border-radius: 10px; border: 1px solid var(--color-border-specular); margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.85rem; cursor: pointer; color: var(--color-text-primary);">
+                            <input type="radio" name="plan" value="gratis" checked>
+                            <strong style="color:var(--color-accent-cyan);">Plan Básico (Prueba Gratuita 60 días)</strong> - $0 USD por 60 días. Renovación automática a $20 USD/mes. Cancela cuando quieras.
+                        </label>
+                        <label style="display: block; margin-bottom: 0.85rem; cursor: pointer; color: var(--color-text-primary);">
+                            <input type="radio" name="plan" value="pro_mensual">
+                            <strong style="color:var(--color-accent-cyan);">Plan Pro Mensual</strong> - $100 USD/mes. Renovación mensual.
+                        </label>
+                        <label style="display: block; cursor: pointer; color: var(--color-text-primary);">
+                            <input type="radio" name="plan" value="pro_anual">
+                            <strong style="color:var(--color-accent-cyan);">Plan Pro Anual</strong> - $1,000 USD/año. Ahorras $200 USD.
+                        </label>
+                    </div>
+
+                    <h3 style="color: var(--color-text-primary);">2. Clasificación B2B & Datos de la Organización</h3>
+                    <input type="text" id="nombre_empresa" placeholder="Nombre Oficial de la Empresa u Organización" required>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.75rem;">
+                        <div>
+                            <label style="color:#94A3B8; font-size:0.82rem; font-weight:700;">Naturaleza Jurídica</label>
+                            <select id="tipo_organizacion" required style="width:100%; padding:0.65rem; border-radius:8px; background:#070B14; border:1px solid rgba(56,189,248,0.3); color:#F8FAFC; margin-top:0.25rem;">
+                                <option value="entidad_publica" selected>🏛️ Entidad Pública (Gobernación / Alcaldía / Inst.)</option>
+                                <option value="entidad_privada">🏢 Entidad Privada (Fundación / Liga / IES)</option>
+                                <option value="empresa_publica">🏭 Empresa Pública (EICE / Lotería / Consorcio)</option>
+                                <option value="empresa_privada">💼 Empresa Privada (Academia / S.A.S. / Club)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="color:#94A3B8; font-size:0.82rem; font-weight:700;">Ámbito Territorial</label>
+                            <select id="ambito_organizacional" required style="width:100%; padding:0.65rem; border-radius:8px; background:#070B14; border:1px solid rgba(56,189,248,0.3); color:#F8FAFC; margin-top:0.25rem;">
+                                <option value="municipal" selected>📍 Municipal / Local</option>
+                                <option value="departamental">🗺️ Departamental / Regional</option>
+                                <option value="nacional">🇨🇴 Nacional / Cobertura País</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3 style="color: var(--color-text-primary); margin-top: 1.5rem;">3. Administrador Principal</h3>
+                    <input type="text" id="nombre_admin" placeholder="Nombre Completo del Administrador" required>
+                    <input type="email" id="correo_admin" placeholder="Correo Electrónico Oficial" required>
+                    <input type="password" id="password_admin" placeholder="Elige una Contraseña Segura" required>
+
+                    <h3 style="color: var(--color-text-primary); margin-top: 1.5rem;">4. Declaración de Edad & Rango Etario</h3>
+                    <select id="rango_edad" required>
+                        <option value="">Selecciona el Rango de Edad...</option>
+                        <option value="18+">Mayor de edad (18+ años - Administrador / Instructor)</option>
+                        <option value="13-17">Adolescente (13 a 17 años - Con Autorización)</option>
+                        <option value="5-12">Infantil (5 a 12 años - Con Tutoría del Acudiente)</option>
+                    </select>
+
+                    <div class="privacy-consent-group" style="margin: 1.5rem 0; font-size: 0.88rem; color: var(--color-text-muted);">
+                        <label style="display: block; margin-bottom: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="declaracion_edad" required>
+                            Declaro ser mayor de edad o representante legal de la organización.
+                        </label>
+                        <label style="display: block; cursor: pointer;">
+                            <input type="checkbox" id="acepto_privacidad" required>
+                            Acepto la <a href="privacy.html" target="_blank" style="color:var(--color-accent-cyan); font-weight:bold;">Política de Privacidad</a> y los <a href="terms.html" target="_blank" style="color:var(--color-accent-cyan); font-weight:bold;">Términos del Servicio</a>.
+                        </label>
+                    </div>
+
+                    <div id="form-mensaje"></div>
+                    <button type="submit" class="cta-button" style="width: 100%; margin-top: 1rem;">Comenzar Prueba Gratuita</button>
+                </form>
+            </section>
+        </main>
+
+        <footer id="main-footer">
+            <p class="footer-copy">&copy; 2025 SGA-CD. Todos los derechos reservados. | <a href="privacy.html">Política de Privacidad</a> | <a href="terms.html">Términos del Servicio</a></p>
+        </footer>
+    </div>
+
+    <!-- Archivo de configuración global -->
+    <script src="js/config.js"></script>
+    <script src="js/privacy.js"></script>
+    <script src="js/register.js"></script>
+</body>
+</html>

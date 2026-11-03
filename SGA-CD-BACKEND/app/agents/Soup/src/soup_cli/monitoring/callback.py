@@ -1,0 +1,779 @@
+"""HuggingFace Trainer callback that feeds metrics to our display and tracker."""
+
+from __future__ import annotations
+
+import logging
+from typing import TYPE_CHECKING, Any, Optional
+
+from rich.console import Console
+
+if TYPE_CHECKING:
+    from transformers import TrainerControl, TrainerState, TrainingArguments
+
+from soup_cli.monitoring.display import TrainingDisplay
+
+logger = logging.getLogger(__name__)
+console = Console()
+
+
+def soup_callback_kwargs(
+    tcfg: Any,
+    *,
+    batch_size: Optional[int] = None,
+    output_dir: Optional[str] = None,
+    include_eval_gate: bool = True,
+    task: Optional[str] = None,
+) -> dict[str, Any]:
+    """Shared kwargs for :class:`SoupTrainerCallback` across all trainers (#802).
+
+    Unifies watchdog, spike recovery, and grad-accum parameters so they cannot
+    drift across trainer implementations.
+
+    ``task`` picks the run's validation metric from
+    :data:`soup_cli.utils.eval_schedule.VALIDATION_METRICS` (#1389): every task
+    records ``eval_loss`` as ``val_loss`` unless the table says otherwise, so only
+    a trainer whose evaluation is scored differently (``grpo``: the held-out
+    reward) needs to pass it.
+    """
+    from soup_cli.utils.eval_schedule import validation_metric
+    resolved_batch = 1
+    if batch_size is not None and not isinstance(batch_size, bool):
+        try:
+            resolved_batch = max(1, int(batch_size))
+        except (TypeError, ValueError):
+            resolved_batch = 1
+    elif (
+        hasattr(tcfg, "batch_size")
+        and isinstance(tcfg.batch_size, int)
+        and not isinstance(tcfg.batch_size, bool)
+    ):
+        resolved_batch = max(1, tcfg.batch_size)
+
+    kwargs: dict[str, Any] = {
+        "loss_watchdog": getattr(tcfg, "loss_watchdog", False),
+        "loss_watchdog_threshold": getattr(tcfg, "loss_watchdog_threshold", 3.0),
+        "loss_watchdog_patience": getattr(tcfg, "loss_watchdog_patience", 5),
+        "spike_recovery": getattr(tcfg, "loss_spike_recovery", False),
+        "spike_recovery_max_attempts": getattr(
+            tcfg, "loss_spike_recovery_max_attempts", 3
+        ),
+        "spike_recovery_lr_decay": getattr(
+            tcfg, "loss_spike_recovery_lr_decay", 0.5
+        ),
+        "grad_accum_auto_tune": getattr(tcfg, "grad_accum_auto_tune", False),
+        "grad_accum_pressure_threshold": getattr(
+            tcfg, "grad_accum_pressure_threshold", 0.9
+        ),
+        "grad_accum_current_steps": getattr(
+            tcfg, "gradient_accumulation_steps", 1
+        ),
+        "grad_accum_current_batch": resolved_batch,
+        "val_metric": validation_metric(task),
+    }
+    if include_eval_gate:
+        kwargs["eval_gate_config"] = getattr(tcfg, "eval_gate", None)
+    if output_dir is not None:
+        kwargs["output_dir"] = output_dir
+    return kwargs
+
+
+def build_soup_trainer_callback(
+    display: TrainingDisplay,
+    *,
+    config: Any,
+    tracker: Optional[object] = None,
+    run_id: str = "",
+    batch_size: Optional[int] = None,
+    output_dir: Optional[str] = None,
+    task: Optional[str] = None,
+) -> Any:
+    """Build a trainer callback with shared training and evaluation config.
+
+    ``task`` picks the run's validation metric (#1389); only a trainer whose
+    evaluation is scored differently (``grpo``) needs to pass it."""
+    training_config = config.training
+    callback_cls = globals().get("SoupTrainerCallback")
+    if callback_cls is None:
+        callback_cls = __getattr__("SoupTrainerCallback")
+
+    return callback_cls(
+        display=display,
+        tracker=tracker,
+        run_id=run_id,
+        **soup_callback_kwargs(
+            training_config,
+            batch_size=batch_size,
+            output_dir=output_dir,
+            task=task,
+        ),
+    )
+
+
+def _get_trainer_callback_base():
+    """Lazy-resolve ``transformers.TrainerCallback``."""
+    try:
+        from transformers import TrainerCallback
+
+        return TrainerCallback
+    except ImportError:
+        return object
+
+
+def _gate_failure_summary(result) -> str:
+    """Name what failed the gate: regressions, and tasks that could not be scored.
+
+    A task with ``error`` set never ran to a score (a judge that was down, a
+    missing prompts file); it fails the gate closed, but it is not a regression
+    and the log must not call it one (#1447).
+    """
+    failed = [r for r in result.task_results if not r.passed]
+    unscored = [r for r in failed if r.error]
+    regressed = len(failed) - len(unscored)
+    parts = []
+    if regressed or not unscored:
+        parts.append(f"{regressed} task(s) regressed")
+    if unscored:
+        parts.append(
+            f"{len(unscored)} task(s) could not be scored: "
+            + "; ".join(f"{r.name}: {r.error}" for r in unscored)
+        )
+    return ", ".join(parts)
+
+
+class _SoupTrainerCallback_body:  # noqa: N801
+    """Bridges HF Trainer events to Soup's Rich live display and experiment tracker."""
+
+    def __init__(
+        self,
+        display: TrainingDisplay,
+        tracker: Optional[object] = None,
+        run_id: str = "",
+        output_dir: str = "",
+        loss_watchdog: bool = False,
+        loss_watchdog_threshold: float = 3.0,
+        loss_watchdog_patience: int = 5,
+        eval_gate_config: Optional[object] = None,
+        spike_recovery: bool = False,
+        spike_recovery_max_attempts: int = 3,
+        spike_recovery_lr_decay: float = 0.5,
+        grad_accum_auto_tune: bool = False,
+        grad_accum_pressure_threshold: float = 0.9,
+        grad_accum_total_vram_gb: Optional[float] = None,
+        grad_accum_current_steps: int = 1,
+        grad_accum_current_batch: int = 1,
+        val_metric: Optional[object] = None,
+    ):
+        from soup_cli.utils.eval_schedule import DEFAULT_VALIDATION_METRIC
+
+        self.display = display
+        self.tracker = tracker
+        self.run_id = run_id
+        self.output_dir = output_dir
+        #: Which evaluation entry is this run's validation number, and under
+        #: what name it is recorded (#1389). ``eval_loss`` -> ``val_loss`` for
+        #: every task but the generation-scored ones; grpo records
+        #: ``eval_reward`` as ``val_reward`` and its ``eval_loss``, the policy
+        #: objective, reaches no sink.
+        self._val_metric = val_metric or DEFAULT_VALIDATION_METRIC
+        # HF emits a summary-only ``on_log`` event after the final optimizer
+        # step. It has runtime/throughput fields but no loss/LR/grad norm. Keep
+        # the last real values so that event cannot reset the dashboards and
+        # tracker to synthetic zeroes (#541).
+        #: None until a loss is logged, not 0.0: a training log can arrive
+        #: without one (an Online DPO window in which the judge ranked no pair,
+        #: #1225). A stored 0.0 would be the run's lowest loss to `soup runs
+        #: clean` and `soup runs replay`, and would switch off `soup why`'s
+        #: plateau and divergence checks.
+        self._last_loss: Optional[float] = None
+        self._last_lr = 0.0
+        # A missing norm is not a measured zero. Keep the last measured value
+        # only for the live panel; persisted metrics use the current log.
+        self._last_grad_norm: Optional[float] = None
+        #: None until an evaluation runs. Not 0.0 -- an unmeasured
+        #: validation loss must not read as a measured one.
+        self._last_val_loss = None
+        # Loss watchdog state
+        self._watchdog_enabled = loss_watchdog
+        self._watchdog_threshold = loss_watchdog_threshold
+        self._watchdog_patience = loss_watchdog_patience
+        self._watchdog_counter = 0
+        self._watchdog_fired = False
+        # v0.33.0 #57 — spike-recovery hint state
+        self._spike_recovery_enabled = spike_recovery
+        self._spike_recovery_attempts = 0
+        from soup_cli.utils.spike_recovery import SpikeRecoveryStrategy
+        if spike_recovery:
+            self._spike_strategy = SpikeRecoveryStrategy(
+                max_attempts=spike_recovery_max_attempts,
+                lr_decay=spike_recovery_lr_decay,
+            )
+        else:
+            self._spike_strategy = None
+        # v0.33.0 #59 — grad-accum advisory monitor
+        self._grad_accum_enabled = grad_accum_auto_tune
+        self._grad_accum_current = max(1, int(grad_accum_current_steps))
+        self._grad_accum_batch = max(1, int(grad_accum_current_batch))
+        self._grad_accum_advised = False
+        self._grad_accum_threshold = grad_accum_pressure_threshold
+        #: None = measure the total memory of the CUDA device the run uses on
+        #: the first advisory call (#1620); an explicit value overrides that.
+        self._grad_accum_total_vram_gb = grad_accum_total_vram_gb
+        #: Built lazily on the first advisory call: construction must not
+        #: probe torch, and the card total is only known once CUDA is up.
+        self._grad_accum_monitor = None
+        # Eval gate state (Part B of v0.26.0)
+        self.eval_gate_config = eval_gate_config
+        # Tests inject these; prod wiring sets them at on_train_begin time.
+        self._gate_suite: Optional[object] = None
+        self._gate_generate_fn: Optional[object] = None
+        self._gate_baseline: Optional[dict] = None
+        # Injectable for tests; default is the real implementation.
+        self._gate_run_fn = None
+
+    def on_train_begin(
+        self, args: TrainingArguments, state: TrainerState,
+        control: TrainerControl, **kwargs,
+    ):
+        self.display.start(total_steps=state.max_steps)
+        # Prod wiring for the eval gate: load the suite + baseline and build a
+        # live generate_fn from the training model. Before this, ``_gate_suite``
+        # was only ever set by tests, so ``_run_eval_gate`` returned immediately
+        # and ``--gate`` never halted a real run.
+        model = kwargs.get("model")
+        tokenizer = kwargs.get("tokenizer") or kwargs.get("processing_class")
+        self._setup_eval_gate(model, tokenizer)
+
+    def on_step_end(
+        self, args: TrainingArguments, state: TrainerState,
+        control: TrainerControl, **kwargs,
+    ):
+        """v0.53.10 #156 — peek at the active batch for tool-calling rows.
+
+        HF Trainer does not pass ``inputs`` to ``on_step_end`` by default, so
+        this hook can only see a batch when the trainer subclass explicitly
+        threads ``inputs=`` via ``kwargs``. When present, route any
+        ``tool_calls`` entries through the global tool-output buffer so the
+        Web UI's Tool Outputs panel populates in real time.
+
+        Best-effort: any exception inside the probe MUST NEVER take down
+        training. Lazy buffer access — zero overhead when ``tool_calls``
+        is absent from the batch.
+        """
+        inputs = kwargs.get("inputs")
+        if not isinstance(inputs, dict):
+            return
+        tool_calls = inputs.get("tool_calls")
+        if not tool_calls:
+            return
+        # stdlib import outside the try-block (python-review MEDIUM fix:
+        # ``time`` is impossible to ImportError, so don't pretend it can).
+        import time
+
+        try:
+            from soup_cli.utils.tool_outputs import get_global_tool_buffer
+
+            count = 0
+            if isinstance(tool_calls, (list, tuple)):
+                count = len(tool_calls)
+            elif isinstance(tool_calls, (int, float)) and not isinstance(
+                tool_calls, bool
+            ):
+                count = int(tool_calls)
+            if count <= 0:
+                return
+            get_global_tool_buffer().record_call(
+                name="sft_batch",
+                started_ts=time.time(),
+                duration_ms=0.0,
+                success=True,
+                output_preview=f"step {state.global_step}: {count} tool_calls",
+            )
+        except Exception:  # noqa: BLE001 — best-effort, must never crash training
+            return
+
+    def on_log(
+        self, args: TrainingArguments, state: TrainerState,
+        control: TrainerControl, logs=None, **kwargs,
+    ):
+        if logs is None:
+            return
+
+        # Try to get GPU memory.
+        # Uses max_memory_allocated() to report peak allocated VRAM rather than the
+        # inter-step trough (#650). We deliberately do not call reset_peak_memory_stats()
+        # here because that reset is process-global and would clobber the grad-accum
+        # advisor's own peak reading at line 566 (#650 criterion 3).
+        gpu_mem = ""
+        try:
+            import torch
+
+            if torch.cuda.is_available():
+                device = torch.cuda.current_device()
+                used = torch.cuda.max_memory_allocated(device) / (1024**3)
+                total = torch.cuda.get_device_properties(device).total_memory / (1024**3)
+                gpu_mem = f"{used:.1f}/{total:.1f} GB"
+        except Exception:
+            pass
+
+        step = state.global_step
+        epoch = state.epoch or 0
+        if logs.get("loss") is not None:
+            self._last_loss = logs["loss"]
+        if logs.get("learning_rate") is not None:
+            self._last_lr = logs["learning_rate"]
+        if logs.get("grad_norm") is not None:
+            self._last_grad_norm = logs["grad_norm"]
+        # An evaluation arrives as its OWN on_log call carrying `eval_loss` and
+        # no `loss`. Before this, nothing read it: the eval call left
+        # `_last_loss` untouched and re-reported the stale training number to
+        # every sink at the same step, so the evaluated value existed nowhere.
+        # It is kept as a separate series and never folded into `loss`.
+        # Which entry that is depends on the task (#1389): `eval_loss` for a
+        # likelihood-scored task, `eval_reward` for grpo, where `eval_loss` is
+        # the policy objective and is deliberately not read.
+        val_key, val_field = self._val_metric.log_key, self._val_metric.field
+        if logs.get(val_key) is not None:
+            self._last_val_loss = logs[val_key]
+        loss = self._last_loss
+        lr = self._last_lr
+        display_grad_norm = self._last_grad_norm
+        measured_grad_norm = logs.get("grad_norm")
+        # Two different values on purpose, and the distinction is the whole
+        # point of the column existing.
+        #
+        # The PANEL wants the last measured value carried forward, so the row
+        # does not blink out on every training step between evaluations.
+        #
+        # The RECORD must not. Persisting the carried value would write a
+        # measurement on steps where no evaluation ran -- 9 stored points for 2
+        # real ones at a realistic cadence -- inflating n for anything that
+        # reads the series back, including `soup eval`'s paired bootstrap. That
+        # is the same fabrication this change refuses for legacy rows, and it
+        # would be inconsistent to reject 0.0 there and accept a carried value
+        # here.
+        display_val_loss = self._last_val_loss
+        measured_val_loss = logs.get(val_key)
+        speed = logs.get("train_steps_per_second", 0.0)
+
+        self.display.update(
+            step=step,
+            epoch=epoch,
+            loss=loss,
+            lr=lr,
+            grad_norm=display_grad_norm,
+            speed=speed,
+            gpu_mem=gpu_mem,
+            **{val_field: display_val_loss},
+        )
+
+        # v0.53.9 #94 — push to the global SSE buffer so the live Web UI
+        # dashboard sees per-step metrics in real time. Best-effort: any
+        # exception inside the push must NEVER take down training.
+        try:
+            from soup_cli.utils.sse_train_stream import TrainEvent
+            from soup_cli.utils.train_event_buffer import push_train_event
+
+            push_train_event(
+                TrainEvent(
+                    type="metric",
+                    step=int(step) if step is not None else None,
+                    epoch=float(epoch) if epoch is not None else None,
+                    # `is not None`, not truthiness — a real 0.0 loss / lr (e.g.
+                    # end of an LR schedule) must not be reported as None.
+                    loss=float(loss) if loss is not None else None,
+                    lr=float(lr) if lr is not None else None,
+                    grad_norm=(
+                        float(measured_grad_norm)
+                        if measured_grad_norm is not None
+                        else None
+                    ),
+                    **{
+                        val_field: (
+                            float(measured_val_loss)
+                            if measured_val_loss is not None
+                            else None
+                        )
+                    },
+                )
+            )
+        except Exception:
+            pass
+
+        # v0.53.9 #100 — tool-call observation for SFT runs whose batch logs
+        # surface a `tool_calls` count. Best-effort; the SFT trainer emits
+        # the field only when the data format is `tool-calling`.
+        if "tool_calls" in (logs or {}):
+            try:
+                import time
+
+                from soup_cli.utils.tool_outputs import get_global_tool_buffer
+
+                tool_count = logs.get("tool_calls")
+                if isinstance(tool_count, (int, float)) and not isinstance(
+                    tool_count, bool
+                ) and tool_count > 0:
+                    get_global_tool_buffer().record_call(
+                        name="batch",
+                        started_ts=time.time(),
+                        duration_ms=0.0,
+                        success=True,
+                        output_preview=f"observed {int(tool_count)} tool_calls at step {step}",
+                    )
+            except Exception:
+                pass
+
+        # Loss watchdog — detect loss spikes and auto-stop. A log whose loss is
+        # None measured nothing (#1225): skip it, rather than compare None
+        # before the first loss or re-count the carried one after it.
+        if self._watchdog_enabled and not self._watchdog_fired and logs.get("loss") is not None:
+            if loss > self._watchdog_threshold:
+                self._watchdog_counter += 1
+                if self._watchdog_counter >= self._watchdog_patience:
+                    self._watchdog_fired = True
+                    # Stop Live display before printing panel
+                    self.display.stop()
+
+                    from rich.console import Console as WatchdogConsole
+                    from rich.panel import Panel
+
+                    wc = WatchdogConsole()
+
+                    # v0.33.0 #57 — spike recovery hint: write a recovery
+                    # state file the user can resume from. We do NOT mutate
+                    # optimizer state in-place (HF Trainer does not expose a
+                    # safe public API for that mid-loop) but we leave a
+                    # machine-readable hint so a wrapper / re-launch can
+                    # resume with a decayed LR.
+                    if self._spike_strategy is not None:
+                        self._write_spike_recovery_hint(args, loss)
+
+                    wc.print(Panel(
+                        f"[bold red]Loss watchdog triggered![/]\n\n"
+                        f"Loss {loss:.4f} exceeded threshold "
+                        f"{self._watchdog_threshold} for "
+                        f"{self._watchdog_counter} consecutive steps "
+                        f"(patience={self._watchdog_patience}).\n\n"
+                        f"Training will stop.",
+                        title="Loss Watchdog",
+                        border_style="red",
+                    ))
+                    control.should_training_stop = True
+            else:
+                self._watchdog_counter = 0
+
+        # v0.33.0 #59 — grad-accum advisory (one-shot per run). The monitor
+        # is built lazily inside the method on its first call (#1620).
+        if self._grad_accum_enabled and not self._grad_accum_advised:
+            self._maybe_advise_grad_accum()
+
+        # Log to experiment tracker
+        if self.tracker and self.run_id:
+            self.tracker.log_metrics(
+                run_id=self.run_id,
+                step=step,
+                epoch=epoch,
+                loss=loss,
+                lr=lr,
+                grad_norm=measured_grad_norm,
+                speed=speed,
+                gpu_mem=gpu_mem,
+                **{val_field: measured_val_loss},
+            )
+
+    def on_epoch_end(
+        self, args: TrainingArguments, state: TrainerState,
+        control: TrainerControl, **kwargs,
+    ):
+        """Run the eval gate, if configured."""
+        self._run_eval_gate(state, control)
+
+    def _setup_eval_gate(self, model: object, tokenizer: object) -> None:
+        """Load the gate suite/baseline and build a live generator.
+
+        Called once from ``on_train_begin`` with the trainer's model +
+        tokenizer. Each piece is only initialised when a test has not already
+        injected it, so unit tests that pre-set ``_gate_suite`` /
+        ``_gate_generate_fn`` still control the harness. Failures are logged and
+        leave the gate inert rather than crashing training setup — the CLI
+        (``soup train --gate``) already validated the suite path up front.
+        """
+        cfg = self.eval_gate_config
+        if cfg is None or not getattr(cfg, "enabled", False):
+            return
+
+        if self._gate_suite is None:
+            suite_path = getattr(cfg, "suite", None)
+            if not suite_path:
+                logger.warning("eval gate enabled but no suite configured")
+                return
+            try:
+                from soup_cli.eval.gate import load_suite
+
+                self._gate_suite = load_suite(suite_path)
+            except (ValueError, FileNotFoundError, OSError) as exc:
+                logger.warning("eval gate: could not load suite %r: %s", suite_path, exc)
+                self._gate_suite = None
+                return
+
+        if self._gate_baseline is None:
+            try:
+                from soup_cli.eval.gate import resolve_baseline
+
+                self._gate_baseline = resolve_baseline(getattr(cfg, "baseline", None))
+            except (ValueError, FileNotFoundError, OSError) as exc:
+                logger.warning("eval gate: could not resolve baseline: %s", exc)
+                self._gate_baseline = {}
+
+        if self._gate_generate_fn is None and model is not None and tokenizer is not None:
+            try:
+                self._gate_generate_fn = self._build_gate_generate_fn(model, tokenizer)
+            except Exception as exc:  # noqa: BLE001 — never crash training setup
+                logger.warning("eval gate: could not build generator: %s", exc)
+                self._gate_generate_fn = None
+
+    def _build_gate_generate_fn(self, model: object, tokenizer: object):
+        """Build a greedy ``(prompt) -> str`` closure over the training model.
+
+        Reuses ``utils.live_eval.make_generator`` (shared with the offline live
+        runners). Toggles eval mode around each call and swallows per-prompt
+        generation errors (returning ``""``) so a single bad prompt cannot take
+        down training — the gate treats an empty completion as a low score.
+        """
+        from soup_cli.utils.live_eval import make_generator
+
+        try:
+            device = next(model.parameters()).device  # type: ignore[attr-defined]
+        except (StopIteration, AttributeError):
+            device = None
+        base_gen = make_generator("", loaded=(model, tokenizer, device))
+
+        def _gen(prompt: str) -> str:
+            was_training = getattr(model, "training", False)
+            try:
+                if hasattr(model, "eval"):
+                    model.eval()
+                return base_gen(prompt)
+            except Exception as exc:  # noqa: BLE001 — degrade to empty completion
+                logger.warning("eval gate: generation failed: %s", exc)
+                return ""
+            finally:
+                if was_training and hasattr(model, "train"):
+                    model.train()
+
+        return _gen
+
+    def _run_eval_gate(self, state: TrainerState, control: TrainerControl) -> None:
+        """Execute the eval gate and react per ``on_regression`` policy."""
+        cfg = self.eval_gate_config
+        if cfg is None or not getattr(cfg, "enabled", False):
+            return
+        suite = self._gate_suite
+        if suite is None:
+            return
+        every_n = int(getattr(cfg, "every_n_epochs", 1) or 1)
+        current_epoch = int(state.epoch or 0)
+        if current_epoch <= 0 or current_epoch % every_n != 0:
+            return
+
+        from soup_cli.eval.gate import run_gate as _default_run_gate
+
+        run_fn = self._gate_run_fn if self._gate_run_fn is not None else _default_run_gate
+
+        baseline = self._gate_baseline or {}
+        threshold = float(getattr(cfg, "regression_threshold", 0.05))
+        generate_fn = self._gate_generate_fn or (lambda prompt: "")
+        on_reg = getattr(cfg, "on_regression", "stop")
+        try:
+            result = run_fn(
+                suite, generate_fn=generate_fn, baseline=baseline,
+                regression_threshold=threshold,
+            )
+        except (ValueError, FileNotFoundError, OSError) as exc:
+            # Structured errors — log and react per policy. 'stop' means
+            # the user wants safety; treat errors as regressions for stop.
+            logger.warning("eval gate failed to execute: %s", exc)
+            if on_reg == "stop":
+                control.should_training_stop = True
+            return
+        except Exception as exc:  # unexpected — fail safe under 'stop'
+            logger.exception("eval gate raised unexpected error: %s", exc)
+            if on_reg == "stop":
+                control.should_training_stop = True
+            return
+
+        if not result.passed:
+            if on_reg == "stop":
+                control.should_training_stop = True
+                logger.warning(
+                    "eval gate FAILED (%s); stopping training",
+                    _gate_failure_summary(result),
+                )
+            elif on_reg == "warn":
+                logger.warning(
+                    "eval gate FAILED (%s); continuing per policy",
+                    _gate_failure_summary(result),
+                )
+            # on_reg == "continue": silent per user policy
+
+    def on_train_end(
+        self, args: TrainingArguments, state: TrainerState,
+        control: TrainerControl, **kwargs,
+    ):
+        self.display.stop()
+
+    # ------------------------------------------------------------------
+    # v0.33.0 #57 — spike recovery hint
+    # ------------------------------------------------------------------
+
+    def _write_spike_recovery_hint(self, args, loss: float) -> None:
+        """Write a JSON recovery hint next to the run output so a wrapper
+        script (or `soup train --resume`) can pick up the new LR.
+
+        Best-effort: errors are logged but never crash training.
+        """
+        import json
+        import math
+        from pathlib import Path
+
+        if self._spike_strategy is None:
+            return
+        try:
+            new_lr = self._spike_strategy.compute_new_lr(args.learning_rate)
+        except ValueError:
+            return
+        out_dir = Path(self.output_dir or args.output_dir or ".")
+        # Containment: never write outside cwd (matches v0.32.0 lr-finder /
+        # autopilot / cans policy). Caller's output_dir is already validated
+        # by SoupConfig but args.output_dir from raw HF TrainingArguments is
+        # not — defence-in-depth.
+        from soup_cli.utils.paths import is_under_cwd
+        if not is_under_cwd(out_dir):
+            logger.warning(
+                "spike_recovery hint skipped: output_dir %s is outside cwd",
+                out_dir,
+            )
+            return
+        try:
+            out_dir.mkdir(parents=True, exist_ok=True)
+            hint_path = out_dir / "spike_recovery.json"
+            attempts = self._spike_recovery_attempts
+            if hint_path.exists() and attempts == 0:
+                try:
+                    data = json.loads(hint_path.read_text(encoding="utf-8"))
+                    if isinstance(data, dict) and "attempts" in data:
+                        raw = data["attempts"]
+                        if isinstance(raw, bool):
+                            pass
+                        elif isinstance(raw, float):
+                            if math.isfinite(raw):
+                                attempts = max(0, int(raw))
+                        elif isinstance(raw, int):
+                            attempts = max(0, raw)
+                        elif isinstance(raw, str):
+                            attempts = max(0, int(raw))
+                except (json.JSONDecodeError, ValueError, TypeError, OverflowError, OSError):
+                    pass
+            recover = self._spike_strategy.should_recover(attempts)
+            hint_path.write_text(json.dumps({
+                "attempts": attempts + 1,
+                "max_attempts": self._spike_strategy.max_attempts,
+                "loss_at_spike": float(loss),
+                "previous_lr": float(args.learning_rate),
+                "recommended_lr": float(new_lr),
+                "should_recover": recover,
+            }, indent=2), encoding="utf-8")
+            self._spike_recovery_attempts = attempts + 1
+            if recover:
+                console.print(
+                    f"[yellow]Spike recovery hint written:[/] {hint_path} "
+                    f"(recommended_lr={new_lr:.2e}, should_recover={recover})"
+                )
+            else:
+                console.print(
+                    f"[yellow]Spike recovery hint written:[/] {hint_path} "
+                    f"(recommended_lr={new_lr:.2e}, should_recover=False, "
+                    f"max attempts {self._spike_strategy.max_attempts} reached)"
+                )
+        except OSError as exc:
+            logger.warning("Failed to write spike recovery hint: %s", exc)
+
+    # ------------------------------------------------------------------
+    # v0.33.0 #59 — grad-accum advisory (Phase 1)
+    # ------------------------------------------------------------------
+
+    def _maybe_advise_grad_accum(self) -> None:
+        """Sample VRAM use; if pressure crosses threshold once, print the
+        recommended (batch_size, grad_accum_steps) pair.
+
+        Phase 1 is advisory-only. Phase 2 (live DataLoader rebuild) requires
+        a small upstream TRL change tracked as a known limitation.
+        """
+        if self._grad_accum_advised or not self._grad_accum_enabled:
+            return
+        try:
+            import torch
+            if not torch.cuda.is_available():
+                return
+            # The advisory must measure against the card the run actually
+            # uses (#1620): against the old fixed 24 GB total it could never
+            # fire on a smaller card and fired early on larger ones. The peak
+            # and the total are read from the same device.
+            device = torch.cuda.current_device()
+            used_gb = torch.cuda.max_memory_allocated(device) / (1024**3)
+        except Exception:  # noqa: BLE001 — VRAM probe is best-effort
+            return
+
+        if self._grad_accum_monitor is None:
+            try:
+                if self._grad_accum_total_vram_gb is None:
+                    total_gb = (
+                        torch.cuda.get_device_properties(device).total_memory
+                        / (1024**3)
+                    )
+                else:
+                    total_gb = float(self._grad_accum_total_vram_gb)
+                from soup_cli.utils.grad_accum import GradAccumMonitor
+                self._grad_accum_monitor = GradAccumMonitor(
+                    total_vram_gb=total_gb,
+                    threshold=self._grad_accum_threshold,
+                )
+            except Exception:  # noqa: BLE001 — card probe is best-effort
+                return
+
+        self._grad_accum_monitor.observe(used_gb)
+        if not self._grad_accum_monitor.should_adjust(used_gb):
+            return
+        new_batch, new_accum = self._grad_accum_monitor.recommend(
+            self._grad_accum_batch, self._grad_accum_current,
+        )
+        if new_accum == self._grad_accum_current:
+            return
+        self._grad_accum_advised = True
+        monitor_gb = self._grad_accum_monitor.total_vram_gb
+        console.print(
+            f"[yellow]Grad-accum advisory:[/] peak {used_gb:.1f} of "
+            f"{monitor_gb:.1f} GB ({used_gb / monitor_gb:.0%}) crossed "
+            f"the pressure threshold; recommend (batch_size, "
+            f"grad_accum_steps) ({self._grad_accum_batch}, "
+            f"{self._grad_accum_current}) -> ({new_batch}, {new_accum}). "
+            f"Restart training with the new pair to take effect."
+        )
+
+
+_LAZY_CALLBACKS = {
+    "SoupTrainerCallback": _SoupTrainerCallback_body,
+}
+_BODY_SKIP = frozenset(("__dict__", "__weakref__"))
+
+
+def __getattr__(name: str):  # PEP 562
+    body = _LAZY_CALLBACKS.get(name)
+    if body is not None:
+        base = _get_trainer_callback_base()
+        ns = {k: v for k, v in vars(body).items() if k not in _BODY_SKIP}
+        cls = type(name, (base,), ns)
+        cls.__module__ = __name__
+        cls.__qualname__ = name
+        globals()[name] = cls
+        return cls
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

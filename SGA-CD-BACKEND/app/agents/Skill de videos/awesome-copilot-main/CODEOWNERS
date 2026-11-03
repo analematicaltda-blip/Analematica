@@ -1,0 +1,29 @@
+# Ownership model: see docs/maintainers/review-routing.md
+#
+# - Teams own paths; no individual is the default owner. Do not add individual
+#   users to the `*` rule or to the team block below.
+# - The last matching rule wins.
+# - Reviewer pools used for automatic review requests live in
+#   .github/review-routing.yml.
+
+# Default owner for everything
+* @github/awesome-copilot-core-maintainers
+
+# Domain reviewer teams
+/extensions/ @github/awesome-copilot-canvas-reviewers
+/plugins/ @github/awesome-copilot-plugin-reviewers
+/agents/ @github/awesome-copilot-content-reviewers
+/instructions/ @github/awesome-copilot-content-reviewers
+/skills/ @github/awesome-copilot-content-reviewers
+/hooks/ @github/awesome-copilot-content-reviewers
+/workflows/ @github/awesome-copilot-content-reviewers
+/.github/ @github/awesome-copilot-core-maintainers
+/eng/ @github/awesome-copilot-core-maintainers
+
+# Copilot workshops
+/website/**/cli-for-beginners/ @github/awesome-copilot-workshop-reviewers
+/website/**/app-for-beginners/ @github/awesome-copilot-workshop-reviewers
+/website/**/copilot-workshops/ @github/awesome-copilot-workshop-reviewers
+
+# Specific allocations
+/.github/plugin/ @github/awesome-copilot-plugin-reviewers

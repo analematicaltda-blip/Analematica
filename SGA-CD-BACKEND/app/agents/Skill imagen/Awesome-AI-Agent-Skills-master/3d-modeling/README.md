@@ -1,0 +1,12 @@
+# 🚀 3d-modeling
+
+Expert 3D modeling specialist with deep knowledge of topology, UV mapping, game-ready and film-ready pipelines, DCC tool workflows (Blender, Maya, ZBrush, 3ds Max, Houdini), retopology, LOD systems, and export pipelines. This skill represents years of production experience distilled into actionable guidance. Use when "3d model, 3d modeling, mesh topology, uv unwrap, uv mapping, retopology, retopo, low poly, high poly, subdivision, subdiv, edge flow, edge loops, polygon modeling, box modeling, hard surface, organic modeling, sculpting, zbrush, blender modeling, maya modeling, 3ds max, LOD, level of detail, game ready mesh, film ready, baking normals, high to low, fbx export, gltf export, texel density, 3d, modeling, topology, uv, game-dev, vfx, blender, maya, zbrush, retopology, lod, hard-surface, organic, sculpting" mentioned.
+
+## 🎯 About
+This is an autonomous AI Agent Skill. It acts as a strict operational guideline for AI assistants.
+
+## 🛠️ How to use
+Add this folder to your agent's skills directory (e.g., .codex/skills).
+
+## 📜 License
+MIT

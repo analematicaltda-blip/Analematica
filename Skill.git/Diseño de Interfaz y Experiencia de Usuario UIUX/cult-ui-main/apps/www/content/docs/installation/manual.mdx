@@ -1,0 +1,77 @@
+---
+title: Manual Installation
+description: Set up Cult UI without the shadcn CLI by installing the dependencies, cn utility, and Tailwind CSS config yourself.
+---
+
+Use this when you cannot run the shadcn CLI, or want to see exactly what a component adds before it lands in your project. Your project needs the same four things `shadcn init` would set up, and then each component is a file you copy.
+
+## One-time setup
+
+<Steps>
+
+### Tailwind CSS v4
+
+Follow the [Tailwind CSS installation guide](https://tailwindcss.com/docs/installation) for your framework. Components use Tailwind v4 utilities and arbitrary values, and a few use enter and exit classes such as `animate-in` from `tw-animate-css`:
+
+```bash
+npm install tw-animate-css
+```
+
+```css title="globals.css"
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+```
+
+### Theme tokens
+
+Components read the standard shadcn tokens: `--background`, `--foreground`, `--card`, `--muted`, `--muted-foreground`, `--border`, `--input`, `--ring`, `--accent`, `--destructive`, `--chart-1` to `--chart-5`, and `--radius`. Copy a complete token set for `:root` and `.dark` from the [shadcn manual installation guide](https://ui.shadcn.com/docs/installation/manual) or the [Cult UI themes](/themes), and map them in `@theme inline`. [Theming](/docs/theming) explains what each token controls.
+
+### The cn helper
+
+```bash
+npm install clsx tailwind-merge
+```
+
+```ts title="lib/utils.ts"
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+### The @/ import alias
+
+Components import from `@/lib/utils` and `@/components/ui/*`. Point `@/*` at your source root in `tsconfig.json`, and in your bundler config if it does not read `tsconfig` paths:
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+Use `["./*"]` instead if you do not have a `src` folder.
+
+</Steps>
+
+## Add a component
+
+Every component page has a **Manual** tab under Installation with its source. Adding a component by hand takes three steps:
+
+1. **Install its npm dependencies.** Most animated components need `motion`. The Halo kit and newer form controls also use `@base-ui/react`.
+2. **Add any shadcn/ui or Cult UI components it builds on**, such as `button` or `badge`.
+3. **Copy the source** into `components/ui/<name>.tsx` and fix the import paths if your alias differs.
+
+The component's registry file is the complete list for steps 1 and 2. It shows `dependencies` (npm packages), `registryDependencies` (components it builds on), and the full source:
+
+```txt
+https://www.cult-ui.com/r/halo-select.json
+```

@@ -1,0 +1,13 @@
+**GUION EXTENSO: "El Día que la IA lo cambió todo"**
+
+**INTRO (0:00 - 0:30)**
+Narrador: "La Inteligencia Artificial (IA) ha revolucionado nuestra sociedad en un abrir y cerrar de ojos. Desde la creación de asistentes virtuales hasta la automatización de tareas, la IA ha cambiado la forma en que vivimos y trabajamos. Pero ¿qué pasó cuando se lanzó Gemini 3.1? En este video, exploraremos cómo la IA cambió todo y qué peligros tenemos que enfrentar en el futuro."
+
+**DESARROLLO (0:30 - 4:00)**
+Narrador: "Gemini 3.1 no fue solo un modelo más. Fue el salto hacia la expresividad absoluta. Donde antes teníamos voces metálicas y sin alma, ahora tenemos actores digitales capaces de susurrar, gritar y emocionarse. Esto cambia las reglas del juego para las startups que antes cobraban por locuciones premium. Google lo ha canibalizado todo ofreciéndolo gratis en AI Studio."
+
+**ANÁLISIS PROFUNDO (4:00 - 7:00)**
+Narrador: "Pero el verdadero peligro no es la voz, son los agentes. Como Manus. Agentes que no solo hablan, sino que ejecutan. Entran en tu banco, compran tus vuelos, editan tus videos. La línea entre el humano y el bot se difumina. Si el software se lo están comiendo los modelos, ¿qué queda para el desarrollador tradicional? Karpathy ya lo dijo: el nuevo lenguaje de programación es el Inglés (o el Español), pero el control se está concentrando en muy pocas manos (Google, OpenAI, Meta)."
+
+**OUTRO (7:00 - 10:00)**
+Narrador: "Entonces, ¿qué podemos hacer? Debemos ser conscientes del impacto que tiene la IA en nuestra sociedad y trabajar juntos para desarrollar tecnologías más seguras y éticas. Solo así podemos asegurarnos de que la IA sea utilizada para mejorar la vida de las personas, no para perjudicarla. Gracias por ver este video sobre cómo la IA cambió todo. No olvides suscribirte."

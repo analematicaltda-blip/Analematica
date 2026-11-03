@@ -1,0 +1,199 @@
+---
+title: Metal Button
+description: shadcn/ui Button wrapped in an animated liquid metal ring for React, in text and icon variants, for standout calls to action.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="metal-button-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="Presets, variants, strength, icon buttons, and interactive controls"
+/>
+
+Metal Button is a React button component for shadcn/ui built on the metal-fx library. Use it for a standout primary action on landing pages, hero sections, or product launch pages.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/metal-button
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>
+  Install the [metal-fx](https://www.npmjs.com/package/metal-fx) package.
+</Step>
+
+```bash
+pnpm add metal-fx
+```
+
+<Step>
+  Add the [shadcn/ui Button](https://ui.shadcn.com/docs/components/button) if
+  you do not already have it.
+</Step>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="metal-button" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+`MetalButton` wraps the standard shadcn `Button` with [`MetalFx`](https://www.npmjs.com/package/metal-fx) from the **metal-fx** package. All visible instances on a page share one WebGL renderer, so multiple buttons stay efficient.
+
+- **`className`** — styles the inner `Button` (padding, gap, typography).
+- **`metalFxClassName`** / **`metalFxStyle`** — styles the MetalFx wrapper (surface fill when `normalizeHostStyles` is on).
+- **`MetalIconButton`** — same API with `size="icon-sm"` and `metalVariant="circle"` by default.
+
+```tsx
+import { MetalButton, MetalIconButton } from "@/components/ui/metal-button";
+import { Sparkles } from "lucide-react";
+```
+
+```tsx
+<MetalButton type="button" variant="outline" preset="chromatic">
+  Continue
+</MetalButton>
+
+<MetalIconButton
+  type="button"
+  variant="outline"
+  aria-label="Sparkles"
+  preset="gold"
+>
+  <Sparkles className="size-3.5" />
+</MetalIconButton>
+```
+
+### Presets and theme
+
+Pick a bundled palette with **`preset`**: `"chromatic"` (default), `"silver"`, or `"gold"`. Each preset includes dark and light tunings; **`theme`** (`"auto"` | `"dark"` | `"light"`) selects which side to use. Because metal-fx shares one palette per page, changing `preset` on any instance updates every visible ring.
+
+```tsx
+<MetalButton preset="gold" theme="dark" variant="default">
+  Upgrade
+</MetalButton>
+```
+
+### Ring shape and intensity
+
+- **`metalVariant`** — `"button"` (pill ring, default) or `"circle"` (thicker ring for compact controls).
+- **`strength`** — `0`–`1`; scales shader opacity and glow while the animation keeps running (default `0.9`).
+- **`paused`** — freezes the ring on the last frame; the button stays fully clickable.
+
+```tsx
+<MetalButton
+  metalVariant="circle"
+  strength={0.75}
+  paused={isPaused}
+  variant="outline"
+>
+  Settings
+</MetalButton>
+```
+
+### Styling split: button vs wrapper
+
+With **`normalizeHostStyles`** (default `true`), variant fills and hover colors apply on the MetalFx wrapper so the inner button stays transparent and the liquid ring stays visible. Pass **`normalizeHostStyles={false}`** if you want full shadcn chrome on the button itself (filled variants will cover most of the metal).
+
+```tsx
+<MetalButton
+  className="gap-2 pl-6 pr-5"
+  metalFxClassName="shadow-sm"
+  variant="outline"
+>
+  Get started
+</MetalButton>
+```
+
+### Reflections and glow
+
+In **dark** theme, pass **`reflectionTargets`** — an array of refs to sibling elements — for a soft proximity reflection on nearby chips or labels. Use **`disableGlow`** to turn off the wandering halo while keeping the shader ring.
+
+```tsx
+const chipRef = useRef<HTMLButtonElement>(null)
+
+<>
+  <button ref={chipRef} type="button" className="...">
+    Tools
+  </button>
+  <MetalButton
+    reflectionTargets={[chipRef]}
+    variant="outline"
+  >
+    Send
+  </MetalButton>
+</>
+```
+
+## API Reference
+
+### Exports
+
+| Export | Description |
+| --- | --- |
+| `MetalButton` | Text button with liquid metal ring |
+| `MetalIconButton` | Icon-sized control; defaults to `size="icon-sm"` and `metalVariant="circle"` |
+| `MetalButtonProps` | Props for `MetalButton` |
+| `MetalIconButtonProps` | Alias of `MetalButtonProps` |
+
+`MetalButton` accepts all [Button](https://ui.shadcn.com/docs/components/button) props plus MetalFx shell props below. The ref attaches to the MetalFx wrapper (`HTMLDivElement`).
+
+### MetalFx props (forwarded)
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `preset` | `"chromatic"` \| `"silver"` \| `"gold"` | `"chromatic"` | Bundled shader palette (shared page-wide) |
+| `theme` | `"auto"` \| `"dark"` \| `"light"` | `"auto"` | Resolves preset tuning from OS or pins a mode |
+| `metalVariant` | `"button"` \| `"circle"` | `"button"` | Ring shape and thickness baseline |
+| `strength` | `number` | `0.9` | Effect opacity and glow (`0`–`1`) |
+| `paused` | `boolean` | `false` | Freeze ring on last frame |
+| `borderRadius` | `number` | — | Override computed child radius (CSS px) |
+| `normalizeHostStyles` | `boolean` | `true` | Move variant fill to wrapper; strip button chrome |
+| `disableGlow` | `boolean` | `false` | Disable halo; ring still renders |
+| `reflectionTargets` | `RefObject<HTMLElement \| null>[]` | — | Dark-mode proximity reflections on siblings |
+| `shaderScale` | `number` | variant default | Zoom into shared shader pattern |
+| `ringCssPx` | `number` | variant default | Ring thickness in CSS pixels |
+| `scale` | `number` | `1` | Master multiplier for ring, glow, and reflections |
+| `metalFxClassName` | `string` | — | Class names on the MetalFx wrapper |
+| `metalFxStyle` | `CSSProperties` | — | Inline styles on the MetalFx wrapper |
+
+See the [MetalFx documentation](https://metal.jakubantalik.com/) for shader behavior, performance notes, and advanced tuning.
+
+## Accessibility
+
+- Prefer **`MetalIconButton`** with a visible **`aria-label`** (and optional `title`) for icon-only actions.
+- Respect **`prefers-reduced-motion`**: pause the effect when users request reduced motion so the ring does not animate unnecessarily.
+- The inner control remains a native **`button`** (or your polymorphic choice via Button props); keyboard activation works as usual.
+
+## Performance
+
+- One shared WebGL canvas drives every `MetalFx` instance on the page — prefer a single preset per view when possible.
+- Reflection scanning runs only in dark mode and only for refs you pass in `reflectionTargets`.
+- Use **`paused`** on off-screen or inactive controls to avoid painting frames users cannot see.
+
+## Credits
+
+The liquid metal shader and **metal-fx** React wrapper are by **Jakub Antalík**. Documentation, live demos, and the underlying effect are at [metal.jakubantalik.com](https://metal.jakubantalik.com/).

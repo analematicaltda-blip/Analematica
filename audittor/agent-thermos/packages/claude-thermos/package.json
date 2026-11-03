@@ -1,0 +1,39 @@
+{
+	"name": "@thinkscape/claude-thermos",
+	"version": "0.1.4",
+	"description": "Thermos plugin for Claude Code: deep correctness/security and strict code-quality branch reviews.",
+	"type": "module",
+	"license": "MIT",
+	"author": {
+		"name": "Thinkscape"
+	},
+	"homepage": "https://github.com/Thinkscape/agent-thermos#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Thinkscape/agent-thermos.git",
+		"directory": "packages/claude-thermos"
+	},
+	"keywords": [
+		"claude-code",
+		"plugin",
+		"thermos",
+		"code-review",
+		"subagents"
+	],
+	"bin": {
+		"claude-thermos": "./bin/claude-thermos.js"
+	},
+	"files": [
+		".claude-plugin",
+		"agents",
+		"assets",
+		"bin",
+		"commands",
+		"shims",
+		"README.md"
+	],
+	"scripts": {
+		"build": "bun test tests/integration.test.ts",
+		"test": "bun test tests"
+	}
+}

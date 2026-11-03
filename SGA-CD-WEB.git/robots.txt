@@ -1,0 +1,16 @@
+# SGA-CD Robots.txt
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /login.html
+Allow: /register.html
+Allow: /privacy.html
+Allow: /terms.html
+
+# Disallow private/admin endpoints and application core
+Disallow: /app.html
+Disallow: /api/
+Disallow: /js/
+Disallow: /admin/
+
+Sitemap: https://sga-cd.org/sitemap.xml

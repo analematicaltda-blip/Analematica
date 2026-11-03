@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Banana Claude"
+abstract: "Brief-led Gemini image generation, editing, review, and bounded multi-model orchestration for Claude Code"
+authors:
+  - family-names: "Daniel"
+    given-names: "Agrici"
+    alias: "AgriciDaniel"
+repository-code: "https://github.com/AgriciDaniel/banana-claude"
+url: "https://github.com/AgriciDaniel/banana-claude"
+license: MIT
+version: "3.0.0"
+date-released: "2026-08-30"
+keywords:
+  - ai-image-generation
+  - claude-code
+  - gemini
+  - prompt-engineering
+  - mcp

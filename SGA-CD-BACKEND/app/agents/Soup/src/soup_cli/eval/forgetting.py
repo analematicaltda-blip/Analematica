@@ -1,0 +1,560 @@
+"""Catastrophic forgetting detection (Part G of v0.25.0).
+
+Runs lightweight mini benchmarks against a model during training and flags
+significant drops in general-knowledge accuracy from the pre-training baseline.
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+from typing import Callable, Literal, Optional, Tuple
+
+from soup_cli.eval.generation import generate_outputs
+from soup_cli.utils.final_answer import iter_boxed_answers
+
+MiniBenchmark = list[dict[str, str]]
+
+
+# ---------------------------------------------------------------------------
+# Answer scoring (v0.71.38 — "the gate grows teeth")
+# ---------------------------------------------------------------------------
+#
+# The v0.25.0 scorer was ``answer.lower() in output.lower()`` — a raw substring
+# test that credited "B" for "**B**erlin"/"**b**ecause", "ok" for "lo**ok**",
+# and "3" for "1**3**". That made the whole leg-2 regression gate decorative.
+# The fix is answer-EXTRACTION (pull the model's chosen option) + a
+# boundary-aware match, so a spurious substring no longer scores.
+
+# MCQ option letters run A–J (the bundled suites never exceed 5 options today,
+# but the extractor is generous so richer suites drop in without a scorer edit).
+_MCQ_OPTIONS = "ABCDEFGHIJ"
+
+# Cap the model output the scorer regexes scan (defense-in-depth — the regexes
+# are all O(n) with bounded quantifiers, but ``score_answer`` is public SDK
+# surface callable with an arbitrary, unbounded ``generate_fn``).
+_MAX_SCORE_OUTPUT = 64 * 1024
+
+# Explicit answer cue: "answer is C", "correct option: B", "I pick (A)". The
+# optional ``is`` lets the letter sit one filler word past the cue.
+_CUE_RE = re.compile(
+    r"(?:answer|correct|option|choice|select|pick)\b[\s:=.\-]{0,4}(?:is\s+)?"
+    r"\(?([A-Ja-j])\)?(?![A-Za-z0-9])",
+    re.IGNORECASE,
+)
+# Parenthesised choice marker: "(B)" or "B)".
+_PAREN_RE = re.compile(r"(?<![A-Za-z0-9])\(?([A-Ja-j])\)(?![A-Za-z0-9])")
+# A lone uppercase letter wrapped in markdown emphasis, quotes or square
+# brackets: "**B**", "__B__", "*B*", "_B_", "`B`", "\"B\"", "'B'", "[B]".
+# Deliberate markup of a single letter is an explicit commitment like "(B)",
+# so it joins the last-wins tier — position decides against boxed/cue matches
+# the same way. Keeping the letter uppercase leaves prose such as "the word
+# 'a' is an article" untouched. (#1442)
+_WRAPPED_RE = re.compile(
+    r"(?<![A-Za-z0-9])(?:\*{1,2}|_{1,2}|[`\"'\[])\s*([A-J])\s*"
+    r"(?:\*{1,2}|_{1,2}|[`\"'\]])(?![A-Za-z0-9])"
+)
+# Standalone uppercase letter LEADING the output, followed by a line break
+# or " is" / " -" — the model led with its answer then explained itself
+# ("B is the correct answer.", "B\n\nBecause ..."). Restricted to the start
+# so a stray "B is" mid-prose cannot claim the slot, and kept uppercase so
+# the article "a" still cannot. (#1442)
+_LEADING_RE = re.compile(r"^([A-J])(?=\r?\n| is\b| -)")
+# LaTeX ``\boxed{C}`` — how a reasoning-tuned model states its final answer.
+# Read through ``utils.final_answer``'s shared scan instead of a local regex: the
+# box counts as an OPTION LETTER when the scan's normalised content is a single
+# A–J letter, which keeps this tier and the reward parser on one reading of the
+# same box (they diverged once: ``\boxed{B.}`` and ``\boxed{**B**}`` read C here
+# and B there, #1347). The scan also allows whitespace between the command and
+# its brace, so the spaced spelling ``\boxed {A}`` scores — the same #357 defect,
+# one space to the left. ``\boxed{4}`` is the model answering with a VALUE, and
+# reading that as "option 4" would be a wrong credit rather than a repair — the
+# prompt is what has to change there (see ``_MCQ_ANSWER_CUE``). #357.
+# Bare standalone UPPERCASE letter that TERMINATES a clause — i.e. followed by
+# end-of-string or sentence punctuation, not by more words. Requiring upper-case
+# skips the lower-case article "a"/"an", and the terminating look-ahead skips a
+# capitalized sentence-opener like "A cat sat ..." / the pronoun "I think ..."
+# that a bare "\b" match would wrongly read as choosing option A / I.
+_BARE_UPPER_RE = re.compile(r"(?<![A-Za-z0-9])([A-J])(?=[.,;:!?]|\s*$)")
+
+
+# Appended to a multiple-choice question before it reaches the model (#357).
+#
+# The other half of the boxed-answer defect, and the half the extractor CANNOT
+# fix. Measured on Meta-Llama-3.1-8B-Instruct over the shipped ``mini_mmlu``:
+# of 15 failures, 8 boxed the right LETTER (the extractor's half) and **6 boxed
+# a VALUE** — "\\boxed{4}" for "What is 2 + 2? (A) 3 (B) 4 (C) 5" — because
+# nothing in the prompt ever asked for a letter. Teaching the extractor to read
+# a boxed value as an option would credit the wrong thing; asking for the letter
+# is the honest repair. Neither change alone closes the issue: the extractor
+# alone is worth +8 items, the prompt alone **0**, together 0.423 -> 0.731.
+#
+# It is appended only to items whose ANSWER is an option letter, so the
+# free-text suites (``mini_instruction``, ``mini_arithmetic``) are untouched.
+# Base and tuned models receive the identical prompt, so every existing delta
+# stays comparable — only the absolute level moves.
+_MCQ_ANSWER_CUE = "\nAnswer with the option letter only."
+
+
+def _is_mcq_letter(answer: str) -> bool:
+    """True when ``answer`` is a single MCQ option letter (A–J)."""
+    return len(answer) == 1 and answer.upper() in _MCQ_OPTIONS
+
+
+def build_mcq_prompt(question: str, answer: str) -> str:
+    """The prompt actually sent to the model for one mini-benchmark item.
+
+    Adds ``_MCQ_ANSWER_CUE`` for multiple-choice items and returns ``question``
+    unchanged for free-text ones. Public so a caller that builds its own
+    generator loop asks the model the same thing the scorer expects (#357).
+    """
+    if not isinstance(question, str):
+        raise TypeError("question must be a string")
+    if isinstance(answer, str) and _is_mcq_letter(answer.strip()):
+        return question + _MCQ_ANSWER_CUE
+    return question
+
+
+def extract_mcq_letter(output: str) -> Optional[str]:
+    """Pull the model's chosen MCQ option letter (A–J) from ``output``.
+
+    Four "explicit commitment" forms are considered together — a LaTeX
+    ``\\boxed{C}``, an ``answer/option/...`` cue, a parenthesised
+    ``(B)``/``B)`` marker, and a markdown/quote/bracket-wrapped lone letter
+    (``**B**``, ``[B]``) — and the LAST one to appear anywhere in the output
+    wins. Position, not form, decides: a model that boxes a scratch answer and
+    then self-corrects ("...\\boxed{A}... on reflection, the answer is (B)")
+    chose B, while one that echoes the option list and then boxes its decision
+    ("(A) x (B) y. Answer: \\boxed{A}") chose A. Ranking the boxed FORM above
+    the others would get the first of those backwards.
+
+    Only if none of the four appears (the wrapped-letter form counts as an
+    explicit commitment too — ``**B**``/``[B]``/``"B"`` and friends, #1442)
+    does the bare tier apply: a standalone uppercase letter leading the
+    output followed by a line break or ``is``/``-`` (``B is the correct
+    answer.``), else a clause-terminating uppercase letter, taking the FIRST
+    match (a model answering without a cue leads with the letter, e.g. "C.
+    I think ..."). A bare letter only counts when it terminates a clause or
+    leads the output, so a prose opener ("A cat sat ...") is not read as
+    choosing option A.
+
+    Returns ``None`` when no option letter is present (e.g. a free-text answer
+    like "Berlin", or a boxed VALUE like ``\\boxed{4}``).
+    """
+    if not isinstance(output, str) or not output:
+        return None
+    output = output[:_MAX_SCORE_OUTPUT]
+    latest: Optional[Tuple[int, str]] = None
+    for box in iter_boxed_answers(output):
+        letter = box.answer.upper()
+        if len(letter) == 1 and letter in _MCQ_OPTIONS and (latest is None or box.end > latest[0]):
+            latest = (box.end, letter)
+    for regex in (_CUE_RE, _PAREN_RE, _WRAPPED_RE):
+        for match in regex.finditer(output):
+            if latest is None or match.end() > latest[0]:
+                latest = (match.end(), match.group(1))
+    if latest is not None:
+        return latest[1].upper()
+    leading = _LEADING_RE.match(output)
+    if leading is not None:
+        return leading.group(1)
+    bare = _BARE_UPPER_RE.findall(output)
+    if bare:
+        return bare[0].upper()
+    return None
+
+
+def _standalone_match(output: str, answer: str) -> bool:
+    """True when ``answer`` appears in ``output`` as a whole alnum-bounded token.
+
+    Uses alnum look-around instead of ``\\b`` so an answer that begins or ends
+    with punctuation still matches cleanly; case-insensitive. This is what stops
+    "ok" scoring for "lo**ok**" and "3" for "1**3**".
+    """
+    pattern = r"(?<![A-Za-z0-9])" + re.escape(answer) + r"(?![A-Za-z0-9])"
+    return re.search(pattern, output[:_MAX_SCORE_OUTPUT], re.IGNORECASE) is not None
+
+
+def score_answer(output: str, answer: str) -> bool:
+    """Score one model ``output`` against a mini-benchmark ``answer``.
+
+    MCQ letter answers are scored by extraction + exact letter match; every
+    other answer by a boundary-aware standalone-token match. Replaces the
+    v0.25.0 raw-substring scorer (the "gate grows teeth" fix, v0.71.38).
+    """
+    if not isinstance(output, str) or not isinstance(answer, str):
+        return False
+    ans = answer.strip()
+    if not ans:
+        return False
+    if _is_mcq_letter(ans):
+        chosen = extract_mcq_letter(output)
+        return chosen is not None and chosen == ans.upper()
+    return _standalone_match(output, ans)
+
+
+# ---------------------------------------------------------------------------
+# Built-in mini benchmarks (v0.71.38 — expanded from the v0.25.0 5-item
+# starter sets so a single-item flip (1/N < 0.05) actually trips the ship gate
+# rather than being rounded away).
+#
+# PROVENANCE / decontamination: every item below is ORIGINAL, hand-authored for
+# Soup. NO row is copied from MMLU / GSM8K / HellaSwag / any public benchmark —
+# the gate suite must itself pass ``soup data decontaminate``. Answers are
+# scored by ``score_answer`` (extraction + boundary match), never raw substring.
+# ---------------------------------------------------------------------------
+
+MINI_MMLU: MiniBenchmark = [
+    {"question": "What is 2 + 2? (A) 3 (B) 4 (C) 5", "answer": "B"},
+    {"question": "The capital of France is: (A) London (B) Berlin (C) Paris", "answer": "C"},
+    {"question": "Water freezes at: (A) 0C (B) 50C (C) 100C", "answer": "A"},
+    {"question": "Photosynthesis mainly uses: (A) oxygen (B) carbon dioxide (C) nitrogen",
+     "answer": "B"},
+    {"question": "Atomic number of hydrogen is: (A) 1 (B) 2 (C) 3", "answer": "A"},
+    {"question": "The largest planet in our solar system is: (A) Earth (B) Jupiter (C) Mars",
+     "answer": "B"},
+    {"question": "The chemical symbol for gold is: (A) Gd (B) Go (C) Au", "answer": "C"},
+    {"question": "How many continents are there on Earth? (A) 5 (B) 7 (C) 9", "answer": "B"},
+    {"question": "The powerhouse of the cell is the: (A) nucleus (B) ribosome (C) mitochondrion",
+     "answer": "C"},
+    {"question": "Light travels faster than: (A) sound (B) nothing (C) radio waves",
+     "answer": "A"},
+    {"question": "The square root of 81 is: (A) 9 (B) 8 (C) 18", "answer": "A"},
+    {"question": "Which gas do plants release during photosynthesis? "
+                 "(A) oxygen (B) hydrogen (C) methane", "answer": "A"},
+    {"question": "The author of 'Romeo and Juliet' is: (A) Dickens (B) Austen (C) Shakespeare",
+     "answer": "C"},
+    {"question": "The freezing point of water in Fahrenheit is: (A) 0 (B) 32 (C) 100",
+     "answer": "B"},
+    {"question": "Which ocean is the largest? (A) Atlantic (B) Indian (C) Pacific",
+     "answer": "C"},
+    {"question": "The human body has how many pairs of ribs? (A) 10 (B) 12 (C) 14",
+     "answer": "B"},
+    {"question": "The currency of Japan is the: (A) yuan (B) won (C) yen", "answer": "C"},
+    {"question": "Which metal is liquid at room temperature? (A) mercury (B) iron (C) copper",
+     "answer": "A"},
+    {"question": "The speed of light is closest to: (A) 300 km/s (B) 300,000 km/s (C) 30 km/s",
+     "answer": "B"},
+    {"question": "A triangle has how many sides? (A) 3 (B) 4 (C) 5", "answer": "A"},
+    {"question": "The closest star to Earth is the: (A) Moon (B) Sun (C) Sirius", "answer": "B"},
+    {"question": "DNA carries: (A) genetic information (B) oxygen (C) sugar", "answer": "A"},
+    {"question": "The tallest mountain above sea level is: (A) K2 (B) Everest (C) Denali",
+     "answer": "B"},
+    {"question": "Which is a prime number? (A) 9 (B) 15 (C) 13", "answer": "C"},
+    {"question": "The primary gas in Earth's atmosphere is: (A) oxygen (B) nitrogen (C) argon",
+     "answer": "B"},
+    {"question": "Sound cannot travel through a: (A) solid (B) liquid (C) vacuum", "answer": "C"},
+    # #1192 — the 26 rows above put a capable model at 1.000 (Qwen2.5-7B-Instruct,
+    # 26/26 in the #1111 tool-call discrimination record; Qwen2.5-1.5B-Instruct
+    # too). The rows below are 4-option, many with a common misconception as a
+    # distractor, selected from two 24-row candidate pools measured on two
+    # models. Two rows above had options swapped so no letter answers more
+    # than 30% of the suite.
+    {"question": "Which planet has the shortest day (fastest rotation)? (A) Mercury (B) Earth "
+                 "(C) Saturn (D) Jupiter",
+     "answer": "D"},
+    {"question": "The interior angles of a hexagon add up to: (A) 540 degrees (B) 900 degrees "
+                 "(C) 720 degrees (D) 1080 degrees",
+     "answer": "C"},
+    {"question": "Which country has the longest coastline? (A) Russia (B) Australia (C) Canada "
+                 "(D) Indonesia",
+     "answer": "C"},
+    {"question": "How many hearts does an octopus have? (A) 3 (B) 1 (C) 2 (D) 4",
+     "answer": "A"},
+    {"question": "Measured from base to peak, the tallest mountain on Earth is: (A) Mount "
+                 "Everest (B) Mauna Kea (C) K2 (D) Kilimanjaro",
+     "answer": "B"},
+    {"question": "In computing, a nibble is how many bits? (A) 4 (B) 2 (C) 8 (D) 16",
+     "answer": "A"},
+    {"question": "In which phase of mitosis do sister chromatids separate? (A) prophase (B) "
+                 "metaphase (C) telophase (D) anaphase",
+     "answer": "D"},
+    {"question": "Which planet has the highest average surface temperature? (A) Mercury (B) "
+                 "Venus (C) Mars (D) Jupiter",
+     "answer": "B"},
+    {"question": "Which element has the chemical symbol K? (A) krypton (B) calcium (C) "
+                 "phosphorus (D) potassium",
+     "answer": "D"},
+    {"question": "Which is the smallest of the world's five oceans? (A) the Southern (B) the "
+                 "Indian (C) the Atlantic (D) the Arctic",
+     "answer": "D"},
+    {"question": "The largest moon of Saturn is: (A) Ganymede (B) Europa (C) Titan (D) Callisto",
+     "answer": "C"},
+    {"question": "The hardest substance in the human body is: (A) tooth enamel (B) bone (C) "
+                 "cartilage (D) fingernail",
+     "answer": "A"},
+    {"question": "The Rock of Gibraltar is a territory of: (A) Spain (B) Morocco (C) Portugal "
+                 "(D) the United Kingdom",
+     "answer": "D"},
+    {"question": "The capital of Turkey is: (A) Istanbul (B) Izmir (C) Antalya (D) Ankara",
+     "answer": "D"},
+]
+
+MINI_COMMON_SENSE: MiniBenchmark = [
+    {"question": "If it is raining, you should bring a: (A) hat (B) umbrella (C) fan",
+     "answer": "B"},
+    {"question": "You eat breakfast in the: (A) morning (B) evening (C) night", "answer": "A"},
+    {"question": "Fish live in: (A) trees (B) water (C) sand", "answer": "B"},
+    {"question": "The sun rises in the: (A) west (B) south (C) east", "answer": "C"},
+    {"question": "Ice melts when: (A) heated (B) frozen (C) pressed", "answer": "A"},
+    {"question": "To unlock a door you usually need a: (A) spoon (B) pillow (C) key",
+     "answer": "C"},
+    {"question": "Before crossing a busy street you should: (A) close your eyes "
+                 "(B) look both ways (C) run fast", "answer": "B"},
+    {"question": "If a glass falls on tile it will likely: (A) bounce (B) float (C) break",
+     "answer": "C"},
+    {"question": "To write on paper you use a: (A) hammer (B) pen (C) plate", "answer": "B"},
+    {"question": "A wet towel is best dried by: (A) folding it (B) hanging it in the sun "
+                 "(C) burying it", "answer": "B"},
+    {"question": "You feel cold, so you put on a: (A) swimsuit (B) coat (C) sandal",
+     "answer": "B"},
+    {"question": "Plants need this to grow: (A) darkness (B) television (C) sunlight",
+     "answer": "C"},
+    {"question": "To call a friend far away you use a: (A) phone (B) fork (C) broom",
+     "answer": "A"},
+    {"question": "After you finish eating, dirty dishes should be: (A) washed (B) painted "
+                 "(C) planted", "answer": "A"},
+    {"question": "If the room is dark you should turn on the: (A) faucet (B) light (C) oven",
+     "answer": "B"},
+    {"question": "A baby is younger than a: (A) grandparent (B) newborn (C) egg", "answer": "A"},
+    {"question": "To cut paper you use: (A) scissors (B) a magnet (C) glue", "answer": "A"},
+    {"question": "Bread that is very old may become: (A) fresh (B) cold (C) moldy",
+     "answer": "C"},
+    {"question": "If you are thirsty you should drink: (A) sand (B) water (C) paper",
+     "answer": "B"},
+    {"question": "A car needs this to run: (A) fuel (B) music (C) paint", "answer": "A"},
+    {"question": "You wear shoes on your: (A) hands (B) head (C) feet", "answer": "C"},
+    {"question": "To keep food cold you put it in the: (A) oven (B) refrigerator (C) closet",
+     "answer": "B"},
+    {"question": "If you are tired at night you should: (A) sleep (B) exercise hard (C) shout",
+     "answer": "A"},
+    {"question": "Rain falls from the: (A) ground (B) clouds (C) ocean floor", "answer": "B"},
+    # #1192 — the 24 rows above put a capable model at 1.000 (Qwen2.5-7B-Instruct,
+    # 24/24 in the #1111 tool-call discrimination record). The rows below are
+    # 4-option physical, temporal and relational reasoning, measured as a
+    # candidate pool on two models before selection. Four rows above had their
+    # B and C options swapped so no one letter answers more than 30% of the suite.
+    {"question": "You put a completely full, tightly sealed glass bottle of water in the freezer "
+                 "overnight. In the morning the bottle is most likely: (A) unchanged (B) warm "
+                 "(C) half empty (D) cracked",
+     "answer": "D"},
+    {"question": "A candle is burning inside a glass jar and you screw the lid on. The flame "
+                 "will: (A) grow brighter (B) burn for weeks (C) go out soon (D) turn the jar to "
+                 "water",
+     "answer": "C"},
+    {"question": "Your flight leaves at 7:00, the airport is 1 hour away, and you must arrive 2 "
+                 "hours before the flight. The latest time you can leave home is: (A) 4:00 (B) "
+                 "3:00 (C) 5:00 (D) 6:00",
+     "answer": "A"},
+    {"question": "Which would NOT help a phone battery last longer? (A) lowering the screen "
+                 "brightness (B) closing unused apps (C) turning on airplane mode (D) turning "
+                 "the volume up to maximum",
+     "answer": "D"},
+    {"question": "A heavy box and a light box of the same size are pushed across the same floor "
+                 "with the same force. Compared with the heavy box, the light box will: (A) move "
+                 "faster (B) move slower (C) not move at all (D) move at exactly the same speed",
+     "answer": "A"},
+    {"question": "A metal spoon and a wooden spoon are left standing in a pot of boiling soup "
+                 "for a few minutes. Which handle is hotter to touch? (A) the wooden one (B) "
+                 "neither is warm (C) both the same (D) the metal one",
+     "answer": "D"},
+    {"question": "Maria is taller than Ben, and Ben is taller than Chen. Who is the shortest? "
+                 "(A) Maria (B) Ben (C) Chen (D) it cannot be told",
+     "answer": "C"},
+    {"question": "Maria is taller than Ben, and Chen is taller than Ben. Who is the tallest? (A) "
+                 "Maria (B) Ben (C) Chen (D) it cannot be told",
+     "answer": "D"},
+    {"question": "You wash a wool sweater in very hot water and then tumble-dry it on high heat. "
+                 "It will most likely: (A) get bigger (B) turn white (C) shrink (D) become "
+                 "waterproof",
+     "answer": "C"},
+    {"question": "Ignoring air resistance, you drop a rubber ball and a stone of the same size "
+                 "from the same window at the same moment. Which lands first? (A) the ball (B) "
+                 "the stone (C) both at the same time (D) neither ever lands",
+     "answer": "C"},
+    {"question": "Where would you see the stars most clearly? (A) a city centre at noon (B) a "
+                 "countryside field on a clear, moonless night (C) a brightly lit stadium at "
+                 "night (D) a countryside field on a cloudy night",
+     "answer": "B"},
+    {"question": "It is 3 p.m. where you take off. You fly for 2 hours and land in a time zone 1 "
+                 "hour ahead. What is the local time when you land? (A) 3 p.m. (B) 5 p.m. (C) 6 "
+                 "p.m. (D) 4 p.m.",
+     "answer": "C"},
+    {"question": "It is raining and the wind is blowing hard from your left. To stay as dry as "
+                 "possible you tilt your umbrella: (A) to the left (B) to the right (C) straight "
+                 "behind you (D) you must keep it perfectly upright",
+     "answer": "A"},
+    {"question": "A fish tank has no lid and nobody adds water to it for a month. The water "
+                 "level will: (A) rise (B) freeze (C) stay exactly the same (D) fall",
+     "answer": "D"},
+    {"question": "You borrowed a friend's book and spilled coffee on it. The most considerate "
+                 "thing to do is: (A) return it without mentioning it (B) keep it and say you "
+                 "lost it (C) tell them and offer to replace it (D) say it was like that already",
+     "answer": "C"},
+    {"question": "A clock's hour hand points at 3 and its minute hand points at 12. What time "
+                 "did the clock show five hours earlier? (A) 8 o'clock (B) 7 o'clock (C) 2 "
+                 "o'clock (D) 10 o'clock",
+     "answer": "D"},
+]
+
+MINI_INSTRUCTION: MiniBenchmark = [
+    {"question": "Respond with just the word: ok", "answer": "ok"},
+    {"question": "Answer in one word — the color of grass:", "answer": "green"},
+    {"question": "Answer yes or no: Is fire hot?", "answer": "yes"},
+    {"question": "Reply with only the number three.", "answer": "3"},
+    {"question": "Say only the word: done", "answer": "done"},
+    {"question": "Reply with a single word: the opposite of 'up'.", "answer": "down"},
+    {"question": "Answer with one word: the color of a clear daytime sky.", "answer": "blue"},
+    {"question": "Answer yes or no: Is water wet?", "answer": "yes"},
+    {"question": "Respond with only the word: apple", "answer": "apple"},
+    {"question": "Reply with the number that comes after 9.", "answer": "10"},
+    {"question": "Answer in one word: what animal says 'meow'?", "answer": "cat"},
+    {"question": "Say only the word: banana", "answer": "banana"},
+    {"question": "Answer with one word: the opposite of 'hot'.", "answer": "cold"},
+    {"question": "Reply with the single word: yes if 2 is greater than 1.", "answer": "yes"},
+    {"question": "Answer in one word: the first month of the year.", "answer": "January"},
+    {"question": "Respond with only: purple", "answer": "purple"},
+    {"question": "Answer with one word: what do bees make?", "answer": "honey"},
+    {"question": "Reply with only the number of days in a week.", "answer": "7"},
+    {"question": "Answer in one word: the opposite of 'left'.", "answer": "right"},
+    {"question": "Say only the word: ocean", "answer": "ocean"},
+    {"question": "Answer with one word: what color is a ripe tomato?", "answer": "red"},
+    {"question": "Reply with a single word: the season after winter.", "answer": "spring"},
+    {"question": "Answer in one word: what do you call frozen water?", "answer": "ice"},
+    {"question": "Respond with only the number: how many wheels does a bicycle have?",
+     "answer": "2"},
+]
+
+# Arithmetic — the market asks for basic numeracy; scored by extraction + exact.
+MINI_ARITHMETIC: MiniBenchmark = [
+    {"question": "What is 6 + 7?", "answer": "13"},
+    {"question": "What is 9 - 4?", "answer": "5"},
+    {"question": "What is 8 times 3?", "answer": "24"},
+    {"question": "What is 6 multiplied by 7?", "answer": "42"},
+    {"question": "What is 12 divided by 4?", "answer": "3"},
+    {"question": "What is 15 + 27?", "answer": "42"},
+    {"question": "What is 100 - 37?", "answer": "63"},
+    {"question": "What is 9 times 9?", "answer": "81"},
+    {"question": "What is half of 50?", "answer": "25"},
+    {"question": "What is 7 + 8?", "answer": "15"},
+    {"question": "What is 5 squared?", "answer": "25"},
+    {"question": "What is 45 divided by 9?", "answer": "5"},
+    {"question": "What is 11 times 11?", "answer": "121"},
+    {"question": "What is 30 - 12?", "answer": "18"},
+    {"question": "What is 4 + 4 + 4?", "answer": "12"},
+    {"question": "What is 3 times 12?", "answer": "36"},
+    {"question": "What is 200 - 99?", "answer": "101"},
+    {"question": "What is 8 + 9?", "answer": "17"},
+    {"question": "What is 72 divided by 8?", "answer": "9"},
+    {"question": "What is 14 times 2?", "answer": "28"},
+    {"question": "What is 6 + 6 + 6?", "answer": "18"},
+    {"question": "What is 10 percent of 200?", "answer": "20"},
+    {"question": "What is 16 + 25?", "answer": "41"},
+    {"question": "What is 90 divided by 3?", "answer": "30"},
+    # #1192 — the 24 single-step rows above put a capable model at 1.000
+    # (Qwen2.5-7B-Instruct, 36/36 in the #1111 gate record),
+    # so the suite could not see a numeracy regression. The rows below are
+    # multi-step or large-operand; no answer appears as a token in its own
+    # question, so echoing the prompt cannot score.
+    {"question": "What is 47 times 38?", "answer": "1786"},
+    {"question": "What is 1234 times 56?", "answer": "69104"},
+    {"question": "What is 7 + 3 times 4 - 6 divided by 2?", "answer": "16"},
+    {"question": "A shirt costs 80 dollars. It is discounted by 25 percent, then the "
+                 "discounted price is raised by 25 percent. What is the final price "
+                 "in dollars?", "answer": "75"},
+    {"question": "What is 2 to the power of 15?", "answer": "32768"},
+    {"question": "What is the remainder when 2024 is divided by 37?", "answer": "26"},
+    {"question": "How many seconds are in 3 days?", "answer": "259200"},
+    {"question": "What is 999 times 999?", "answer": "998001"},
+    {"question": "What is the sum of all the whole numbers from 1 to 250?", "answer": "31375"},
+    {"question": "What is 17 squared minus 13 squared?", "answer": "120"},
+    {"question": "A train leaves at 9:47 and arrives at 14:12 the same day. How many "
+                 "minutes long is the trip?", "answer": "265"},
+    {"question": "What is 15 percent of 15 percent of 4000?", "answer": "90"},
+    {"question": "What is 123456789 divided by 9?", "answer": "13717421"},
+    {"question": "What is the least common multiple of 18, 24 and 40?", "answer": "360"},
+    {"question": "What is 3/8 plus 5/12, as a fraction in lowest terms?", "answer": "19/24"},
+    {"question": "How many times is the digit 7 written when you write out every whole "
+                 "number from 1 to 100?", "answer": "20"},
+]
+
+MINI_BENCHMARKS: dict[str, MiniBenchmark] = {
+    "mini_mmlu": MINI_MMLU,
+    "mini_common_sense": MINI_COMMON_SENSE,
+    "mini_instruction": MINI_INSTRUCTION,
+    "mini_arithmetic": MINI_ARITHMETIC,
+}
+
+
+@dataclass
+class ForgettingResult:
+    """Outcome of a single forgetting eval."""
+
+    step: int
+    accuracy: float
+    baseline: float
+    delta: float
+    warning_level: Literal["green", "yellow", "red"]
+
+
+class ForgettingDetector:
+    """Run a mini benchmark periodically and report accuracy drops."""
+
+    def __init__(
+        self,
+        generate_fn: Callable[[str], str],
+        benchmark: str = "mini_mmlu",
+        threshold: float = 0.10,
+    ) -> None:
+        if benchmark not in MINI_BENCHMARKS:
+            raise ValueError(
+                f"Unknown benchmark '{benchmark}'. "
+                f"Options: {', '.join(MINI_BENCHMARKS.keys())}"
+            )
+        self.generate_fn = generate_fn
+        self.benchmark_name = benchmark
+        self.benchmark = MINI_BENCHMARKS[benchmark]
+        self.threshold = threshold
+        self._baseline_accuracy: Optional[float] = None
+
+    def _evaluate(self) -> float:
+        correct = 0
+        outputs = generate_outputs(self.generate_fn, [
+            build_mcq_prompt(item["question"], item.get("answer", ""))
+            for item in self.benchmark
+        ])
+        for item, output in zip(self.benchmark, outputs):
+            if output is None:
+                continue
+            if score_answer(output, item["answer"]):
+                correct += 1
+        return correct / len(self.benchmark) if self.benchmark else 0.0
+
+    def run_baseline(self) -> float:
+        """Compute the baseline accuracy before training starts."""
+        self._baseline_accuracy = self._evaluate()
+        return self._baseline_accuracy
+
+    def _build_result(self, step: int, accuracy: float) -> ForgettingResult:
+        baseline = self._baseline_accuracy if self._baseline_accuracy is not None else accuracy
+        delta = baseline - accuracy
+        if delta <= self.threshold:
+            level: Literal["green", "yellow", "red"] = "green"
+        elif delta <= self.threshold * 2:
+            level = "yellow"
+        else:
+            level = "red"
+        return ForgettingResult(
+            step=step,
+            accuracy=accuracy,
+            baseline=baseline,
+            delta=delta,
+            warning_level=level,
+        )
+
+    def check_forgetting(self, step: int) -> ForgettingResult:
+        """Run the mini benchmark and compare against the baseline."""
+        if self._baseline_accuracy is None:
+            self.run_baseline()
+        current = self._evaluate()
+        return self._build_result(step=step, accuracy=current)

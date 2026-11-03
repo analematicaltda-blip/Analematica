@@ -1,0 +1,619 @@
+"""soup sweep — hyperparameter search over training configs."""
+
+import itertools
+import math
+import random
+from pathlib import Path
+from typing import Optional
+
+import typer
+import yaml
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+
+from soup_cli.config.loader import load_config
+from soup_cli.utils.sweep_config import load_sweep_yaml
+from soup_cli.utils.terminal import for_terminal
+
+console = Console()
+
+
+def _finite_loss(value: object) -> Optional[float]:
+    """Return a numeric finite loss, or ``None`` for missing/diverged values."""
+    try:
+        loss = float(value)
+    except (TypeError, ValueError):
+        return None
+    return loss if math.isfinite(loss) else None
+
+
+def _is_diverged_loss(value: object) -> bool:
+    """Whether a recorded loss is explicitly non-finite."""
+    try:
+        return not math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _loss_sort_key(result: dict) -> tuple[int, float]:
+    """Rank finite completed runs first and keep divergent/failed runs visible last."""
+    if result.get("status") != "completed":
+        return (2, float("inf"))
+    loss = _finite_loss(result.get("final_loss"))
+    return (0, loss) if loss is not None else (1, float("inf"))
+
+
+def _exceeds_early_stop(final_loss: object, best_loss: float, factor: float) -> bool:
+    """Treat an explicitly diverged arm as worse than any finite threshold."""
+    if _is_diverged_loss(final_loss):
+        return True
+    loss = _finite_loss(final_loss)
+    return loss is not None and math.isfinite(best_loss) and loss > best_loss * factor
+
+
+def sweep(
+    config: str = typer.Option(
+        "soup.yaml",
+        "--config",
+        "-c",
+        help="Path to base soup.yaml config file",
+    ),
+    param: Optional[list[str]] = typer.Option(
+        None,
+        "--param",
+        "-p",
+        help="Parameter to sweep: key=val1,val2,val3 (e.g., lr=1e-5,2e-5,5e-5)",
+    ),
+    sweep_config: Optional[str] = typer.Option(
+        None,
+        "--sweep-config",
+        help=(
+            "Path to a standalone sweep YAML (strategy/n_runs/seed/params) "
+            "instead of --param; its strategy, n_runs and seed take "
+            "precedence over --strategy/--max-runs"
+        ),
+    ),
+    strategy: str = typer.Option(
+        "grid",
+        "--strategy",
+        "-s",
+        help="Search strategy: grid, random",
+    ),
+    max_runs: Optional[int] = typer.Option(
+        None,
+        "--max-runs",
+        help="Max number of runs (useful for random strategy)",
+    ),
+    name: Optional[str] = typer.Option(
+        None,
+        "--name",
+        "-n",
+        help="Sweep experiment name prefix",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Show planned runs without executing",
+    ),
+    early_stop: float = typer.Option(
+        None,
+        "--early-stop",
+        help="Stop early if run's loss exceeds best loss by this factor (e.g. 1.5 = 50% worse)",
+    ),
+    yes: bool = typer.Option(
+        False,
+        "--yes",
+        "-y",
+        help="Skip confirmation prompt",
+    ),
+):
+    """Run hyperparameter sweep: grid or random search over training parameters."""
+    config_path = Path(config)
+    if not config_path.exists():
+        console.print(f"[red]Config not found: {config_path}[/]")
+        raise typer.Exit(1)
+
+    if param and sweep_config:
+        console.print("[red]Use either --param or --sweep-config, not both.[/]")
+        raise typer.Exit(1)
+
+    if sweep_config:
+        try:
+            spec = load_sweep_yaml(sweep_config)
+        except (OSError, ValueError, TypeError, yaml.YAMLError) as exc:
+            console.print(
+                f"[red]Failed to load --sweep-config {for_terminal(sweep_config)}: "
+                f"{for_terminal(exc)}[/]"
+            )
+            raise typer.Exit(1) from exc
+        sweep_params = {key: list(values) for key, values in spec.params.items()}
+        strategy = spec.strategy
+        max_runs = spec.n_runs or max_runs
+        random.seed(spec.seed)
+    elif param:
+        sweep_params = _parse_sweep_params(param)
+    else:
+        console.print(
+            "[red]Provide --param, or --sweep-config for a standalone sweep file.[/]"
+        )
+        raise typer.Exit(1)
+
+    if strategy not in ("grid", "random"):
+        console.print(f"[red]Invalid strategy: {strategy}. Must be grid or random.[/]")
+        raise typer.Exit(1)
+
+    if not sweep_params:
+        console.print("[red]No valid sweep parameters provided.[/]")
+        raise typer.Exit(1)
+
+    # Generate parameter combinations
+    combinations = _generate_combinations(sweep_params, strategy, max_runs)
+
+    # Validate before anything is printed (#642). --dry-run used to return
+    # below without ever loading the config, so neither the loader's
+    # unknown-key warning (#627) nor the sweep-parameter pre-flight (#628)
+    # was reachable under it — a dry run whose job is catching mistakes
+    # before a long run caught neither. Loading a config file executes
+    # nothing, so both paths now validate at the same point and share the
+    # single load.
+    base_cfg = load_config(config_path)
+
+    # Refuse the whole sweep before any arm starts — and before printing a
+    # grid that can never run (#627, #642). The arm loop below wraps each run
+    # in `except Exception`, so the guard inside `_run_single` would be
+    # caught, recorded as a per-arm failure, and the command would still
+    # exit 0 — an entirely invalid sweep that nothing downstream can detect.
+    # Every combination carries the same parameter names, so one probe built
+    # the way `_run_single` builds its config settles it for the grid.
+    if combinations:
+        probe = base_cfg.model_dump()
+        for key, val in combinations[0].items():
+            _set_nested_param(probe, key, val)
+        try:
+            _reject_unknown_sweep_params(probe)
+        except ValueError as exc:
+            console.print(f"[red]{exc}[/]")
+            raise typer.Exit(1) from exc
+
+    console.print(
+        Panel(
+            f"Config:   [bold]{config_path}[/]\n"
+            f"Strategy: [bold]{strategy}[/]\n"
+            f"Params:   [bold]{', '.join(sweep_params.keys())}[/]\n"
+            f"Runs:     [bold]{len(combinations)}[/]",
+            title="Sweep Plan",
+        )
+    )
+
+    # Show parameter table
+    param_table = Table(title="Parameter Grid")
+    param_table.add_column("Run", style="bold")
+    for key in sweep_params:
+        param_table.add_column(key)
+
+    for idx, combo in enumerate(combinations):
+        row_values = [str(combo[key]) for key in sweep_params]
+        param_table.add_row(f"#{idx + 1}", *row_values)
+
+    console.print(param_table)
+
+    if dry_run:
+        console.print("[yellow]Dry run - no training will be executed.[/]")
+        raise typer.Exit()
+
+    if not yes:
+        if not typer.confirm(f"Start {len(combinations)} training run(s)?", default=True):
+            console.print("[yellow]Cancelled.[/]")
+            raise typer.Exit()
+
+    results = []
+    best_loss = float("inf")
+    skipped = 0
+
+    for idx, combo in enumerate(combinations):
+        run_name = f"{name or 'sweep'}_{idx + 1}"
+        console.print(f"\n[bold]--- Run {idx + 1}/{len(combinations)}: {run_name} ---[/]")
+
+        for key, val in combo.items():
+            console.print(f"  {key} = {val}")
+
+        try:
+            result = _run_single(base_cfg, combo, run_name, config_path)
+            final_loss = result.get("final_loss", 0)
+            results.append({
+                "name": run_name,
+                "params": combo,
+                "run_id": result.get("run_id", ""),
+                "final_loss": final_loss,
+                "duration": result.get("duration", ""),
+                "status": "completed",
+            })
+
+            # A diverged run stays in results but can never become the best arm.
+            finite_loss = _finite_loss(final_loss)
+            if finite_loss is not None and finite_loss < best_loss:
+                best_loss = finite_loss
+
+            if early_stop and _exceeds_early_stop(final_loss, best_loss, early_stop):
+                if _is_diverged_loss(final_loss):
+                    console.print(
+                        f"[yellow]Loss {final_loss} diverged; treating this arm as worse "
+                        "than the early-stop threshold.[/]"
+                    )
+                else:
+                    console.print(
+                        f"[yellow]Loss {finite_loss:.4f} exceeds threshold "
+                        f"({best_loss:.4f} x {early_stop} = {best_loss * early_stop:.4f})[/]"
+                    )
+        except Exception as exc:
+            # #1213 — a `backend: mlx` arm now reaches the MLX wrapper, whose
+            # install hint reads `pip install "soup-cli[mlx]"`. Interpolated
+            # straight into the markup string, Rich reads `[mlx]` as a style tag
+            # and drops it, so the hint that tells the user what to install is
+            # the part that disappears. `for_terminal` escapes it.
+            console.print(f"[red]Run {run_name} failed:[/] {for_terminal(exc)}")
+            results.append({
+                "name": run_name,
+                "params": combo,
+                "run_id": "",
+                "final_loss": 0,
+                "duration": "",
+                "status": "failed",
+            })
+
+        # Early stopping: skip remaining runs if too many are poor
+        if early_stop and len(results) >= 2:
+            completed = [r for r in results if r["status"] == "completed"]
+            if completed:
+                recent = completed[-1]
+                if _exceeds_early_stop(recent["final_loss"], best_loss, early_stop):
+                    remaining = len(combinations) - idx - 1
+                    if remaining > 0:
+                        skipped = remaining
+                        if _is_diverged_loss(recent["final_loss"]):
+                            reason = "Last run diverged."
+                        else:
+                            reason = (
+                                f"Last loss {recent['final_loss']:.4f} exceeded threshold."
+                            )
+                        console.print(
+                            f"[yellow]Early stopping: skipping {remaining} remaining run(s). "
+                            f"{reason}[/]"
+                        )
+                        break
+
+    # Summary table
+    _display_summary(results, sweep_params)
+
+    if skipped:
+        console.print(f"\n[yellow]Early stopping: {skipped} run(s) skipped.[/]")
+
+    # #1808: a sweep in which no arm completed used to return normally, so a
+    # script chaining on the exit code read a table of "failed" rows as success.
+    # One completed arm is still a sweep; none is a failure, named as such.
+    completed_count = sum(1 for r in results if r["status"] == "completed")
+    if results and completed_count == 0:
+        console.print(
+            f"\n[red]No sweep run completed: {len(results)} of {len(results)} "
+            f"run(s) failed.[/] The first error is printed above each run."
+        )
+        raise typer.Exit(1)
+
+
+def _parse_sweep_params(params: list[str]) -> dict[str, list]:
+    """Parse sweep parameter strings into a dict of {key: [values]}."""
+    result = {}
+    for param_str in params:
+        if "=" not in param_str:
+            console.print(f"[yellow]Skipping invalid param: {param_str} (missing '=')[/]")
+            continue
+
+        key, values_str = param_str.split("=", 1)
+        key = key.strip()
+        values = []
+
+        for val in values_str.split(","):
+            val = val.strip()
+            values.append(_parse_value(val))
+
+        if values:
+            result[key] = values
+
+    return result
+
+
+def _parse_value(val: str):
+    """Parse a string value into the appropriate Python type."""
+    # Bool
+    if val.lower() in ("true", "false"):
+        return val.lower() == "true"
+    # None
+    if val.lower() == "none":
+        return None
+    # Int
+    try:
+        return int(val)
+    except ValueError:
+        pass
+    # Float (including scientific notation)
+    try:
+        return float(val)
+    except ValueError:
+        pass
+    # String
+    return val
+
+
+def _generate_combinations(
+    sweep_params: dict[str, list],
+    strategy: str,
+    max_runs: Optional[int],
+) -> list[dict]:
+    """Generate parameter combinations based on strategy."""
+    keys = list(sweep_params.keys())
+    value_lists = [sweep_params[k] for k in keys]
+
+    if strategy == "grid":
+        combos = [dict(zip(keys, vals)) for vals in itertools.product(*value_lists)]
+    elif strategy == "random":
+        # Draw from each list's distinct values. A list that names a value twice
+        # (`lr=1e-5,2e-5,1e-5`, or `1e-5,0.00001`) has fewer distinct arms than the
+        # product of the list lengths; sampling until that many unique arms turned
+        # up never finished, and the run-them-all branch repeated an arm.
+        value_lists = [list(dict.fromkeys(vals)) for vals in value_lists]
+        total_possible = 1
+        for vals in value_lists:
+            total_possible *= len(vals)
+
+        num_runs = max_runs or min(total_possible, 10)
+        num_runs = min(num_runs, total_possible)
+
+        if num_runs >= total_possible:
+            # Just do all of them
+            combos = [dict(zip(keys, vals)) for vals in itertools.product(*value_lists)]
+        else:
+            seen = set()
+            combos = []
+            while len(combos) < num_runs:
+                vals = tuple(random.choice(vals_list) for vals_list in value_lists)
+                if vals not in seen:
+                    seen.add(vals)
+                    combos.append(dict(zip(keys, vals)))
+    else:
+        combos = []
+
+    if max_runs and len(combos) > max_runs:
+        combos = combos[:max_runs]
+
+    return combos
+
+
+def _set_nested_param(config_dict: dict, key: str, value) -> dict:
+    """Set a nested parameter in a config dict using dot notation.
+
+    Supports keys like: lr, lora.r, training.epochs, etc.
+    Maps common short names to their full paths.
+    """
+    # Short name mappings
+    shortcuts = {
+        "lr": "training.lr",
+        "epochs": "training.epochs",
+        "batch_size": "training.batch_size",
+        "lora_r": "training.lora.r",
+        "lora_alpha": "training.lora.alpha",
+        "lora_dropout": "training.lora.dropout",
+        "quantization": "training.quantization",
+        "warmup_ratio": "training.warmup_ratio",
+        "weight_decay": "training.weight_decay",
+        "gradient_accumulation_steps": "training.gradient_accumulation_steps",
+        "max_grad_norm": "training.max_grad_norm",
+        "optimizer": "training.optimizer",
+        "scheduler": "training.scheduler",
+        "val_split": "data.val_split",
+        "max_length": "data.max_length",
+        "dpo_beta": "training.dpo_beta",
+        "kto_beta": "training.kto_beta",
+        "grpo_beta": "training.grpo_beta",
+        "num_generations": "training.num_generations",
+        "reward_fn": "training.reward_fn",
+        "ppo_epochs": "training.ppo_epochs",
+        "ppo_clip_ratio": "training.ppo_clip_ratio",
+        "ppo_kl_penalty": "training.ppo_kl_penalty",
+        "reward_model": "training.reward_model",
+        "orpo_beta": "training.orpo_beta",
+        "simpo_gamma": "training.simpo_gamma",
+        "cpo_alpha": "training.cpo_alpha",
+        "ipo_tau": "training.ipo_tau",
+        "bco_beta": "training.bco_beta",
+        "loraplus_lr_ratio": "training.loraplus_lr_ratio",
+        "use_dora": "training.lora.use_dora",
+        "use_galore": "training.use_galore",
+        "galore_rank": "training.galore_rank",
+        "moe_lora": "training.moe_lora",
+        "moe_aux_loss_coeff": "training.moe_aux_loss_coeff",
+        "embedding_loss": "training.embedding_loss",
+        "embedding_margin": "training.embedding_margin",
+        "embedding_pooling": "training.embedding_pooling",
+        "embedding_temperature": "training.embedding_temperature",
+        "neftune_alpha": "training.neftune_alpha",
+        "use_rslora": "training.lora.use_rslora",
+        "backend": "backend",
+    }
+
+    full_key = shortcuts.get(key, key)
+    parts = full_key.split(".")
+
+    obj = config_dict
+    for part in parts[:-1]:
+        if part not in obj:
+            obj[part] = {}
+        obj = obj[part]
+    obj[parts[-1]] = value
+
+    return config_dict
+
+
+def _reject_unknown_sweep_params(config_dict: dict) -> None:
+    """Refuse a sweep whose parameter names no config field (#627).
+
+    ``config_dict`` starts from a validated ``model_dump()``, so anything the
+    schema cannot place got there from a ``--param`` name. Dropping it silently
+    would run the whole grid with the swept knob never applied, producing arms
+    that are all identical and a winner that means nothing -- so this raises
+    regardless of the loader's severity switch, and carries no deadline: there
+    is no partially-useful result to preserve by continuing.
+
+    Kept out of :func:`_run_single` so it is reachable without importing the
+    training stack, and so removing it fails a test rather than a review.
+    """
+    from soup_cli.config.unknown_keys import find_unknown_config_keys, format_unknown_keys
+
+    unknown = find_unknown_config_keys(config_dict)
+    if unknown:
+        detail = format_unknown_keys(unknown, include_deadline=False)
+        raise ValueError(f"sweep parameter does not match any config field: {detail}")
+
+
+def _run_single(base_cfg, params: dict, run_name: str, config_path: Path) -> dict:
+    """Run a single training with modified parameters."""
+    # Deep copy and modify config
+    config_dict = base_cfg.model_dump()
+    for key, val in params.items():
+        _set_nested_param(config_dict, key, val)
+
+    # Override experiment name
+    config_dict["experiment_name"] = run_name
+
+    # Before the heavy imports, so this refusal is reachable -- and testable --
+    # without the training stack. `sweep()` pre-checks the grid too; this stays
+    # so a direct caller cannot bypass it.
+    _reject_unknown_sweep_params(config_dict)
+
+    from soup_cli.config.schema import SoupConfig
+    from soup_cli.data.loader import (
+        data_config_for_task,
+        load_dataset,
+        task_preserves_source_columns,
+    )
+    from soup_cli.experiment.tracker import ExperimentTracker
+    from soup_cli.monitoring.display import TrainingDisplay
+    from soup_cli.trainer.dispatch import build_trainer
+    from soup_cli.utils.eval_schedule import loader_data_config, validation_notice
+    from soup_cli.utils.gpu import configure_mps_async_load, detect_device, get_gpu_info
+
+    cfg = SoupConfig(**config_dict)
+
+    # Detect hardware
+    device, device_name = detect_device()
+    configure_mps_async_load(device)
+    gpu_info = get_gpu_info()
+
+    # Load data -- the same split `soup train` would use (#1223).
+    val_notice = validation_notice(cfg)
+    if val_notice:
+        console.print(f"[yellow]Note:[/] {val_notice}")
+    dataset = load_dataset(
+        data_config_for_task(loader_data_config(cfg), cfg.task),
+        preserve_source_columns=task_preserves_source_columns(cfg.task),
+    )
+    console.print(f"[dim]Loaded {len(dataset['train'])} train samples[/]")
+    # #2047 -- the judge_rank cost guard, between the data load and the model load.
+    from soup_cli.trainer.grpo_judge import check_judge_rank_budget
+
+    check_judge_rank_budget(cfg, dataset)
+
+    # Start tracking
+    tracker = ExperimentTracker()
+    run_id = tracker.start_run(
+        config_dict=cfg.model_dump(),
+        device=device,
+        device_name=device_name,
+        gpu_info=gpu_info,
+        experiment_name=run_name,
+    )
+
+    try:
+        # Build trainer — the same dispatch `soup train` uses (#1213). This used to
+        # be a second, shorter chain that never grew past v0.40.0, so ten task
+        # values and every `backend: mlx` config were trained as plain SFT here
+        # while the tracker recorded the configured task.
+        trainer_wrapper = build_trainer(cfg, device=device)
+        trainer_wrapper.setup(dataset)
+
+        # Train
+        display = TrainingDisplay(cfg, device_name=device_name)
+        result = trainer_wrapper.train(display=display, tracker=tracker, run_id=run_id)
+        tracker.finish_run(
+            run_id=run_id,
+            initial_loss=result["initial_loss"],
+            final_loss=result["final_loss"],
+            total_steps=result["total_steps"],
+            duration_secs=result["duration_secs"],
+            output_dir=result["output_dir"],
+        )
+        result["run_id"] = run_id
+        return result
+    except Exception as exc:
+        from soup_cli.commands.train import _describe_exception_for_tracker
+
+        tracker.fail_run(run_id, error=_describe_exception_for_tracker(exc))
+        raise
+
+
+def _display_summary(results: list[dict], sweep_params: dict[str, list]):
+    """Display sweep results summary table."""
+    table = Table(title="Sweep Results")
+    table.add_column("Run", style="bold")
+    for key in sweep_params:
+        table.add_column(key)
+    table.add_column("Final Loss", justify="right", style="green")
+    table.add_column("Duration", justify="right")
+    table.add_column("Status")
+
+    # Sort finite completed losses first; divergent and failed rows remain visible last.
+    sorted_results = sorted(results, key=_loss_sort_key)
+
+    for idx, res in enumerate(sorted_results):
+        diverged = res["status"] == "completed" and _is_diverged_loss(res.get("final_loss"))
+        display_status = "diverged" if diverged else res["status"]
+        status_style = "green" if display_status == "completed" else "red"
+        param_vals = [str(res["params"].get(k, "")) for k in sweep_params]
+        finite_loss = _finite_loss(res.get("final_loss"))
+        if diverged:
+            loss_str = str(res["final_loss"])
+        elif res["status"] == "completed" and finite_loss is not None:
+            loss_str = f"{finite_loss:.4f}"
+        else:
+            loss_str = "-"
+        best_marker = (
+            " [bold yellow]*[/]"
+            if idx == 0 and display_status == "completed"
+            else ""
+        )
+        table.add_row(
+            res["name"],
+            *param_vals,
+            f"{loss_str}{best_marker}",
+            res.get("duration", "-"),
+            f"[{status_style}]{display_status}[/]",
+        )
+
+    console.print(table)
+
+    # Best run
+    completed = [
+        r
+        for r in sorted_results
+        if r["status"] == "completed" and _finite_loss(r.get("final_loss")) is not None
+    ]
+    if completed:
+        best = completed[0]
+        console.print(
+            f"\n[bold green]Best run:[/] {best['name']} "
+            f"(loss: {best['final_loss']:.4f})"
+        )
+        for key, val in best["params"].items():
+            console.print(f"  {key} = {val}")
+        if best.get("run_id"):
+            console.print(f"\n[dim]View details: soup runs show {best['run_id']}[/]")

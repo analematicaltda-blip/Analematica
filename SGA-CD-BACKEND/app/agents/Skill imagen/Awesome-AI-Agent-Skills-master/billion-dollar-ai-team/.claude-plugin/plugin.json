@@ -1,0 +1,11 @@
+{
+  "name": "billion-dollar-ai-team",
+  "version": "1.0.0",
+  "description": "Operator-style marketing and sales advisory skill for offers, funnels, copy, positioning, content, and closing.",
+  "author": {
+    "name": "walva"
+  },
+  "repository": "https://github.com/alirezarezvani/claude-skills",
+  "license": "MIT",
+  "skills": "./"
+}

@@ -1,0 +1,2911 @@
+from __future__ import annotations
+
+import asyncio
+from dataclasses import asdict, dataclass, replace
+import hashlib
+import secrets
+import shutil
+import threading
+import tomllib
+import uuid
+import zipfile
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, BinaryIO, Literal
+
+from plugin.core.plugin_layout import resolve_plugin_layout
+from plugin.core.package_limits import MAX_PLUGIN_PACKAGE_BYTES
+from plugin.logging_config import get_logger
+from plugin.neko_plugin_cli.core.install import PackageInstaller
+from plugin.neko_plugin_cli.core.models import InstalledPlugin, InstallResult
+from plugin.neko_plugin_cli.public import (
+    inspect_package,
+    install_package,
+)
+from plugin.server.application.install_source import (
+    InstallSourceError,
+    InstallSourceManager,
+    LockEntry,
+    classify_plugin_path,
+    get_install_source_manager,
+)
+from plugin.server.infrastructure.autostart_approvals import (
+    clear_autostart_pending,
+    is_autostart_approved,
+    mark_autostart_pending,
+)
+from plugin.server.infrastructure.runtime_overrides import (
+    RuntimeOverridePersistenceError,
+    get_runtime_override_entry,
+    restore_runtime_override,
+    set_runtime_auto_start_override,
+)
+from plugin.server.application.plugin_cli.paths import PluginCliPathPolicy
+from plugin.server.application.plugin_cli.install_plan import (
+    REPLACEMENT_ACTIONS,
+    PluginInstallPlan,
+    build_install_plan,
+    is_manifestless_state_directory,
+)
+from plugin.server.application.plugins.installation_transactions import (
+    replace as replacement_transaction,
+)
+from plugin.server.application.plugins import source_switch
+from plugin.server.application.plugins.registry_service import PluginRegistryService
+from plugin.server.application.plugins.installation_transactions.manual_takeover import (
+    is_manual_takeover_entry,
+    local_manual_takeover_confirmation_token,
+    manual_takeover_snapshot_sha256,
+)
+from plugin.server.application.plugins.source_switch import (
+    SourceSwitchRequest,
+    switch_builtin_source,
+)
+from plugin.server.application.plugins.operation_lock import serialized_plugin_operation
+from plugin.server.application.plugin_cli.source_resolver import (
+    PluginSourceResolver,
+    ResolvedPluginSource,
+)
+from plugin.server.domain.errors import ServerDomainError
+from plugin.settings import (
+    BUILTIN_PLUGIN_CONFIG_ROOT,
+    USER_PACKAGE_PROFILES_ROOT,
+    USER_PLUGIN_CONFIG_ROOT,
+    USER_PLUGIN_PACKAGES_ROOT,
+)
+
+_PLUGIN_ROOT = Path(__file__).resolve().parents[3]
+# Deprecated compatibility anchors. Package-management code below resolves
+# roots through PluginCliPathPolicy.from_settings() for each operation.
+_RUNTIME_PLUGINS_ROOT = BUILTIN_PLUGIN_CONFIG_ROOT
+_INSTALL_PLUGINS_ROOT = USER_PLUGIN_CONFIG_ROOT
+_INSTALL_PROFILES_ROOT = USER_PACKAGE_PROFILES_ROOT
+_TARGET_ROOT = USER_PLUGIN_PACKAGES_ROOT
+
+# Allowed extensions for uploaded plugin packages
+_ALLOWED_UPLOAD_SUFFIXES = frozenset({".neko-plugin", ".neko-bundle"})
+# Maximum upload size (500 MiB)
+_UPLOAD_MAX_BYTES = MAX_PLUGIN_PACKAGE_BYTES
+_UPLOAD_COPY_CHUNK_BYTES = 1024 * 1024
+
+logger = get_logger("server.application.plugin_cli")
+plugin_registry_service = PluginRegistryService()
+
+async def _refresh_committed_market_install(plugin_id: str) -> str | None:
+    """Refresh a fresh Market install without rolling back committed files.
+
+    The source row is the commit point. Cancellation after it must wait for the
+    one refresh already in flight, then propagate to the caller; refresh failure
+    is surfaced as a warning while the committed installation remains intact.
+    """
+
+    try:
+        # upload_and_install is wrapped by serialized_plugin_operation, which
+        # shields the complete locked operation and waits for it before
+        # propagating caller cancellation. Await directly here so no orphan
+        # refresh task is created.
+        await plugin_registry_service.refresh_plugin(plugin_id)
+    except Exception as exc:  # noqa: BLE001 - committed install stays successful.
+        logger.warning(
+            "post-commit Market plugin refresh failed: plugin_id={}",
+            plugin_id,
+            exc_info=True,
+        )
+        return (
+            f"plugin '{plugin_id}' was installed, but its registry refresh failed "
+            f"({type(exc).__name__}: {exc}); refresh plugins or restart N.E.K.O"
+        )
+    return None
+
+_PACKAGE_ERROR_PATTERNS = (
+    (
+        "PLUGIN_PACKAGE_NESTED_ROOT",
+        (("extra parent folder",), ("manifest.toml is nested",)),
+    ),
+    (
+        "PLUGIN_PACKAGE_MANIFEST_MISSING",
+        (
+            ("required file 'manifest.toml' not found",),
+            ("package manifest.toml is missing",),
+        ),
+    ),
+    (
+        "PLUGIN_PACKAGE_PLUGIN_MANIFEST_MISSING",
+        (("missing the required 'plugin.toml'",),),
+    ),
+    (
+        "PLUGIN_PACKAGE_PLUGIN_MANIFEST_INVALID",
+        (("plugin.toml", "invalid toml"),),
+    ),
+    (
+        "PLUGIN_PACKAGE_IDENTITY_MISMATCH",
+        (("does not match plugin.toml id",), ("plugin identity mismatch",)),
+    ),
+    (
+        "PLUGIN_PACKAGE_HASH_MISMATCH",
+        (("payload hash mismatch",), ("content verification hash",)),
+    ),
+)
+
+
+def _classify_package_error(exc: Exception) -> str | None:
+    if isinstance(exc, ServerDomainError) and exc.code.startswith("PLUGIN_PACKAGE_"):
+        return exc.code
+    if isinstance(exc, zipfile.BadZipFile):
+        return "PLUGIN_PACKAGE_INVALID_ARCHIVE"
+
+    message = str(exc).lower()
+    for code, alternatives in _PACKAGE_ERROR_PATTERNS:
+        if any(
+            all(fragment in message for fragment in fragments)
+            for fragments in alternatives
+        ):
+            return code
+    if any(
+        fragment in message
+        for fragment in (
+            "too many entries",
+            "package archive expands to",
+            "single-member limit",
+            "compression ratio",
+            "-byte read limit",
+            "equivalent on common filesystems",
+            "file/directory path conflict",
+        )
+    ):
+        return "PLUGIN_PACKAGE_INVALID_ARCHIVE"
+    return None
+
+
+def _replacement_error_details(
+    exc: replacement_transaction.ReplacePluginError,
+) -> dict[str, object]:
+    details: dict[str, object] = {
+        "stage": exc.stage,
+        "rollback_status": exc.rollback_status,
+    }
+    cause_code = _classify_package_error(exc.cause)
+    if cause_code:
+        details["cause_code"] = cause_code
+    return details
+
+
+@dataclass(frozen=True, slots=True)
+class _StagedBuiltinOverride:
+    result: InstallResult
+    plugin_dir: Path
+
+
+def _require_within(path: Path, root: Path, *, field: str) -> Path:
+    resolved = path.resolve()
+    try:
+        resolved.relative_to(root.resolve())
+    except ValueError as exc:
+        raise ValueError(f"{field} must be inside {root}") from exc
+    return resolved
+
+
+def _require_safe_directory_name(value: str, *, field: str) -> str:
+    directory_name = value.strip()
+    if (
+        not directory_name
+        or directory_name in {".", ".."}
+        or "/" in directory_name
+        or "\\" in directory_name
+    ):
+        raise ValueError(f"{field} must be a safe plugin directory name, got {value!r}")
+    return directory_name
+
+
+class PluginCliService:
+    async def list_local_plugins(self) -> dict[str, object]:
+        return await asyncio.to_thread(self._list_local_plugins_sync)
+
+    async def list_local_packages(self) -> dict[str, object]:
+        return await asyncio.to_thread(self._list_local_packages_sync)
+
+    async def build(
+        self,
+        *,
+        mode: str = "selected",
+        plugin: str | None = None,
+        plugins: list[str] | None = None,
+        plugin_ref: dict[str, Any] | None = None,
+        plugin_refs: list[dict[str, Any]] | None = None,
+        development_ref: dict[str, Any] | None = None,
+        development_refs: list[dict[str, Any]] | None = None,
+        allow_development: bool = True,
+        out: str | None = None,
+        target_dir: str | None = None,
+        keep_staging: bool = False,
+        bundle_id: str | None = None,
+        package_name: str | None = None,
+        package_description: str | None = None,
+        version: str | None = None,
+    ) -> dict[str, object]:
+        cancelled = threading.Event()
+        try:
+            return await asyncio.to_thread(
+                self._build_sync,
+                mode=mode,
+                plugin=plugin,
+                plugins=plugins,
+                plugin_ref=plugin_ref,
+                plugin_refs=plugin_refs,
+                development_ref=development_ref,
+                development_refs=development_refs,
+                allow_development=allow_development,
+                cancelled=cancelled,
+                out=out,
+                target_dir=target_dir,
+                keep_staging=keep_staging,
+                bundle_id=bundle_id,
+                package_name=package_name,
+                package_description=package_description,
+                version=version,
+            )
+        except asyncio.CancelledError:
+            cancelled.set()
+            raise
+
+    async def inspect(self, *, package: str) -> dict[str, object]:
+        return await asyncio.to_thread(self._inspect_sync, package=package)
+
+    async def verify(self, *, package: str) -> dict[str, object]:
+        return await asyncio.to_thread(self._verify_sync, package=package)
+
+    async def plan_install(
+        self,
+        *,
+        package: str,
+        plugins_root: str | None = None,
+        profiles_root: str | None = None,
+        _allow_external_profiles_root: bool = False,
+    ) -> dict[str, object]:
+        return await asyncio.to_thread(
+            self._plan_install_sync,
+            package=package,
+            plugins_root=plugins_root,
+            profiles_root=profiles_root,
+            _allow_external_profiles_root=_allow_external_profiles_root,
+        )
+
+    @serialized_plugin_operation
+    async def install(
+        self,
+        *,
+        package: str,
+        plugins_root: str | None = None,
+        profiles_root: str | None = None,
+        on_conflict: str = "fail",
+        use_staging: bool = True,
+        forced_directory_name: str | None = None,
+        install_source: Literal["imported"] | None = None,
+        confirm_upgrade: bool = False,
+        confirmation_token: str | None = None,
+        _allow_external_profiles_root: bool = False,
+        _preserve_autostart_plugin_id: str | None = None,
+    ) -> dict[str, object]:
+        install_source_manager = get_install_source_manager()
+        reload_install_source = getattr(install_source_manager, "load", None)
+        if callable(reload_install_source):
+            await asyncio.to_thread(reload_install_source)
+        plan_dict = await self.plan_install(
+            package=package,
+            plugins_root=plugins_root,
+            profiles_root=profiles_root,
+            _allow_external_profiles_root=_allow_external_profiles_root,
+        )
+        action = str(plan_dict["action"])
+        if action == "blocked":
+            raise ServerDomainError(
+                code="PLUGIN_INSTALL_BLOCKED",
+                message="plugin package cannot be installed safely",
+                status_code=409,
+                details=plan_dict,
+            )
+        if action == "install":
+            # The Market replacement transaction has already backed up the old
+            # directory. Its absence does not make this a first installation.
+            preserve_autostart = _preserve_autostart_plugin_id is not None
+            if preserve_autostart and (
+                plan_dict.get("package_type") != "plugin"
+                or plan_dict.get("plugin_id") != _preserve_autostart_plugin_id
+            ):
+                raise ServerDomainError(
+                    code="PLUGIN_PACKAGE_IDENTITY_MISMATCH",
+                    message="plugin identity mismatch in Market replacement",
+                    status_code=409,
+                    details=plan_dict,
+                )
+            # Register before elevation, matching the overwrite-install path. If registration happens after installation and the disk write
+            # fails, the plugin is already on disk and we can only warn — then on next startup, "no pending approval
+            # record" is treated as approved, so third-party code runs before the user's first launch (coderabbit
+            # / greptile). plan_dict's plugin_id comes from the bundled manifest and is available before elevation.
+            # A bundle's plan.plugin_id is the **package** ID, but the registry records approval for each plugin's own
+            # manifest ID — registering only the package ID would fail to block the entire group
+            # (coderabbit). So bundles use bundle_plugin_ids, single plugins use plugin_id.
+            bundle_ids = [
+                str(item or "").strip()
+                for item in (plan_dict.get("bundle_plugin_ids") or ())
+                if str(item or "").strip()
+            ]
+            gate_plugin_ids = bundle_ids or [
+                pid for pid in (str(plan_dict.get("plugin_id") or "").strip(),) if pid
+            ]
+            if preserve_autostart:
+                gate_plugin_ids = []
+            gate_restore: list[str] = []
+            autostart_pref_restore: list[tuple[str, object, object]] = []
+            for gate_plugin_id in gate_plugin_ids:
+                if await asyncio.to_thread(is_autostart_approved, gate_plugin_id):
+                    gate_restore.append(gate_plugin_id)
+                if not await asyncio.to_thread(mark_autostart_pending, gate_plugin_id):
+                    # Before rejecting, restore registrations already made during this attempt; do not leave partial state.
+                    for done in gate_restore:
+                        if not await asyncio.to_thread(clear_autostart_pending, done):
+                            logger.error(
+                                "could not restore the autostart approval for "
+                                "plugin_id={} while refusing the install; it must "
+                                "have auto-start explicitly approved",
+                                done,
+                            )
+                    for done, previous, written in autostart_pref_restore:
+                        if not await asyncio.to_thread(
+                            _restore_first_install_autostart, done, previous, written
+                        ):
+                            logger.error(
+                                "could not restore the auto-start preference for "
+                                "plugin_id={} while refusing the install",
+                                done,
+                            )
+                    raise ServerDomainError(
+                        code="PLUGIN_AUTOSTART_GATE_UNAVAILABLE",
+                        message=(
+                            "cannot record the plugin as awaiting approval; "
+                            "refusing to install code that would autostart "
+                            "unapproved"
+                        ),
+                        status_code=500,
+                        details={"plugin_id": gate_plugin_id},
+                    )
+                try:
+                    autostart_pref_restore.append(
+                        (
+                            gate_plugin_id,
+                            *await asyncio.to_thread(
+                                _persist_first_install_autostart_off, gate_plugin_id
+                            ),
+                        )
+                    )
+                except RuntimeOverridePersistenceError as exc:
+                    for done in gate_restore:
+                        if not await asyncio.to_thread(clear_autostart_pending, done):
+                            logger.error(
+                                "could not restore the autostart approval for "
+                                "plugin_id={} while refusing the install; it must "
+                                "have auto-start explicitly approved",
+                                done,
+                            )
+                    for done, previous, written in autostart_pref_restore:
+                        if not await asyncio.to_thread(
+                            _restore_first_install_autostart, done, previous, written
+                        ):
+                            logger.error(
+                                "could not restore the auto-start preference for "
+                                "plugin_id={} while refusing the install",
+                                done,
+                            )
+                    raise ServerDomainError(
+                        code="PLUGIN_RUNTIME_PREFERENCE_PERSIST_FAILED",
+                        message=(
+                            "cannot record auto-start as off; refusing to install "
+                            "a plugin that would default to auto-start"
+                        ),
+                        status_code=500,
+                        details={
+                            "plugin_id": gate_plugin_id,
+                            "error_type": type(exc).__name__,
+                        },
+                    ) from exc
+            try:
+                result = await asyncio.to_thread(
+                    self._install_sync,
+                    package=package,
+                    plugins_root=plugins_root,
+                    profiles_root=profiles_root,
+                    on_conflict=on_conflict,
+                    use_staging=use_staging,
+                    forced_directory_name=forced_directory_name,
+                    _allow_external_profiles_root=_allow_external_profiles_root,
+                )
+            except BaseException:
+                # Installation failed: restore the approval state exactly as it was — otherwise a failed install would leave pending-approval records for these IDs
+                # and could affect a future plugin with the same ID.
+                gate_root = await asyncio.to_thread(
+                    self._autostart_gate_root, plugins_root
+                )
+                for gate_plugin_id in gate_restore:
+                    # Restore only entries that are truly absent from disk. _install_via_staging_sync uses
+                    # rmtree(ignore_errors=True) during cleanup, and contention/permissions/disk errors may leave an
+                    # executable artifact behind; unconditional approval rollback would let it run on the next startup
+                    # (codex). Same criterion as overwrite rollback: inspect disk, not intent.
+                    if gate_root is None or await asyncio.to_thread(
+                        _plugin_directory_exists, gate_root, gate_plugin_id
+                    ):
+                        logger.error(
+                            "install rollback could not clear plugin_id={} of "
+                            "leftovers; keeping it gated so leftover code cannot "
+                            "autostart",
+                            gate_plugin_id,
+                        )
+                        continue
+                    if not await asyncio.to_thread(
+                        clear_autostart_pending, gate_plugin_id
+                    ):
+                        # Same decision as overwrite rollback: another exception is already being handled here, and raising would replace
+                        # the actual failure reason. Record a warning; impact is bounded — a pending-approval entry remains for this ID,
+                        # so a future plugin using it must be explicitly approved for autostart.
+                        logger.error(
+                            "install rollback could not restore the autostart "
+                            "approval for plugin_id={}; whatever later takes that "
+                            "id must have auto-start explicitly approved",
+                            gate_plugin_id,
+                        )
+                for pref_plugin_id, previous, written in autostart_pref_restore:
+                    # 残骸还在就保持自动启动为关。目录已经清掉才把原来的偏好还回去。
+                    if gate_root is None or await asyncio.to_thread(
+                        _plugin_directory_exists, gate_root, pref_plugin_id
+                    ):
+                        continue
+                    if not await asyncio.to_thread(
+                        _restore_first_install_autostart,
+                        pref_plugin_id,
+                        previous,
+                        written,
+                    ):
+                        logger.error(
+                            "install rollback could not restore the auto-start "
+                            "preference for plugin_id={}",
+                            pref_plugin_id,
+                        )
+                raise
+            # Attach to install()'s success exit, not to one particular source-registration path.
+            # Upload installation (upload_and_install) registers the source itself and does not use
+            # _record_requested_install_source; placing the hook there would make uploaded plugins
+            # The plugin would never take effect — exactly the path where this gate is most needed (greptile).
+            #
+            # Register again using the manifest ID from the installation result. The ID above comes from the plan, but
+            # directory name and [plugin].id may differ; both registrations are idempotent. This one is already on disk,
+            # so failure cannot reject it; emit a warning instead of raising.
+            unrecorded = []
+            if not preserve_autostart:
+                unrecorded = await asyncio.to_thread(
+                    _mark_new_install_awaiting_autostart, result
+                )
+            if unrecorded:
+                result["autostart_gate_warning"] = (
+                    "could not record as awaiting approval: "
+                    + ", ".join(sorted(unrecorded))
+                )
+            return await self._record_requested_install_source(
+                install_result=result,
+                package=package,
+                source=install_source,
+            )
+
+        if action == "override_builtin":
+            raise ServerDomainError(
+                code="PLUGIN_BUILTIN_OVERRIDE_MARKET_REQUIRED",
+                message="builtin plugins can only be overridden by a SHA256-verified Market package",
+                status_code=409,
+                details=plan_dict,
+            )
+
+        if not confirm_upgrade or not confirmation_token:
+            raise ServerDomainError(
+                code="PLUGIN_UPGRADE_CONFIRMATION_REQUIRED",
+                message="plugin replacement requires explicit confirmation",
+                status_code=409,
+                details=plan_dict,
+            )
+        if confirmation_token != str(plan_dict["confirmation_token"]):
+            raise ServerDomainError(
+                code="PLUGIN_UPGRADE_PLAN_CHANGED",
+                message="installed plugin changed after replacement confirmation",
+                status_code=409,
+                details=plan_dict,
+            )
+
+        policy = self._path_policy()
+        target_root = (
+            _require_within(
+                Path(plugins_root).expanduser().resolve(),
+                policy.user_plugins_root,
+                field="plugins_root",
+            )
+            if plugins_root
+            else policy.user_plugins_root
+        )
+        directory_name = _require_safe_directory_name(
+            str(plan_dict["directory_name"]),
+            field="directory_name",
+        )
+        target_dir = target_root / directory_name
+        _require_safe_directory_name(
+            str(plan_dict["package_id"]),
+            field="package_id",
+        )
+        _require_safe_directory_name(
+            str(plan_dict["installed_package_id"] or plan_dict["package_id"]),
+            field="installed_package_id",
+        )
+        package_path = self._resolve_package_path(package)
+        plan = self._apply_installed_package_identity(
+            build_install_plan(
+                package_path=package_path,
+                plugins_root=target_root,
+                builtin_plugins_root=policy.builtin_plugins_root,
+            ),
+            package_path=package_path,
+            target_root=target_root,
+        )
+        if (
+            plan.action not in REPLACEMENT_ACTIONS
+            or plan.confirmation_token != confirmation_token
+        ):
+            raise ServerDomainError(
+                code="PLUGIN_UPGRADE_PLAN_CHANGED",
+                message="installed plugin changed after replacement confirmation",
+                status_code=409,
+                details=asdict(plan),
+            )
+
+        # If the target directory contains only config/data/cache and no plugin.toml, install_plan
+        # chooses reinstall — but by definition that replacement path does not register pending approval. Yet no plugin code was previously installed there:
+        # this attempt places executable code for the **first time**, and default enabled/auto_start
+        # would make it run on next startup before the user has ever launched it (codex). Treat it as a fresh install
+        # and put the gate before elevation.
+        manifestless_gate_restore = False
+        manifestless_autostart_pref: tuple[object, object] | None = None
+        if plan.manifestless_state:
+            manifestless_gate_restore = await asyncio.to_thread(
+                is_autostart_approved, plan.plugin_id
+            )
+            if not await asyncio.to_thread(mark_autostart_pending, plan.plugin_id):
+                raise ServerDomainError(
+                    code="PLUGIN_AUTOSTART_GATE_UNAVAILABLE",
+                    message=(
+                        "cannot record the plugin as awaiting approval; refusing "
+                        "to install code that would autostart unapproved"
+                    ),
+                    status_code=500,
+                    details={"plugin_id": plan.plugin_id},
+                )
+            try:
+                manifestless_autostart_pref = await asyncio.to_thread(
+                    _persist_first_install_autostart_off, plan.plugin_id
+                )
+            except RuntimeOverridePersistenceError as exc:
+                # 文件还没动，所以这里直接还原批准位。回滚路径仍要先看盘。
+                approval_plugin_id = plan.plugin_id
+                if manifestless_gate_restore and not await asyncio.to_thread(
+                    clear_autostart_pending, approval_plugin_id
+                ):
+                    logger.error(
+                        "could not restore the autostart approval for "
+                        "plugin_id={} while refusing the install",
+                        approval_plugin_id,
+                    )
+                raise ServerDomainError(
+                    code="PLUGIN_RUNTIME_PREFERENCE_PERSIST_FAILED",
+                    message=(
+                        "cannot record auto-start as off; refusing to install "
+                        "code that would default to auto-start"
+                    ),
+                    status_code=500,
+                    details={
+                        "plugin_id": plan.plugin_id,
+                        "error_type": type(exc).__name__,
+                    },
+                ) from exc
+
+        manual_manager: InstallSourceManager | None = None
+        manual_entry: LockEntry | None = None
+        expected_manual_snapshot = ""
+        if plan.reason == "manual_takeover":
+            manual_manager = self._require_install_source_manager()
+            manual_entry = manual_manager.entry_for_directory(target_dir)
+            if not is_manual_takeover_entry(manual_entry):
+                raise ServerDomainError(
+                    code="PLUGIN_UPGRADE_PLAN_CHANGED",
+                    message="manual plugin ownership changed after replacement confirmation",
+                    status_code=409,
+                    details=asdict(plan),
+                )
+            expected_manual_snapshot = await asyncio.to_thread(
+                manual_takeover_snapshot_sha256,
+                entry=manual_entry,
+                target_dir=target_dir,
+            )
+            rebound_token = await asyncio.to_thread(
+                local_manual_takeover_confirmation_token,
+                package_path=package_path,
+                target_dir=target_dir,
+                entry=manual_entry,
+                snapshot_sha256=expected_manual_snapshot,
+            )
+            if not secrets.compare_digest(confirmation_token, rebound_token):
+                raise ServerDomainError(
+                    code="PLUGIN_UPGRADE_PLAN_CHANGED",
+                    message="manual plugin changed after replacement confirmation",
+                    status_code=409,
+                    details=asdict(plan),
+                )
+        async def validate_manifestless_backup(backup_dir: Path) -> None:
+            if not await asyncio.to_thread(is_manifestless_state_directory, backup_dir):
+                raise ValueError("manifest-less plugin state changed before installation")
+
+        async def validate_manual_takeover_backup(backup_dir: Path) -> None:
+            assert manual_entry is not None
+            staged_snapshot = await asyncio.to_thread(
+                manual_takeover_snapshot_sha256,
+                entry=manual_entry,
+                target_dir=backup_dir,
+            )
+            if not secrets.compare_digest(
+                expected_manual_snapshot,
+                staged_snapshot,
+            ):
+                raise ServerDomainError(
+                    code="PLUGIN_UPGRADE_PLAN_CHANGED",
+                    message="manual plugin changed while it was being stopped",
+                    status_code=409,
+                    details=asdict(plan),
+                )
+
+        source_write_attempted = False
+
+        async def install_new() -> dict[str, object]:
+            nonlocal source_write_attempted
+            install_result = await asyncio.to_thread(
+                self._install_sync,
+                package=package,
+                plugins_root=plugins_root,
+                on_conflict="fail",
+                use_staging=use_staging,
+                forced_directory_name=forced_directory_name,
+                _allow_external_profiles_root=_allow_external_profiles_root,
+            )
+            if manual_manager is not None:
+                source_write_attempted = True
+                await self._record_manual_takeover_source(
+                    manager=manual_manager,
+                    install_result=install_result,
+                    package_path=package_path,
+                )
+            return install_result
+
+        try:
+            result = await replacement_transaction.replace_plugin(
+                layout=resolve_plugin_layout(plan.plugin_id, target_dir),
+                install_new=install_new,
+                preserve_targets=((target_dir,) if plan.manifestless_state else ()),
+                initialize_runtime_config=not plan.manifestless_state,
+                validate_backup=(
+                    validate_manual_takeover_backup
+                    if manual_manager is not None
+                    else validate_manifestless_backup
+                    if plan.manifestless_state
+                    else None
+                ),
+            )
+        except replacement_transaction.ReplacePluginError as exc:
+            manifest_gone = plan.manifestless_state and not await asyncio.to_thread(
+                (target_dir / "plugin.toml").exists
+            )
+            if manifestless_gate_restore and manifest_gone:
+                # Same criterion as elsewhere: inspect disk, not intent. If the manifest remains, code remains on disk,
+                # so keep blocking; restore approval only after rollback actually cleans it up.
+                if not await asyncio.to_thread(
+                    clear_autostart_pending, plan.plugin_id
+                ):
+                    logger.error(
+                        "manifestless replacement rollback could not restore the "
+                        "autostart approval for plugin_id={}; it needs explicit "
+                        "auto-start approval",
+                        plan.plugin_id,
+                    )
+            if manifest_gone and manifestless_autostart_pref is not None and not await asyncio.to_thread(
+                _restore_first_install_autostart,
+                plan.plugin_id,
+                *manifestless_autostart_pref,
+            ):
+                logger.error(
+                    "manifestless replacement rollback could not restore the "
+                    "auto-start preference for plugin_id={}",
+                    plan.plugin_id,
+                )
+            source_restored = True
+            if manual_entry is not None and source_write_attempted:
+                try:
+                    assert manual_manager is not None
+                    await asyncio.to_thread(
+                        manual_manager.restore_entry_for_rollback,
+                        manual_entry,
+                    )
+                except Exception as restore_exc:
+                    source_restored = False
+                    logger.error(
+                        "manual takeover source rollback failed plugin_id={} err_type={}",
+                        plan.plugin_id,
+                        type(restore_exc).__name__,
+                    )
+            details = _replacement_error_details(exc)
+            if not source_restored:
+                details["rollback_status"] = "incomplete"
+                details["source_rollback"] = "incomplete"
+            raise ServerDomainError(
+                code="PLUGIN_UPGRADE_ROLLED_BACK",
+                message="plugin upgrade failed and rollback was attempted",
+                status_code=500,
+                details=details,
+            ) from exc
+
+        # This exit path is replacement/upgrade/takeover, not a fresh install by definition. Registering pending approval would revoke autostart
+        # for a plugin the user already uses and disguise a regression as a security feature.
+        response = {
+            **result.install_result,
+            # Compatibility response for the existing Package Manager UI.
+            # The shared file transaction itself is version-agnostic replace.
+            "operation": plan.action,
+            "restarted": result.restarted,
+            "rollback_status": result.rollback_status,
+        }
+        if manual_manager is not None:
+            return response
+        return await self._record_requested_install_source(
+            install_result=response,
+            package=package,
+            source=install_source,
+        )
+
+    @serialized_plugin_operation
+    async def install_builtin_override(
+        self,
+        *,
+        package: str,
+        market_override: dict[str, Any],
+    ) -> dict[str, object]:
+        """Install one verified Market package as the effective user source."""
+
+        policy = self._path_policy()
+        policy.ensure_writable_layout()
+        manager = self._require_install_source_manager()
+        if manager.is_degraded:
+            raise ServerDomainError(
+                code="INSTALL_SOURCE_READ_ONLY",
+                message="builtin override requires a writable install-source lock",
+                status_code=503,
+                details={"reason": manager.degrade_reason or "read_only_degrade"},
+            )
+        package_path = self._resolve_package_path(package)
+        detail = dict(market_override.get("market_detail") or {})
+        if market_override.get("channel") != "market" or market_override.get("mode") != "override_builtin":
+            raise ValueError("builtin override requires Market source metadata")
+        expected_plugin_id = str(detail.get("expected_plugin_toml_id") or "").strip()
+        expected_sha256 = str(detail.get("package_sha256") or "").strip().lower()
+        actual_sha256 = await asyncio.to_thread(self._sha256_file, package_path)
+        if len(expected_sha256) != 64 or actual_sha256 != expected_sha256:
+            raise ValueError("builtin override Market SHA256 does not match the saved package")
+
+        plan_dict = await self.plan_install(package=str(package_path))
+        if plan_dict.get("action") != "override_builtin":
+            raise ServerDomainError(
+                code="PLUGIN_BUILTIN_OVERRIDE_BLOCKED",
+                message="builtin override plan is no longer valid",
+                status_code=409,
+                details=plan_dict,
+            )
+        plan = self._apply_installed_package_identity(
+            build_install_plan(
+                package_path=package_path,
+                plugins_root=policy.user_plugins_root,
+                builtin_plugins_root=policy.builtin_plugins_root,
+            ),
+            package_path=package_path,
+            target_root=policy.user_plugins_root,
+        )
+        if not expected_plugin_id or expected_plugin_id != plan.plugin_id:
+            raise ValueError("Market plugin identity does not match the builtin override plan")
+        expected_version = str(detail.get("version") or "").strip()
+        if not expected_version or expected_version != plan.target_version:
+            raise ValueError("Market plugin version does not match the builtin override package")
+        confirmation = dict(market_override.get("override_confirmation") or {})
+        expected_builtin_manifest_sha256 = str(
+            confirmation.get("builtin_manifest_sha256") or ""
+        ).strip().lower()
+        builtin_manifest = policy.builtin_plugins_root / expected_plugin_id / "plugin.toml"
+        try:
+            actual_builtin_manifest_sha256 = hashlib.sha256(
+                builtin_manifest.read_bytes()
+            ).hexdigest()
+        except OSError as exc:
+            raise ServerDomainError(
+                code="OVERRIDE_CONFIRMATION_CHANGED",
+                message="builtin override source changed after confirmation",
+                status_code=409,
+            ) from exc
+        if (
+            len(expected_builtin_manifest_sha256) != 64
+            or not secrets.compare_digest(
+                expected_builtin_manifest_sha256,
+                actual_builtin_manifest_sha256,
+            )
+        ):
+            raise ServerDomainError(
+                code="OVERRIDE_CONFIRMATION_CHANGED",
+                message="builtin override source changed after confirmation",
+                status_code=409,
+            )
+        detail.pop("expected_plugin_toml_id", None)
+        detail["package_sha256"] = actual_sha256
+
+        staged = await asyncio.to_thread(
+            self._stage_builtin_override_sync,
+            package=package_path,
+            plugins_root=policy.user_plugins_root,
+            plan=plan,
+        )
+        target_dir = policy.user_plugins_root / plan.directory_name
+        original_lock_entry = manager.entry_for_directory(target_dir, include_removed=True)
+        lock_warnings: list[str] = []
+
+        async def rebuild_plan() -> dict[str, object]:
+            return await self.plan_install(package=str(package_path))
+
+        async def read_lock_snapshot() -> object:
+            return original_lock_entry
+
+        async def commit_lock() -> object:
+            entry, warnings = await asyncio.to_thread(
+                manager.record_market_install,
+                root_id="user",
+                directory_name=plan.directory_name,
+                plugin_id=plan.plugin_id,
+                market_detail=detail,
+                package_id=plan.package_id,
+                profile_dir="",
+            )
+            lock_warnings.extend(warnings)
+            return entry
+
+        async def restore_lock(_snapshot: object) -> None:
+            # The transaction calls clear_user_source immediately afterwards;
+            # that callback restores the exact old row or soft-removes the row
+            # created by this attempt.
+            return None
+
+        async def clear_user_source() -> None:
+            if original_lock_entry is not None:
+                await asyncio.to_thread(manager.restore_entry_for_rollback, original_lock_entry)
+            else:
+                await asyncio.to_thread(
+                    manager.mark_removed,
+                    directory_path=target_dir,
+                    reason="override_rollback",
+                )
+
+        async def refresh_registry() -> object:
+            from plugin.server.application.plugins.lifecycle_service import plugin_registry_service
+
+            # This refresh after source switch / rollback rereads the selected source's manifest and plugin.meta.json.
+            # Previously, it was necessary to clear the scan cache first (its key uses plugin directory contents, so it cannot see a source change),
+            # but that cache no longer exists.
+            return await plugin_registry_service.refresh_registry()
+
+        async def validate_promoted_source() -> None:
+            from plugin.server.application.plugins.lifecycle_service import plugin_registry_service
+
+            await plugin_registry_service.validate_plugin_runtime_source(
+                plugin_id=plan.plugin_id,
+                config_path=target_dir / "plugin.toml",
+            )
+
+        # Register before the switch. switch_builtin_source completes elevation and registration before returning,
+        # and may start replacement code from a third party; if registration happens afterward and the process exits in between,
+        # that code has already run and will inherit the original plugin's autostart approval next startup
+        # (greptile / coderabbit independently pointed to this same spot).
+        #
+        # The cost is rollback work on failure: after switching back to the built-in plugin, this pending-approval record would block a built-in plugin the user
+        # already had enabled at startup. Save the original state first and restore it exactly on failure.
+        override_was_approved = await asyncio.to_thread(
+            is_autostart_approved, plan.plugin_id
+        )
+        if not await asyncio.to_thread(mark_autostart_pending, plan.plugin_id):
+            # Do not continue if registration was not persisted. The switch promotes third-party code to the active source and may start it;
+            # without a pending-approval record, it would autostart next boot even though the user never approved it (coderabbit).
+            # Since this happens before switching, rejection is clean: nothing else has changed — except the staging directory,
+            # where _stage_builtin_override_sync has already extracted and renamed the whole package. Cleanup is in the
+            # finally block under the try below, but this raise happens before it, so every registration failure
+            # would leave a complete orphan package and repeated retries would accumulate them (codex).
+            await asyncio.to_thread(
+                self._cleanup_builtin_override_staging_sync, staged
+            )
+            raise ServerDomainError(
+                code="PLUGIN_AUTOSTART_GATE_UNAVAILABLE",
+                message=(
+                    "cannot record the override as awaiting approval; refusing to "
+                    "promote third-party code that would autostart unapproved"
+                ),
+                status_code=500,
+                details={"plugin_id": plan.plugin_id},
+            )
+        try:
+            switched = await switch_builtin_source(
+                SourceSwitchRequest(
+                    plugin_id=plan.plugin_id,
+                    staged_plugin_dir=staged.plugin_dir,
+                    target_plugin_dir=target_dir,
+                    confirmation_token=plan.confirmation_token,
+                ),
+                rebuild_plan=rebuild_plan,
+                read_lock_snapshot=read_lock_snapshot,
+                commit_lock=commit_lock,
+                restore_lock=restore_lock,
+                clear_user_source=clear_user_source,
+                refresh_registry=refresh_registry,
+                validate_promoted_source=validate_promoted_source,
+                is_running=source_switch.plugin_is_running_for_source_switch,
+                stop=source_switch.stop_plugin_for_source_switch,
+                start=source_switch.start_plugin_for_source_switch,
+            )
+        except BaseException:
+            # Restore approval only if the replacement is truly absent from disk. Rollback may fail to delete the user directory (in-use,
+            # permissions, damaged disk); in that case the third-party source remains, and restoring approval would let it run
+            # at next startup (greptile). Inspect disk, not intent: if the directory remains, keep blocking.
+            override_removed = not await asyncio.to_thread(target_dir.exists)
+            if override_was_approved and override_removed:
+                if not await asyncio.to_thread(
+                    clear_autostart_pending, plan.plugin_id
+                ):
+                    # Only record a warning. Another exception is already being handled here; raising "approval rollback failed" would
+                    # replace the actual failure reason, which is what the user needs to see (greptile suggested
+                    # propagating it; I reject that part). Impact is bounded and not security-sensitive: the restored built-in
+                    # plugin remains pending approval and can be approved again through its separate autostart setting.
+                    logger.error(
+                        "override rollback could not restore the autostart "
+                        "approval for plugin_id={}; the restored builtin will not "
+                        "autostart until its auto-start switch is enabled",
+                        plan.plugin_id,
+                    )
+            raise
+        finally:
+            await asyncio.to_thread(self._cleanup_builtin_override_staging_sync, staged)
+
+        staged_result = staged.result.model_dump(mode="json")
+        staged_result.update(
+            {
+                "plugins_root": str(policy.user_plugins_root),
+                "profiles_root": None,
+                "installed_plugins": [
+                    {
+                        "source_folder": plan.plugin_id,
+                        "target_plugin_id": plan.plugin_id,
+                        "target_dir": str(target_dir),
+                        "renamed": False,
+                    }
+                ],
+                "profile_dir": None,
+                "operation": "override_builtin",
+                "restarted": switched.restarted,
+                "rollback_status": "not_needed",
+                "previous_version": plan.current_version,
+                "install_source_warning": "; ".join(lock_warnings) if lock_warnings else None,
+            }
+        )
+        return staged_result
+
+    async def _install_market_builtin_replacement(
+        self,
+        *,
+        package: str,
+        profiles_root: str | None,
+        _allow_external_profiles_root: bool,
+        forced_directory_name: str,
+        market_detail: dict[str, Any],
+        actual_sha256: str,
+        manual_takeover_snapshot_sha256: str = "",
+    ) -> dict[str, object]:
+        """Restore a verified Market override while replace owns its directory.
+
+        A Market upgrade temporarily moves the current user directory aside.
+        During that window the normal install plan sees only the builtin copy
+        and correctly classifies the package as a new builtin override. This
+        narrow path accepts that transient plan only when the active lock is
+        either the existing Market owner or the exact manual owner already
+        bound to server-verified takeover evidence.
+        """
+
+        expected_sha256 = str(market_detail.get("package_sha256") or "").strip().lower()
+        if len(expected_sha256) != 64 or expected_sha256 != actual_sha256:
+            raise ValueError("Market replacement SHA256 does not match the saved package")
+
+        plan_dict = await self.plan_install(
+            package=package,
+            profiles_root=profiles_root,
+            _allow_external_profiles_root=_allow_external_profiles_root,
+        )
+        if plan_dict.get("action") != "override_builtin":
+            raise ValueError("Market builtin replacement requires an override_builtin plan")
+
+        directory_name = _require_safe_directory_name(
+            forced_directory_name,
+            field="directory_name",
+        )
+        expected_plugin_id = str(market_detail.get("expected_plugin_toml_id") or "").strip()
+        package_id = str(plan_dict.get("package_id") or "")
+        plugin_id = str(plan_dict.get("plugin_id") or "")
+        if (
+            not expected_plugin_id
+            or expected_plugin_id != plugin_id
+            or directory_name != str(plan_dict.get("directory_name") or "")
+        ):
+            raise ValueError("Market replacement identity does not match the builtin override plan")
+        expected_version = str(market_detail.get("version") or "").strip()
+        if (
+            not expected_version
+            or expected_version != str(plan_dict.get("target_version") or "").strip()
+        ):
+            raise ValueError("Market replacement version does not match the builtin override package")
+
+        manager = self._require_install_source_manager()
+        entry = manager.find_active_market_entry(expected_plugin_id)
+        confirmed_manual_takeover = bool(
+            is_manual_takeover_entry(entry)
+            and len(manual_takeover_snapshot_sha256.strip()) == 64
+        )
+        if entry is None and len(manual_takeover_snapshot_sha256.strip()) == 64:
+            user_entry_reader = getattr(manager, "find_active_user_entry", None)
+            candidate = (
+                user_entry_reader(expected_plugin_id)
+                if callable(user_entry_reader)
+                else None
+            )
+            if is_manual_takeover_entry(candidate):
+                entry = candidate
+                confirmed_manual_takeover = True
+        installed_package_id = str(getattr(entry, "package_id", "") or plugin_id)
+        if (
+            entry is None
+            or getattr(entry, "root_id", "") != "user"
+            or getattr(entry, "directory_name", "") != directory_name
+            or getattr(entry, "plugin_id", "") != plugin_id
+            or (is_manual_takeover_entry(entry) and not confirmed_manual_takeover)
+            or (not confirmed_manual_takeover and installed_package_id != package_id)
+        ):
+            raise ValueError("Market replacement does not match the active install-source lock")
+
+        return await asyncio.to_thread(
+            self._install_sync,
+            package=package,
+            plugins_root=None,
+            profiles_root=profiles_root,
+            on_conflict="fail",
+            use_staging=True,
+            forced_directory_name=directory_name,
+            _allow_external_profiles_root=_allow_external_profiles_root,
+        )
+
+    async def _record_requested_install_source(
+        self,
+        *,
+        install_result: dict[str, object],
+        package: str,
+        source: Literal["imported"] | None,
+    ) -> dict[str, object]:
+        if source is None:
+            return install_result
+
+        try:
+            package_path = self._resolve_package_path(package)
+            package_sha256 = await asyncio.to_thread(self._sha256_file, package_path)
+        except Exception as exc:
+            logger.warning(
+                "prepare install source failed: err_type={}, err={}",
+                type(exc).__name__,
+                str(exc),
+            )
+            return {
+                **install_result,
+                "install_source_warning": f"install_source_prepare_failed: {exc}",
+            }
+        warning = await self._record_install_source_best_effort(
+            install_result=install_result,
+            package_filename=package_path.name,
+            package_sha256=package_sha256,
+            override=None,
+        )
+        if warning is None:
+            return install_result
+        return {**install_result, "install_source_warning": warning}
+
+    async def _record_manual_takeover_source(
+        self,
+        *,
+        manager: InstallSourceManager,
+        install_result: dict[str, object],
+        package_path: Path,
+    ) -> None:
+        """Commit a manual takeover source row inside replacement rollback."""
+
+        package_sha256 = await asyncio.to_thread(self._sha256_file, package_path)
+        await asyncio.to_thread(
+            _record_install_source_for_install_result,
+            manager,
+            install_result,
+            package_path.name,
+            package_sha256,
+            None,
+        )
+
+    async def analyze(
+        self,
+        *,
+        plugins: list[str],
+        plugin_refs: list[dict[str, Any]] | None = None,
+        current_sdk_version: str | None = None,
+    ) -> dict[str, object]:
+        return await asyncio.to_thread(
+            self._analyze_sync,
+            plugins=plugins,
+            plugin_refs=plugin_refs,
+            current_sdk_version=current_sdk_version,
+        )
+
+    # ── Upload & Download ──────────────────────────────────────────────
+
+    async def save_uploaded_package(self, *, filename: str, content: bytes) -> dict[str, object]:
+        """Save an uploaded package file to the target directory.
+
+        Returns metadata about the saved file including its server-side path,
+        which can be passed to ``install`` or ``inspect``.
+        """
+        return await asyncio.to_thread(self._save_uploaded_package_sync, filename=filename, content=content)
+
+    async def save_uploaded_file(self, *, filename: str, source_file: BinaryIO) -> dict[str, object]:
+        """Stream an uploaded package into the managed artifacts directory."""
+        return await asyncio.to_thread(
+            self._save_uploaded_file_sync,
+            filename=filename,
+            source_file=source_file,
+        )
+
+    @serialized_plugin_operation
+    async def discard_uploaded_package(self, *, package: str) -> dict[str, object]:
+        """Remove one upload owned by an abandoned Plugin Center workflow."""
+        return await asyncio.to_thread(self._discard_uploaded_package_sync, package=package)
+
+    @serialized_plugin_operation
+    async def upload_and_install(
+        self,
+        *,
+        filename: str,
+        content: bytes | None = None,
+        package_path: str | None = None,
+        profiles_root: str | None = None,
+        _allow_external_profiles_root: bool = False,
+        on_conflict: str = "fail",
+        install_source_override: dict[str, Any] | None = None,
+        _preserve_autostart_plugin_id: str | None = None,
+    ) -> dict[str, object]:
+        """Upload, unpack, and atomically record the install source (design §3.3).
+
+        ``install_source_override`` lets the caller pin the lock entry to
+        ``channel="market"`` and mode (``install`` / ``upgrade`` / ``reinstall``)
+        in a single call. When ``None`` this method is exactly equivalent to
+        :meth:`upload_and_unpack` (no lock write).
+
+        ``_preserve_autostart_plugin_id`` is internal replacement context from
+        the Market transaction, which has validated the existing install and
+        moved its code aside. Only that same single plugin keeps its auto-start
+        preference and approval; a normal first install still initializes them.
+
+        ``install_source_override`` schema (design §3.3.1):
+
+        ```
+        {
+            "channel": "market",
+            "mode": "install" | "upgrade" | "reinstall",
+            "market_detail": {
+                "plugin_market_id": str,
+                "version": str,
+                "package_url": str,
+                "channel": str,            # "stable" | "beta"
+                "package_sha256": str,     # 64-hex from caller; we re-verify
+                "payload_hash": str | None,
+                "published_at": str,       # ISO 8601
+            },
+        }
+        ```
+
+        Returns a dict with ``upload`` / ``unpack`` / ``install`` keys; the
+        ``install`` dict mirrors :class:`SourceDetailMarket` fields. When
+        warnings accrue (e.g. mismatched sha256, missing market_detail
+        keys, fall back to imported channel) they are joined into an
+        ``install_source_warning`` string in the return value (Req 3.4 / R10.5).
+
+        Failure semantics (Req 3.6 / design §10.1):
+
+        * Any exception from the save / unpack / record steps cleans up
+          the saved package file and the unpacked directory before
+          re-raising. The lock is never left with a half-written entry.
+        * ``record_market_*`` raising :class:`InstallSourceError` with
+          ``code="lock_write_failed"`` propagates verbatim so the caller
+          (Bridge ``_execute_install``) can map it to the right user-facing
+          error code.
+        """
+
+        if content is None and package_path is None:
+            raise ValueError("upload_and_install requires content or package_path")
+        if content is not None and package_path is not None:
+            raise ValueError("upload_and_install accepts content or package_path, not both")
+        if (
+            install_source_override is not None
+            and install_source_override.get("channel") == "market"
+        ):
+            manager = get_install_source_manager()
+            if manager is not None and manager.is_degraded:
+                raise ServerDomainError(
+                    code="INSTALL_SOURCE_READ_ONLY",
+                    message="Market installation requires a writable install-source lock",
+                    status_code=503,
+                    details={"reason": manager.degrade_reason or "read_only_degrade"},
+                )
+
+        if install_source_override is None:
+            owns_saved_package = content is not None or package_path is not None
+            saved: dict[str, object] | None = None
+            unpacked_target_dirs: list[Path] = []
+            if package_path is not None:
+                saved = await asyncio.to_thread(
+                    self._save_package_file_sync,
+                    filename=filename,
+                    package_path=package_path,
+                )
+                actual_sha256 = await asyncio.to_thread(
+                    self._sha256_file,
+                    str(saved["path"]),
+                )
+            else:
+                saved = await self.save_uploaded_package(
+                    filename=filename,
+                    content=content or b"",
+                )
+                actual_sha256 = hashlib.sha256(content or b"").hexdigest().lower()
+            try:
+                install_result = await self.install(
+                    package=str(saved["path"]),
+                    profiles_root=profiles_root,
+                    on_conflict=on_conflict,
+                    use_staging=True,
+                    _allow_external_profiles_root=_allow_external_profiles_root,
+                )
+                unpacked_target_dirs = self._extract_unpack_target_dirs(install_result)
+                warning = await self._record_install_source_best_effort(
+                    install_result=install_result,
+                    package_filename=str(saved["name"]),
+                    package_sha256=actual_sha256,
+                    override=None,
+                )
+                payload: dict[str, object] = {
+                    "upload": saved,
+                    "install": install_result,
+                }
+                if warning is not None:
+                    payload["install_source_warning"] = warning
+                return payload
+            except Exception:
+                self._cleanup_after_failure(
+                    saved=saved,
+                    unpacked_target_dirs=unpacked_target_dirs,
+                    delete_saved_package=owns_saved_package,
+                )
+                raise
+
+        channel = install_source_override.get("channel")
+        if channel != "market":
+            raise ValueError(
+                f"unsupported install_source_override channel: {channel!r}"
+            )
+
+        warnings: list[str] = []
+        saved: dict[str, object] | None = None
+        unpack_result: dict[str, object] | None = None
+        unpacked_target_dirs: list[Path] = []
+        owns_saved_package = False
+
+        try:
+            # Step 1 — materialise package bytes on disk when needed.
+            if package_path is not None:
+                saved = await asyncio.to_thread(
+                    self._save_package_file_sync,
+                    filename=filename,
+                    package_path=package_path,
+                )
+                actual_sha256 = await asyncio.to_thread(
+                    self._sha256_file,
+                    str(saved["path"]),
+                )
+                owns_saved_package = True
+            else:
+                saved = await self.save_uploaded_package(
+                    filename=filename,
+                    content=content or b"",
+                )
+                owns_saved_package = True
+                actual_sha256 = hashlib.sha256(content or b"").hexdigest().lower()
+
+            # Step 2 — install/unpack into the user plugin root.
+            saved_path = str(saved["path"])
+            install_mode = install_source_override.get("mode") or "install"
+            if install_mode == "override_builtin":
+                market_detail = dict(install_source_override.get("market_detail") or {})
+                expected_sha256 = str(market_detail.get("package_sha256") or "").lower()
+                if expected_sha256 != actual_sha256:
+                    raise ValueError("builtin override Market SHA256 does not match the saved package")
+                unpack_result = await self.install_builtin_override(
+                    package=saved_path,
+                    market_override=install_source_override,
+                )
+                # The source-switch transaction has committed and owns its
+                # rollback. Do not let the outer upload cleanup delete the
+                # promoted executable/profile directories if response
+                # composition fails after the commit.
+                install_dict: dict[str, Any] = {
+                    "channel": "market",
+                    "directory_name": str(unpack_result["installed_plugins"][0]["target_plugin_id"]),
+                    "plugin_id": str(unpack_result["installed_plugins"][0]["target_plugin_id"]),
+                    "version": str(market_detail.get("version") or ""),
+                    "package_sha256": actual_sha256,
+                    "payload_hash": unpack_result.get("payload_hash"),
+                    "published_at": str(market_detail.get("published_at") or ""),
+                    "previous_version": unpack_result.get("previous_version"),
+                }
+                warning = unpack_result.get("install_source_warning")
+                return self._compose_install_result(
+                    saved=saved,
+                    unpack_result=unpack_result,
+                    install_dict=install_dict,
+                    warnings=[str(warning)] if warning else [],
+                )
+            forced_directory_name = install_source_override.get("directory_name")
+            use_staging = install_mode == "install" or isinstance(
+                forced_directory_name,
+                str,
+            )
+            market_detail_raw = install_source_override.get("market_detail") or {}
+            market_detail = dict(market_detail_raw)
+            install_plan = await self.plan_install(
+                package=saved_path,
+                profiles_root=profiles_root,
+                _allow_external_profiles_root=_allow_external_profiles_root,
+            )
+            if (
+                install_mode in ("upgrade", "reinstall")
+                and install_plan.get("action") == "override_builtin"
+                and isinstance(forced_directory_name, str)
+            ):
+                unpack_result = await self._install_market_builtin_replacement(
+                    package=saved_path,
+                    profiles_root=profiles_root,
+                    _allow_external_profiles_root=_allow_external_profiles_root,
+                    forced_directory_name=forced_directory_name,
+                    market_detail=market_detail,
+                    actual_sha256=actual_sha256,
+                    manual_takeover_snapshot_sha256=str(
+                        install_source_override.get(
+                            "manual_takeover_snapshot_sha256"
+                        )
+                        or ""
+                    ),
+                )
+            else:
+                unpack_result = await self.install(
+                    package=saved_path,
+                    plugins_root=None,
+                    profiles_root=profiles_root,
+                    on_conflict=on_conflict,
+                    use_staging=use_staging,
+                    forced_directory_name=(
+                        forced_directory_name
+                        if isinstance(forced_directory_name, str)
+                        else None
+                    ),
+                    _allow_external_profiles_root=_allow_external_profiles_root,
+                    _preserve_autostart_plugin_id=_preserve_autostart_plugin_id,
+                )
+            unpacked_target_dirs = self._extract_unpack_target_dirs(unpack_result)
+            target_dir, _target_directory_plugin_id = self._extract_unpack_target(
+                unpack_result
+            )
+            # One tomllib read + parse, also under the global lock, and should not block the event loop.
+            package_plugin_id = await asyncio.to_thread(
+                self._read_installed_plugin_toml_id, target_dir
+            )
+
+            # Step 4 — degrade to imported when market_detail is incomplete.
+            required_keys = ("plugin_market_id", "version", "package_url")
+            missing = [k for k in required_keys if not market_detail.get(k)]
+            if missing:
+                warnings.append(
+                    f"market_detail missing required fields ({', '.join(missing)}); "
+                    "falling back to imported channel"
+                )
+                install_dict = await self._record_imported_for_unpack(
+                    target_dir=target_dir,
+                    saved_filename=str(saved["name"]),
+                    actual_sha256=actual_sha256,
+                    package_id=str(unpack_result.get("package_id") or ""),
+                    profile_dir=str(unpack_result.get("profile_dir") or ""),
+                )
+                if install_mode == "install":
+                    refresh_warning = await _refresh_committed_market_install(
+                        package_plugin_id
+                    )
+                    if refresh_warning is not None:
+                        warnings.append(refresh_warning)
+                return self._compose_install_result(
+                    saved=saved,
+                    unpack_result=unpack_result,
+                    install_dict=install_dict,
+                    warnings=warnings,
+                )
+
+            # Step 4b — plugin identity consistency check.
+            # When Market tells us "this is plugin X" by passing
+            # ``expected_plugin_toml_id`` (the Market plugin slug),
+            # the unpacked package's plugin.toml [plugin].id is expected
+            # to match. Fresh installs keep the historic soft-warning
+            # behavior because Market may still publish legacy slugs, but
+            # upgrade/reinstall must fail fast: the bridge rollback flow is
+            # keyed to the original plugin id and directory.
+            expected_toml_id = market_detail.get("expected_plugin_toml_id")
+            if (
+                isinstance(expected_toml_id, str)
+                and expected_toml_id
+                and package_plugin_id
+                and expected_toml_id != package_plugin_id
+            ):
+                message = (
+                    f"plugin identity mismatch: Market declared "
+                    f"'{expected_toml_id}' but the package contains "
+                    f"plugin id '{package_plugin_id}'"
+                )
+                if install_mode in ("upgrade", "reinstall"):
+                    raise ValueError(message)
+                warnings.append(
+                    f"{message}; install proceeds but please verify the "
+                    "package source"
+                )
+            # ``expected_plugin_toml_id`` is informational only — drop it
+            # before passing market_detail to ISM so it does not leak into
+            # the lock entry's source_detail.
+            market_detail.pop("expected_plugin_toml_id", None)
+
+            # Step 5 — overwrite hash fields with our own freshly-computed
+            # values. Mismatches are warnings, not failures (R3.5 says
+            # caller's value is informational; the bytes we hashed are what
+            # actually landed on disk).
+            caller_sha = (market_detail.get("package_sha256") or "").lower()
+            if caller_sha and caller_sha != actual_sha256:
+                warnings.append(
+                    f"package_sha256 mismatch: market={caller_sha!r}, "
+                    f"actual={actual_sha256!r}; recording actual"
+                )
+            market_detail["package_sha256"] = actual_sha256
+
+            unpacked_payload_hash = unpack_result.get("payload_hash")
+            if isinstance(unpacked_payload_hash, str) and unpacked_payload_hash:
+                caller_payload = market_detail.get("payload_hash")
+                if (
+                    isinstance(caller_payload, str)
+                    and caller_payload
+                    and caller_payload.lower() != unpacked_payload_hash.lower()
+                ):
+                    warnings.append(
+                        "payload_hash mismatch between market and unpacked package"
+                    )
+                market_detail["payload_hash"] = unpacked_payload_hash
+
+            # Step 6 — record into ISM with the right semantic.
+            #
+            # record_market_* are **synchronous** methods and eventually call _atomic_write in install_source/manager.py;
+            # on Windows, PermissionError (AV / Explorer temporarily holds the handle; the comment notes this is expected)
+            # triggers a cumulative wait of up to 350ms. Calling directly would make the event loop **sleep for 350ms**, and this is in the global
+            # ``for attempt_ms in (0, 50, 100, 200): time.sleep(attempt_ms / 1000)``，
+            # wait up to 350ms cumulatively. Calling directly makes the event loop **sleep for 350ms**, and it is inside the global
+            # plugin-operation lock**: all plugin-server routes (/plugins, /plugin_cli,
+            # /runs, /websocket, plugin UI streams) would be unavailable during that time.
+            #
+            # record_market_install in this file already uses to_thread at :893; this just
+            # makes the other record_market_* methods consistent. They hold the manager's threading.Lock, which is safe across threads.
+            mgr = self._require_install_source_manager()
+            root_id, directory_name = await asyncio.to_thread(
+                classify_plugin_path,
+                target_dir,
+                builtin_root=mgr.builtin_root,
+                user_root=mgr.user_root,
+            )
+
+            if install_mode in ("upgrade", "reinstall"):
+                entry, ism_warnings = await asyncio.to_thread(
+                    mgr.record_market_upgrade,
+                    root_id=root_id,
+                    directory_name=directory_name,
+                    plugin_id=package_plugin_id,
+                    market_detail=market_detail,
+                    package_id=str(unpack_result.get("package_id") or ""),
+                    profile_dir=str(unpack_result.get("profile_dir") or ""),
+                )
+            else:
+                entry, ism_warnings = await asyncio.to_thread(
+                    mgr.record_market_install,
+                    root_id=root_id,
+                    directory_name=directory_name,
+                    plugin_id=package_plugin_id,
+                    market_detail=market_detail,
+                    package_id=str(unpack_result.get("package_id") or ""),
+                    profile_dir=str(unpack_result.get("profile_dir") or ""),
+                )
+            warnings.extend(ism_warnings)
+            if install_mode == "install":
+                refresh_warning = await _refresh_committed_market_install(
+                    package_plugin_id
+                )
+                if refresh_warning is not None:
+                    warnings.append(refresh_warning)
+
+            install_dict: dict[str, Any] = {
+                "channel": entry.channel,
+                "directory_name": entry.directory_name,
+                "plugin_id": entry.plugin_id,
+            }
+            if entry.source_detail is not None and hasattr(
+                entry.source_detail, "version"
+            ):
+                # Mirror SourceDetailMarket fields for the API response.
+                install_dict.update(
+                    {
+                        "version": getattr(entry.source_detail, "version", ""),
+                        "package_sha256": getattr(
+                            entry.source_detail, "package_sha256", ""
+                        ),
+                        "payload_hash": getattr(
+                            entry.source_detail, "payload_hash", None
+                        ),
+                        "published_at": getattr(
+                            entry.source_detail, "published_at", ""
+                        ),
+                        "previous_version": getattr(
+                            entry.source_detail, "previous_version", None
+                        ),
+                    }
+                )
+
+            return self._compose_install_result(
+                saved=saved,
+                unpack_result=unpack_result,
+                install_dict=install_dict,
+                warnings=warnings,
+            )
+
+        except InstallSourceError:
+            # Lock write failed — fs cleanup still runs, but propagate the
+            # structured error so Bridge can map it to ``lock_write_failed``.
+            self._cleanup_after_failure(
+                saved=saved,
+                unpacked_target_dirs=unpacked_target_dirs,
+                delete_saved_package=owns_saved_package,
+            )
+            raise
+        except Exception:
+            self._cleanup_after_failure(
+                saved=saved,
+                unpacked_target_dirs=unpacked_target_dirs,
+                delete_saved_package=owns_saved_package,
+            )
+            raise
+
+    @staticmethod
+    def _extract_unpack_entries(unpack_result: dict[str, object]) -> list[dict[str, object]]:
+        unpacked_plugins = unpack_result.get("unpacked_plugins")
+        if unpacked_plugins is None:
+            unpacked_plugins = unpack_result.get("installed_plugins")
+        if not isinstance(unpacked_plugins, list) or not unpacked_plugins:
+            raise ValueError("install returned no plugins")
+        entries: list[dict[str, object]] = []
+        for item in unpacked_plugins:
+            if not isinstance(item, dict):
+                raise ValueError("unpack returned malformed unpacked_plugins entry")
+            entries.append(item)
+        return entries
+
+    @classmethod
+    def _extract_unpack_target_dirs(cls, unpack_result: dict[str, object]) -> list[Path]:
+        """Return every target dir created by the unpack operation."""
+
+        target_dirs: list[Path] = []
+        for entry in cls._extract_unpack_entries(unpack_result):
+            target_dir_raw = entry.get("target_dir")
+            if isinstance(target_dir_raw, str) and target_dir_raw:
+                target_dirs.append(Path(target_dir_raw))
+        return target_dirs
+
+
+    @classmethod
+    def _extract_unpack_target(
+        cls,
+        unpack_result: dict[str, object],
+    ) -> tuple[Path, str]:
+        """Pull the single Market plugin's target dir + plugin id from a dump.
+
+        The CLI returns potentially many ``unpacked_plugins`` for bundles,
+        but Market install-source metadata and rollback are single-plugin
+        flows. Reject multi-plugin Market packages before recording any lock
+        entry so extra unpacked plugins cannot become untracked installs.
+        """
+
+        unpacked_plugins = cls._extract_unpack_entries(unpack_result)
+        if len(unpacked_plugins) != 1:
+            raise ValueError(
+                "Market packages must contain exactly one plugin; "
+                f"got {len(unpacked_plugins)}"
+            )
+        first = unpacked_plugins[0]
+        target_dir_raw = first.get("target_dir")
+        if not isinstance(target_dir_raw, str) or not target_dir_raw:
+            raise ValueError("unpack returned no target_dir for plugin")
+        target_plugin_id = str(first.get("target_plugin_id", "")) or ""
+        return Path(target_dir_raw), target_plugin_id
+
+    @staticmethod
+    def _read_installed_plugin_toml_id(target_dir: Path) -> str:
+        plugin_toml = target_dir / "plugin.toml"
+        try:
+            data = tomllib.loads(plugin_toml.read_text(encoding="utf-8"))
+        except FileNotFoundError as exc:
+            raise ValueError(f"installed plugin.toml not found: {plugin_toml}") from exc
+        except tomllib.TOMLDecodeError as exc:
+            raise ValueError(f"installed plugin.toml is invalid TOML: {plugin_toml}") from exc
+
+        plugin_table = data.get("plugin")
+        if not isinstance(plugin_table, dict):
+            raise ValueError(f"installed plugin.toml missing [plugin] table: {plugin_toml}")
+        plugin_id = plugin_table.get("id")
+        if not isinstance(plugin_id, str) or not plugin_id.strip():
+            raise ValueError(f"installed plugin.toml missing [plugin].id: {plugin_toml}")
+        return plugin_id.strip()
+
+    def _compose_install_result(
+        self,
+        *,
+        saved: dict[str, object],
+        unpack_result: dict[str, object],
+        install_dict: dict[str, Any],
+        warnings: list[str],
+    ) -> dict[str, object]:
+        result: dict[str, object] = {
+            "upload": saved,
+            "unpack": unpack_result,
+            "install": install_dict,
+        }
+        if warnings:
+            result["install_source_warning"] = "; ".join(warnings)
+        return result
+
+    async def _record_imported_for_unpack(
+        self,
+        *,
+        target_dir: Path,
+        saved_filename: str,
+        actual_sha256: str,
+        package_id: str,
+        profile_dir: str,
+    ) -> dict[str, Any]:
+        """Fall back to recording the install as ``channel="imported"``.
+
+        Used when ``market_detail`` lacks the required keys; the user
+        still gets a working plugin and we still record source-truth, just
+        without the Market-side evidence.
+        """
+
+        mgr = self._require_install_source_manager()
+
+        def _record() -> None:
+            mgr.record_import(
+                directory_path=target_dir,
+                package_filename=saved_filename,
+                package_sha256=actual_sha256,
+                package_id=package_id,
+                profile_dir=profile_dir,
+            )
+
+        await asyncio.to_thread(_record)
+        # Build a minimal install_dict mirroring the imported entry shape
+        # (no version / channel for imported channel by design).
+        return {
+            "channel": "imported",
+            "directory_name": target_dir.name,
+            "plugin_id": target_dir.name,
+            "package_filename": saved_filename,
+            "package_sha256": actual_sha256,
+        }
+
+    def _cleanup_after_failure(
+        self,
+        *,
+        saved: dict[str, object] | None,
+        unpacked_target_dirs: list[Path] | None = None,
+        delete_saved_package: bool = True,
+    ) -> None:
+        """Best-effort fs cleanup on upload_and_install failure (R3.6).
+
+        Order is important: we delete the unpacked directory first (so a
+        partial extract doesn't get adopted by the next reconcile pass)
+        and then the saved archive. Both calls swallow OSError because
+        the original exception is what we care about — cleanup failures
+        get logged but don't shadow the real error.
+        """
+
+        for unpacked_target_dir in unpacked_target_dirs or []:
+            self._cleanup_failed_unpack(unpacked_target_dir)
+        if delete_saved_package and saved is not None:
+            saved_path_raw = saved.get("path")
+            if isinstance(saved_path_raw, str) and saved_path_raw:
+                try:
+                    Path(saved_path_raw).unlink(missing_ok=True)
+                except OSError as exc:
+                    logger.warning(
+                        "upload_and_install: failed to clean up saved package "
+                        "{}: {}",
+                        saved_path_raw,
+                        exc,
+                    )
+
+    @staticmethod
+    def _cleanup_failed_unpack(target_dir: Path) -> None:
+        """Recursively remove ``target_dir`` ignoring missing-path errors.
+
+        Does NOT touch the lock file — fs rollback only. The caller is
+        responsible for ensuring no partial lock entry exists (we never
+        write one before unpack completes).
+        """
+
+        try:
+            shutil.rmtree(target_dir, ignore_errors=True)
+        except OSError as exc:  # pragma: no cover — ignore_errors=True suppresses
+            logger.warning(
+                "upload_and_install: _cleanup_failed_unpack({}) failed: {}",
+                target_dir,
+                exc,
+            )
+
+    @staticmethod
+    def _require_install_source_manager() -> InstallSourceManager:
+        """Resolve the global manager or raise a clear configuration error.
+
+        The manager is published by ``StartupReconciler`` during FastAPI
+        lifespan startup; if a caller hits the market install path before
+        that has run we want a meaningful error rather than ``AttributeError``
+        on ``None.record_market_install``.
+        """
+
+        mgr = get_install_source_manager()
+        if mgr is None:
+            raise ServerDomainError(
+                code="INSTALL_SOURCE_NOT_READY",
+                message="install source manager is not initialised",
+                status_code=503,
+                details={"hint": "wait for FastAPI lifespan startup to complete"},
+            )
+        return mgr
+
+    def resolve_download_path(self, package: str) -> Path:
+        """Resolve and validate a package path for download.
+
+        Returns the absolute path to the package file.  Raises if the file
+        does not exist or is outside the target directory.
+        """
+        try:
+            return self._resolve_package_path(package)
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="download") from exc
+
+    # ── Sync helpers ───────────────────────────────────────────────────
+
+    @staticmethod
+    def _path_policy() -> PluginCliPathPolicy:
+        return PluginCliPathPolicy.from_settings()
+
+    def _autostart_gate_root(self, plugins_root: str | None) -> Path | None:
+        """The directory the install rollback checks for leftovers.
+
+        ``None`` means the question could not be asked, and the caller keeps the
+        id gated. Everything is inside the try on purpose: this runs from an
+        except block that is already carrying the install's real failure, and a
+        ``PluginCliPathPolicy.from_settings()`` error escaping here would both
+        replace that cause and skip every restore in the loop (coderabbit).
+        """
+        try:
+            policy = self._path_policy()
+            if not plugins_root:
+                return policy.user_plugins_root
+            return _require_within(
+                Path(plugins_root).expanduser().resolve(),
+                policy.user_plugins_root,
+                field="plugins_root",
+            )
+        except Exception as exc:
+            # An out-of-scope root cannot contain an install anyway; if a policy can be resolved, search for leftovers under the actual user plugin root,
+            # otherwise let the caller handle "cannot inspect."
+            logger.error("cannot resolve the install rollback root: {}", exc)
+            try:
+                return self._path_policy().user_plugins_root
+            except Exception:
+                return None
+
+    def _resolver(self) -> PluginSourceResolver:
+        return PluginSourceResolver(self._path_policy())
+
+    def _list_local_plugins_sync(self) -> dict[str, object]:
+        try:
+            sources = self._resolver().list_plugins()
+            plugins = [source.directory_name for source in sources]
+            plugin_refs = [
+                {
+                    "root_id": source.root_id,
+                    "directory_name": source.directory_name,
+                    "plugin_id": source.plugin_id,
+                    "label": (
+                        f"{source.plugin_id} ({source.root_id}/{source.directory_name})"
+                        if source.plugin_id and source.plugin_id != source.directory_name
+                        else f"{source.root_id}/{source.directory_name}"
+                    ),
+                }
+                for source in sources
+            ]
+            return {"plugins": plugins, "plugin_refs": plugin_refs, "count": len(sources)}
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="list_plugins") from exc
+
+    def _list_local_packages_sync(self) -> dict[str, object]:
+        try:
+            target_root = self._path_policy().package_artifacts_root
+            items: list[dict[str, object]] = []
+            package_paths = [
+                path
+                for path in target_root.glob("*")
+                if path.is_file() and self._has_allowed_upload_suffix(path.name)
+            ]
+            for path in sorted(
+                package_paths,
+                key=lambda item: item.stat().st_mtime,
+                reverse=True,
+            ):
+                stat = path.stat()
+                items.append(
+                    {
+                        "name": path.name,
+                        "path": str(path.resolve()),
+                        "suffix": path.suffix,
+                        "size_bytes": stat.st_size,
+                        "modified_at": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+                    }
+                )
+            return {"packages": items, "count": len(items), "target_dir": str(target_root)}
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="list_packages") from exc
+
+    def _build_sync(
+        self,
+        *,
+        mode: str,
+        plugin: str | None,
+        plugins: list[str] | None,
+        plugin_ref: dict[str, Any] | None,
+        plugin_refs: list[dict[str, Any]] | None,
+        out: str | None,
+        target_dir: str | None,
+        keep_staging: bool,
+        bundle_id: str | None,
+        package_name: str | None,
+        package_description: str | None,
+        version: str | None,
+        development_ref: dict[str, Any] | None = None,
+        development_refs: list[dict[str, Any]] | None = None,
+        allow_development: bool = True,
+        cancelled: threading.Event | None = None,
+    ) -> dict[str, object]:
+        from plugin.neko_plugin_cli.core.build import build_bundle, build_plugin
+
+        try:
+            policy = self._path_policy()
+            target_root = policy.package_artifacts_root
+            from .development_build import build_development_sources, resolve_development_sources
+
+            development = resolve_development_sources(mode, development_ref, development_refs or []) if allow_development else []
+            if development:
+                if mode == "single" and (plugin or plugin_ref):
+                    raise ValueError("A single build accepts exactly one source")
+                ordinary = (
+                    self._resolver().list_plugins() if mode == "all" else
+                    self._resolve_plugin_sources(
+                        mode=mode, plugin=plugin, plugins=plugins or [],
+                        plugin_ref=plugin_ref, plugin_refs=plugin_refs or [],
+                    ) if plugin or plugin_ref or plugins or plugin_refs else []
+                )
+                return build_development_sources(
+                    development=development, ordinary=ordinary, mode=mode,
+                    target_root=target_root, target_dir=target_dir, out=out,
+                    keep_staging=keep_staging, bundle_id=bundle_id,
+                    package_name=package_name, package_description=package_description,
+                    version=version,
+                    cancelled=cancelled,
+                )
+            sources = self._resolve_plugin_sources(
+                mode=mode,
+                plugin=plugin,
+                plugins=plugins or [],
+                plugin_ref=plugin_ref,
+                plugin_refs=plugin_refs or [],
+            )
+            plugin_dirs = [source.plugin_dir for source in sources]
+            resolved_target_dir = Path(target_dir).expanduser().resolve() if target_dir else target_root
+            _require_within(resolved_target_dir, target_root, field="target_dir")
+            resolved_target_dir.mkdir(parents=True, exist_ok=True)
+
+            if out and mode != "bundle" and len(plugin_dirs) != 1:
+                raise ValueError("'out' can only be used when building a single plugin")
+
+            if mode == "bundle":
+                resolved_bundle_id = bundle_id or "__".join(sorted(item.directory_name for item in sources))
+                output_path = (
+                    _require_within(Path(out).expanduser().resolve(), target_root, field="out")
+                    if out
+                    else _require_within(
+                        (resolved_target_dir / f"{resolved_bundle_id}.neko-bundle").resolve(),
+                        target_root,
+                        field="out",
+                    )
+                )
+                result = build_bundle(
+                    plugin_dirs,
+                    output_path,
+                    bundle_id=resolved_bundle_id,
+                    package_name=package_name,
+                    package_description=package_description,
+                    version=version or "0.1.0",
+                    keep_staging=keep_staging,
+                )
+                built = [result.model_dump(mode="json")]
+                return {
+                    "built": built,
+                    "built_count": len(built),
+                    "failed": [],
+                    "failed_count": 0,
+                    "ok": True,
+                }
+
+            built: list[dict[str, object]] = []
+            failed: list[dict[str, object]] = []
+            output_stems = self._output_stems_for_sources(sources)
+            for source, plugin_dir in zip(sources, plugin_dirs, strict=True):
+                output_path = (
+                    _require_within(Path(out).expanduser().resolve(), target_root, field="out")
+                    if out
+                    else resolved_target_dir / f"{output_stems[source]}.neko-plugin"
+                )
+                try:
+                    result = build_plugin(
+                        plugin_dir,
+                        output_path,
+                        keep_staging=keep_staging,
+                    )
+                    built.append(result.model_dump(mode="json"))
+                except Exception as exc:
+                    failed.append({"plugin": f"{source.root_id}/{source.directory_name}", "error": str(exc)})
+
+            return {
+                "built": built,
+                "built_count": len(built),
+                "failed": failed,
+                "failed_count": len(failed),
+                "ok": not failed,
+            }
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="build") from exc
+
+    def _inspect_sync(self, *, package: str) -> dict[str, object]:
+        try:
+            result = inspect_package(self._resolve_package_path(package))
+            return result.model_dump(mode="json")
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="inspect") from exc
+
+    def _verify_sync(self, *, package: str) -> dict[str, object]:
+        try:
+            result = inspect_package(self._resolve_package_path(package))
+            payload_hash_verified = result.payload_hash_verified
+            return {
+                **result.model_dump(mode="json"),
+                "ok": payload_hash_verified is True,
+            }
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="verify") from exc
+
+    def _plan_install_sync(
+        self,
+        *,
+        package: str,
+        plugins_root: str | None,
+        profiles_root: str | None,
+        _allow_external_profiles_root: bool = False,
+    ) -> dict[str, object]:
+        try:
+            policy = self._path_policy()
+            policy.ensure_writable_layout()
+            target_root = (
+                _require_within(
+                    Path(plugins_root).expanduser().resolve(),
+                    policy.user_plugins_root,
+                    field="plugins_root",
+                )
+                if plugins_root
+                else policy.user_plugins_root
+            )
+            package_path = self._resolve_package_path(package)
+            plan = self._apply_installed_package_identity(
+                build_install_plan(
+                    package_path=package_path,
+                    plugins_root=target_root,
+                    builtin_plugins_root=policy.builtin_plugins_root,
+                ),
+                package_path=package_path,
+                target_root=target_root,
+            )
+            from plugin.server.application.plugins.development import list_registration_records_sync
+            incoming_ids = set(getattr(plan, "bundle_plugin_ids", ()) or (plan.plugin_id,))
+            try:
+                registrations = list_registration_records_sync()
+            except ServerDomainError as exc:
+                if exc.code != "DEVELOPMENT_STORE_INVALID":
+                    raise
+                # Like managed discovery, installation does not depend on a
+                # readable optional development store. Preserve it for repair;
+                # all package, target and installed-identity checks still apply.
+                logger.warning("Ignoring invalid optional development registry during managed install planning")
+                registrations = []
+            conflicts = [item for item in registrations if item.plugin_id in incoming_ids]
+            if conflicts:
+                plan = replace(plan, action="blocked", confirmation_token="", reason="development_registration_conflict")
+                result = asdict(plan)
+                result["development_sources"] = [str(item.source_dir) for item in conflicts]
+                return result
+            return asdict(plan)
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="install-plan") from exc
+
+    def _apply_installed_package_identity(
+        self,
+        plan: PluginInstallPlan,
+        *,
+        package_path: Path,
+        target_root: Path,
+    ) -> PluginInstallPlan:
+        # A fresh bundle has no single executable directory or source row.
+        if not plan.directory_name:
+            return plan
+        target_dir = target_root / plan.directory_name
+        manager = get_install_source_manager()
+        entry_reader = getattr(manager, "entry_for_directory", None)
+        entry = entry_reader(target_dir) if callable(entry_reader) else None
+        if (
+            plan.action == "blocked"
+            and plan.reason == "plugin_builtin_override_market_required"
+            and is_manual_takeover_entry(entry)
+            and entry.plugin_id == plan.plugin_id
+            and entry.directory_name == plan.directory_name
+        ):
+            # A canonical builtin and its canonical user override are valid
+            # peers. Rebuild only the user-side replacement plan after the
+            # exact manual LockEntry proves this is an ownership transfer,
+            # not an attempt to overwrite the builtin source.
+            plan = build_install_plan(
+                package_path=package_path,
+                plugins_root=target_root,
+                builtin_plugins_root=None,
+            )
+        if plan.action not in REPLACEMENT_ACTIONS:
+            return plan
+
+        if not plan.manifestless_state and entry is None:
+            return replace(
+                plan,
+                action="blocked",
+                confirmation_token="",
+                reason="install_source_ownership_unknown",
+                current_source="unknown",
+                target_source="imported",
+            )
+        if is_manual_takeover_entry(entry):
+            assert isinstance(entry, LockEntry)
+            if bool(getattr(manager, "is_degraded", False)):
+                return replace(
+                    plan,
+                    action="blocked",
+                    confirmation_token="",
+                    reason="install_source_read_only",
+                    current_source="manual",
+                    target_source="imported",
+                )
+            if entry.plugin_id != plan.plugin_id or entry.directory_name != plan.directory_name:
+                return replace(
+                    plan,
+                    action="blocked",
+                    confirmation_token="",
+                    reason="manual_takeover_identity_mismatch",
+                    current_source="manual",
+                    target_source="imported",
+                )
+            return replace(
+                plan,
+                confirmation_token=local_manual_takeover_confirmation_token(
+                    package_path=package_path,
+                    target_dir=target_dir,
+                    entry=entry,
+                ),
+                reason="manual_takeover",
+                installed_package_id=plan.package_id,
+                current_source="manual",
+                target_source="imported",
+            )
+        installed_package_id = str(getattr(entry, "package_id", "") or "")
+        if not installed_package_id and plan.manifestless_state:
+            package_id_reader = getattr(manager, "package_id_for_directory", None)
+            installed_package_id = (
+                package_id_reader(target_dir) if callable(package_id_reader) else ""
+            )
+        if not installed_package_id:
+            # Legacy rows predate package identity tracking. Directory
+            # existence cannot prove package identity. Historical official
+            # single-plugin packages used plugin_id as package_id, so use that
+            # conservative baseline and fail closed on any ambiguous rename.
+            installed_package_id = plan.plugin_id
+        if installed_package_id != plan.package_id:
+            return replace(
+                plan,
+                action="blocked",
+                confirmation_token="",
+                reason="package_id_change",
+                installed_package_id=installed_package_id,
+            )
+        return replace(plan, installed_package_id=installed_package_id)
+
+    def _install_sync(
+        self,
+        *,
+        package: str,
+        plugins_root: str | None,
+        profiles_root: str | None = None,
+        on_conflict: str,
+        use_staging: bool = True,
+        forced_directory_name: str | None = None,
+        _allow_external_profiles_root: bool = False,
+    ) -> dict[str, object]:
+        try:
+            policy = self._path_policy()
+            policy.ensure_writable_layout()
+            install_plugins_root = policy.user_plugins_root
+            plugins_root_path = (
+                _require_within(Path(plugins_root).expanduser().resolve(), install_plugins_root, field="plugins_root")
+                if plugins_root
+                else install_plugins_root
+            )
+            package_path = self._resolve_package_path(package)
+            if use_staging:
+                result = self._install_via_staging_sync(
+                    package=package_path,
+                    plugins_root=plugins_root_path,
+                    on_conflict=on_conflict,
+                    forced_directory_name=forced_directory_name,
+                )
+            elif forced_directory_name is not None:
+                raise ValueError("forced_directory_name requires use_staging=True")
+            else:
+                result = install_package(
+                    package_path,
+                    plugins_root=plugins_root_path,
+                    on_conflict=on_conflict,
+                )
+            return result.model_dump(mode="json")
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="install") from exc
+
+    def _install_via_staging_sync(
+        self,
+        *,
+        package: Path,
+        plugins_root: Path,
+        on_conflict: str,
+        forced_directory_name: str | None = None,
+    ) -> InstallResult:
+        """Validate the whole archive and promote only its executable trees."""
+        forced_directory_name = (
+            _require_safe_directory_name(forced_directory_name, field="forced_directory_name")
+            if forced_directory_name is not None
+            else None
+        )
+        staging_plugins = plugins_root / f".neko_staging_{uuid.uuid4().hex}"
+        staging_plugins.mkdir(parents=True, exist_ok=True)
+        installer = PackageInstaller()
+        promoted_plugins: list[InstalledPlugin] = []
+        try:
+            staged = install_package(
+                package,
+                plugins_root=staging_plugins,
+                on_conflict="fail",
+            )
+            for item in staged.installed_plugins:
+                source_dir = Path(item.target_dir)
+                desired_name = forced_directory_name or item.target_plugin_id
+                final_dir = installer.resolve_plugin_target_dir(plugins_root / desired_name)
+                final_dir.parent.mkdir(parents=True, exist_ok=True)
+                source_dir.rename(final_dir)
+                promoted_plugins.append(
+                    InstalledPlugin(
+                        source_folder=item.source_folder,
+                        target_plugin_id=final_dir.name,
+                        target_dir=final_dir,
+                        renamed=(final_dir.name != item.source_folder),
+                    )
+                )
+                if not (final_dir / "plugin.toml").is_file():
+                    raise ValueError(f"promoted plugin is missing plugin.toml: {final_dir}")
+            return InstallResult(
+                package_path=staged.package_path,
+                package_type=staged.package_type,
+                package_id=staged.package_id,
+                plugins_root=plugins_root,
+                profiles_root=None,
+                installed_plugins=promoted_plugins,
+                profile_dir=None,
+                metadata_found=staged.metadata_found,
+                payload_hash=staged.payload_hash,
+                payload_hash_verified=staged.payload_hash_verified,
+                conflict_strategy=on_conflict,
+            )
+        except Exception:
+            for item in promoted_plugins:
+                shutil.rmtree(item.target_dir, ignore_errors=True)
+            raise
+        finally:
+            shutil.rmtree(staging_plugins, ignore_errors=True)
+
+    def _stage_builtin_override_sync(
+        self,
+        *,
+        package: Path,
+        plugins_root: Path,
+        plan: PluginInstallPlan,
+    ) -> _StagedBuiltinOverride:
+        """Extract and validate override code without touching either live source."""
+        staging_token = uuid.uuid4().hex
+        unpack_plugins = plugins_root / f".neko_override_unpack_{staging_token}"
+        staged_plugin_dir = plugins_root / f".neko_override_staging_{staging_token}"
+        unpack_plugins.mkdir(parents=True, exist_ok=True)
+        try:
+            staged = install_package(
+                package,
+                plugins_root=unpack_plugins,
+                on_conflict="fail",
+            )
+            if staged.package_type != "plugin" or len(staged.installed_plugins) != 1:
+                raise ValueError("builtin override requires one plugin package")
+            [installed] = staged.installed_plugins
+            unpacked_plugin_dir = Path(installed.target_dir).resolve()
+            if (
+                staged.package_id != plan.package_id
+                or installed.source_folder != plan.plugin_id
+                or installed.target_plugin_id != plan.plugin_id
+                or unpacked_plugin_dir.name != plan.directory_name
+                or self._read_installed_plugin_toml_id(unpacked_plugin_dir) != plan.plugin_id
+            ):
+                raise ValueError("staged builtin override identity does not match the plan")
+            if staged.payload_hash_verified is False:
+                raise ValueError("builtin override package payload hash is not verified")
+            unpacked_plugin_dir.rename(staged_plugin_dir)
+            return _StagedBuiltinOverride(result=staged, plugin_dir=staged_plugin_dir)
+        except Exception:
+            shutil.rmtree(staged_plugin_dir, ignore_errors=True)
+            raise
+        finally:
+            shutil.rmtree(unpack_plugins, ignore_errors=True)
+
+    @staticmethod
+    def _cleanup_builtin_override_staging_sync(staged: _StagedBuiltinOverride) -> None:
+        shutil.rmtree(staged.plugin_dir, ignore_errors=True)
+
+    @staticmethod
+    def _sha256_file(path: str | Path) -> str:
+        digest = hashlib.sha256()
+        with Path(path).open("rb") as handle:
+            for chunk in iter(lambda: handle.read(65536), b""):
+                digest.update(chunk)
+        return digest.hexdigest().lower()
+
+    @staticmethod
+    def _package_ref_from_path(*, filename: str, package_path: str) -> dict[str, object]:
+        resolved = Path(package_path).expanduser().resolve()
+        if not resolved.is_file():
+            raise FileNotFoundError(f"package file not found: {package_path}")
+        return {
+            "name": filename,
+            "path": str(resolved),
+            "size": resolved.stat().st_size,
+        }
+
+    def _analyze_sync(
+        self,
+        *,
+        plugins: list[str],
+        plugin_refs: list[dict[str, Any]] | None,
+        current_sdk_version: str | None,
+    ) -> dict[str, object]:
+        from plugin.neko_plugin_cli.core.bundle_analysis import analyze_bundle_plugins
+
+        try:
+            plugin_dirs = [
+                source.plugin_dir
+                for source in self._resolver().resolve_many(
+                    refs=plugin_refs or [],
+                    specifiers=plugins,
+                )
+            ]
+            result = analyze_bundle_plugins(
+                plugin_dirs,
+                current_sdk_version=current_sdk_version,
+            )
+            return result.model_dump(mode="json")
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="analyze") from exc
+
+    @staticmethod
+    def _has_allowed_upload_suffix(filename: str) -> bool:
+        return filename.lower().endswith(tuple(_ALLOWED_UPLOAD_SUFFIXES))
+
+    @staticmethod
+    def _upload_filename_parts(filename: str) -> tuple[str, str, str]:
+        safe_name = Path(filename).name
+        if not safe_name:
+            raise ValueError("Invalid filename")
+
+        lower_name = safe_name.lower()
+        for allowed_suffix in sorted(_ALLOWED_UPLOAD_SUFFIXES, key=len, reverse=True):
+            if lower_name.endswith(allowed_suffix):
+                return safe_name, safe_name[: -len(allowed_suffix)], allowed_suffix
+
+        allowed = ", ".join(sorted(_ALLOWED_UPLOAD_SUFFIXES))
+        raise ValueError(f"Unsupported file type. Allowed: {allowed}")
+
+    @staticmethod
+    def _upload_metadata(path: Path) -> dict[str, object]:
+        stat = path.stat()
+        return {
+            "name": path.name,
+            "path": str(path.resolve()),
+            "size_bytes": stat.st_size,
+            "modified_at": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+        }
+
+    def _save_uploaded_package_sync(self, *, filename: str, content: bytes) -> dict[str, object]:
+        try:
+            target_root = self._path_policy().package_artifacts_root
+            # Validate file size
+            if len(content) > _UPLOAD_MAX_BYTES:
+                raise ValueError(
+                    f"File too large: {len(content)} bytes "
+                    f"(max {_UPLOAD_MAX_BYTES // (1024 * 1024)} MiB)"
+                )
+
+            safe_name, stem, suffix = self._upload_filename_parts(filename)
+
+            # Ensure target directory exists
+            target_root.mkdir(parents=True, exist_ok=True)
+
+            # Exclusive create: if name collides (including concurrent uploads
+            # racing on the same filename), pick a UUID-suffixed dest and retry.
+            dest = target_root / safe_name
+            while True:
+                try:
+                    with dest.open("xb") as file:
+                        file.write(content)
+                    break
+                except FileExistsError:
+                    unique = uuid.uuid4().hex[:8]
+                    dest = target_root / f"{stem}_{unique}{suffix}"
+                except Exception:
+                    dest.unlink(missing_ok=True)
+                    raise
+
+            return self._upload_metadata(dest)
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="upload") from exc
+
+    def _discard_uploaded_package_sync(self, *, package: str) -> dict[str, object]:
+        """Remove one direct upload using the existing package-path policy."""
+        try:
+            target_root = self._path_policy().package_artifacts_root.resolve()
+            target = self._resolve_package_path(package)
+            if target.parent != target_root:
+                raise ValueError("only a directly uploaded plugin package can be discarded")
+            target.unlink()
+            return {"success": True, "removed": True, "name": target.name}
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="discard-upload") from exc
+
+    def _save_uploaded_file_sync(self, *, filename: str, source_file: BinaryIO) -> dict[str, object]:
+        """Copy an incoming upload in bounded chunks and enforce the size limit."""
+        try:
+            target_root = self._path_policy().package_artifacts_root
+            safe_name, stem, suffix = self._upload_filename_parts(filename)
+            target_root.mkdir(parents=True, exist_ok=True)
+            source_file.seek(0)
+
+            dest = target_root / safe_name
+            while True:
+                try:
+                    total_bytes = 0
+                    with dest.open("xb") as target:
+                        while chunk := source_file.read(_UPLOAD_COPY_CHUNK_BYTES):
+                            total_bytes += len(chunk)
+                            if total_bytes > _UPLOAD_MAX_BYTES:
+                                raise ValueError(
+                                    f"File too large: {total_bytes} bytes "
+                                    f"(max {_UPLOAD_MAX_BYTES // (1024 * 1024)} MiB)"
+                                )
+                            target.write(chunk)
+                    break
+                except FileExistsError:
+                    unique = uuid.uuid4().hex[:8]
+                    dest = target_root / f"{stem}_{unique}{suffix}"
+                except Exception:
+                    dest.unlink(missing_ok=True)
+                    raise
+
+            return self._upload_metadata(dest)
+        except Exception as exc:
+            raise self._domain_error_from_exception(exc, action="upload") from exc
+
+    def _save_package_file_sync(self, *, filename: str, package_path: str) -> dict[str, object]:
+        """Copy an existing package into the managed package artifacts root."""
+
+        source = Path(package_path).expanduser().resolve()
+        if not source.is_file():
+            raise FileNotFoundError(f"package file not found: {package_path}")
+        if source.stat().st_size > _UPLOAD_MAX_BYTES:
+            raise ValueError(
+                f"File too large: {source.stat().st_size} bytes "
+                f"(max {_UPLOAD_MAX_BYTES // (1024 * 1024)} MiB)"
+            )
+
+        safe_name, stem, suffix = self._upload_filename_parts(filename or source.name)
+
+        target_root = self._path_policy().package_artifacts_root
+        target_root.mkdir(parents=True, exist_ok=True)
+
+        if source.parent == target_root.resolve() and source.name == safe_name:
+            return self._upload_metadata(source)
+
+        dest = target_root / safe_name
+        while True:
+            try:
+                with source.open("rb") as src, dest.open("xb") as dst:
+                    shutil.copyfileobj(src, dst)
+                break
+            except FileExistsError:
+                unique = uuid.uuid4().hex[:8]
+                dest = target_root / f"{stem}_{unique}{suffix}"
+            except Exception:
+                dest.unlink(missing_ok=True)
+                raise
+
+        return self._upload_metadata(dest)
+
+    def _resolve_plugin_sources(
+        self,
+        *,
+        mode: str,
+        plugin: str | None,
+        plugins: list[str],
+        plugin_ref: dict[str, Any] | None,
+        plugin_refs: list[dict[str, Any]],
+    ) -> list[ResolvedPluginSource]:
+        resolver = self._resolver()
+        if mode == "all":
+            sources = resolver.list_plugins()
+            if not sources:
+                roots = ", ".join(f"{root_id}={root}" for root_id, root in self._path_policy().build_source_roots)
+                raise FileNotFoundError(f"No plugin.toml files found under builtin or user plugin roots ({roots})")
+            return sources
+
+        if mode == "single":
+            if plugin_ref is not None:
+                return [resolver.resolve_plugin_ref(plugin_ref)]
+            if plugin:
+                return [resolver.resolve_string(plugin)]
+            raise ValueError("Please provide plugin_ref or plugin when mode=single")
+
+        if mode in {"selected", "bundle"}:
+            if plugin_refs:
+                return [resolver.resolve_plugin_ref(item) for item in plugin_refs]
+            if plugins:
+                return [resolver.resolve_string(item) for item in plugins]
+            raise ValueError(f"Please provide plugin_refs or plugins when mode={mode}")
+
+        raise ValueError("Unsupported build mode")
+
+    @staticmethod
+    def _output_stems_for_sources(sources: list[ResolvedPluginSource]) -> dict[ResolvedPluginSource, str]:
+        counts: dict[str, int] = {}
+        for source in sources:
+            counts[source.directory_name] = counts.get(source.directory_name, 0) + 1
+        return {
+            source: (
+                source.directory_name
+                if counts[source.directory_name] == 1
+                else f"{source.root_id}_{source.directory_name}"
+            )
+            for source in sources
+        }
+
+    def _resolve_package_path(self, raw: str) -> Path:
+        target_root = self._path_policy().package_artifacts_root
+
+        def _accept(path: Path) -> bool:
+            return path.is_file() and self._has_allowed_upload_suffix(path.name)
+
+        candidate = Path(raw).expanduser()
+        if candidate.exists():
+            resolved = candidate.resolve()
+            _require_within(resolved, target_root, field=f"package '{raw}'")
+            if _accept(resolved):
+                return resolved
+
+        target_candidate = (target_root / raw).resolve()
+        if target_candidate.exists():
+            _require_within(target_candidate, target_root, field=f"package '{raw}'")
+            if _accept(target_candidate):
+                return target_candidate
+
+        raise FileNotFoundError(f"package file not found: {raw}")
+
+    async def _record_install_source_best_effort(
+        self,
+        *,
+        install_result: dict,
+        package_filename: str,
+        package_sha256: str,
+        override: dict | None,
+    ) -> str | None:
+        """Best-effort record the install source in the lock file (design §7.3).
+
+        Returns ``None`` on success or a short human-readable warning
+        string on failure (to be surfaced as ``install_source_warning``
+        per Req 9.6 / 10.8). This helper intentionally never raises: a
+        broken install-source subsystem must not mask a successful
+        plugin install.
+        """
+        try:
+            from plugin.server.application.install_source import (
+                get_install_source_manager,
+            )
+        except Exception as exc:
+            return f"install_source_import_failed: {exc}"
+
+        mgr = get_install_source_manager()
+        if mgr is None:
+            return "install_source_manager_unavailable"
+        if mgr.is_degraded:
+            return f"install_source_manager_degraded: {mgr.degrade_reason}"
+
+        try:
+            await asyncio.to_thread(
+                _record_install_source_for_install_result,
+                mgr,
+                install_result,
+                package_filename,
+                package_sha256,
+                override,
+            )
+            return None
+        except Exception as exc:
+            logger.warning(
+                "record_install_source failed: err_type={}, err={}",
+                type(exc).__name__,
+                str(exc),
+            )
+            # Design §13 Fix 12: for BUILTIN_CHANNEL_LOCKED errors,
+            # surface a specifically-shaped warning so ops can grep for
+            # internal bug triggers.
+            try:
+                from plugin.server.application.install_source import InstallSourceError
+
+                if isinstance(exc, InstallSourceError):
+                    if exc.code == "BUILTIN_CHANNEL_LOCKED":
+                        details = exc.details
+                        return (
+                            "internal_error: attempted to mutate builtin channel, "
+                            f"plugin_id={details.get('plugin_id', '')} "
+                            f"directory={details.get('directory_name', '')}"
+                        )
+                    return f"{exc.code}: {exc.message}"
+            except Exception:
+                pass  # classification failed; use generic fallback below
+            return f"unexpected: {exc}"
+
+    def _domain_error_from_exception(self, exc: Exception, *, action: str) -> ServerDomainError:
+        if isinstance(exc, ServerDomainError):
+            return exc
+        if getattr(exc, "code", "") == "PLUGIN_EXEC_STATE_ROOT_COLLISION":
+            status_code = 409
+            code = "PLUGIN_EXEC_STATE_ROOT_COLLISION"
+        elif package_error_code := _classify_package_error(exc):
+            status_code = 400
+            code = package_error_code
+        elif isinstance(exc, FileNotFoundError):
+            status_code = 404
+            code = "PLUGIN_CLI_NOT_FOUND"
+        elif isinstance(exc, FileExistsError):
+            status_code = 409
+            code = "PLUGIN_CLI_CONFLICT"
+        elif isinstance(exc, ValueError):
+            status_code = 400
+            code = "PLUGIN_CLI_INVALID_REQUEST"
+        else:
+            status_code = 500
+            code = "PLUGIN_CLI_INTERNAL_ERROR"
+
+        logger.warning(
+            "plugin cli action failed: action={}, err_type={}, err={}",
+            action,
+            type(exc).__name__,
+            str(exc),
+        )
+        return ServerDomainError(
+            code=code,
+            message=str(exc),
+            status_code=status_code,
+            details={"action": action, "error_type": type(exc).__name__},
+        )
+
+
+def _plugin_directory_exists(plugins_root: Path, plugin_id: str) -> bool:
+    """Whether any directory under ``plugins_root`` still holds ``plugin_id``.
+
+    Used by the install rollback to decide whether restoring the plugin's
+    autostart approval is safe. Staging cleanup runs with
+    ``ignore_errors=True``, so a failed install can leave a runnable copy
+    behind; handing that copy its approval back lets it start itself at the
+    next boot without the user ever having run it.
+
+    Fails closed, unlike the manifest reader: every uncertainty here — an
+    unlistable root, an unreadable manifest next to a same-named directory —
+    returns ``True`` and keeps the id gated. The cost of a false positive is
+    one manual start; the cost of a false negative is third-party code running
+    unapproved.
+    """
+    wanted = str(plugin_id or "").strip()
+    if not wanted:
+        return False
+    try:
+        entries = list(plugins_root.iterdir())
+    except FileNotFoundError:
+        return False
+    except OSError as exc:
+        logger.error(
+            "cannot list {} to check for install remnants of {}: {}",
+            plugins_root,
+            wanted,
+            exc,
+        )
+        return True
+    for entry in entries:
+        try:
+            if not entry.is_dir():
+                continue
+        except OSError:
+            continue
+        if entry.name.startswith("."):
+            # Staging directories (.neko_staging_*) are not installation artifacts, and the registry does not scan them.
+            continue
+        manifest_id = _installed_manifest_plugin_id(entry)
+        if manifest_id == wanted:
+            return True
+        if not manifest_id and entry.name == wanted:
+            # If a same-name directory has an unreadable manifest, its ownership is unknown; treat it as present.
+            return True
+    return False
+
+
+def _installed_manifest_plugin_id(target_dir: object) -> str:
+    """Read ``[plugin].id`` out of an installed plugin's manifest.
+
+    Returns "" when it cannot be read. Every caller here fails open — an
+    unreadable manifest means the plugin autostarts the way it did before this
+    gate existed, which is the safe direction.
+    """
+    if not target_dir:
+        return ""
+    # Use the module-level tomllib import. This code previously had a try/except fallback to tomli, but this module
+    # imports tomllib unconditionally at top level, so that fallback was unreachable and implied unsupported
+    # Python 3.10 compatibility (github-code-quality).
+    config_path = Path(str(target_dir)) / "plugin.toml"
+    try:
+        with open(config_path, "rb") as handle:
+            data = tomllib.load(handle)
+    except (OSError, ValueError):
+        return ""
+    plugin_table = data.get("plugin")
+    if not isinstance(plugin_table, dict):
+        return ""
+    return str(plugin_table.get("id") or "").strip()
+
+
+def _persist_first_install_autostart_off(plugin_id: str) -> tuple[object, object]:
+    """Turn auto-start off for a plugin that has just been installed locally.
+
+    The package manifest may declare ``auto_start = true``. That must not become
+    the switch state: the first local copy stays off until the user enables it.
+    Returns ``(previous entry, written entry)`` so a failed install can restore
+    the previous preference.
+    """
+    previous = get_runtime_override_entry(plugin_id)
+    set_runtime_auto_start_override(plugin_id, False)
+    return previous, get_runtime_override_entry(plugin_id)
+
+
+def _restore_first_install_autostart(
+    plugin_id: str, previous: object, written: object
+) -> bool:
+    try:
+        return restore_runtime_override(
+            plugin_id, previous, expected_current=written
+        )
+    except RuntimeOverridePersistenceError:
+        # Keep the original install error and let callers restore the remaining
+        # bundle entries. Each caller already reports an unsuccessful restore.
+        return False
+
+
+def _mark_new_install_awaiting_autostart(install_result: dict) -> list[str]:
+    """Withhold autostart from a plugin the user has installed but never run.
+
+    Call this only from the fresh-install path. "Is this plugin new?" is decided
+    by the install plan, which computes it before touching disk: ``install_plan``
+    only says ``"install"`` when nothing is installed under that id, and says
+    ``reinstall`` or ``blocked`` otherwise.
+
+    It deliberately does *not* consult ``state.plugins``. That snapshot answers a
+    different question — "has a refresh seen this yet" — and a refresh that
+    overlaps the install can register the freshly written directory before this
+    runs, at which point the plugin looks pre-existing and skips the gate
+    entirely (greptile); a stale registry produces the mirror error (codex).
+
+    The saved auto-start preference is forced off here as well. Plan ids are
+    withheld before the files land; this pass covers the manifest id, which can
+    differ from the directory name.
+    """
+    from plugin.server.infrastructure.autostart_approvals import mark_autostart_pending
+
+    unrecorded: list[str] = []
+    installed = install_result.get("installed_plugins")
+    if not isinstance(installed, list):
+        return unrecorded
+    for item in installed:
+        if not isinstance(item, dict):
+            continue
+        target_dir = item.get("target_dir")
+        # The registry records plugins by the ID declared in their manifest, while the installation result provides only a directory name
+        # (InstalledPlugin.target_plugin_id is target_dir.name). The repository permits directory names
+        # to differ from plugin.id, so recording the wrong ID makes this gate completely ineffective for that plugin
+        # (coderabbit). Read the installed manifest directly.
+        plugin_id = _installed_manifest_plugin_id(target_dir)
+        if not plugin_id:
+            plugin_id = str(item.get("target_plugin_id") or "").strip()
+        if not plugin_id and target_dir:
+            plugin_id = Path(str(target_dir)).name
+        if not plugin_id:
+            continue
+        pending_ok = mark_autostart_pending(plugin_id)
+        preference_ok = True
+        try:
+            _persist_first_install_autostart_off(plugin_id)
+        except RuntimeOverridePersistenceError:
+            preference_ok = False
+            logger.error(
+                "could not record auto-start as off for newly installed plugin_id={}",
+                plugin_id,
+            )
+        if not pending_ok or not preference_ok:
+            unrecorded.append(plugin_id)
+    return unrecorded
+
+
+def _record_install_source_for_install_result(
+    mgr,
+    install_result: dict,
+    package_filename: str,
+    package_sha256: str,
+    override: dict | None,
+) -> None:
+    """Walk ``install_result["installed_plugins"]`` and call the appropriate
+    ``record_*`` method on ``mgr`` for each one (design §7.3).
+
+    Raises :class:`InstallSourceError` with code ``"UNSUPPORTED_OVERRIDE"``
+    when the caller supplies an ``override`` whose ``channel`` is not one
+    of the supported values. Other ``InstallSourceError`` codes (e.g.
+    ``PATH_OUTSIDE_ROOTS``, ``BUILTIN_CHANNEL_LOCKED``) propagate from
+    the manager.
+    """
+    from plugin.server.application.install_source import InstallSourceError
+
+    installed_plugins = install_result.get("installed_plugins", [])
+    package_id = str(install_result.get("package_id") or "")
+    profile_dir = str(install_result.get("profile_dir") or "")
+    for installed in installed_plugins:
+        target_dir = Path(installed["target_dir"])
+        if override is None:
+            mgr.record_import(
+                directory_path=target_dir,
+                package_filename=package_filename,
+                package_sha256=package_sha256,
+                package_id=package_id,
+                profile_dir=profile_dir,
+            )
+        elif override.get("channel") == "market":
+            detail = override.get("market_detail", {})
+            mgr.record_market(
+                directory_path=target_dir,
+                plugin_market_id=detail.get("plugin_market_id", ""),
+                version=detail.get("version", ""),
+                package_url=detail.get("package_url", ""),
+                package_id=package_id,
+                profile_dir=profile_dir,
+            )
+        else:
+            raise InstallSourceError(
+                "UNSUPPORTED_OVERRIDE",
+                f"unsupported override channel={override.get('channel')}",
+                details={"override": override},
+            )

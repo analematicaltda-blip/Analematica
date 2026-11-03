@@ -1,0 +1,12 @@
+{
+    "login.title": "Inicio de Sesión",
+    "login.username_label": "Nombre de Usuario",
+    "login.password_label": "Contraseña",
+    "login.login_button": "Ingresar",
+    "login.forgot_password_link": "¿Olvidaste tu contraseña?",
+    "login.or_continue_with": "o continúa con",
+    "login.google_button": "Iniciar sesión con Google",
+    "login.microsoft_button": "Iniciar sesión con Microsoft",
+    "login.error_credentials": "Usuario o contraseña incorrectos.",
+    "login.error_missing_fields": "Por favor, ingrese usuario y contraseña."
+}

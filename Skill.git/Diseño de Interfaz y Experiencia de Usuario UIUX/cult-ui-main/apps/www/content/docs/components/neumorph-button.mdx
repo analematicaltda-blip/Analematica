@@ -1,0 +1,71 @@
+---
+title: Neumorph Button
+description: Neumorphic button for React and shadcn/ui with soft shadows, four intents, three sizes, a loading spinner, and press animation.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="neumorph-button-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+/>
+
+Neumorph Button is a React button component for shadcn/ui, animated with Motion. Use it for form submits, toolbar actions, or calls to action in soft, tactile interfaces.
+
+## References
+
+<Citations>
+  <CitationTitle>Inspiration</CitationTitle>
+  <CitationList>
+    <CitationItem>
+      <CitationLink
+        href="https://animations.dev/learn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Animations dot dev
+      </CitationLink>
+    </CitationItem>
+  </CitationList>
+</Citations>
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/neumorph-button
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="neumorph-button" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+export default function Example() {
+  return <NeumorphButton>Click me</NeumorphButton>;
+}
+```

@@ -1,0 +1,50 @@
+{
+	"name": "@thinkscape/pi-thermos",
+	"version": "0.1.4",
+	"description": "Thermos plugin for Pi with provider detection for pi-subagents implementations.",
+	"type": "module",
+	"license": "MIT",
+	"author": {
+		"name": "Thinkscape"
+	},
+	"homepage": "https://github.com/Thinkscape/agent-thermos#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Thinkscape/agent-thermos.git",
+		"directory": "packages/pi-thermos"
+	},
+	"keywords": [
+		"pi",
+		"pi-extension",
+		"thermos",
+		"code-review",
+		"subagents"
+	],
+	"bin": {
+		"pi-thermos": "./bin/pi-thermos.js"
+	},
+	"files": [
+		"agents",
+		"assets",
+		"bin",
+		"src",
+		"README.md"
+	],
+	"pi": {
+		"extensions": [
+			"./src/index.ts"
+		]
+	},
+	"peerDependencies": {
+		"@earendil-works/pi-coding-agent": "*"
+	},
+	"peerDependenciesMeta": {
+		"@earendil-works/pi-coding-agent": {
+			"optional": true
+		}
+	},
+	"scripts": {
+		"build": "bun test tests",
+		"test": "bun test tests"
+	}
+}

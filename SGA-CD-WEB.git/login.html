@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión — SGA-CD</title>
+    <meta name="description" content="Acceso al portal institucional del Sistema Estudiantil, Cultural y Deportivo SGA-CD.">
+    <link rel="canonical" href="https://sga-cd.org/login.html">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#070B14">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="site-wrapper">
+        <header role="banner">
+            <h1><a href="index.html" style="color:var(--color-text-primary); text-decoration:none;"><i class="fa-solid fa-trophy"></i> SGA-CD</a></h1>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="register.html">Registrarse</a>
+            </nav>
+        </header>
+
+        <main role="main">
+            <section id="login-section" style="max-width: 450px; margin: 4rem auto;" class="glass-panel">
+                <h2 style="text-align: center; color: var(--color-accent-cyan);"><i class="fa-solid fa-lock" style="margin-right:0.5rem;"></i> Acceso Institucional</h2>
+                <form id="login-form" style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%; margin-top: 1.5rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; width: 100%;">
+                        <label for="username" style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Nombre de Usuario o Email</label>
+                        <input type="text" id="username" placeholder="ejemplo@institucion.gov.co" required autocomplete="username" style="width: 100%; min-height: 48px; padding: 0.75rem 1rem; background: #070B14; border: 1px solid var(--color-border-specular); border-radius: 10px; color: var(--color-text-primary); font-size: 0.95rem; box-sizing: border-box;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; width: 100%;">
+                        <label for="password" style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600;">Contraseña</label>
+                        <input type="password" id="password" placeholder="••••••••••••" required autocomplete="current-password" style="width: 100%; min-height: 48px; padding: 0.75rem 1rem; background: #070B14; border: 1px solid var(--color-border-specular); border-radius: 10px; color: var(--color-text-primary); font-size: 0.95rem; box-sizing: border-box;">
+                    </div>
+                    <div id="login-mensaje" style="margin-bottom: 0.5rem;"></div>
+                    <button type="submit" class="cta-button" style="width: 100%; min-height: 48px;">Ingresar</button>
+                </form>
+
+                <div class="social-login-divider" style="text-align: center; margin: 2rem 0; position: relative;">
+                    <span style="background: #0D1424; padding: 0 10px; color: var(--color-text-muted); font-size: 0.85rem;">O ingresa con tu cuenta corporativa</span>
+                </div>
+
+                <div class="social-login-buttons" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <button id="google-login-btn" class="cta-button" style="background: rgba(255,255,255,0.06); color: var(--color-text-primary); border: 1px solid var(--color-border-specular); box-shadow: none;">
+                        <i class="fa-brands fa-google" style="margin-right:0.5rem; color:#EA4335;"></i> Google Workspace
+                    </button>
+                    <button id="microsoft-login-btn" class="cta-button" style="background: rgba(255,255,255,0.06); color: var(--color-text-primary); border: 1px solid var(--color-border-specular); box-shadow: none;">
+                        <i class="fa-brands fa-microsoft" style="margin-right:0.5rem; color:#00A4EF;"></i> Microsoft 365
+                    </button>
+                </div>
+
+                <p style="text-align: center; margin-top: 2rem; color: var(--color-text-muted); font-size: 0.9rem;">
+                    ¿Tu organización aún no está registrada? <a href="register.html" style="color:var(--color-accent-cyan); font-weight:bold;">Crea una cuenta institucional</a>.
+                </p>
+            </section>
+        </main>
+
+        <footer id="main-footer">
+            <p class="footer-copy">&copy; 2025 SGA-CD. Todos los derechos reservados. | <a href="privacy.html">Política de Privacidad</a> | <a href="terms.html">Términos del Servicio</a></p>
+        </footer>
+    </div>
+
+    <!-- Archivo de configuración global -->
+    <script src="js/config.js"></script>
+    <script src="js/privacy.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/oauth.js"></script>
+</body>
+</html>

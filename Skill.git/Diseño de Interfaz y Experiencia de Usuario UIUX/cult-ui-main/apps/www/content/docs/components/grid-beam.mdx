@@ -1,0 +1,101 @@
+---
+title: Grid Beam
+description: Animated canvas light beams on a grid for React and shadcn/ui, with palette presets, SVG dividers, and a headless useGridBeam hook.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="grid-beam-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[92%]"
+  description="Preset GridBeam table, palette switcher, and headless composition"
+/>
+
+Grid Beam is a canvas-rendered React component for shadcn/ui. Use it behind pricing tables, feature grids, or landing page hero sections.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/grid-beam
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="grid-beam" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+Use **`GridBeam`** for the full stack (dividers, animated canvas, content slot). For custom markup, call **`useGridBeam`** and place **`GridBeamDividers`**, **`GridBeamCanvas`**, and **`GridBeamContent`** yourself.
+
+```tsx
+import {
+  GridBeam,
+  GridBeamCanvas,
+  GridBeamContent,
+  GridBeamDividers,
+  useGridBeam,
+} from "@/components/ui/grid-beam";
+
+export function BeamTable() {
+  return (
+    <GridBeam
+      rows={4}
+      cols={4}
+      colorVariant="colorful"
+      theme="dark"
+      active
+      borderRadius={12}
+      className="min-h-[280px] rounded-xl border border-border bg-card/40"
+    >
+      <div className="grid h-full grid-cols-4 grid-rows-4 p-4 text-sm">
+        {/* Your cells */}
+      </div>
+    </GridBeam>
+  );
+}
+```
+
+```tsx
+function HeadlessExample() {
+  const { canvasRef, rows, cols } = useGridBeam({
+    rows: 2,
+    cols: 3,
+    colorVariant: "ocean",
+    theme: "light",
+    active: true,
+  });
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border">
+      <GridBeamDividers cols={cols} rows={rows} />
+      <GridBeamCanvas borderRadius={12} ref={canvasRef} />
+      <GridBeamContent>{/* Your layout */}</GridBeamContent>
+    </div>
+  );
+}
+```
+
+`colorVariant` accepts **`colorful`**, **`mono`**, **`ocean`**, or **`sunset`**. Pass **`theme`** as **`"light"`** or **`"dark"`** (often from your app theme). Toggle **`active`** to run or pause the beam; optional **`breathe`**, **`duration`**, and **`strength`** tune the motion.

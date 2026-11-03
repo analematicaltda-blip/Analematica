@@ -1,0 +1,2133 @@
+# Copyright 2025-2026 Project N.E.K.O. Team
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Transcript upload journal / chunked upload / queued reports (visit design §4.6 report, §4.7, PR-09a)."""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import os
+import stat
+import time
+from pathlib import Path
+
+import httpx
+import pytest
+
+from main_logic.visit import local_chars
+from main_logic.visit.recovery import visit_spool_recovery
+from main_routers.visit_router import accounts
+from main_routers.visit_router import credentials as cr
+from main_routers.visit_router import transcript_upload as tu
+from tests.unit.visit_memory_test_helpers import FakeMemoryServer, vid
+from tests.unit.visit_servers_fake import BASE, FakeServers
+
+OWN = "a" * 24
+OTHER = "b" * 24
+CHAR_UID = "c" * 32
+V1 = vid(1)
+
+
+@pytest.fixture
+def servers(tmp_path, monkeypatch):
+    tu._reset_for_tests()
+    fake = FakeServers()
+    client = httpx.AsyncClient(transport=httpx.MockTransport(fake.handler))
+    monkeypatch.setattr(cr, "get_external_http_client", lambda: client)
+    state = {"account": "u1"}
+
+    async def session():
+        if state["account"] is None:
+            raise cr.VisitLoginRequired()
+        return cr._ServersSession(base_url=BASE, access_token="bearer-x", client_id="c1", account=state["account"])
+
+    async def local_account():
+        return state["account"]
+
+    monkeypatch.setattr(cr, "_servers_session", session)
+    monkeypatch.setattr(accounts, "local_account", local_account)
+    monkeypatch.setattr(accounts, "config_dir_provider", lambda: tmp_path)
+    monkeypatch.setattr(tu, "config_dir_provider", lambda: tmp_path)
+    monkeypatch.setattr(tu, "is_live", lambda _v: False)
+
+    async def no_sleep(_s):
+        return None
+
+    monkeypatch.setattr(tu, "_sleep", no_sleep)
+    (tmp_path / "visit_accounts.json").write_text(json.dumps({"accounts": {"u1": OWN, "u2": OTHER}}),
+                                                  encoding="utf-8")
+    yield fake, state
+    tu._reset_for_tests()
+
+
+def _spool(tmp_path: Path) -> Path:
+    return tmp_path / "visit_spool"
+
+
+async def _journal(tmp_path, visit_id=V1, *, role="host", started_at=1000.0) -> tu.UploadJournal:
+    journal = tu.UploadJournal(tmp_path, visit_id)
+    await journal.open(role=role, own_visit_uid=OWN, own_char_uid=CHAR_UID, transport="trtc",
+                       started_at=started_at, app_version="1.2")
+    return journal
+
+
+async def _say(journal, lp, text="hi", *, side="host", speaker="own_cat", ts=None, truncated=False):
+    await journal.append_line(lp=lp, side=side, speaker=speaker, ts=ts if ts is not None else 1000.0 + lp,
+                              text=text, truncated=truncated)
+
+
+def _crash(journal) -> None:
+    """kill -9 between records: nothing sealed, the writer's queue reached the OS, the fd dies with the process."""
+    journal._executor.shutdown(wait=True)
+    journal._close_sync()
+
+
+def _sealed(tmp_path, visit_id=V1) -> dict:
+    return json.loads((_spool(tmp_path) / f"{visit_id}.upload.json").read_text(encoding="utf-8"))
+
+
+def _write_sealed(tmp_path, doc, visit_id=V1):
+    path = _spool(tmp_path) / f"{visit_id}.upload.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc), encoding="utf-8")
+    return path
+
+
+async def _recover(tmp_path, monkeypatch, submit=None):
+    async def readable():
+        return None
+
+    async def names():
+        return ["A"]
+
+    async def resolve(_uid):
+        return "A"
+
+    async def chips(*_a, **_k):
+        return True
+
+    monkeypatch.setattr(local_chars, "ensure_characters_readable", readable)
+    return await visit_spool_recovery(
+        chips, tu.upload_visit_transcript, config_dir=tmp_path, is_live=lambda _v: False,
+        resolve_char_name=resolve, list_char_names=names, submit_report=submit or tu.submit_queued_report,
+        client=FakeMemoryServer().client(),
+    )
+
+
+# ── Pipeline and archive ────────────────────────────────────────────────────
+
+
+async def test_an_abandoned_open_stops_at_once_when_cancelled(tmp_path, servers):
+    import threading
+
+    journal = tu.UploadJournal(tmp_path, V1)
+    release = threading.Event()
+    real_open = journal._open_sync
+
+    def slow_open(data):
+        release.wait(10)                                      # Disk stalls while creating the pipeline
+        return real_open(data)
+
+    journal._open_sync = slow_open
+    opening = asyncio.ensure_future(journal.open(role="host", own_visit_uid=OWN, own_char_uid=CHAR_UID,
+                                                 transport="trtc", started_at=1000.0, app_version="1.2"))
+    try:
+        await asyncio.sleep(0.05)
+        journal.abandon_open()                                # Shutdown
+        opening.cancel()
+        done, _ = await asyncio.wait([opening], timeout=0.5)
+        assert done                                           # Do not wait for the stuck disk write; keep the event loop responsive
+        assert V1 in tu._open_streams                         # Keep the registration: the upload worker must not seal a half-written pipeline as an orphan file
+    finally:
+        release.set()
+        await asyncio.sleep(0.1)
+        tu._open_streams.discard(V1)
+
+
+async def test_an_abandoned_open_still_writes_the_buffered_records_after_the_header(tmp_path, servers):
+    import threading
+
+    journal = tu.UploadJournal(tmp_path, V1)
+    release = threading.Event()
+    real_open = journal._open_sync
+
+    def slow_open(data):
+        release.wait(10)
+        return real_open(data)
+
+    journal._open_sync = slow_open
+    opening = asyncio.ensure_future(journal.open(role="host", own_visit_uid=OWN, own_char_uid=CHAR_UID,
+                                                 transport="trtc", started_at=1000.0, app_version="1.2"))
+    try:
+        await asyncio.sleep(0.05)
+        journal.abandon_open([{"kind": "line", "lp": 1, "side": "host", "from": "own_cat", "ts": 1001.0,
+                               "text": "等上传头时说的", "truncated": False}])
+        opening.cancel()
+        await asyncio.wait([opening], timeout=0.5)
+        release.set()                                         # The writer thread creates the pipeline only now, then appends the buffered records
+        stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+        for _ in range(50):
+            if stream.exists() and "等上传头时说的" in stream.read_text(encoding="utf-8"):
+                break
+            await asyncio.sleep(0.05)
+        rows = [json.loads(line) for line in stream.read_text(encoding="utf-8").splitlines()]
+        assert [r["kind"] for r in rows] == ["header", "line"]   # Write the header before rows so startup reconciliation can read them next time
+    finally:
+        release.set()
+        await asyncio.sleep(0.1)
+        tu._open_streams.discard(V1)
+
+
+async def test_an_abandoned_open_stays_registered_until_its_tail_is_written(tmp_path, servers, monkeypatch):
+    import threading
+
+    journal = tu.UploadJournal(tmp_path, V1)
+    release, created, tail_go = threading.Event(), threading.Event(), threading.Event()
+    real_open = journal._open_sync
+    real_write_all = tu._write_all
+
+    def slow_open(data):
+        release.wait(10)
+        fd = real_open(data)
+        created.set()
+        return fd
+
+    def slow_write_all(fd, data):
+        tail_go.wait(10)                                      # The append is stuck in the writer thread
+        return real_write_all(fd, data)
+
+    journal._open_sync = slow_open
+    opening = asyncio.ensure_future(journal.open(role="host", own_visit_uid=OWN, own_char_uid=CHAR_UID,
+                                                 transport="trtc", started_at=1000.0, app_version="1.2"))
+    try:
+        await asyncio.sleep(0.05)
+        release.set()
+        created.wait(5)                                       # Header is created, but open() has not returned yet
+        monkeypatch.setattr(tu, "_write_all", slow_write_all)
+        journal.abandon_open([{"kind": "anomaly", "ts": 1001.0}])
+        opening.cancel()
+        await asyncio.wait([opening], timeout=1)
+        await asyncio.sleep(0.1)
+        assert V1 in tu._open_streams                         # Append is incomplete: the upload worker must not seal it as an orphan pipeline
+        tail_go.set()
+        for _ in range(100):
+            if V1 not in tu._open_streams:
+                break
+            await asyncio.sleep(0.05)
+        assert V1 not in tu._open_streams                     # Remove the registration only after append completes and the fd is closed
+    finally:
+        release.set()
+        tail_go.set()
+        tu._open_streams.discard(V1)
+
+
+async def test_an_abandoned_open_that_already_finished_keeps_its_header_only_stream(tmp_path, servers):
+    import threading
+
+    journal = tu.UploadJournal(tmp_path, V1)
+    release, created = threading.Event(), threading.Event()
+    real_open = journal._open_sync
+
+    def slow_open(data):
+        release.wait(10)
+        fd = real_open(data)
+        created.set()
+        return fd
+
+    journal._open_sync = slow_open
+    opening = asyncio.ensure_future(journal.open(role="host", own_visit_uid=OWN, own_char_uid=CHAR_UID,
+                                                 transport="trtc", started_at=1000.0, app_version="1.2"))
+    try:
+        await asyncio.sleep(0.05)
+        release.set()
+        created.wait(5)                                       # File creation has completed, but open() has not returned yet
+        journal.abandon_open([])                              # Shutdown: no buffered records
+        opening.cancel()
+        await asyncio.wait([opening], timeout=1)
+        await asyncio.sleep(0.1)
+        stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+        assert stream.exists()                                # Keep even a header-only file: zero-row transcripts and usage are still reconciled on next startup
+    finally:
+        release.set()
+        tu._open_streams.discard(V1)
+
+
+async def test_a_second_seal_while_the_first_is_writing_waits_for_the_same_write(tmp_path, servers):
+    import threading
+
+    journal = await _journal(tmp_path)
+    await _say(journal, 1, "first")
+    release = threading.Event()
+    real_seal = journal._seal_sync
+    writes = []
+
+    def slow_seal(doc):
+        writes.append(doc)
+        release.wait(10)                                      # Disk stalls while writing .upload.json
+        real_seal(doc)
+
+    journal._seal_sync = slow_seal
+    first = asyncio.ensure_future(journal.seal("route_end", ended_at=1002.0))
+    while not writes:
+        await asyncio.sleep(0.01)
+    second = asyncio.ensure_future(journal.seal("shutdown"))  # Shutdown path runs a second time
+    await asyncio.sleep(0.1)
+    assert not second.done()                                  # Do not immediately return None and pretend "archiving completed"
+    release.set()
+    doc = await asyncio.wait_for(first, 5)
+    assert await asyncio.wait_for(second, 5) is doc           # Wait for the same write and same document
+    assert len(writes) == 1 and _sealed(tmp_path) == doc
+
+
+async def test_seal_writes_the_upload_doc_then_deletes_the_stream(tmp_path, servers, monkeypatch):
+    journal = await _journal(tmp_path)
+    await _say(journal, 2, "second", side="guest", speaker="peer_cat")
+    await _say(journal, 1, "first")
+    journal.note_usage({"llm_input_tokens": 100, "llm_output_tokens": 20}, ts=1002.1)
+    journal.note_usage({"tts_requests": 1}, ts=1002.2)
+    journal.note_usage({"tts_chars": 7}, ts=1002.3)
+    order = []
+    real_write, real_unlink = tu._write_private_json, Path.unlink
+
+    def write(path, doc):
+        order.append(("write", Path(path).name))
+        real_write(path, doc)
+
+    def unlink(self, *a, **k):
+        order.append(("unlink", self.name))
+        return real_unlink(self, *a, **k)
+
+    monkeypatch.setattr(tu, "_write_private_json", write)
+    monkeypatch.setattr(Path, "unlink", unlink)
+    doc = await journal.seal("wrap_up", ended_at=1002.3)
+    monkeypatch.undo()
+    assert order[:2] == [("write", f"{V1}.upload.json"), ("unlink", f"{V1}.upload.jsonl")]
+    assert not (_spool(tmp_path) / f"{V1}.upload.jsonl").exists()
+    sealed = _sealed(tmp_path)
+    assert sealed == doc and sealed["own_visit_uid"] == OWN and sealed["own_char_uid"] == CHAR_UID
+    request = sealed["request"]
+    assert [line["text"] for line in request["lines"]] == ["first", "second"]
+    assert request["finalized_reason"] == "wrap_up" and request["role"] == "host"
+    assert request["usage"] == {"duration_s": 2, "llm_input_tokens": 100, "llm_output_tokens": 20,
+                                "tts_requests": 1, "tts_chars": 7}
+    if os.name != "nt":
+        assert stat.S_IMODE((_spool(tmp_path) / f"{V1}.upload.json").stat().st_mode) == 0o600
+
+
+async def test_seal_counts_the_quiet_tail_up_to_finalize(tmp_path, servers):
+    journal = await _journal(tmp_path)
+    await _say(journal, 1, "hi", ts=1003.0)
+    request = (await journal.seal("wrap_up", ended_at=1060.0))["request"]
+    # Finalization happens a quiet minute after the last sentence: duration runs to finalization time, not the timestamp of the last record
+    assert request["ended_at"] == 1060.0 and request["usage"]["duration_s"] == 60
+
+
+async def test_seal_never_moves_the_end_before_the_last_record(tmp_path, servers):
+    journal = await _journal(tmp_path)
+    await _say(journal, 1, "hi", ts=1003.0)
+    request = (await journal.seal("wrap_up", ended_at=1001.0))["request"]
+    assert request["ended_at"] == 1003.0 and request["usage"]["duration_s"] == 3
+
+
+async def test_usage_after_the_seal_is_dropped(tmp_path, servers):
+    journal = await _journal(tmp_path)
+    await journal.seal("route_end")
+    journal.note_usage({"tts_chars": 50})
+    journal.note_anomaly()
+    assert not (_spool(tmp_path) / f"{V1}.upload.jsonl").exists()
+    assert _sealed(tmp_path)["request"]["usage"]["tts_chars"] == 0
+
+
+async def test_empty_or_negative_usage_writes_nothing(tmp_path, servers):
+    journal = await _journal(tmp_path)
+    journal.note_usage({"tts_chars": 0})
+    journal.note_usage({"tts_chars": -3, "llm_input_tokens": True})
+    await _say(journal, 1)
+    lines = (_spool(tmp_path) / f"{V1}.upload.jsonl").read_text(encoding="utf-8").splitlines()
+    assert [json.loads(raw)["kind"] for raw in lines] == ["header", "line"]
+
+
+async def test_telemetry_counters_carry_no_visit_id(tmp_path, servers, monkeypatch):
+    seen = []
+    monkeypatch.setattr(tu, "counter", lambda name, value=1, **dims: seen.append((name, dims)))
+    monkeypatch.setattr(tu, "histogram", lambda name, value, **dims: seen.append((name, dims)))
+    journal = await _journal(tmp_path)
+    journal.note_usage({"llm_input_tokens": 5, "tts_chars": 3})
+    await journal.seal("wrap_up")
+    assert {name for name, _ in seen} >= {"visit_llm_input_tokens", "visit_tts_chars", "visit_duration_s"}
+    assert all(V1 not in json.dumps(dims) and "visit_id" not in dims for _, dims in seen)
+
+
+# ── Crash reconciliation (integrated with PR-08 reconciliation) ────────────
+
+
+async def test_crashed_visit_is_uploaded_once_from_its_stream(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    journal = await _journal(tmp_path)
+    for lp in range(1, 6):
+        await _say(journal, lp, f"line {lp}")
+    journal.note_usage({"llm_input_tokens": 10})
+    journal.note_usage({"llm_input_tokens": 5, "llm_output_tokens": 3})
+    for _ in range(3):
+        journal.note_anomaly(ts=1010.0)
+    await _say(journal, 6, "last", ts=1020.0)
+    _crash(journal)
+    report = await _recover(tmp_path, monkeypatch)
+    assert report.uploads == {V1: True} and fake.count("/api/visit/transcripts") == 1
+    body = json.loads(fake.requests[-1].content)
+    assert body["finalized_reason"] == "crash" and body["role"] == "host" and body["started_at"] == 1000.0
+    assert body["ended_at"] == 1020.0 and body["anomalies"] == 3 and len(body["lines"]) == 6
+    assert body["usage"]["llm_input_tokens"] == 15 and body["usage"]["llm_output_tokens"] == 3
+    assert not list(_spool(tmp_path).glob(f"{V1}.upload*"))
+
+
+async def test_header_only_crash_is_still_uploaded(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    journal = await _journal(tmp_path, started_at=1234.0)
+    _crash(journal)
+    await _recover(tmp_path, monkeypatch)
+    body = json.loads(fake.requests[-1].content)
+    assert body["ended_at"] == body["started_at"] == 1234.0 and body["lines"] == []
+    assert all(v == 0 for v in body["usage"].values())
+
+
+async def test_crash_before_any_usage_uploads_zero_usage(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    journal = await _journal(tmp_path)
+    await _say(journal, 1, "peer says hi", side="guest", speaker="peer_cat")
+    _crash(journal)
+    await _recover(tmp_path, monkeypatch)
+    body = json.loads(fake.requests[-1].content)
+    assert [line["text"] for line in body["lines"]] == ["peer says hi"]
+    assert all(v == 0 for k, v in body["usage"].items() if k != "duration_s")
+
+
+async def test_upload_is_held_while_another_account_is_signed_in(tmp_path, servers, monkeypatch):
+    fake, state = servers
+    scheduled = []
+    # A callback failure schedules a background retry (covered by another test); here test reconciliation itself without letting the background worker race to upload
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda visit_id, **_k: scheduled.append(visit_id))
+    journal = await _journal(tmp_path)
+    await _say(journal, 1)
+    await journal.seal("wrap_up")
+    state["account"] = "u2"
+    assert await tu.upload_visit_transcript(V1, _sealed(tmp_path)) is False
+    assert fake.count("/api/visit/transcripts") == 0 and scheduled == [V1]
+    await _recover(tmp_path, monkeypatch)
+    assert (_spool(tmp_path) / f"{V1}.upload.json").exists()
+    state["account"] = "u1"
+    await _recover(tmp_path, monkeypatch)
+    assert fake.count("/api/visit/transcripts") == 1 and not (_spool(tmp_path) / f"{V1}.upload.json").exists()
+
+
+async def test_logged_out_keeps_the_file(tmp_path, servers):
+    _fake, state = servers
+    journal = await _journal(tmp_path)
+    await journal.seal("wrap_up")
+    state["account"] = None
+    assert await tu.upload_visit_transcript(V1, _sealed(tmp_path)) is False
+
+
+# ── Chunked upload ─────────────────────────────────────────────────────────
+
+
+def _big_doc(n_lines=160, size=4096) -> dict:
+    lines = []
+    for lp in range(1, n_lines + 1):
+        side = "host" if lp % 2 else "guest"
+        lines.append({"lp": lp, "side": side, "from": "own_cat" if side == "host" else "peer_cat",
+                      "ts": 1000.0 + lp, "text": '"' * size, "truncated": False})
+    return {"v": 1, "own_visit_uid": OWN, "own_char_uid": CHAR_UID, "transport": "trtc", "request": {
+        "visit_id": V1, "role": "host", "started_at": 1000.0, "ended_at": 2000.0, "finalized_reason": "wrap_up",
+        "usage": {"duration_s": 1000, "llm_input_tokens": 1, "llm_output_tokens": 1, "tts_requests": 1,
+                  "tts_chars": 1},
+        "lines": lines, "anomalies": 0, "app_version": "1.2",
+    }}
+
+
+async def test_large_transcript_is_split_and_reassembles(tmp_path, servers):
+    fake, _ = servers
+    doc = _big_doc()
+    assert len(tu._encode_body(doc["request"])) > tu.VISIT_UPLOAD_CHUNK_BYTES
+    _write_sealed(tmp_path, doc)
+    assert await tu.upload_visit_transcript(V1, doc) is True
+    sizes = [len(r.content) for r in fake.requests if r.url.path == "/api/visit/transcripts"]
+    assert len(sizes) > 1 and all(s <= tu.VISIT_UPLOAD_CHUNK_BYTES for s in sizes)
+    assert fake.complete[(V1, "host")] == doc["request"]["lines"]
+
+
+async def test_too_large_doubles_parts_and_resends_the_whole_group(tmp_path, servers):
+    fake, _ = servers
+    fake.limit = 300 * 1024
+    doc = _big_doc()
+    _write_sealed(tmp_path, doc)
+    round_ = await tu.retry_visit_once(V1)
+    assert round_.pending is False
+    assert not (_spool(tmp_path) / f"{V1}.upload.json").exists()
+    assert fake.complete[(V1, "host")] == doc["request"]["lines"]
+    bodies = [json.loads(r.content) for r in fake.requests if r.url.path == "/api/visit/transcripts"
+              and len(r.content) <= fake.limit]
+    # 512 KiB produces a plan of 4 chunks (~330 KiB each); with a 300 KiB cap, a 413 doubles the plan to 8 chunks and retries the entire group
+    assert max(b["parts"] for b in bodies) == 8 and fake.count("/api/visit/transcripts") <= 12
+
+
+async def test_regrouping_does_not_collide_with_accepted_chunks(tmp_path, servers):
+    fake, _ = servers
+    doc = _big_doc()
+    _write_sealed(tmp_path, doc)
+    # Chunk 0 from generation one (parts=2) was accepted and chunk 1 exceeded the limit: none of the four chunks in generation two (parts=4) should be marked duplicate
+    fake.limit = 10 * 1024 * 1024
+    request = doc["request"]
+    first = tu.chunk_body(request, 0, 2)
+    fake.handler(httpx.Request("POST", f"{BASE}/api/visit/transcripts", content=tu._encode_body(first)))
+    doc["parts"], doc["accepted_parts"] = 2, [0]
+    _write_sealed(tmp_path, doc)
+    fake.limit = len(tu._encode_body(tu.chunk_body(request, 1, 2))) - 1
+    assert await tu.upload_visit_transcript(V1, doc) is True
+    later = [json.loads(r.content) for r in fake.requests[1:] if r.url.path == "/api/visit/transcripts"
+             and len(r.content) <= fake.limit]
+    # Resend the entire new generation in order from chunk 0 (clearing the prior generation's accepted set); do not rely on Servers feedback to correct it
+    assert [b["part"] for b in later if b["parts"] == 4] == [0, 1, 2, 3]
+    assert fake.complete[(V1, "host")] == request["lines"]
+
+
+async def test_restart_resends_only_the_missing_chunks(tmp_path, servers):
+    fake, _ = servers
+    doc = _big_doc()
+    _write_sealed(tmp_path, doc)
+    fake.fail_parts = {1}
+    assert await tu.upload_visit_transcript(V1, doc) is False
+    progress = _sealed(tmp_path)
+    parts = progress["parts"]
+    assert parts > 2 and progress["accepted_parts"] == [0]
+    sent_before = fake.count("/api/visit/transcripts")
+    # "Restart": reload chunk progress from disk
+    assert await tu.upload_visit_transcript(V1, _sealed(tmp_path)) is True
+    resent = [json.loads(r.content)["part"] for r in fake.requests[sent_before:]]
+    assert resent == list(range(1, parts))
+
+
+async def test_chunk_progress_does_not_extend_the_file_age(tmp_path, servers):
+    fake, _ = servers
+    doc = _big_doc()
+    path = _write_sealed(tmp_path, doc)
+    old = time.time() - 3 * 86400
+    os.utime(path, (old, old))
+    fake.fail_parts = {1}
+    await tu.upload_visit_transcript(V1, doc)
+    assert abs(path.stat().st_mtime - old) < 1
+
+
+@pytest.mark.parametrize("mode,code", [
+    ("budget", "transcript_budget_exceeded"), ("parts", "parts_out_of_range"),
+    ("not_started_final", "visit_not_started"),
+])
+async def test_terminal_rejections_stop_and_release_the_report(tmp_path, servers, mode, code):
+    fake, _ = servers
+    fake.transcript_mode = mode
+    doc = _big_doc(4, 10)
+    _write_sealed(tmp_path, doc)
+    await tu.queue_report(tmp_path, _report_doc())
+    round_ = await tu.retry_visit_once(V1)
+    assert round_.pending is False and not (_spool(tmp_path) / f"{V1}.upload.json").exists()
+    assert fake.reports and fake.reports[0]["transcript_unavailable"] == code
+    assert not (tmp_path / "visit_reports" / f"{V1}.json").exists()
+
+
+@pytest.mark.parametrize("mode", ["503", "not_started", "429"])
+async def test_retryable_failures_keep_the_file(tmp_path, servers, mode):
+    fake, _ = servers
+    fake.transcript_mode = mode
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    round_ = await tu.retry_visit_once(V1)
+    assert round_.pending is True and (_spool(tmp_path) / f"{V1}.upload.json").exists()
+    if mode == "429":
+        assert round_.retry_after_s == 77
+
+
+async def test_duplicate_counts_as_uploaded(tmp_path, servers):
+    fake, _ = servers
+    doc = _big_doc(4, 10)
+    fake.complete[(V1, "host")] = doc["request"]["lines"]
+    _write_sealed(tmp_path, doc)
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert not (_spool(tmp_path) / f"{V1}.upload.json").exists()
+
+
+async def test_upload_given_up_after_seven_days(tmp_path, servers, caplog):
+    fake, _ = servers
+    path = _write_sealed(tmp_path, _big_doc(4, 10))
+    old = time.time() - 8 * 86400
+    os.utime(path, (old, old))
+    fake.transcript_mode = "503"
+    await tu.queue_report(tmp_path, _report_doc())
+    with caplog.at_level(logging.WARNING):
+        await tu.retry_visit_once(V1)
+    assert not path.exists() and "upload_expired" in caplog.text
+    assert fake.reports[0]["transcript_unavailable"] == "expired"
+
+
+async def test_logs_never_carry_the_transcript_text(tmp_path, servers, caplog):
+    fake, _ = servers
+    fake.transcript_mode = "503"
+    journal = await _journal(tmp_path)
+    await _say(journal, 1, "SECRET-LINE-TEXT")
+    await journal.seal("wrap_up")
+    with caplog.at_level(logging.DEBUG):
+        await tu.retry_visit_once(V1)
+        fake.transcript_mode = "budget"
+        await tu.retry_visit_once(V1)
+    assert "SECRET-LINE-TEXT" not in caplog.text and "bearer-x" not in caplog.text
+
+
+async def test_background_retry_runs_until_delivered(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "503"
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    calls = []
+
+    async def sleep(seconds):
+        calls.append(seconds)
+        if len(calls) == 2:
+            fake.transcript_mode = "ok"
+
+    tu._sleep = sleep
+    await tu.schedule_visit_retry(V1)
+    # Compute the wait duration from the monotonic-clock deadline; a few microseconds differ, so exact comparison is unreliable (coarse Windows clock only makes it happen to match by chance)
+    assert calls == pytest.approx(list(tu.VISIT_UPLOAD_RETRY_BACKOFF_S[:2]), abs=0.05)
+    assert not (_spool(tmp_path) / f"{V1}.upload.json").exists()
+
+
+async def test_background_retry_waits_for_a_live_visit(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    monkeypatch.setattr(tu, "is_live", lambda _v: True)
+    await tu.schedule_visit_retry(V1)
+    assert fake.count("/api/visit/transcripts") == 0
+
+
+# ── Report queue (unit) ─────────────────────────────────────────────────────
+
+
+def _report_doc(**over) -> dict:
+    doc = {"visit_id": V1, "own_visit_uid": OWN, "own_account": "u1", "reason": "harassment", "note": "n",
+           "include_transcript": True, "anomalies": 2, "app_version": "1.2", "queued_at": time.time()}
+    doc.update(over)
+    return doc
+
+
+async def test_report_request_rebuilt_from_file_matches(tmp_path, servers):
+    fake, _ = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert fake.reports == [{"visit_id": V1, "reason": "harassment", "include_transcript": False,
+                             "anomalies": 2, "app_version": "1.2", "note": "n"}]
+    assert "peer_uid" not in json.dumps(fake.reports)
+
+
+async def test_report_waits_for_its_transcript_then_goes(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "429"
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc())
+    assert (await tu.retry_visit_once(V1)).pending is True
+    assert fake.count("/api/visit/reports") == 0
+    fake.transcript_mode = "ok"
+    tu._upload_not_before.clear()                                        # Retry-After has elapsed
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert fake.transcript_seen_at_report == [True]
+
+
+async def test_a_retry_round_does_not_resend_before_the_transcripts_retry_after(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "429"
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc())
+    await tu.retry_visit_once(V1)
+    sent = fake.count("/api/visit/transcripts")
+    fake.transcript_mode = "ok"
+    outcome = await tu.retry_visit_once(V1, manual=True)                 # User manually clicks retry
+    # Retry-After has not elapsed: do not resend this time; schedule retry after the remaining delay
+    assert fake.count("/api/visit/transcripts") == sent and outcome.pending and outcome.retry_after_s >= 70
+
+
+async def test_report_without_transcript_ignores_the_upload_gate(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "503"
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await tu.retry_visit_once(V1)
+    assert fake.count("/api/visit/reports") == 1
+    assert not (tmp_path / "visit_reports" / f"{V1}.json").exists()
+
+
+async def test_queued_report_is_resubmitted_at_startup(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.report_mode = "503"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    assert (await tu.retry_visit_once(V1)).pending is True
+    fake.report_mode = "ok"
+    report = await _recover(tmp_path, monkeypatch)
+    assert report.reports == {V1: True} and not (tmp_path / "visit_reports" / f"{V1}.json").exists()
+
+
+async def test_queued_report_of_an_unknown_visit_is_kept_for_the_user(tmp_path, servers):
+    fake, _ = servers
+    fake.report_mode = "404"
+    path = tmp_path / "visit_reports" / f"{V1}.json"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    # Delete only after acceptance or user abandonment: keep rejected files, mark them, and do not submit them again automatically
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert json.loads(path.read_text(encoding="utf-8"))["rejected"] == "unknown_visit"
+    sent = fake.count("/api/visit/reports")
+    assert (await tu.retry_visit_once(V1)).pending is False and fake.count("/api/visit/reports") == sent
+    assert await tu.submit_queued_report(V1, await tu.load_report(tmp_path, V1)) is False
+    assert fake.count("/api/visit/reports") == sent
+    assert (await tu.list_queued_reports(tmp_path, "u1"))[0]["rejected"] == "unknown_visit"
+    # User clicks "Retry": send normally; if the network fails again, return it to the regular queue for background retry
+    fake.report_mode = "503"
+    assert (await tu.retry_visit_once(V1, manual=True)).pending is True
+    assert "rejected" not in json.loads(path.read_text(encoding="utf-8"))
+    fake.report_mode = "ok"
+    assert (await tu.retry_visit_once(V1)).pending is False and not path.exists()
+
+
+async def test_recovery_callback_marks_an_unknown_visit_and_keeps_the_file(tmp_path, servers):
+    fake, _ = servers
+    fake.report_mode = "404"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    assert await tu.submit_queued_report(V1, await tu.load_report(tmp_path, V1)) is False
+    assert (await tu.load_report(tmp_path, V1))["rejected"] == "unknown_visit"
+
+
+async def test_recovery_callback_skips_a_report_that_was_replaced(tmp_path, servers):
+    fake, _ = servers
+    stale = _report_doc(include_transcript=False, queued_at=1000.0)
+    # Reconciliation read the old file, but a different file is now on disk (requeued after abandonment): do not send, delete, or mark it
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, own_account="u2", own_visit_uid=OTHER))
+    assert await tu.submit_queued_report(V1, stale) is False
+    assert fake.count("/api/visit/reports") == 0
+    assert (await tu.load_report(tmp_path, V1))["own_account"] == "u2"
+
+
+async def test_recovery_callback_deletes_under_the_visit_lock(tmp_path, servers):
+
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    doc = await tu.load_report(tmp_path, V1)
+    lock = tu.visit_lock(V1)
+    await lock.acquire()
+    task = asyncio.create_task(tu.submit_queued_report(V1, doc))
+    try:
+        await asyncio.sleep(0.05)
+        assert not task.done()                      # Wait for the endpoint's abandon / retry operation to finish first
+    finally:
+        lock.release()
+    assert await asyncio.wait_for(task, 5) is True
+    assert await tu.load_report(tmp_path, V1) is None
+
+
+async def test_recovery_does_not_delete_a_report_queued_after_the_one_it_sent(tmp_path, servers, monkeypatch):
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, queued_at=1000.0))
+
+    async def accepted_then_replaced(visit_id, doc):
+        # Servers accepted this file; before reconciliation deleted it, another file for the same session was queued
+        await tu.delete_report(tmp_path, visit_id)
+        await tu.queue_report(tmp_path, _report_doc(include_transcript=False, queued_at=2000.0))
+        return True
+
+    await _recover(tmp_path, monkeypatch, submit=accepted_then_replaced)
+    assert (await tu.load_report(tmp_path, V1))["queued_at"] == 2000.0
+
+
+async def test_rejected_mark_only_lands_on_the_same_report(tmp_path, servers):
+    first = _report_doc(include_transcript=False, queued_at=1000.0)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, queued_at=2000.0))
+    await tu.set_report_rejected(tmp_path, V1, "unknown_visit", expect=first)
+    assert "rejected" not in await tu.load_report(tmp_path, V1)
+
+
+async def test_manual_retry_without_a_sent_request_keeps_the_rejection(tmp_path, servers):
+    fake, state = servers
+    fake.report_mode = "404"
+    path = tmp_path / "visit_reports" / f"{V1}.json"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await tu.retry_visit_once(V1)
+    state["account"] = None                         # Login expired: the request was never sent
+    assert (await tu.retry_visit_once(V1, manual=True)).pending is False
+    assert json.loads(path.read_text(encoding="utf-8"))["rejected"] == "unknown_visit"
+
+
+async def test_anomaly_count_outlives_the_uploaded_transcript(tmp_path, servers):
+    journal = await _journal(tmp_path)
+    journal.note_anomaly(ts=1001.0)
+    journal.note_anomaly(ts=1001.5)
+    await journal.seal("wrap_up")
+    assert await tu.visit_anomalies(tmp_path, V1) == 2
+    await tu.retry_visit_once(V1)
+    assert not (_spool(tmp_path) / f"{V1}.upload.json").exists()
+    assert await tu.visit_anomalies(tmp_path, V1) == 2
+
+
+async def test_queued_report_of_another_account_waits(tmp_path, servers):
+    fake, state = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    state["account"] = "u2"
+    assert (await tu.retry_visit_once(V1)).pending is True and fake.count("/api/visit/reports") == 0
+
+
+async def test_old_queued_reports_are_flagged_but_never_dropped(tmp_path, servers):
+    fake, _ = servers
+    fake.report_mode = "503"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, queued_at=time.time() - 8 * 86400))
+    await tu.retry_visit_once(V1)
+    rows = await tu.list_queued_reports(tmp_path, "u1")
+    assert await tu.list_queued_reports(tmp_path, "u2") == []
+    assert rows[0]["visit_id"] == V1 and rows[0]["stale"] is True
+    assert (tmp_path / "visit_reports" / f"{V1}.json").exists()
+
+
+async def test_unrecordable_rejection_keeps_the_upload_and_still_reaches_the_report(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc())
+    fake.report_mode = "503"
+
+    def broken(*_a, **_k):
+        raise OSError("disk full")
+
+    original = tu._mark_unavailable_sync
+    monkeypatch.setattr(tu, "_mark_unavailable_sync", broken)
+    await tu.retry_visit_once(V1)
+    # Failure reason cannot be written to the report: retain the upload file and mark it rejected; do not delete the only durable record
+    assert sealed.exists() and json.loads(sealed.read_text(encoding="utf-8"))["rejected"] == "parts_out_of_range"
+    uploads = fake.count("/api/visit/transcripts")
+    fake.report_mode = "ok"
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert fake.reports[0]["transcript_unavailable"] == "parts_out_of_range"
+    assert fake.count("/api/visit/transcripts") == uploads          # Do not resend the entire file after rejection
+    # Report was accepted: the retained rejected file is no longer useful; delete it immediately rather than holding upload capacity until next startup
+    assert not sealed.exists()
+    monkeypatch.setattr(tu, "_mark_unavailable_sync", original)
+
+
+async def test_backlog_counts_pending_upload_bytes(tmp_path, servers, monkeypatch):
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    assert await tu.upload_backlog_full(tmp_path) is False
+    monkeypatch.setattr(tu, "VISIT_UPLOAD_PENDING_CAP_BYTES", 10)
+    assert await tu.upload_backlog_full(tmp_path) is True
+
+
+def test_chunk_bounds_follow_the_contract():
+    n, parts = 7, 3
+    spans = [tu.chunk_bounds(n, parts, k) for k in range(parts)]
+    assert spans == [(0, 3), (3, 5), (5, 7)]
+    assert spans[0][0] == 0 and spans[-1][1] == n
+
+
+
+@pytest.mark.parametrize("mode", ["bogus204", "html200"])
+async def test_an_uncontracted_2xx_is_not_a_receipt(tmp_path, servers, mode):
+    fake, _ = servers
+    fake.transcript_mode = mode
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    assert (await tu.retry_visit_once(V1)).pending is True
+    assert sealed.exists()
+
+
+@pytest.mark.parametrize("mode", ["no_parts", "complete_no_parts"])
+async def test_chunk_receipts_without_accepted_parts_are_not_trusted(tmp_path, servers, mode):
+    fake, _ = servers
+    fake.transcript_mode = mode
+    sealed = _write_sealed(tmp_path, _big_doc())        # >512 KiB: chunked upload
+    assert (await tu.retry_visit_once(V1)).pending is True
+    doc = json.loads(sealed.read_text(encoding="utf-8"))
+    assert not doc.get("accepted_parts")                 # Do not let Servers mark any chunks as accepted
+
+
+async def test_a_report_200_without_its_receipt_stays_queued(tmp_path, servers):
+    fake, _ = servers
+    fake.report_mode = "bogus200"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    assert (await tu.retry_visit_once(V1)).pending is True
+    assert await tu.load_report(tmp_path, V1) is not None
+
+
+
+async def test_a_rate_limited_report_waits_the_servers_delay(tmp_path, servers):
+    fake, _ = servers
+    fake.report_mode = "429"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    outcome = await tu.retry_visit_once(V1)
+    assert outcome.pending is True and outcome.retry_after_s == 5
+
+
+async def test_a_round_reports_an_expired_login(tmp_path, servers, monkeypatch):
+    async def expired():
+        raise cr.VisitLoginRequired()
+
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    monkeypatch.setattr(cr, "_servers_session", expired)
+    assert (await tu.retry_visit_once(V1, manual=True)).login_required is True
+
+
+async def test_a_scheduled_retry_after_an_attempt_waits_first(tmp_path, servers, monkeypatch):
+    slept = []
+
+    async def sleep(seconds):
+        slept.append(seconds)
+
+    monkeypatch.setattr(tu, "_sleep", sleep)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await tu.schedule_visit_retry(V1, initial_delay_s=7)
+    assert slept and slept[0] == pytest.approx(7, abs=0.05)
+
+
+
+async def test_a_longer_delay_pushes_back_a_waiting_worker(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.report_mode = "503"
+    slept = []
+    first_wait = asyncio.Event()
+
+    async def sleep(seconds):
+        slept.append(round(seconds))
+        if len(slept) == 1:
+            first_wait.set()
+            await asyncio.sleep(0.05)               # Background task is waiting for the first chunk
+
+    monkeypatch.setattr(tu, "_sleep", sleep)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    task = tu.schedule_visit_retry(V1, initial_delay_s=10)
+    await first_wait.wait()
+    tu.schedule_visit_retry(V1, initial_delay_s=600)    # Manual retry received a longer retry_after
+    fake.report_mode = "ok"
+    await asyncio.wait_for(task, 5)
+    assert slept[0] == 10 and slept[1] >= 590             # Wait for the old interval first, then wait the new interval after it is extended, and only then retry
+    assert fake.count("/api/visit/reports") == 1
+
+
+
+async def test_all_parts_without_complete_is_not_done(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "never_complete"
+    sealed = _write_sealed(tmp_path, _big_doc())
+    assert (await tu.retry_visit_once(V1)).pending is True and sealed.exists()
+    sent = fake.count("/api/visit/transcripts")
+    fake.transcript_mode = "ok"
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+    # Every chunk is accepted in persisted progress: next retry resends only the final chunk for a complete receipt, not the whole group
+    assert fake.count("/api/visit/transcripts") == sent + 1
+
+
+
+async def test_a_401_on_the_transcript_asks_to_sign_in_for_a_waiting_report(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "401"
+    _write_sealed(tmp_path, _big_doc())
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True))
+    outcome = await tu.retry_visit_once(V1, manual=True)
+    assert outcome.pending is True and outcome.login_required is True
+    assert fake.count("/api/visit/reports") == 0
+
+
+async def test_the_recovery_upload_waits_for_a_running_round(tmp_path, servers):
+    fake, _ = servers
+    sealed = _write_sealed(tmp_path, _big_doc())
+    doc = json.loads(sealed.read_text(encoding="utf-8"))
+    lock = tu.visit_lock(V1)
+    await lock.acquire()
+    try:
+        task = asyncio.ensure_future(tu.upload_visit_transcript(V1, doc))
+        await asyncio.sleep(0.05)
+        assert not task.done() and fake.count("/api/visit/transcripts") == 0     # Wait for the other run to finish
+    finally:
+        lock.release()
+    assert await asyncio.wait_for(task, 5) is True
+
+
+
+async def test_a_manual_retry_leaves_another_accounts_report_alone(tmp_path, servers):
+    fake, _ = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, own_account="u2"))
+    outcome = await tu.retry_visit_once(V1, manual=True, owner="u1")
+    assert fake.count("/api/visit/reports") == 0 and outcome.pending is False
+    assert await tu.load_report(tmp_path, V1) is not None
+
+
+
+async def test_a_worker_keeps_going_when_an_accepted_report_cannot_be_deleted(tmp_path, servers, monkeypatch):
+    real_delete = tu.delete_report
+    calls = []
+
+    async def locked(config_dir, visit_id):
+        calls.append(visit_id)
+        if len(calls) == 1:
+            raise PermissionError("file in use")
+        return await real_delete(config_dir, visit_id)
+
+    monkeypatch.setattr(tu, "delete_report", locked)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    assert (await tu.retry_visit_once(V1)).pending is True       # Accepted but file still exists: worker must not exit
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert await tu.load_report(tmp_path, V1) is None
+
+
+
+async def test_an_uploaded_spool_that_cannot_be_deleted_keeps_the_round_going(tmp_path, servers, monkeypatch):
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    real_unlink = Path.unlink
+    calls = []
+
+    def busy(self, missing_ok=False):
+        if self == sealed and not calls:
+            calls.append(self)
+            raise PermissionError("in use")
+        return real_unlink(self, missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", busy)
+    assert (await tu.retry_visit_once(V1)).pending is True and sealed.exists()
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+
+
+
+async def test_a_rejected_spool_that_cannot_be_deleted_is_cleaned_up_later(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    real_unlink = Path.unlink
+    calls = []
+
+    def busy(self, missing_ok=False):
+        if self == sealed and not calls:
+            calls.append(self)
+            raise PermissionError("in use")
+        return real_unlink(self, missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", busy)
+    assert (await tu.retry_visit_once(V1)).pending is True and sealed.exists()
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+
+
+
+async def test_a_settled_leftover_is_deleted_without_signing_in_again(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    real_unlink = Path.unlink
+    calls = []
+
+    def busy(self, missing_ok=False):
+        if self == sealed and not calls:
+            calls.append(self)
+            raise PermissionError("in use")
+        return real_unlink(self, missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", busy)
+    assert (await tu.retry_visit_once(V1)).pending is True and sealed.exists()
+    uploads = fake.count("/api/visit/transcripts")
+
+    async def signed_out():
+        raise cr.VisitLoginRequired()
+
+    monkeypatch.setattr(cr, "_servers_session", signed_out)          # User signs out at this point
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+    assert fake.count("/api/visit/transcripts") == uploads             # Delete only the file; do not resend
+
+
+
+async def test_an_expired_spool_that_cannot_be_deleted_is_cleaned_up_later(tmp_path, servers, monkeypatch):
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    real_unlink = Path.unlink
+    calls = []
+
+    def busy(self, missing_ok=False):
+        if self == sealed and not calls:
+            calls.append(self)
+            raise PermissionError("in use")
+        return real_unlink(self, missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", busy)
+    assert (await tu.retry_visit_once(V1)).pending is True and sealed.exists()
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+
+
+async def test_a_sealed_file_of_another_version_is_not_uploaded_directly(tmp_path, servers):
+    fake, _ = servers
+    doc = _big_doc(4, 10)
+    doc["v"] = 99
+    sealed = _write_sealed(tmp_path, doc)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is True and outcome.retryable is False
+    assert fake.count("/api/visit/transcripts") == 0 and sealed.exists()
+
+
+async def test_a_transcript_free_report_goes_out_despite_upload_errors(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+
+    async def disk_full(*_a, **_k):
+        raise OSError("no space left")
+
+    monkeypatch.setattr(tu, "attempt_upload", disk_full)
+    outcome = await tu.retry_visit_once(V1)
+    assert fake.count("/api/visit/reports") == 1 and await tu.load_report(tmp_path, V1) is None
+    assert outcome.pending is True                       # Transcript has not been uploaded yet; worker continues
+
+
+async def test_an_unrecorded_rejection_keeps_the_round_pending(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.report_mode = "404"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    original = tu._set_rejected_sync
+    calls = []
+
+    def broken_once(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            raise OSError("disk full")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(tu, "_set_rejected_sync", broken_once)
+    assert (await tu.retry_visit_once(V1)).pending is True
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert (await tu.load_report(tmp_path, V1))["rejected"] == "unknown_visit"
+
+
+
+async def test_an_unreadable_report_does_not_count_as_a_recorded_rejection(tmp_path, servers, monkeypatch):
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    original = tu._load_json
+
+    def locked(path):
+        if path.name == f"{V1}.json":
+            raise PermissionError("in use")
+        return original(path)
+
+    monkeypatch.setattr(tu, "_load_json", locked)
+    assert await tu.rejection_recorded(tmp_path, V1) is False
+    monkeypatch.setattr(tu, "_load_json", original)
+    assert await tu.rejection_recorded(tmp_path, V1) is False          # Readable but unmarked
+    await tu.set_report_rejected(tmp_path, V1, "unknown_visit")
+    assert await tu.rejection_recorded(tmp_path, V1) is True
+    await tu.delete_report(tmp_path, V1)
+    assert await tu.rejection_recorded(tmp_path, V1) is True           # No longer in queue
+
+
+
+async def test_a_round_stays_pending_while_the_report_file_cannot_be_read(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    original = tu._load_json
+    locked = [True]
+
+    def maybe_locked(path):
+        if locked[0] and path.name == f"{V1}.json":
+            raise PermissionError("in use")
+        return original(path)
+
+    monkeypatch.setattr(tu, "_load_json", maybe_locked)
+    assert (await tu.retry_visit_once(V1)).pending is True and fake.count("/api/visit/reports") == 0
+    locked[0] = False
+    assert (await tu.retry_visit_once(V1)).pending is False and fake.count("/api/visit/reports") == 1
+
+
+
+async def test_a_report_read_failure_keeps_the_round_pending_even_if_it_clears_at_once(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    original = tu._load_json
+    calls = []
+
+    def flaky(path):
+        if path.name == f"{V1}.json" and not calls:
+            calls.append(path)
+            raise PermissionError("in use")                # Fail only this attempt
+        return original(path)
+
+    monkeypatch.setattr(tu, "_load_json", flaky)
+    assert (await tu.retry_visit_once(V1)).pending is True
+    assert (await tu.retry_visit_once(V1)).pending is False and fake.count("/api/visit/reports") == 1
+
+
+async def test_a_residual_stream_goes_when_its_sealed_upload_settles(tmp_path, servers):
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    stream = sealed.with_name(f"{V1}.upload.jsonl")
+    stream.write_text("{}\n", encoding="utf-8")         # Pipeline left behind when sealing failed to delete it
+    tu._settled_leftovers.discard(V1)
+    await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert not sealed.exists() and not stream.exists()
+
+
+async def test_a_later_report_carries_a_terminal_reason_settled_before_it(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    assert (await tu.attempt_upload(V1, config_dir=tmp_path)).pending is False and not sealed.exists()
+    fake.transcript_mode = "ok"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True))
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert fake.reports[0]["transcript_unavailable"] == "parts_out_of_range"
+
+
+
+async def test_an_unreadable_file_after_acceptance_keeps_the_round_pending(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    original_load, original_delete = tu._load_json, tu.delete_report
+    state = {"reads": 0, "deletes": 0}
+
+    def load(path):
+        if path.name == f"{V1}.json":
+            state["reads"] += 1
+            if state["reads"] == 2:                        # At acceptance verification, the file is temporarily unreadable
+                raise PermissionError("in use")
+        return original_load(path)
+
+    async def delete(config_dir, visit_id):
+        state["deletes"] += 1
+        if state["deletes"] == 1:
+            raise PermissionError("in use")
+        return await original_delete(config_dir, visit_id)
+
+    monkeypatch.setattr(tu, "_load_json", load)
+    monkeypatch.setattr(tu, "delete_report", delete)
+    assert (await tu.retry_visit_once(V1)).pending is True
+    assert (await tu.retry_visit_once(V1)).pending is False and await tu.load_report(tmp_path, V1) is None
+
+
+
+async def test_an_orphan_stream_is_resealed_and_uploaded_by_a_retry_round(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    journal = await _journal(tmp_path)
+    await _say(journal, 1, "first")
+    real_write = tu._write_private_json
+
+    def failing(path, doc):
+        if Path(path).name.endswith(".upload.json"):
+            raise OSError("disk full")
+        return real_write(path, doc)
+
+    monkeypatch.setattr(tu, "_write_private_json", failing)
+    with pytest.raises(OSError):
+        await journal.seal("wrap_up", ended_at=1002.0)
+    monkeypatch.setattr(tu, "_write_private_json", real_write)
+    stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+    assert stream.exists() and not (_spool(tmp_path) / f"{V1}.upload.json").exists()
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True))
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert fake.count("/api/visit/transcripts") >= 1 and fake.count("/api/visit/reports") == 1
+    assert not stream.exists()
+
+
+async def test_a_recovery_report_failure_re_arms_the_background_worker(tmp_path, servers):
+    fake, _ = servers
+    fake.report_mode = "503"
+    doc = _report_doc(include_transcript=False)
+    await tu.queue_report(tmp_path, doc)
+    assert await tu.submit_queued_report(V1, doc) is False
+    assert V1 in tu._workers
+
+
+
+async def test_a_stream_still_being_written_is_never_resealed(tmp_path, servers):
+    fake, _ = servers
+    journal = await _journal(tmp_path)                    # Do not reseal when is_live is unwired (defaults to False), either
+    await _say(journal, 1, "first")
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True))
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+    assert outcome.pending is True and stream.exists()
+    assert not (_spool(tmp_path) / f"{V1}.upload.json").exists() and fake.count("/api/visit/transcripts") == 0
+    await journal.seal("wrap_up", ended_at=1002.0)
+
+
+
+async def test_a_stream_is_registered_as_open_before_it_appears_on_disk(tmp_path, servers, monkeypatch):
+    seen = []
+    real_open = tu.UploadJournal._open_sync
+
+    def watch(self, data):
+        seen.append(self.visit_id in tu._open_streams)    # Registered at the moment the file was created
+        return real_open(self, data)
+
+    monkeypatch.setattr(tu.UploadJournal, "_open_sync", watch)
+    journal = await _journal(tmp_path)
+    assert seen == [True] and V1 in tu._open_streams
+    await journal.seal("wrap_up", ended_at=1001.0)
+    assert V1 not in tu._open_streams
+
+    def broken(self, data):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(tu.UploadJournal, "_open_sync", broken)
+    with pytest.raises(OSError):
+        await _journal(tmp_path, vid(2))
+    assert vid(2) not in tu._open_streams                # Undo the registration if opening never succeeded
+
+
+
+async def test_a_recovery_upload_failure_re_arms_the_background_worker(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "503"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    doc = json.loads(sealed.read_text(encoding="utf-8"))
+    assert await tu.upload_visit_transcript(V1, doc) is False
+    assert V1 in tu._workers
+
+
+async def test_a_cancelled_open_cleans_up_after_the_worker(tmp_path, servers, monkeypatch):
+    import threading
+
+    started, release = threading.Event(), threading.Event()
+    real_open = tu.UploadJournal._open_sync
+
+    def slow(self, data):
+        started.set()
+        release.wait(5)
+        return real_open(self, data)
+
+    monkeypatch.setattr(tu.UploadJournal, "_open_sync", slow)
+    task = asyncio.ensure_future(_journal(tmp_path))
+    await asyncio.to_thread(started.wait, 5)
+    task.cancel()
+    await asyncio.sleep(0.05)
+    assert V1 in tu._open_streams                         # Writer thread is still creating the file: do not remove the registration yet
+    release.set()
+    with pytest.raises(asyncio.CancelledError):
+        await asyncio.wait_for(task, timeout=5)
+    assert V1 not in tu._open_streams
+    assert not (_spool(tmp_path) / f"{V1}.upload.jsonl").exists()
+
+
+
+async def test_a_second_cancel_while_waiting_still_cleans_up(tmp_path, servers, monkeypatch):
+    import threading
+
+    started, release = threading.Event(), threading.Event()
+    real_open = tu.UploadJournal._open_sync
+
+    def slow(self, data):
+        started.set()
+        release.wait(5)
+        return real_open(self, data)
+
+    monkeypatch.setattr(tu.UploadJournal, "_open_sync", slow)
+    task = asyncio.ensure_future(_journal(tmp_path))
+    await asyncio.to_thread(started.wait, 5)
+    task.cancel()
+    await asyncio.sleep(0.05)
+    task.cancel()                                          # Another cancellation arrives while waiting for the thread
+    await asyncio.sleep(0.05)
+    assert V1 in tu._open_streams
+    release.set()
+    with pytest.raises(asyncio.CancelledError):
+        await asyncio.wait_for(task, timeout=5)
+    assert V1 not in tu._open_streams
+    assert not (_spool(tmp_path) / f"{V1}.upload.jsonl").exists()
+
+
+
+async def test_a_rejected_spool_left_after_acceptance_is_cleaned_up_later(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    scheduled = []
+    # Check only the turn itself: do not start the background worker (waiting is a no-op in the fixture, so it would delete the file before the assertion)
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda visit_id, **_k: scheduled.append(visit_id))
+    fake.transcript_mode = "parts"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc())
+    original_mark = tu._mark_unavailable_sync
+
+    def broken(*_a, **_k):
+        raise OSError("disk full")                    # Failure reason cannot be recorded in the report: keep the sealed file marked rejected
+
+    monkeypatch.setattr(tu, "_mark_unavailable_sync", broken)
+    real_unlink = Path.unlink
+    calls = []
+
+    def busy(self, missing_ok=False):
+        if self == sealed and not calls:
+            calls.append(self)
+            raise PermissionError("in use")
+        return real_unlink(self, missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", busy)
+    outcome = await tu.retry_visit_once(V1)
+    assert await tu.load_report(tmp_path, V1) is None and sealed.exists() and outcome.pending is True
+    assert scheduled == [V1]                                # Also schedule background cleanup
+    monkeypatch.setattr(tu, "_mark_unavailable_sync", original_mark)
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+
+
+
+async def test_a_manual_retry_keeps_going_when_the_rejection_marker_cannot_be_cleared(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await tu.set_report_rejected(tmp_path, V1, "unknown_visit")
+    fake.report_mode = "503"
+    original = tu._set_rejected_sync
+    calls = []
+
+    def broken_once(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            raise OSError("disk full")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(tu, "_set_rejected_sync", broken_once)
+    assert (await tu.retry_visit_once(V1, manual=True)).pending is True
+    assert (await tu.load_report(tmp_path, V1))["rejected"] == "unknown_visit"     # Marker was not cleared
+    fake.report_mode = "ok"
+    assert (await tu.retry_visit_once(V1)).pending is False                      # Background turn still submits normally
+    assert await tu.load_report(tmp_path, V1) is None
+
+
+async def test_a_recovered_owner_is_written_before_the_upload_is_deferred(tmp_path, servers):
+    fake, state = servers
+    doc = _big_doc(4, 10)
+    doc.pop("own_visit_uid")                             # Legacy file: owner was not recorded
+    sealed = _write_sealed(tmp_path, doc)
+    state["account"] = "u2"                               # A different account is currently signed in
+    assert await tu.upload_visit_transcript(V1, {**doc, "own_visit_uid": OWN}) is False
+    assert json.loads(sealed.read_text(encoding="utf-8"))["own_visit_uid"] == OWN
+    state["account"] = "u1"
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+
+
+
+async def test_a_pending_manual_retry_ends_when_servers_rejects_again(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await tu.set_report_rejected(tmp_path, V1, "unknown_visit")
+    fake.report_mode = "503"
+    original = tu._set_rejected_sync
+    calls = []
+
+    def broken_once(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            raise OSError("disk full")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(tu, "_set_rejected_sync", broken_once)
+    await tu.retry_visit_once(V1, manual=True)
+    assert V1 in tu._manual_retries
+    fake.report_mode = "404"                               # That background run was rejected again
+    await tu.retry_visit_once(V1)
+    assert V1 not in tu._manual_retries
+    sent = fake.count("/api/visit/reports")
+    assert (await tu.retry_visit_once(V1)).pending is False   # Do not resubmit automatically; wait for the user to decide
+    assert fake.count("/api/visit/reports") == sent
+
+
+async def test_a_pending_manual_retry_does_not_carry_over_to_a_new_report(tmp_path, servers):
+    fake, _ = servers
+    old = _report_doc(include_transcript=False, queued_at=1.0)
+    await tu.queue_report(tmp_path, old)
+    tu._manual_retries[V1] = dict(old)
+    await tu.delete_report(tmp_path, V1)                    # User abandoned that file
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, queued_at=2.0))
+    await tu.set_report_rejected(tmp_path, V1, "unknown_visit")
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert fake.count("/api/visit/reports") == 0 and V1 not in tu._manual_retries
+
+
+
+async def test_a_pending_manual_retry_survives_an_unreadable_round(tmp_path, servers, monkeypatch):
+    doc = _report_doc(include_transcript=False)
+    await tu.queue_report(tmp_path, doc)
+    tu._manual_retries[V1] = dict(doc)
+    real_read = tu._read_report
+
+    async def unreadable(_config_dir, _visit_id):
+        return None, True
+
+    monkeypatch.setattr(tu, "_read_report", unreadable)
+    assert (await tu.retry_visit_once(V1)).pending is True
+    assert V1 in tu._manual_retries                         # Do not invalidate it when unreadable
+    monkeypatch.setattr(tu, "_read_report", real_read)
+
+
+
+async def test_a_manual_retry_that_cannot_read_the_report_is_remembered(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    doc = _report_doc(include_transcript=False)
+    await tu.queue_report(tmp_path, doc)
+    await tu.set_report_rejected(tmp_path, V1, "unknown_visit")
+    real_read = tu._read_report
+    locked = [True]
+
+    async def maybe_unreadable(config_dir, visit_id):
+        if locked[0]:
+            return None, True
+        return await real_read(config_dir, visit_id)
+
+    monkeypatch.setattr(tu, "_read_report", maybe_unreadable)
+    assert (await tu.retry_visit_once(V1, manual=True, owner="u1", expect=doc)).pending is True
+    locked[0] = False
+    assert (await tu.retry_visit_once(V1)).pending is False          # Background run still submits a manual retry
+    assert fake.count("/api/visit/reports") == 1 and await tu.load_report(tmp_path, V1) is None
+
+
+
+async def test_accepting_a_report_drops_the_rejected_spool_and_its_residual_stream(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    stream = sealed.with_name(f"{V1}.upload.jsonl")
+    await tu.queue_report(tmp_path, _report_doc())
+
+    def broken(*_a, **_k):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(tu, "_mark_unavailable_sync", broken)
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda *_a, **_k: None)
+    fake.report_mode = "503"
+    await tu.retry_visit_once(V1)                         # Rejected: failure reason cannot be recorded in the report; keep the sealed file marked rejected
+    stream.write_text("{}\n", encoding="utf-8")          # Pipeline left behind when sealing failed to delete it
+    fake.report_mode = "ok"
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert not sealed.exists() and not stream.exists()
+
+
+async def test_an_inherited_terminal_reason_is_written_into_the_queued_report(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.attempt_upload(V1, config_dir=tmp_path)       # Settle the transcript before the report
+    fake.report_mode = "503"
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda *_a, **_k: None)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True))
+    await tu.retry_visit_once(V1)
+    assert (await tu.load_report(tmp_path, V1))["transcript_unavailable"] == "parts_out_of_range"
+
+
+async def test_a_recovery_rejection_marker_failure_re_arms_the_worker(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.report_mode = "404"
+    doc = _report_doc(include_transcript=False)
+    await tu.queue_report(tmp_path, doc)
+    scheduled = []
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda visit_id, **_k: scheduled.append(visit_id))
+
+    def broken(*_a, **_k):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(tu, "_set_rejected_sync", broken)
+    assert await tu.submit_queued_report(V1, doc) is False
+    assert scheduled == [V1]
+
+
+
+async def test_the_rejected_marker_outlives_a_stream_that_cannot_be_deleted(tmp_path, servers, monkeypatch):
+    spool = _spool(tmp_path)
+    spool.mkdir(parents=True, exist_ok=True)
+    sealed = spool / f"{V1}.upload.json"
+    stream = spool / f"{V1}.upload.jsonl"
+    sealed.write_text(json.dumps({"rejected": "parts_out_of_range"}), encoding="utf-8")
+    stream.write_text("{}" + chr(10), encoding="utf-8")
+    real_unlink = Path.unlink
+
+    def busy(self, missing_ok=False):
+        if self == stream:
+            raise PermissionError("in use")
+        return real_unlink(self, missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", busy)
+    assert tu._drop_rejected_sealed_sync(tmp_path, V1) is False
+    assert sealed.exists() and json.loads(sealed.read_text(encoding="utf-8"))["rejected"]   # Marker is still present
+
+
+async def test_an_unmarked_terminal_spool_is_dropped_once_the_report_is_accepted(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc())
+
+    def broken(*_a, **_k):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(tu, "_mark_unavailable_sync", broken)      # Failure reason cannot be written to the report
+    monkeypatch.setattr(tu, "_mark_sealed_rejected_sync", broken)  # The marker on the sealed file also cannot be written
+    assert (await tu.retry_visit_once(V1)).pending is False
+    assert fake.reports[0]["transcript_unavailable"] == "parts_out_of_range"
+    assert not sealed.exists()                                      # Process knows it is already terminal: clear it anyway
+
+
+async def test_another_accounts_transcript_does_not_gate_a_report(tmp_path, servers):
+    fake, _ = servers
+    doc = _big_doc(4, 10)
+    doc["own_visit_uid"] = "b" * 24                                 # Shared computer: this transcript belongs to the other account
+    _write_sealed(tmp_path, doc)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True))
+    await tu.retry_visit_once(V1)
+    assert fake.count("/api/visit/reports") == 1 and "transcript_unavailable" not in fake.reports[0]
+
+
+async def test_an_aged_transcript_is_tried_once_before_it_expires(tmp_path, servers):
+    fake, _ = servers
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is False and outcome.unavailable is None    # Test upload succeeded; do not discard it as expired
+    assert fake.count("/api/visit/transcripts") >= 1 and not sealed.exists()
+
+
+async def test_an_aged_transcript_that_still_fails_expires(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "503"
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert fake.count("/api/visit/transcripts") >= 1 and not sealed.exists()   # One attempt still failed: settle it as expired
+
+
+async def test_a_terminal_record_never_drops_another_accounts_transcript(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    doc = _big_doc(4, 10)
+    doc["own_visit_uid"] = "b" * 24                         # Transcript for the other account that has not yet been uploaded
+    sealed = _write_sealed(tmp_path, doc)
+    tu.remember_terminal_reason(V1, "parts_out_of_range", OWN)  # This account's side was settled to a terminal state earlier
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda *_a, **_k: None)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await tu.retry_visit_once(V1)
+    assert fake.count("/api/visit/reports") == 1 and sealed.exists()
+
+
+
+async def test_another_accounts_report_is_not_marked_with_this_transcripts_reason(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    _write_sealed(tmp_path, _big_doc(4, 10))                       # Transcript on this account's (OWN) side
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True, own_visit_uid="b" * 24, own_account="u2"))
+    await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert "transcript_unavailable" not in (await tu.load_report(tmp_path, V1))
+
+
+async def test_a_recovery_success_still_arms_a_cleanup_check(tmp_path, servers, monkeypatch):
+    sealed = _write_sealed(tmp_path, _big_doc(4, 10))
+    scheduled = []
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda visit_id, **_k: scheduled.append(visit_id))
+    assert await tu.upload_visit_transcript(V1, json.loads(sealed.read_text(encoding="utf-8"))) is True
+    assert scheduled == [V1]
+
+
+async def test_a_recovered_owner_that_cannot_be_written_is_kept_for_the_worker(tmp_path, servers, monkeypatch):
+    fake, state = servers
+    doc = _big_doc(4, 10)
+    doc.pop("own_visit_uid")
+    sealed = _write_sealed(tmp_path, doc)
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda *_a, **_k: None)
+    real_persist = tu._persist_owner_sync
+    calls = []
+
+    def flaky(path, owner):
+        calls.append(owner)
+        if len(calls) == 1:
+            raise OSError("disk full")
+        return real_persist(path, owner)
+
+    monkeypatch.setattr(tu, "_persist_owner_sync", flaky)
+    state["account"] = "u2"
+    assert await tu.upload_visit_transcript(V1, {**doc, "own_visit_uid": OWN}) is False
+    assert V1 in tu._pending_owners
+    state["account"] = "u1"
+    assert (await tu.retry_visit_once(V1)).pending is False and not sealed.exists()
+    assert V1 not in tu._pending_owners
+
+
+async def test_a_report_with_an_unknown_owner_still_gets_the_reason(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "parts"
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True, own_visit_uid=None))
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    report = await tu.load_report(tmp_path, V1)
+    assert report["transcript_unavailable"] == "parts_out_of_range"
+    assert outcome.for_report(report).pending is False and outcome.for_report(report) is outcome
+
+
+
+def test_an_unknown_owner_never_counts_as_the_same_owner(tmp_path):
+    spool = _spool(tmp_path)
+    spool.mkdir(parents=True, exist_ok=True)
+    sealed = spool / f"{V1}.upload.json"
+    sealed.write_text(json.dumps({"v": 1, "request": {}}), encoding="utf-8")     # Legacy file: no owner and no rejection marker
+    assert tu._drop_rejected_sealed_sync(tmp_path, V1, ("corrupt", None)) is True
+    assert sealed.exists()
+
+
+
+async def test_a_manual_retry_does_not_submit_a_replacement_report(tmp_path, servers):
+    fake, _ = servers
+    clicked = _report_doc(include_transcript=False, queued_at=1.0)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, queued_at=2.0))    # It has been replaced with a new file
+    await tu.retry_visit_once(V1, manual=True, owner="u1", expect=clicked)
+    assert fake.count("/api/visit/reports") == 0
+
+
+async def test_a_corrupt_orphan_stream_keeps_its_owner(tmp_path, servers, monkeypatch):
+    async def corrupt(_config_dir, _visit_id):
+        return "corrupt", OWN
+
+    monkeypatch.setattr(tu, "reseal_orphan_stream", corrupt)
+    stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+    stream.parent.mkdir(parents=True, exist_ok=True)
+    stream.write_text("garbage", encoding="utf-8")
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=True, own_visit_uid="b" * 24, own_account="u2"))
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.owner == OWN and tu._terminal_reasons[V1] == ("corrupt", OWN)
+    assert "transcript_unavailable" not in (await tu.load_report(tmp_path, V1))   # Do not record the other account's report
+
+
+async def test_an_aged_broken_sealed_file_is_resealed_from_its_stream_first(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    sealed.parent.mkdir(parents=True, exist_ok=True)
+    sealed.write_text("{broken", encoding="utf-8")
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    (_spool(tmp_path) / f"{V1}.upload.jsonl").write_text("{}", encoding="utf-8")
+    good = _big_doc(4, 10)
+
+    async def reseal(_config_dir, _visit_id):
+        sealed.write_text(json.dumps(good), encoding="utf-8")
+        os.utime(sealed, (old, old))
+        return "sealed", OWN
+
+    monkeypatch.setattr(tu, "reseal_orphan_stream", reseal)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert fake.count("/api/visit/transcripts") >= 1 and outcome.unavailable is None   # Test upload after resealing; do not discard it as expired
+
+
+
+async def test_a_failed_reseal_keeps_an_aged_broken_file_and_its_stream(tmp_path, servers, monkeypatch):
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    sealed.parent.mkdir(parents=True, exist_ok=True)
+    sealed.write_text("{broken", encoding="utf-8")
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+    stream.write_text("{}", encoding="utf-8")
+
+    async def failed(_config_dir, _visit_id):
+        return "failed", None
+
+    monkeypatch.setattr(tu, "reseal_orphan_stream", failed)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is True and outcome.retryable is True
+    assert sealed.exists() and stream.exists()             # Do not delete it as expired
+
+
+
+async def test_anomaly_counts_of_another_accounts_side_are_not_used(tmp_path, servers):
+    doc = _big_doc(4, 10)
+    doc["request"]["anomalies"] = 3
+    _write_sealed(tmp_path, doc)                               # Transcript on the OWN side
+    assert await tu.visit_anomalies(tmp_path, V1, OWN) == 3
+    assert await tu.visit_anomalies(tmp_path, V1, "b" * 24) == 0
+    assert await tu.visit_anomalies(tmp_path, V1, None) == 3   # Report ownership is unknown: use it anyway
+    tu.remember_anomalies(vid(2), 5, OWN)
+    assert await tu.visit_anomalies(tmp_path, vid(2), "b" * 24) == 0
+    assert await tu.visit_anomalies(tmp_path, vid(2), OWN) == 5
+
+
+
+async def test_a_transient_sealed_read_failure_stays_retryable(tmp_path, servers, monkeypatch):
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    original = tu._load_json
+
+    def locked(path):
+        if path.name.endswith(".upload.json"):
+            raise PermissionError("in use")
+        return original(path)
+
+    monkeypatch.setattr(tu, "_load_json", locked)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is True and outcome.retryable is True
+
+
+async def test_a_failed_reseal_keeps_the_owner_from_the_stream(tmp_path, servers, monkeypatch):
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    sealed.parent.mkdir(parents=True, exist_ok=True)
+    sealed.write_text("{broken", encoding="utf-8")
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    (_spool(tmp_path) / f"{V1}.upload.jsonl").write_text("{}", encoding="utf-8")
+
+    async def failed(_config_dir, _visit_id):
+        return "failed", OWN
+
+    monkeypatch.setattr(tu, "reseal_orphan_stream", failed)
+    assert (await tu.attempt_upload(V1, config_dir=tmp_path)).owner == OWN
+
+
+async def test_a_deeply_nested_stream_header_does_not_break_the_anomaly_count(tmp_path, servers):
+    stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+    stream.parent.mkdir(parents=True, exist_ok=True)
+    stream.write_text("[" * 100000 + "\n" + '{"kind":"anomaly"}\n', encoding="utf-8")
+    assert await tu.visit_anomalies(tmp_path, V1, OWN) == 1
+
+
+async def test_the_recovery_callback_remembers_a_terminal_rejection(tmp_path, servers, monkeypatch):
+    doc = _big_doc(4, 10)
+    _write_sealed(tmp_path, doc)
+
+    async def rejected(_visit_id, _doc, _config_dir):
+        return tu.UploadResult(terminal="parts_out_of_range")
+
+    monkeypatch.setattr(tu, "_upload", rejected)
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda *_a, **_k: None)
+    assert await tu.upload_visit_transcript(V1, doc) == "parts_out_of_range"
+    # Reconciliation then deletes the sealed file; a late transcript-attachment report relies on this copy to include the reason
+    assert tu._terminal_reasons[V1] == ("parts_out_of_range", OWN)
+
+
+async def test_a_lone_stream_that_cannot_be_resealed_keeps_its_owner(tmp_path, servers, monkeypatch):
+    stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+    stream.parent.mkdir(parents=True, exist_ok=True)
+    stream.write_text("{}", encoding="utf-8")
+
+    async def failed(_config_dir, _visit_id):
+        return "failed", OWN
+
+    monkeypatch.setattr(tu, "reseal_orphan_stream", failed)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending and outcome.retryable and outcome.owner == OWN
+
+
+async def test_an_aged_broken_upload_with_a_corrupt_stream_settles_as_corrupt_with_the_stream_owner(
+        tmp_path, servers, monkeypatch):
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    sealed.parent.mkdir(parents=True, exist_ok=True)
+    sealed.write_text("{broken", encoding="utf-8")
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    (_spool(tmp_path) / f"{V1}.upload.jsonl").write_text("{}", encoding="utf-8")
+
+    async def corrupt(_config_dir, _visit_id):
+        return "corrupt", OWN
+
+    monkeypatch.setattr(tu, "reseal_orphan_stream", corrupt)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is False and outcome.owner == OWN
+    assert tu._terminal_reasons[V1] == ("corrupt", OWN) and not sealed.exists()
+
+
+async def test_a_transient_read_after_resealing_does_not_expire_the_transcript(tmp_path, servers, monkeypatch):
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    sealed.parent.mkdir(parents=True, exist_ok=True)
+    sealed.write_text("{broken", encoding="utf-8")
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    (_spool(tmp_path) / f"{V1}.upload.jsonl").write_text("{}", encoding="utf-8")
+    good = _big_doc(4, 10)
+
+    async def resealed(_config_dir, _visit_id):
+        sealed.write_text(json.dumps(good), encoding="utf-8")
+        os.utime(sealed, (old, old))
+        return "sealed", OWN
+
+    reads = []
+    original = tu._load_json
+
+    def load(path):
+        if path.name.endswith(".upload.json"):
+            reads.append(path)
+            if len(reads) == 2:
+                raise PermissionError("in use")                   # Reread after resealing: temporarily locked
+        return original(path)
+
+    monkeypatch.setattr(tu, "reseal_orphan_stream", resealed)
+    monkeypatch.setattr(tu, "_load_json", load)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending and outcome.retryable and sealed.exists()
+
+
+
+async def test_an_unreadable_sealed_upload_falls_back_to_its_stream_for_anomalies(tmp_path, servers):
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    sealed.parent.mkdir(parents=True, exist_ok=True)
+    sealed.write_text("{broken", encoding="utf-8")
+    header = json.dumps({"kind": "header", "own_visit_uid": OWN})
+    (_spool(tmp_path) / f"{V1}.upload.jsonl").write_text(
+        header + "\n" + '{"kind":"anomaly"}' + "\n" + '{"kind":"anomaly"}' + "\n", encoding="utf-8")
+    assert await tu.visit_anomalies(tmp_path, V1, OWN) == 2
+
+
+
+async def test_the_count_recorded_at_seal_wins_over_a_short_stream(tmp_path, servers):
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    sealed.parent.mkdir(parents=True, exist_ok=True)
+    sealed.write_text("{broken", encoding="utf-8")
+    header = json.dumps({"kind": "header", "own_visit_uid": OWN})
+    (_spool(tmp_path) / f"{V1}.upload.jsonl").write_text(
+        header + "\n" + '{"kind":"anomaly"}' + "\n", encoding="utf-8")       # Pipeline is missing several rows
+    tu.remember_anomalies(V1, 3, OWN)                                       # Full count recorded when sealing
+    assert await tu.visit_anomalies(tmp_path, V1, OWN) == 3
+
+
+
+async def test_another_accounts_recorded_count_does_not_replace_this_stream(tmp_path, servers):
+    other = "b" * 24
+    header = json.dumps({"kind": "header", "own_visit_uid": other})
+    stream = _spool(tmp_path) / f"{V1}.upload.jsonl"
+    stream.parent.mkdir(parents=True, exist_ok=True)
+    stream.write_text("\n".join([header, '{"kind":"anomaly"}', '{"kind":"anomaly"}', ""]), encoding="utf-8")
+    tu.remember_anomalies(V1, 5, OWN)                                       # Count recorded when sealing on the other account's side
+    # B's own pipeline has 2 entries: do not overwrite them with A's count (the later ownership check will clear them)
+    assert await tu.visit_anomalies(tmp_path, V1, other) == 2
+
+
+
+async def test_a_failure_before_the_request_does_not_count_as_the_aged_attempt(tmp_path, servers, monkeypatch):
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+
+    async def setup_failed(*_a, **_k):
+        raise PermissionError("progress file in use")                # Request failed before it was sent
+
+    monkeypatch.setattr(tu, "_upload", setup_failed)
+    with pytest.raises(PermissionError):
+        await tu.attempt_upload(V1, config_dir=tmp_path)
+    # Never actually attempted upload: the next run must still try once before deleting it as expired
+    assert V1 not in tu._aged_attempted and sealed.exists()
+
+
+
+async def test_an_invalid_sealed_file_does_not_lend_its_owner(tmp_path, servers):
+    doc = _big_doc(4, 10)
+    doc["request"]["visit_id"] = vid(9)                                 # File from another session, marked OWN
+    _write_sealed(tmp_path, doc)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is True and outcome.owner is None
+
+
+async def test_anomalies_of_another_visits_file_are_not_used(tmp_path, servers):
+    doc = _big_doc(4, 10)
+    doc["request"]["visit_id"] = vid(9)
+    doc["request"]["anomalies"] = 7
+    _write_sealed(tmp_path, doc)
+    header = json.dumps({"kind": "header", "own_visit_uid": OWN})
+    (_spool(tmp_path) / f"{V1}.upload.jsonl").write_text(
+        "\n".join([header, '{"kind":"anomaly"}', ""]), encoding="utf-8")
+    assert await tu.visit_anomalies(tmp_path, V1, OWN) == 1
+
+
+async def test_an_aged_upload_is_kept_while_the_owner_is_signed_out(tmp_path, servers, monkeypatch):
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+
+    async def signed_out():
+        raise cr.VisitLoginRequired()
+
+    monkeypatch.setattr(cr, "_servers_session", signed_out)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    # Not logged in: request was never sent, so this does not count as an attempt and must not be deleted as expired
+    assert outcome.pending and outcome.login_required and sealed.exists() and V1 not in tu._aged_attempted
+
+
+
+async def test_this_visits_newer_version_file_still_names_its_owner_and_count(tmp_path, servers):
+    doc = _big_doc(4, 10)
+    doc["v"] = 99                                                       # File for this session written by the new version
+    doc["request"]["anomalies"] = 4
+    _write_sealed(tmp_path, doc)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is True and outcome.owner == OWN             # The other account's report need not wait for this one
+    assert await tu.visit_anomalies(tmp_path, V1, OWN) == 4
+
+
+
+async def test_recovery_rearms_a_report_it_cannot_reread_right_now(tmp_path, servers, monkeypatch):
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    doc = await tu.load_report(tmp_path, V1)
+    original = tu._load_json
+
+    def locked(path):
+        if path.parent.name == "visit_reports":
+            raise PermissionError("in use")                          # Reread under the lock: temporarily locked
+        return original(path)
+
+    armed = []
+    monkeypatch.setattr(tu, "_load_json", locked)
+    monkeypatch.setattr(tu, "schedule_visit_retry", lambda visit_id, **_k: armed.append(visit_id))
+    assert await tu.submit_queued_report(V1, doc) is False
+    # Unreadable does not mean missing: let the background process verify and submit it later; do not leave it until next startup
+    assert armed == [V1] and (tmp_path / "visit_reports" / f"{V1}.json").exists()
+
+
+
+async def test_an_aged_file_of_another_visit_settles_without_its_owner(tmp_path, servers):
+    doc = _big_doc(4, 10)
+    doc["request"]["visit_id"] = vid(9)                                 # File from another session, marked OWN
+    _write_sealed(tmp_path, doc)
+    sealed = _spool(tmp_path) / f"{V1}.upload.json"
+    old = time.time() - 30 * 86400
+    os.utime(sealed, (old, old))
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    # The account written in a file from another session does not count: settle it as unknown, and mark queued reports "expired"
+    assert outcome.owner is None and tu._terminal_reasons[V1] == ("expired", None)
+
+
+
+async def test_a_new_report_does_not_inherit_the_abandoned_ones_retry_after(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.report_mode = "503"
+    slept = []
+    waiting = asyncio.Event()
+
+    async def sleep(seconds):
+        slept.append(round(seconds))
+        if len(slept) == 1:
+            waiting.set()
+            await asyncio.sleep(3600)                                    # Currently waiting a long time for the old report's retry_after
+
+    monkeypatch.setattr(tu, "_sleep", sleep)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    task = tu.schedule_visit_retry(V1, initial_delay_s=86400)           # The old report received a long retry_after
+    await waiting.wait()
+    assert await tu.delete_report(tmp_path, V1)                         # User abandoned it
+    fake.report_mode = "ok"
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False, queued_at=time.time() + 1))
+    await asyncio.wait_for(task, 5)
+    # A new report should not wait another old day: after being woken, wait only for the first backoff interval before submitting
+    assert slept[0] == 86400 and slept[1] <= tu.VISIT_UPLOAD_RETRY_BACKOFF_S[0]
+    assert fake.count("/api/visit/reports") == 1 and await tu.load_report(tmp_path, V1) is None
+
+
+
+async def test_a_finished_worker_leaves_no_wakeup_event_behind(tmp_path, servers, monkeypatch):
+    fake, _ = servers
+    fake.report_mode = "503"
+    calls = []
+
+    async def sleep(seconds):
+        calls.append(seconds)
+        fake.report_mode = "ok"
+
+    monkeypatch.setattr(tu, "_sleep", sleep)
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await asyncio.wait_for(tu.schedule_visit_retry(V1, initial_delay_s=5), 5)
+    await asyncio.sleep(0)                                               # Let the done callback finish
+    assert calls and V1 not in tu._wakeups
+
+
+
+async def test_a_sealed_file_that_disagrees_with_the_visit_state_is_not_sent(tmp_path, servers):
+    from tests.unit.visit_memory_test_helpers import make_visit
+
+    fake, _ = servers
+    await make_visit(tmp_path, V1, [], memory_enabled=False, own_uid=OWN, own_char_uid="e" * 32)  # This session belongs to a different character
+    _write_sealed(tmp_path, _big_doc(4, 10))                               # But the file says CHAR_UID
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    assert outcome.pending is True and fake.count("/api/visit/transcripts") == 0
+
+
+
+async def test_an_ownerless_legacy_file_takes_the_state_owner_and_uploads(tmp_path, servers):
+    from tests.unit.visit_memory_test_helpers import make_visit
+
+    fake, _ = servers
+    await make_visit(tmp_path, V1, [], memory_enabled=False, own_uid=OWN, own_char_uid=CHAR_UID)
+    doc = _big_doc(4, 10)
+    doc["own_visit_uid"] = None                                          # Orphan file sealed by an old version
+    _write_sealed(tmp_path, doc)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    # Matches state.json: use its account to fill the missing owner and upload normally
+    assert fake.count("/api/visit/transcripts") > 0 and outcome.pending is False
+
+
+async def test_a_new_report_keeps_the_transcripts_own_retry_after(tmp_path, servers):
+    tu._note_upload_retry_after(V1, 5000)                                # Retry-After obtained for this transcript
+    tu.restart_retry_deadline(V1)                                        # A new report was queued afterward
+    assert tu._not_before[V1] >= time.monotonic() + 4900
+
+
+
+def test_a_transcript_free_report_carries_no_transcript_reason():
+    body = tu.report_request(_report_doc(include_transcript=False, transcript_unavailable="expired"))
+    assert "transcript_unavailable" not in body
+    body = tu.report_request(_report_doc(include_transcript=True, transcript_unavailable="expired"))
+    assert body["transcript_unavailable"] == "expired"
+
+
+async def test_a_transcript_free_report_is_not_marked_with_a_transcript_reason(tmp_path, servers):
+    await tu.queue_report(tmp_path, _report_doc(include_transcript=False))
+    await tu.mark_report_transcript_unavailable(tmp_path, V1, "expired")
+    assert "transcript_unavailable" not in await tu.load_report(tmp_path, V1)
+
+
+
+@pytest.mark.parametrize("mode", ["not_participant", "unknown_visit"])
+async def test_permanent_upload_rejections_are_terminal(tmp_path, servers, mode):
+    fake, _ = servers
+    fake.transcript_mode = mode
+    doc = _big_doc(4, 10)
+    _write_sealed(tmp_path, doc)
+    # Login account was verified against the account holding the session before upload; Servers still rejected it, and retrying cannot change that, so settle it as terminal
+    assert await tu.upload_visit_transcript(V1, doc) == mode
+
+
+async def test_a_synchronous_attempt_records_the_transcripts_retry_after(tmp_path, servers):
+    fake, _ = servers
+    fake.transcript_mode = "429"
+    _write_sealed(tmp_path, _big_doc(4, 10))
+    await tu.attempt_upload(V1, config_dir=tmp_path)
+    # Also record Retry-After from the synchronous attempt in the endpoint's upload deadline table: abandoning and requeueing a report must not allow an early retry
+    assert tu.upload_deferred_s(V1, OWN) > 70
+
+
+
+async def test_an_unreadable_visit_state_defers_the_upload(tmp_path, servers, monkeypatch):
+    from main_logic.visit.spool import VisitSpool
+
+    fake, _ = servers
+    _write_sealed(tmp_path, _big_doc(4, 10))
+
+    async def locked(self):
+        raise PermissionError("state in use")
+
+    monkeypatch.setattr(VisitSpool, "read_state", locked)
+    outcome = await tu.attempt_upload(V1, config_dir=tmp_path)
+    # If verification cannot be completed, do not upload; do not treat it as passed
+    assert outcome.pending and outcome.retryable and fake.count("/api/visit/transcripts") == 0
+
+
+def test_a_queued_report_with_a_non_finite_timestamp_is_malformed():
+    assert tu._valid_report(_report_doc(queued_at=float("nan")), V1) is False
+    assert tu._valid_report(_report_doc(), V1) is True
+
+
+def test_a_queued_report_with_an_unwritable_note_is_malformed():
+    assert tu._valid_report(_report_doc(note="x" * 10000), V1) is False
+    assert tu._valid_report(_report_doc(note=chr(0xD800)), V1) is False
+    assert tu._valid_report(_report_doc(note=None), V1) is True
+
+
+async def test_a_new_report_is_not_held_by_the_abandoned_ones_retry_after(tmp_path, servers):
+    old = _report_doc(queued_at=1000.0)
+    tu._note_report_retry_after(old, 5000)
+    assert tu.report_deferred_s(V1, old) > 4900
+    assert tu.report_deferred_s(V1, _report_doc(queued_at=2000.0)) == 0      # Replaced with a different report

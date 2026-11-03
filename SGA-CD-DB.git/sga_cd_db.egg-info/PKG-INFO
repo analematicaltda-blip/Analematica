@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: sga_cd_db
+Version: 0.1.0
+Summary: Database models and schema for the SGA-CD application.
+Author-email: Jules <jules@example.com>

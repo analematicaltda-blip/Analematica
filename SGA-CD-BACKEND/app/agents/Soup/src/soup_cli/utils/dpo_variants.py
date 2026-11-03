@@ -1,0 +1,346 @@
+"""KL-controlled DPO variants (v0.40.0 Part C).
+
+
+Two opt-in controls for DPO-family preference training:
+
+1. **β schedule** - anneal the DPO ``beta`` coefficient over training.
+   Three shapes: linear, cosine (1/2 (1 + cos(pi t)) ramp), exponential
+   (geometric decay between ``beta_start`` and ``beta_end``).
+
+2. **Reference-model regeneration** - periodically sync reference model weights
+   with the student. With LoRA, copies the active ``.default.`` adapter weights
+   into the frozen ``.ref.`` adapter under ``torch.no_grad()`` on every Nth epoch.
+   Full fine-tuning (``lora.r: 0``) is refused at config load (#1345).
+
+Both helpers are lazily-subclassed TrainerCallbacks (no ``transformers`` import at
+module scope) so they cost nothing on a torch-less interpreter and stay
+unit-testable on CI without GPUs.
+"""
+
+from __future__ import annotations
+
+import math
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from transformers import TrainerCallback
+
+    class BetaScheduleCallback(TrainerCallback):
+        pass
+
+    class RefModelRegenCallback(TrainerCallback):
+        pass
+
+# Allowed schedule shapes, kept as a frozenset for runtime immutability.
+SUPPORTED_SCHEDULES: frozenset[str] = frozenset({"linear", "cosine", "exponential"})
+
+__all__ = [
+    "BetaScheduleCallback",
+    "RefModelRegenCallback",
+    "SUPPORTED_SCHEDULES",
+    "build_dpo_variant_callbacks",
+    "compute_beta_at_step",
+]
+
+
+def _validate_finite_positive(name: str, value: float) -> None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{name} must be a number; got {type(value).__name__}")
+    fvalue = float(value)
+    if math.isnan(fvalue) or math.isinf(fvalue):
+        raise ValueError(f"{name}={value!r} must be finite")
+    if fvalue <= 0:
+        raise ValueError(f"{name}={value!r} must be > 0")
+
+
+def compute_beta_at_step(
+    beta_start: float,
+    beta_end: float,
+    step: int,
+    total_steps: int,
+    schedule: str,
+) -> float:
+    """Return β at ``step`` for the chosen schedule.
+
+    Endpoint contract (matches HF lr_scheduler convention):
+      step ≤ 0           → ``beta_start``
+      step ≥ total_steps → ``beta_end``
+      total_steps == 0   → ``beta_end`` (degenerate case; nothing to anneal)
+    """
+    _validate_finite_positive("beta_start", beta_start)
+    _validate_finite_positive("beta_end", beta_end)
+    if isinstance(total_steps, bool) or not isinstance(total_steps, int):
+        raise ValueError(
+            f"total_steps must be int; got {type(total_steps).__name__}"
+        )
+    if isinstance(step, bool) or not isinstance(step, int):
+        # Defence-in-depth: bool is a subclass of int. Project policy
+        # (v0.30.0 Candidate) rejects bool for int fields.
+        raise ValueError(f"step must be int; got {type(step).__name__}")
+    if total_steps < 0:
+        raise ValueError(f"total_steps={total_steps!r} must be >= 0")
+    if schedule not in SUPPORTED_SCHEDULES:
+        raise ValueError(
+            f"Unknown schedule={schedule!r}; supported: {sorted(SUPPORTED_SCHEDULES)}"
+        )
+    if total_steps == 0:
+        return float(beta_end)
+    if step <= 0:
+        return float(beta_start)
+    if step >= total_steps:
+        return float(beta_end)
+    progress = step / total_steps  # 0..1
+    if schedule == "linear":
+        return float(beta_start + (beta_end - beta_start) * progress)
+    if schedule == "cosine":
+        # Cosine ramp: 1/2 (1 + cos(pi * progress)) goes 1→0 over [0,1].
+        weight = 0.5 * (1.0 + math.cos(math.pi * progress))
+        return float(beta_end + (beta_start - beta_end) * weight)
+    # exponential — geometric interpolation; both endpoints are > 0 by guard.
+    log_start = math.log(beta_start)
+    log_end = math.log(beta_end)
+    return float(math.exp(log_start + (log_end - log_start) * progress))
+
+
+class _BetaScheduleCallback_body:  # type: ignore[misc]  # noqa: N801
+    """HF ``TrainerCallback``: updates ``trainer.beta`` per step.
+
+    Subclasses the lazily-resolved ``TrainerCallback`` so it inherits the no-op
+    default for every Trainer event; only ``on_train_begin`` and
+    ``on_step_begin`` are overridden.
+
+    Use ``attach(trainer)`` once, then add the callback to the trainer.
+    Without ``attach``, ``on_step_begin`` is a no-op (defence-in-depth).
+    """
+
+    def __init__(
+        self,
+        beta_start: float,
+        beta_end: float,
+        total_steps: int,
+        schedule: str,
+    ) -> None:
+        # Validate immediately so callers don't see a deferred crash mid-train.
+        _validate_finite_positive("beta_start", beta_start)
+        _validate_finite_positive("beta_end", beta_end)
+        if schedule not in SUPPORTED_SCHEDULES:
+            raise ValueError(
+                f"Unknown schedule={schedule!r}; supported: "
+                f"{sorted(SUPPORTED_SCHEDULES)}"
+            )
+        self.beta_start = float(beta_start)
+        self.beta_end = float(beta_end)
+        self.total_steps = int(total_steps)
+        self.schedule = schedule
+        self._trainer = None
+
+    def attach(self, trainer) -> None:
+        self._trainer = trainer
+
+    def on_train_begin(self, args, state, control, **kwargs) -> None:
+        # HF Trainer populates state.max_steps inside _inner_training_loop,
+        # which runs before on_train_begin. Resolve total_steps lazily from
+        # the live trainer state so the wrappers don't need to compute it
+        # ahead of time (the wrappers' pre-train computation is racy and
+        # was returning 0 in v0.40.0 first cut).
+        if self.total_steps <= 0:
+            live_max = int(getattr(state, "max_steps", 0) or 0)
+            if live_max > 0:
+                self.total_steps = live_max
+
+    def on_step_begin(self, args, state, control, **kwargs) -> None:
+        if self._trainer is None:
+            return
+        if self.total_steps <= 0:
+            # Couldn't resolve a meaningful horizon; skip the schedule
+            # rather than emit beta_end for every step.
+            return
+        new_beta = compute_beta_at_step(
+            beta_start=self.beta_start,
+            beta_end=self.beta_end,
+            step=int(getattr(state, "global_step", 0)),
+            total_steps=self.total_steps,
+            schedule=self.schedule,
+        )
+        # TRL DPOTrainer exposes .beta directly. Narrow the swallow to
+        # AttributeError only — a TypeError here would indicate a real bug
+        # in compute_beta_at_step that should surface in tests, not be hidden.
+        try:
+            self._trainer.beta = new_beta
+        except AttributeError:
+            return
+
+
+class _RefModelRegenCallback_body:  # type: ignore[misc]  # noqa: N801
+    """HF ``TrainerCallback``: deep-copy student weights into ref adapter/model on epoch.
+
+    On every Nth epoch (1-indexed; epoch 0 is skipped to avoid copying
+    untrained weights), copies the current student weights into the reference.
+    With LoRA (where TRL creates a frozen ``ref`` adapter and leaves
+    ``trainer.ref_model`` as None), in-place copies all matching ``.default.``
+    parameters into ``.ref.`` parameters under ``torch.no_grad()``.
+    If ``trainer.ref_model`` is present, loads ``student.state_dict()`` into
+    ``ref_model``.
+    """
+
+    def __init__(self, every_n_epochs: int) -> None:
+        if isinstance(every_n_epochs, bool) or not isinstance(every_n_epochs, int):
+            raise TypeError(
+                f"every_n_epochs must be int; got {type(every_n_epochs).__name__}"
+            )
+        if every_n_epochs < 1:
+            raise ValueError(
+                f"every_n_epochs={every_n_epochs!r} must be >= 1"
+            )
+        self.every_n_epochs = every_n_epochs
+        self._trainer = None
+        self.regen_count = 0
+
+    def attach(self, trainer) -> None:
+        self._trainer = trainer
+
+    def on_epoch_end(self, args, state, control, **kwargs) -> None:
+        if self._trainer is None:
+            return
+        epoch = float(getattr(state, "epoch", 0.0))
+        # Skip epoch 0 entirely - copying untrained student is a footgun.
+        # round() handles HF Trainer's float epoch counters (e.g. 1.999...).
+        epoch_int = int(round(epoch))
+        if epoch_int < 1:
+            return
+        if epoch_int % self.every_n_epochs != 0:
+            return
+        self._regenerate()
+
+    def _regenerate(self) -> None:
+        trainer = self._trainer
+        if trainer is None:
+            return
+        ref_model = getattr(trainer, "ref_model", None)
+        student = getattr(trainer, "model", None)
+        if student is None:
+            return
+
+        import logging
+
+        import torch
+
+        logger = logging.getLogger(__name__)
+
+        # LoRA path: TRL creates a frozen `ref` adapter on student; ref_model is None.
+        if ref_model is None:
+            named_params = dict(student.named_parameters())
+            ref_params = {k: v for k, v in named_params.items() if ".ref." in k}
+            if not ref_params:
+                logger.warning(
+                    "RefModelRegenCallback: trainer.ref_model is None and no "
+                    "'.ref.' adapter parameters found on model; ref model not updated."
+                )
+                return
+
+            copied = 0
+            with torch.no_grad():
+                for ref_name, ref_param in ref_params.items():
+                    default_name = ref_name.replace(".ref.", ".default.", 1)
+                    default_param = named_params.get(default_name)
+                    if default_param is None:
+                        logger.warning(
+                            "RefModelRegenCallback: matching source parameter '%s' "
+                            "not found for '%s'; skipping.",
+                            default_name,
+                            ref_name,
+                        )
+                        continue
+                    ref_param.copy_(default_param)
+                    ref_param.requires_grad = False
+                    copied += 1
+
+            if copied > 0:
+                self.regen_count += 1
+            return
+
+        # Non-LoRA path (if ref_model is a separate model instance)
+        try:
+            state_dict = student.state_dict()
+        except AttributeError:
+            return
+        # strict=True so a key/shape mismatch (e.g. PEFT-wrapped student vs
+        # bare ref) surfaces loudly instead of silently producing a
+        # half-copied reference. The except below logs at WARNING and the
+        # callback continues - this is an optimisation, not a safety gate,
+        # but operators should know when it failed.
+        try:
+            ref_model.load_state_dict(state_dict, strict=True)
+            self.regen_count += 1
+        except (RuntimeError, TypeError) as exc:
+            logger.warning(
+                "RefModelRegenCallback: load_state_dict failed (%s); ref "
+                "model not updated this epoch.",
+                type(exc).__name__,
+            )
+            return
+
+
+def build_dpo_variant_callbacks(
+    *,
+    beta_start: float,
+    beta_end: Optional[float],
+    schedule: Optional[str],
+    total_steps: int,
+    ref_regen_epochs: Optional[int],
+) -> list:
+    """Build the DPO-variant callback list for a given config slice.
+
+    Returns an empty list when no variants are enabled. Callers should
+    ``attach(trainer)`` and ``trainer.add_callback(cb)`` for each entry.
+    """
+    callbacks: list = []
+    if schedule is not None and beta_end is not None:
+        beta_cls = globals().get("BetaScheduleCallback") or __getattr__("BetaScheduleCallback")
+        callbacks.append(
+            beta_cls(
+                beta_start=beta_start,
+                beta_end=beta_end,
+                total_steps=total_steps,
+                schedule=schedule,
+            )
+        )
+    if ref_regen_epochs is not None:
+        regen_cls = globals().get("RefModelRegenCallback") or __getattr__("RefModelRegenCallback")
+        callbacks.append(regen_cls(every_n_epochs=ref_regen_epochs))
+    return callbacks
+
+
+def _try_import_callback_base():
+    """Return HF ``TrainerCallback`` (or ``object`` when transformers is absent).
+
+    Imported inside the function so the module has no top-level transformers
+    dependency; the class below still inherits every no-op event stub the HF
+    dispatch loop requires. Mirrors ``monitoring/curriculum_callback.py``.
+    """
+    try:
+        from transformers import TrainerCallback  # noqa: PLC0415
+
+        return TrainerCallback
+    except Exception:  # noqa: BLE001 — transformers optional in slim test envs.
+        return object
+
+
+_LAZY_CALLBACKS = {
+    "BetaScheduleCallback": _BetaScheduleCallback_body,
+    "RefModelRegenCallback": _RefModelRegenCallback_body,
+}
+_BODY_SKIP = frozenset(("__dict__", "__weakref__"))
+
+
+def __getattr__(name: str):  # PEP 562
+    body = _LAZY_CALLBACKS.get(name)
+    if body is not None:
+        base = _try_import_callback_base()
+        ns = {k: v for k, v in vars(body).items() if k not in _BODY_SKIP}
+        cls = type(name, (base,), ns)
+        cls.__module__ = __name__
+        cls.__qualname__ = name
+        globals()[name] = cls
+        return cls
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

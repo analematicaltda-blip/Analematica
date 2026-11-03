@@ -1,0 +1,90 @@
+---
+title: Cosmic Button
+description: Animated link or button for React and shadcn/ui with a glowing cosmic gradient border that grows on hover, for landing page CTAs.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="cosmic-button-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="Link and button variants"
+/>
+
+CosmicButton is a polymorphic React button and link component for shadcn/ui. Use it for landing page calls to action or launch announcements, rendering an anchor by default or a button through the as prop.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/cosmic-button
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="cosmic-button" />
+
+<Step>
+  Add the required keyframes and utilities to your global CSS (e.g.
+  globals.css):
+</Step>
+
+```css
+@keyframes cosmic-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cosmic-spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+/* If using Tailwind v4 @theme: */
+/* --animate-cosmic-spin: cosmic-spin 3s linear infinite; */
+/* --animate-cosmic-spin-slow: cosmic-spin-slow 5s linear infinite; */
+```
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+As a link (default):
+
+```tsx
+<CosmicButton href="/about">About</CosmicButton>
+```
+
+As a button:
+
+```tsx
+<CosmicButton as="button" onClick={handleClick}>
+  Submit
+</CosmicButton>
+```

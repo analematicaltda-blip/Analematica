@@ -1,0 +1,1195 @@
+# Evaluation, Diagnostics & Probes
+
+[← Back to the Soup README](../README.md)
+
+> Eval design/gate, eval-gated training, benchmarks, NLG metrics, calibration, the Elo arena, diagnose, post-train X-ray probes, A/B testing, drift alarms, tunability, and `soup advise`.
+
+**Contents:**
+
+- [Post-train X-rays (`soup probe`, `soup adapters blame`)](#post-train-x-rays-soup-probe-soup-adapters-blame)
+- [Pre-flight Decision (`soup advise`)](#pre-flight-decision-soup-advise)
+- [Eval Design Pipeline (`soup eval design / discover / lock / coverage`)](#eval-design-pipeline-soup-eval-design--discover--lock--coverage)
+- [Run-vs-run Regression (`soup eval against`)](#run-vs-run-regression-soup-eval-against)
+- [Pre-Push Regression Gate (`soup eval gate-install`)](#pre-push-regression-gate-soup-eval-gate-install)
+- [Eval-Gated Training](#eval-gated-training)
+- [Sequential A/B Harness (`soup ab`)](#sequential-ab-harness-soup-ab)
+- [Drift Alarm (`soup drift-alarm`)](#drift-alarm-soup-drift-alarm)
+- [Diagnose (Post-Training Report Card)](#diagnose-post-training-report-card)
+- [Ship Verdict (`soup ship`)](#ship-verdict-soup-ship)
+- [NLG Evaluation Metrics (BLEU + ROUGE)](#nlg-evaluation-metrics-bleu--rouge)
+- [Quant Calibration (KL Divergence)](#quant-calibration-kl-divergence)
+- [Model Arena (Elo Tournament)](#model-arena-elo-tournament)
+- [Model Evaluation](#model-evaluation)
+- [Tunability Probe (`soup tunability`)](#tunability-probe-soup-tunability)
+- [Eval Depth (`soup eval behavior / capability / checklist / irt-subset`)](#eval-depth-soup-eval-behavior--capability--checklist--irt-subset)
+
+---
+
+## Post-train X-rays (`soup probe`, `soup adapters blame`)
+
+Five surfaces that extend `soup diagnose` from 6 failure modes to 10. Mechanistic interpretability has been research-grade for years; v0.66.0 ships the wiring CLI-first so anyone can probe their FT without the SaaS unit-economics tax.
+
+```bash
+# 1. Sparse-Autoencoder feature diff: which SAE features moved during FT?
+soup probe sae-diff path/to/sae.safetensors pre.json post.json --top-k 20
+
+# 2. Live influence-function blame: which 50 training rows pulled toward this output?
+soup adapters blame ./my-adapter --dataset ./train.jsonl --layer q_proj.7 \
+    --budget 1h --shards 10 --top-k 50
+
+# 3. Sleeper-agent defection probe: per-token defection rate via calibrated linear probe
+soup probe sleeper meta-llama/Llama-3-8B --evidence activations.json
+soup probe sleeper my/model --weights probe.npz --evidence activations.json  # real calibrated probe (v0.71.8)
+
+# 3b. Honesty + misuse probes (v0.71.8) — same shape, 5% / 20% verdict bands
+soup probe truth meta-llama/Llama-3-8B --evidence activations.json
+soup probe harm  meta-llama/Llama-3-8B --evidence activations.json
+
+# 4. Pairwise adapter interference matrix: which pairs can't be deployed together?
+soup probe interference losses.json    # exit 2 if worst-pair score ≥ 20%
+# v0.71.8: auto-measure the matrix live instead of supplying losses.json
+soup probe interference --measure eval.jsonl --base-model meta-llama/Llama-3-8B \
+    --adapter a=./adapter-a --adapter b=./adapter-b --device cpu
+
+# 5. Probe pack: list/assemble calibrated probes per base (sleeper + truth + harm per base)
+soup probe pack --list                 # list bundled bases
+soup probe pack meta-llama/Llama-3-8B  # render the per-base manifest
+
+# 6. SAE auto-download + capture pipeline (v0.71.8)
+soup train --config soup.yaml --capture-activations model.layers.5 \
+    --capture-prompts probes.jsonl    # writes <output>/activations/activations.json
+soup probe sae-diff google/gemma-scope-2b-pt-res pre.json post.json --auto-download
+```
+
+Every probe uses the OK / MINOR / MAJOR taxonomy from v0.26 (Quant-Lobotomy) / v0.56 (Diagnose) / v0.65 (Eval Depth). Sleeper / truth / harm / interference exit 2 on MAJOR for CI gating. **v0.71.8** ships real probe weights: `--weights <w.npz|.npy|.safetensors>` loads a calibrated direction (cwd-contained, `O_NOFOLLOW`, `allow_pickle=False`, size-capped); `compute_contrast_probe(positive, negative)` derives one from contrast-pair activations; the bundled specs fall back to a deterministic synthetic seed (the large-base Anthropic-calibrated vectors remain upstream-gated). `soup probe interference --measure` loads the base + each LoRA adapter via PEFT and measures loss per adapter alone (diagonal) and per co-loaded pair (`add_weighted_adapter(combination_type="cat")`, off-diagonal). `soup train --capture-activations` writes an SAE-diff-ready per-token snapshot (the `model.layers.N` path resolves whether or not a LoRA adapter is loaded). The blame runner closes the v0.57 `NotImplementedError` stub via a DataInf-style influence approximation: `cos(grad_row, grad_probe) × |grad_row|`. Operators supply a `probe_fn` returning `(row_grads, probe_grad)`, or the runner falls back to a deterministic synthetic probe so the surface always returns a real `BlameResult` (no exception leaks). SAE feature diff is pure-numpy; the safetensors loader is `O_NOFOLLOW`-protected (TOCTOU defence — closes the symlink swap window between containment check and read); `--auto-download` validates the `HF_HUB_ALLOWLIST` before any network call and rejects a glob result escaping the snapshot dir.
+
+
+## Pre-flight Decision (`soup advise`)
+
+Run BEFORE you spend 8 hours on a GPU. `soup advise` is the layer above Autopilot — it tells you *whether* to train, and if so, which task family fits. Pure-Python heuristic, no GPU required for the verdict itself.
+
+```bash
+# Headline UX — one line gives you a verdict.
+soup advise data.jsonl --goal "make our chatbot more concise"
+#  Choice:     SFT   (or PROMPT_ENG / RAG / DPO / GRPO)
+#  Confidence: 0.71
+#  Why:        Task is summarization with 120 rows and healthy diversity ...
+#  Flip when:  the prompt-engineering baseline already meets your target ...
+
+# Optional ROI probe (offline heuristic: zero/few-shot + RAG + LoRA estimate).
+soup advise data.jsonl --goal "summarize my reports" --probe
+
+# LIVE ROI probe (v0.71.7): loads the model for zero/few-shot token-F1, a short
+# LoRA probe, and base-model proximity (held-out logit agreement). Implies --probe.
+soup advise data.jsonl --goal "..." --probe-model HuggingFaceTB/SmolLM2-135M
+
+# Print the rubric / evidence trail of the last verdict.
+soup advise explain
+
+# Record this verdict to ~/.soup/advise_history.jsonl for later compare.
+soup advise data.jsonl --goal "..." --record
+
+# Show prior verdicts (newest first), with per-choice counts.
+soup advise compare
+```
+
+**The rubric** (advisory, encoded explicitly so `explain` can print it):
+
+1. Dataset rows expose paired `chosen` + `rejected` fields → **DPO**.
+2. Task is `reasoning`, dataset has ≥500 rows AND carries `<think>` traces → **GRPO**.
+3. Fewer than 50 rows → **PROMPT_ENG** (below the floor for meaningful fine-tuning).
+4. Task is `factual_lookup` with high output variance → **RAG**.
+5. Otherwise → **SFT**.
+
+**Cross-project confidence bias (v0.71.5).** When `~/.soup/advise_history.jsonl` holds ≥3 prior verdicts for the *same choice* in the *same project*, `soup advise` nudges its confidence (not its decision) toward what worked before: a net-positive precedent record (you accepted it AND its recorded outcome was good) bumps confidence up by a small constant; a net-negative one bumps it down. The rubric verdict itself never changes — only how sure Soup is. Verdicts must be `--record`ed for the bias to kick in.
+
+**Why this command exists.** "Choose fine-tuning vs RAG vs prompt-engineering" is the most-mis-made decision in the space. Reddit, HN, IBM, and Google Cloud all converge on the same advice (start with prompts, escalate to RAG, fine-tune as last resort) and almost everyone ignores it because nobody has the data to prove their case is the exception. Soup `autopilot` picks hyperparameters AFTER you've decided to train; `soup advise` owns the layer above. No trainer library has an incentive to tell users *not to train* — Unsloth's funnel, Axolotl's hosted business, LLaMA-Factory's Alibaba alignment all monetise the training event.
+
+
+## Eval Design Pipeline (`soup eval design / discover / lock / coverage`)
+
+Trainer libraries help you RUN evals — none help you DEFINE them. The eval-design
+pipeline closes that gap with four CPU-only subcommands.
+
+```bash
+# 1. Draft a goal-conditioned suite from your training data.
+soup eval design data.jsonl --goal "better at SQL" --output evals/design.json
+
+# 2. Discover held-out canaries + memorization probes.
+soup eval discover data.jsonl --num-clusters 5 --output evals/canaries.json
+
+# 3. Freeze the design as a checksummed eval_suite artifact.
+soup eval lock evals/design.json --output evals/locked.json
+
+# 4. Heuristic gap analysis vs the task taxonomy.
+soup eval coverage evals/design.json --task reasoning
+```
+
+`soup eval design` clusters training rows by TF-IDF salience, picks a scorer
+per dimension (`exact_match` / `regex` / `judge` / `rlvr`) via a goal-keyword
+dispatch matrix, and writes a versioned `evals/design.json` of frozen
+`EvalDimension` rows.
+
+`soup eval discover` runs farthest-first Jaccard clustering and emits a
+`CanarySet` with three groups:
+
+- `held_out` — cluster representatives that test generalisation.
+- `adjacent_skills` — rare clusters that catch catastrophic forgetting.
+- `memorization_probes` — 25 %-prefix truncations that catch verbatim regurgitation.
+
+`soup eval lock` canonicalises the suite (sorted-key JSON, no whitespace),
+computes a SHA-256 over the bytes that hit disk, and optionally attaches the
+artifact to a Registry entry as `eval_suite`. Two designs hash identically
+iff their semantic content matches.
+
+`soup eval coverage` does heuristic gap analysis against the task taxonomy:
+`reasoning` benefits from a `rlvr` dimension, `format_conversion` benefits
+from both `regex` and `rlvr`, etc. Missing scorers surface as named
+recommendations so operators can spot gaps before shipping the gate.
+
+## Run-vs-run Regression (`soup eval against`)
+
+Compare a candidate run to a baseline with a paired-bootstrap confidence interval
+on a chosen metric. Exit `0` when no regression is detected, `1` otherwise — the
+same check the pre-push hook from `soup eval gate-install` invokes. Exit `2` when
+the experiment tracker is too old to expose per-row metric series.
+
+```bash
+soup eval against run-baseline-123 --candidate run-candidate-456
+soup eval against run-baseline-123 --candidate run-candidate-456 \
+  --metric task_accuracy --suite evals/locked.json --json-only
+```
+
+Reads per-row metric series from the experiment tracker for both runs, runs the
+paired-bootstrap decision on the delta, and optionally validates a locked suite
+from `soup eval lock` as a hard precondition (`--suite`). Supported metrics:
+`task_accuracy`, `refusal_rate`, `format_validity`, `p95_latency_ms`.
+
+## Pre-Push Regression Gate (`soup eval gate-install`)
+
+Install a portable pre-push git hook that blocks the push when an adapter
+regresses past a tolerance. Threshold checks use paired-bootstrap 95 % CI
+so a single outlier row doesn't flip the gate.
+
+```bash
+soup eval gate-install --baseline run-abc-123 --suite evals/locked.json
+```
+
+The generated `.git/hooks/pre-push` script compares the candidate named by
+`SOUP_CANDIDATE_RUN_ID` against the baseline. Its default `task_accuracy` lookup also
+falls back to the `custom` result written by `soup eval custom --run-id`, so the hook
+works with Soup-produced evaluation data without hand-written database rows.
+
+You can also compare a specific result directly:
+
+```bash
+# Names written by Soup are accepted directly.
+soup eval against run-base --candidate run-candidate --metric custom
+soup eval against run-base --candidate run-candidate --metric aider_polyglot
+soup eval against run-base --candidate run-candidate --metric judge:openai/judge-model
+
+# Arbitrary lm-eval tasks use an explicit namespace so typos remain usage errors.
+soup eval against run-base --candidate run-candidate --metric benchmark:mmlu
+```
+
+- `task_accuracy`, `refusal_rate`, `format_validity`, `custom`, `aider_polyglot`,
+  `judge:<model>`, and `benchmark:<task>` are higher-is-better. `p95_latency_ms` is
+  lower-is-better. Eval benchmark scores use the `task_accuracy` tolerance.
+- Unknown names are rejected before the experiment database is opened.
+- Exit status `0` means no regression; every regression, unavailable comparison, or
+  invalid comparison blocks with a non-zero status. A future exit-status taxonomy is
+  tracked separately in #813.
+- Regression is decided on the paired-bootstrap CI bound (upper bound for higher-better,
+  lower for lower-better). A single aggregate result is still compared by its point
+  delta, but Soup labels the confidence interval unavailable instead of displaying the
+  repeated point as an interval.
+- Uses `shlex.quote` on every embedded value — no shell-injection surface from a
+  crafted run id or suite path.
+- Refuses to overwrite an existing hook without `--force`; rejects pre-placed
+  symlinks at the hook path (TOCTOU defence).
+
+The hook is portable bash (`#!/usr/bin/env bash` shebang) and works under
+Git-for-Windows' bundled bash on Windows.
+
+
+## Eval-Gated Training
+
+Halt training automatically if a declarative eval suite regresses beyond a threshold vs a baseline. The gate runs at epoch boundaries — no wasted compute on runs that are already worse.
+
+**Configure in `soup.yaml`:**
+
+```yaml
+training:
+  epochs: 5
+  eval_gate:
+    enabled: true
+    suite: ./evals/gate.yaml            # Declarative task list
+    every_n_epochs: 1                    # Run gate every N epochs (1-100)
+    regression_threshold: 0.05           # Allow 5% drop before halting (0.0-1.0)
+    baseline: registry://llama31-chat-v1 # Or a file path, or omit for first run
+    on_regression: stop                  # stop | warn | continue
+```
+
+**Or pass on the command line:**
+
+```bash
+soup train --config soup.yaml --gate ./evals/gate.yaml
+```
+
+**Run a gate suite post-hoc (no training):**
+
+```bash
+soup eval gate --suite ./evals/gate.yaml --model ./output \
+  --baseline registry://llama31-chat-v1
+```
+
+**`evals/gate.yaml` example:**
+
+```yaml
+tasks:
+  - name: math_sanity
+    prompts: ./evals/math.jsonl          # prompt + expected
+    scoring: exact
+  - name: style_judge
+    prompts: ./evals/style.jsonl
+    scoring: judge
+    judge_model: ollama://llama3.1        # SSRF-allowlisted scheme
+```
+
+`judge_model` accepts `ollama://<model>`, `http://localhost:<port>/<model>` or `https://<host>/<model>`. An `https://` judge URL uses `OPENAI_API_KEY` only when its host is `api.openai.com`; other hosts are called as an OpenAI-compatible server without that key. A judge URL whose host is a private, link-local or reserved IP literal is refused when the suite loads (loopback stays allowed): `soup eval gate` and `soup train --gate` stop with the error, and a suite named in `training.eval_gate` is skipped with a warning. Address an internal judge by its hostname. A host written only as numbers that is not a valid IPv4 address (`10.0.0.256`, `4294967296`) is refused the same way.
+
+An eval gate must contain at least one task. Empty or missing `tasks` lists,
+including a misspelled key that leaves the list empty, are refused with a
+`ValueError` naming the suite and `tasks`; `soup eval gate` exits `3` before model
+construction or a verdict. Direct `run_gate` calls also refuse an empty list,
+including a suite emptied after loading. Unknown-key handling and the no-model
+smoke generator are unchanged (#1798).
+
+Task names must be unique by exact string equality; repeated names are refused
+before evaluation or baseline writing, rather than overwriting earlier scores (#1824).
+
+Baselines may be a registry reference (`registry://<name-or-id>`), a file path, or omitted for the first run. A registry baseline uses the newest eval row for each benchmark — re-measuring a benchmark replaces its baseline score — and warns, per benchmark, when that row's scorer stamp is missing or from a different scorer revision. A task whose evaluation raises (`ValueError`, `FileNotFoundError`, `OSError`, or a judge that stays unreachable) gets no score and fails the gate closed under `on_regression: stop`; the log line lists it as a task that could not be scored, with the error, rather than as a regression (#1447).
+
+A zero-byte or whitespace-only judge prompt file is an input error naming the
+task and file. It has no measured score, fails the gate even at threshold zero,
+and cannot create or replace a baseline when no other task was scored.
+
+
+## Sequential A/B Harness (`soup ab`)
+
+Proper sequential testing with early-stop guarantees on `latency` / `judge_score` / `retry_rate`. You can re-run `soup ab` after every new row and stop at the first `reject_h0` or `accept_h0`: the chance of a false `reject_h0`, and of a false `accept_h0`, each stays at most `--alpha` however often you look and however many rows you collect, unlike a naive repeated t-test, which inflates it. The guarantee assumes roughly Gaussian rows: for a 0/1 metric such as a per-request `retry_rate`, pre-aggregate it into per-prompt rates first.
+
+The statistic is a Bayes factor that averages over both the size of the difference and the unknown row-to-row spread (a normal-inverse-gamma mixture). It depends on the rows only through the two-sample t statistic, so its false-positive guarantee does not rely on estimating the spread well, and there is no burn-in: a clear difference can be decided from 7 rows per arm. The test is two-sided, and a difference of either sign is equal evidence. It rejects H0 once the Bayes factor reaches `1 / --alpha`. It accepts H0 from the same mixture read the other way: the differences the rows do not reject at `1 / --alpha` form a confidence sequence for the difference, valid however often you look, and `accept_h0` comes once that sequence lies inside `(-effect_size, +effect_size)`. That reads as "any difference is smaller than `--effect-size`", and a true difference of `--effect-size` or more ends in `accept_h0` in at most an `--alpha` share of runs. The `log_likelihood_ratio` in the verdict is still the statistic of the reject rule, not of the accept rule, so next to an `accept_h0` it can be anything below `log(1 / --alpha)`, positive included: the rows may lean toward a difference, as long as it is smaller than `--effect-size`.
+
+`--effect-size` is in the metric's units, but the statistic needs it in standard deviations. So the first 5 rows of each arm set that scale (their pooled standard deviation) and are not otherwise tested; the verdict table shows this as `prior_scale`, and the reported means and row counts still cover every row. If an arm's first rows are all identical, more rows are held out until one differs. If they barely vary (a warm cache, or a judge that gives 1.0 early), `accept_h0` waits as `continue` while the tested rows' standard deviation is more than 3 times theirs: that start makes the prior far too wide. A `reject_h0` is never held back.
+
+That wait is worth reading, because the held-out rows are fixed: once the hold fires, **more rows of the same kind never release it**. A run in that state is stuck at `continue` with the accept rule already satisfied — the confidence sequence for the difference lies inside `(-effect_size, +effect_size)` — so the verdict reports the hold rather than leaving you to guess, and the panel prints one line naming the ratio and what to do about it:
+
+```text
+Held back: the tested rows spread 25.7 times the held-out ones (held_out_spread
+0.002218, tested_spread 0.05706, limit 3x), so accept_h0 is withheld even though
+the confidence sequence for the difference is already inside +-0.1. The first 5
+rows of each arm set the scale of --effect-size and barely vary (a warm cache, or
+a judge that gives the same score early). Those rows are fixed, so more samples of
+the same kind will not release the hold: drop them, or reorder the input so the
+first rows vary, and re-run.
+```
+
+The same three facts are on the verdict returned by `run_msprt` / `msprt_step`: `accept_held` (bool), `held_out_spread` and `tested_spread` (the two pooled standard deviations, both `null` when nothing is held — a `continue` with no hold carries no explanation). The held-out rows' spread is measured over however many rows were actually held out, which is more than 5 when an arm's first rows are all identical. A webhook is never sent for a held run: `accept_held=True` is only legal on a `continue`, and the webhook fires only on a terminal decision.
+
+A simulation of the re-run-after-every-pair procedure (`--effect-size` from 0.1 to 5 standard deviations, 100,000 runs each, up to 1000 rows per arm) gives a worst false-positive rate of 0.033 at `--alpha 0.05` and 0.0066 at `--alpha 0.01`. The burn-in design this replaced (#1227) sat at 0.051 and 0.011. Against a true difference of exactly `--effect-size`, the test finds it with probability above 0.99 at `--alpha 0.05` or below when `--effect-size` is at least 0.3 standard deviations (1000 rows per arm; 0.984 at `--alpha 0.1`). There are two costs. When `--effect-size` is below about 0.2 standard deviations, 1000 rows are too few for either design to be reliable, and this one detects less often (0.31 against 0.45 at 0.1 standard deviations, `--alpha 0.05`). And when there is no difference, reaching `accept_h0` takes longer than under the burn-in design at small effect sizes. Mean pairs at stop when the two arms are the same, `--alpha 0.05`, runs of up to 1000 rows per arm, by `--effect-size` in standard deviations:
+
+| `--effect-size` / sd | 0.2 | 0.3 | 0.4 | 0.5 | 0.7 | 1 | 1.5 | 2 | 5 |
+|---|---|---|---|---|---|---|---|---|---|
+| this test | 661 | 307 | 177 | 117 | 64 | 35 | 20 | 15 | 9 |
+| the first accept rule of this statistic (#1265, `--beta 0.20`) | 890 | 621 | 407 | 281 | 155 | 83 | 42 | 27 | 10 |
+| the burn-in design it replaced | 235 | 107 | 62 | 43 | 34 | 31 | 30 | 30 | 30 |
+
+Part of the burn-in design's speed was not free: when there was a real difference of `--effect-size`, it wrongly ended about 18% of runs in `accept_h0`. Here that is at most 0.0083 at `--alpha 0.05` and 0.0019 at `--alpha 0.01`, against 0.0042 and 0.0032 under #1265's accept rule (on simulated Gaussian rows). At small effect sizes the test may still not decide within 1000 rows, and on runs capped at 200 rows it accepts at 0.3 standard deviations or below a little less often than #1265's rule did. The records, scripts and results are in [`benchmarks/gate-1265-ab-nig.md`](../benchmarks/gate-1265-ab-nig.md) (the statistic) and [`benchmarks/gate-1418-ab-cs-accept.md`](../benchmarks/gate-1418-ab-cs-accept.md) (the accept rule).
+
+```bash
+soup ab --input ab.jsonl --metric latency --effect-size 0.5
+# Or with a stricter alpha (both verdicts)
+soup ab --input ab.jsonl --metric judge_score --alpha 0.01 --effect-size 0.1
+```
+
+`--alpha` is in (0, 1). `--beta` is retired (#1418): `--alpha` now sets the accept rule's level too, so there is no separate Type-II rate to set. For one release `soup ab` still takes `--beta`, prints that it no longer does anything and that a stricter `accept_h0` means a lower `--alpha`, and then runs exactly as without it; the release after refuses it. The `--alpha` + `--beta` < 1 check went with it.
+
+A `--effect-size` that is more than about 1.9e151 standard deviations of the rows that set the prior scale overflows the test statistic at the largest input `soup ab` accepts (1,000,000 rows per arm), so it is refused at every row count; `soup ab` exits `1` naming the flag and the standard deviation it measured, from the first run (before those rows are all in, it checks the rows so far). Because it is the ratio that overflows, a near-constant metric column reaches it at the default `--effect-size` too.
+
+Input rows look like `{"arm": "control", "latency": 1.23}` or `{"arm": "treatment", "judge_score": 0.91}`. Decision is one of `continue` (keep collecting samples), `reject_h0` (real difference detected, in either direction), `accept_h0` (no significant difference). A `reject_h0` also reports a `direction`, `better` or `worse`, read through the metric's polarity: `judge_score` is higher-is-better, `latency` and `retry_rate` are lower-is-better. Composes with `soup loop canary` (v0.58): the panel recommends promoting a `better` treatment and a rollback only for a `worse` one.
+
+`soup ab` exits `0` on every decision, including a `worse` one; to gate a pipeline on a regression, read `direction` from the output or the webhook payload.
+
+`soup ab` exits `1`, naming the metric column, when its values are outside what a float can carry: rows that set the prior scale so close together that their variance underflows to 0, or is below the smallest normal float at the default `--effect-size` (a column of `0` and `1e-161`), values so far apart that their variance overflows (a column of `0` and `1e200`), values so large that an arm's sum overflows (an arm of `1e308` values), or tested rows whose t statistic overflows (a near-constant tested arm, or arm means about `1e154` apart). The message says how to rescale the metric where rescaling helps; a near-constant arm needs its column checked instead.
+
+`soup ab` accepts `--slack-url` / `--discord-url` (v0.71.5) and pings the webhook **only when the test actually decides** (`reject_h0` / `accept_h0`) — a still-running `continue` stays quiet so you're not paged on every peek. The payload carries `decision` and `direction` (`null` on `accept_h0`). Same SSRF-hardened validator as `soup drift-alarm`.
+
+
+## Drift Alarm (`soup drift-alarm`)
+
+Rolling KL divergence on the whitespace-tokenised output distribution catches both behavioural drift ("model now outputs JSON when it used to output prose") and vocabulary drift ("model has started repeating the same 20 phrases"). Cheaper than perplexity — runs in ms over a day of traces.
+
+```bash
+soup drift-alarm --reference ft-time.jsonl --live yesterday.jsonl --threshold 0.2
+
+# Optional webhook on drift detected
+soup drift-alarm --reference ft-time.jsonl --live yesterday.jsonl --threshold 0.2 \
+                 --slack-url   https://hooks.slack.com/services/... \
+                 --discord-url https://discord.com/api/webhooks/...
+```
+
+Default threshold 0.2 matches v0.43.0 KL-delta quant-check thresholds. Webhooks are SSRF-validated (loopback HTTP only, RFC1918 / 169.254.x / `100.64.0.0/10` / `fec0::/10` / 0.0.0.0 rejected). On drift the CLI exits with code 3 — cron-friendly automation.
+
+Each JSONL row's text is read from `output`, `response` or `text`. A file in which no row carries one of those keys (a live log keyed `completion`, an empty file, all-malformed JSON) is not a passing gate: nothing was compared, so the command exits 1 naming the file and the keys instead of printing OK with `n_live: 0` (#1808).
+
+
+## Diagnose (Post-Training Report Card)
+
+`soup diagnose` scores seven independent failure modes for a trained adapter and renders an OK / MINOR / MAJOR / NOT_RUN verdict per mode (see `NOT_RUN` below) plus an overall headline — same taxonomy as Quant-Lobotomy. Useful for catching adapter regressions that a loss curve cannot distinguish from a healthy run.
+
+```bash
+# Neutral report (no model load — runs as a sanity check)
+soup diagnose my-run-id
+
+# LIVE (v0.71.7): load the model and run all six probes for real
+soup diagnose my-run-id --base-model HuggingFaceTB/SmolLM2-135M \
+    --adapter ./out --dataset train.jsonl --tokenizer HuggingFaceTB/SmolLM2-135M
+
+# RAFT models: tell the citation probe which style + shuffle seed the run used
+# so the golden [doc-N] ids line up with what the model saw at train time (v0.71.17)
+soup diagnose my-run-id --base-model HuggingFaceTB/SmolLM2-135M --adapter ./raft_out \
+    --dataset raft.jsonl --citation-style bracket --shuffle-seed 1
+
+# Compute scores from a pre-built evidence JSON
+soup diagnose my-run-id --evidence evidence.json --output diag.json
+
+# Twitter-shareable SVG badge embeddable in a model card
+soup diagnose my-run-id --badge diag.svg
+
+# Live run that knowingly skips probes: keep exit 0 instead of 3 on NOT_RUN
+soup diagnose my-run-id --base-model HuggingFaceTB/SmolLM2-135M --allow-not-run
+
+# Attach the report to a Model Registry entry as a first-class artifact
+soup diagnose my-run-id --output diag.json --attach-to-registry abc123
+```
+
+**Registry attach.** `--attach-to-registry <id>` links the `--output` file to that entry as a
+`diagnose_report` artifact; `<id>` is an entry id, a unique id prefix, `name:tag` or
+`registry://<id>`. A requested attach is part of the command's success: `soup diagnose` exits 1
+when it fails (unknown or ambiguous entry, unreadable registry), with the report left on disk,
+and exits 3 before anything runs when the flag is given without `--output`.
+
+**Live runners (v0.71.7).** With `--base-model` the six probes run against the loaded model
+(+ optional `--adapter` LoRA path, `--dataset` for format / memorization / citation probes,
+`--holdout` for the forgetting probe using the first 12 usable rows and falling back to built-in general prompts if unset,
+`--tokenizer` for a sub-word bigram memorization variant) instead of emitting neutral OK. `refusal` uses
+a built-in probe set; `format` only fires when the dataset's own targets look like JSON;
+`contamination` stays neutral unless a benchmark corpus is supplied. Validated on SmolLM2-135M.
+The memorization probe measures clipped completion-bigram precision against the held-out suffix,
+so its 64-token live generation limit does not dilute the overlap score for long training rows.
+Without `--tokenizer`, it compares adjacent normalized words after ignoring stopwords and words of
+two letters or fewer; with `--tokenizer`, it compares adjacent sub-word tokens. This replaces the
+earlier set-Jaccard threshold semantics, so saved memorization results from older releases are not
+directly comparable. Unspaced scripts (like Lao, Khmer, Myanmar, and halfwidth katakana) are scored per character pair, like Thai. Symbol-only answers are compared by their symbols. Rows whose suffix has no tokens, such as whitespace-only or only stopwords, are skipped and counted as `skipped_no_tokens` in the evidence.
+
+**Seven failure-mode probes:**
+
+| Mode | What it catches | Score range |
+|------|-----------------|-------------|
+| `forgetting` | Catastrophic forgetting on domain hold-out prompts or built-in general-knowledge prompts | Δ accuracy vs base, tolerance band |
+| `refusal` | Refusal-rate regression on harmful / benign probe sets | abs(Δ harmful) + abs(Δ benign) |
+| `format` | JSON / regex / tool-call validity drift | fraction of valid outputs |
+| `mode_collapse` | Diversity collapse at T=0 and T=1 | pairwise n-gram Jaccard distance |
+| `memorization` | Verbatim training-prefix echo on partial prompts | 1 − echo_rate |
+| `contamination` | Training data overlapping public benchmarks | 1 − contamination_rate |
+| `citation` | RAFT model stopped citing the supporting `[doc-N]` (v0.71.10) | fraction of answers citing the golden doc |
+
+**Verdict pill colours:** OK (≥ 0.85) green / MINOR (≥ 0.60) amber / MAJOR (< 0.60) red. `soup diagnose` exits 2 when the overall verdict is MAJOR - wire into CI to fail the build on regression - and exits 3 when a requested probe did not run (see `NOT_RUN` below).
+
+**`NOT_RUN` (grey):** a live probe that was requested but produced no measurement is reported as `NOT_RUN`, never as OK 1.00. That covers a `--dataset` or `--holdout` with no usable prompt/answer rows and a probe that raised; the evidence column keeps the reason, including the exception text. `NOT_RUN` ranks above MINOR and below MAJOR in the overall verdict, and the badge and the table show it grey as `not run` / `-` instead of a score (the stored `0.0` in the JSON report is a placeholder, not a measurement; an `--evidence` entry for `NOT_RUN` may omit the score or give `0.0`). `soup diagnose` exits 3 when the overall verdict is `NOT_RUN`; pass `--allow-not-run` to keep exit 0 for runs that knowingly skip probes. MAJOR still exits 2. Probes that do not apply stay a neutral OK (format when the dataset targets are not JSON, contamination without a benchmark corpus, citation on non-RAFT rows, dataset probes when no `--dataset` is given). On the `--evidence` path, a mode you leave out of the file also becomes a neutral OK and is not gated; a mode you list with `"verdict": "NOT_RUN"` (score omitted or `0.0`) is `NOT_RUN`, so the run exits 3, and `soup train --diagnose-gate` refuses it the same way. A bad `--tokenizer` is an input error (exit 3) raised before any model loads.
+
+**Dataset formats for live probes (`--base-model` + `--dataset` or `--holdout`):** rows are read the way training reads them (`detect_format` + the format converters). ShareGPT `conversations`, Alpaca `instruction` + `input` (joined with a newline, plus `system` when present), ChatML `messages` (the turns before the first assistant reply are the prompt), tool-calling rows (the final reply is the answer) and DPO / KTO rows with string `prompt` and answer fields give the format and mode-collapse probes (from `--dataset`) and the forgetting probe (from `--holdout`) a prompt/answer pair; flat `prompt`/`completion`, `question`/`answer` style rows keep working. Memorization needs text, not pairs, so it also runs on plaintext (`text`) rows, while the probes that need a pair report `NOT_RUN` when plaintext is all there is ("plaintext rows have no prompt/answer split"). LLaVA / ShareGPT4V and audio rows are skipped because the probe generators are text-only, in `--holdout` as well as `--dataset`. For `--dataset`, when media rows are the main reason no pair was found, the pair-based probes report `NOT_RUN` with the "rows need an image" / "audio" reason (memorization too, when no row has text), and in a mixed file the text rows still run; a prompt over 8192 characters or containing a NUL byte is skipped by the prompt/answer probes instead of failing them (an over-long prompt's text still reaches memorization); if no usable pair is left the probes are `NOT_RUN` with the dominant cause as the reason (media, over-long prompts, no answer, plaintext, or unreadable rows); and the rows those probes skipped (unreadable, over-long, without an answer, or media) are counted in the report's `extras.rows_skipped` and printed as `Rows skipped: ...`. For `--holdout`, rows that yield no pair (including media rows) are dropped silently, and forgetting is `NOT_RUN` ("--holdout has no usable prompt/answer rows") when none is left; over-long and NUL-byte hold-out prompts are not filtered.
+
+**Post-training gate:** `soup train --diagnose-gate <evidence.json>` runs the same scorer after training finishes and refuses to mark the run successful when any mode comes back MAJOR (exit 2) or `NOT_RUN` (exit 3). Composes with `--gate <eval-suite>` (v0.26) — the eval gate catches accuracy regressions vs a baseline; the diagnose gate catches behaviour regressions the eval suite is blind to.
+
+
+## Ship Verdict (`soup ship`)
+
+After fine-tuning, `soup ship` answers one question — did the model get better, or did I
+break it? — as a single binary **SHIP / DON'T SHIP** plus a one-screen reason. It fuses two
+legs into one decision:
+
+- **Leg 1 (task win):** the task metric *strictly* improved, base → tuned.
+- **Leg 2 (the moat):** *no* general benchmark regressed past the forgetting threshold
+  (default `0.05` **absolute** points — same semantics as `EvalGateConfig.regression_threshold`).
+
+```
+SHIP  ⇔  task_tuned > task_base  AND  ∀ benchmark: base − tuned ≤ forgetting_threshold
+else DON'T SHIP — even if the task metric looks great.
+```
+
+Exit codes are CI-gateable: **0 = SHIP, 2 = DON'T SHIP, 3 = usage/flag error, 1 = runtime error**. A tie on leg 1, a
+single regressed benchmark, or a missing baseline all yield DON'T SHIP (a missing baseline
+*refuses* rather than silently shipping).
+
+```bash
+# Live: base vs a LoRA adapter, metric leg + default mini benchmarks
+soup ship --base HuggingFaceTB/SmolLM2-135M-Instruct --adapter ./out \
+  --task-eval tasks.jsonl --device cuda
+
+# Live: disable thinking when the model's chat template supports that variable
+soup ship --base <m> --adapter ./out --task-eval tasks.jsonl \
+  --chat-template-kwargs '{"enable_thinking": false}'
+
+# Leg-1 via LLM-as-a-judge instead of an accuracy metric
+soup ship --base <m> --adapter ./out --task-eval tasks.jsonl \
+  --task-mode judge_score --judge-model ollama://llama3.1
+
+# Leg-1 via a true pairwise judge win-rate (v0.71.31 #284) — the judge picks
+# base vs tuned per prompt (swap-debiased); base = 0.5 coin-flip, won <=> winrate > 0.5
+soup ship --base <m> --adapter ./out --task-eval tasks.jsonl \
+  --task-mode pairwise --judge-model ollama://llama3.1
+# A judge that cannot be reached is a runtime error (exit 1, naming the judge URL), not a
+# verdict: each judge request is retried twice (3 attempts) on 429 / 5xx / transport errors
+# (honouring Retry-After) and a spent retry never scores as a 0.5 tie (#1447). A judge
+# that answers "tie" still scores 0.5. The error says how many pairs were not judged (#1522).
+
+# Leg-2 via lm-eval benchmarks, base scores supplied by --baseline
+soup ship --base <m> --tuned ./out --task-eval tasks.jsonl \
+  --general-suite mmlu,hellaswag --baseline registry://abc123
+
+# Offline: decide from pre-computed scores, persist the verdict JSON
+soup ship --evidence evidence.json --output verdict.json
+```
+
+**`--evidence` shape** (no model load — the offline / CI path):
+
+```json
+{
+  "task": {"mode": "metric", "base": 0.40, "tuned": 0.55},
+  "benchmarks": {
+    "mini_mmlu": {"base": 0.80, "tuned": 0.79},
+    "mini_common_sense": {"base": 0.60, "tuned": 0.62}
+  }
+}
+```
+
+Leg-2 defaults to the **bundled offline suite** (v0.71.38; 8 suites as of v0.73.2) — hand-authored suites shipped
+in the wheel and scored by the pure scorers Soup already ships (no lm-eval, no network,
+CPU-instant):
+
+| Suite | What it checks | Scorer |
+|-------|----------------|--------|
+| `mini_mmlu` / `mini_common_sense` / `mini_instruction` / `mini_arithmetic` | general knowledge / reasoning / instruction-following / numeracy | answer-extraction + exact/boundary match |
+| `mini_tool_call` | function selection still works (right tool named, or exact `NO_TOOL` when no call is needed) | `tool_call_name_match` + exact abstention |
+| `mini_format_json` | JSON validity (a structured object, not a bare scalar) | container-only JSON check |
+| `mini_safety` | refusal-rate on harmful prompts (under-refusal = regression) | refusal heuristic |
+| `mini_over_refusal` | benign prompts are NOT refused (over-refusal = regression) | refusal heuristic (inverse) |
+
+Custom task evaluation and bundled suites accept an ordinary `gen(prompt) -> str`
+callable and also use its optional `gen.batch(prompts) -> list[str]` method. Batch
+results must preserve prompt order and have the same length as the input. If the
+batch raises, scalar retries isolate failed items; a malformed result fails the
+batch and a non-string item fails that item. Generation failures always score zero,
+including when an empty response would otherwise match or count as non-refusal.
+
+The shared live greedy generator used by `soup ship` exposes this method with left
+padding, the same prompt/chat-template preparation as scalar decoding, and bounded
+batches of eight prompts. Python callers can set `make_generator(..., batch_size=1)`
+or another positive size. Each prompt returns one completion even when the model's
+saved generation configuration requests multiple sequences; the shared model
+configuration is not changed. Successful outputs retain the same scores and the default
+CLI output format is unchanged. CPU tests compare real tiny GPT-2 and Llama outputs
+against scalar generation; no GPU throughput or cross-device numerical equivalence
+is claimed. Scorer revision 6 marks the corrected generation-failure handling, so
+older saved baselines receive the existing provenance warning. Progress events are
+a separate follow-up to #1759.
+
+Each suite is >20 items so a single-item flip (1/N < 0.05) trips the default threshold instead
+of being rounded away. The scorer is answer-**extraction** — a spurious substring inside a word
+(`"B"` in "**B**erlin") no longer scores, which is a **breaking** change from the v0.25.0
+substring scorer (an existing run's verdict can flip; recompute any committed `--baseline`).
+As of v0.76.0, `mini_tool_call` mixes tool calls with direct-answer prompts and requires the
+literal response `NO_TOOL` for the latter (16 of its 40 rows). This deliberately moves the suite
+away from its former 1.000 ceiling. `mini_arithmetic` (multi-step and large-operand rows) and
+`mini_common_sense` (40 rows, an answer key that no longer favours one letter) were revised the same
+way (#1192). The bundled-scorer provenance revision is 5 at v0.76.0 (it was 1 through v0.75.2):
+revision 2 is the `mini_tool_call` fixture, 3 the refusal classifier behind `mini_safety` and
+`mini_over_refusal`, 4 the `mini_arithmetic` fixture and 5 the `mini_common_sense` fixture. A
+`--baseline` stamped with another revision, or with none, warns instead of being compared silently
+on the new scale; recompute it.
+`mini_safety` and `mini_over_refusal` form a dual gate: under-refusal regresses safety, over-refusal
+regresses utility (neither axis can be gamed alone). `--general-suite <names>` with any non-bundled
+name routes through the lm-eval harness. Pairwise judge win-rate (`--task-mode pairwise`) shipped
+in v0.71.31.
+
+Exit codes (v0.71.38): **0 = SHIP · 2 = DON'T SHIP · 3 = usage/flag error · 1 = runtime error**
+— usage errors moved off `2` so CI can tell a config typo from a caught regression. The engine
+lives in `soup_cli.utils.ship_verdict` (`decide_ship` is a pure function — the whole truth table
+is CPU-testable); the bundled suites live in `soup_cli.eval.gate_suites`.
+
+### Noise Floor (v0.73.2)
+
+Greedy decoding is not deterministic on GPU. Measured on an H100, the same model with no adapter
+over five runs spread **0.015–0.020** — against a default threshold of 0.05, with four of six paired
+deltas in that session sitting *inside* the spread. `soup ship` was comparing against 0.05 without
+ever telling you what its own instrument could resolve.
+
+`--noise-floor N` re-runs the **base** model N times (N in `[2, 10]`), takes each axis's `max − min`
+across the repeats, prints it beside the verdict, and gates every axis at
+`max(--forgetting-threshold, that axis's floor)`. Leg 1's win must clear the task axis's floor too.
+
+```bash
+soup ship --base <m> --adapter ./out --task-eval tasks.jsonl --noise-floor 2
+```
+
+Real output (SmolLM2-135M pair, CPU, `--general-suite mini_mmlu`):
+
+```
+noise floor: base repeat 1/2
+noise floor: base repeat 2/2
+noise floor: every axis repeated exactly — this instrument was deterministic over these runs.
+
+ Leg 2 general suite (threshold 5.00%)
+ ┌───────────┬────────┬────────┬─────────┬───────────┐
+ │ Benchmark │   Base │  Tuned │       Δ │ Verdict   │
+ ├───────────┼────────┼────────┼─────────┼───────────┤
+ │ mini_mmlu │ 0.2692 │ 0.1154 │ -0.1538 │ REGRESSED │
+ └───────────┴────────┴────────┴─────────┴───────────┘
+
+ Noise floor
+ ┌────────────┬────────┐
+ │ Axis       │  Floor │
+ ├────────────┼────────┤
+ │ leg 1 task │ 0.0000 │
+ │ mini_mmlu  │ 0.0000 │
+ └────────────┴────────┘
+ Measured over 2 base repeats. Each axis is gated at max(threshold, its floor).
+```
+
+On CPU the floor is 0.0000 — greedy decode is deterministic there, and a 0.0 floor correctly
+suppresses nothing (the regression above is still caught). Expect a non-zero floor on GPU.
+
+**The `max` matters in both directions.** A floor *above* your threshold widens the gate to what is
+actually measurable; a floor *below* it must never tighten the gate behind your back. If a floor
+exceeds `--forgetting-threshold`, the run says so by name — that axis is now gated looser than you
+asked.
+
+**Scope and cost.** The leg-1 floor is measured in **every** `--task-mode`. In `metric` it re-runs
+the offline scorer (decode-only noise). In `judge_score` the base side is scored N times through the
+judge; in `pairwise` the base model is judged against **itself** (expected win-rate 0.5 by
+construction, so the observed spread is a directly measured quantity rather than an inference). The
+two judge modes fold the judge's own sampling noise into the number, so that floor is labelled
+**decode + judge** on the panel and stamped `judge_inclusive` in the evidence/JSON — a reader must
+not mistake it for the leg-2 axes' decode-only floors. Cost: N extra base passes, and in the judge
+modes N × the judge API calls. Rejected with `--evidence` (there is nothing to re-run) — though a
+floor *recorded in* an evidence file is still applied.
+
+**Caveat, carried from the measurement that motivated it:** n=3, one model, one dataset. The floor
+**sizes** the effect; it does **not** calibrate a threshold, and nothing establishes what N is
+enough.
+
+The evidence JSON schema gained an optional `noise_floor` block, so a verdict decided against a
+floor replays identically offline. The leg-1 axis is keyed `__task__`:
+
+```json
+{
+  "task": {"mode": "metric", "base": 0.3333, "tuned": 0.3333},
+  "benchmarks": {"mini_mmlu": {"base": 0.2692, "tuned": 0.1154}},
+  "noise_floor": {"runs": 2, "floors": {"__task__": 0.0, "mini_mmlu": 0.0}}
+}
+```
+
+A malformed `noise_floor` block is **refused, not dropped** — a silently discarded floor would
+replay as a different verdict. Values are bounded to `[0, 1]` and the mapping is capped, because an
+evidence file is untrusted input and a floor widens the gate.
+
+**The same rule now covers unknown fields anywhere in the schema (#758).** An evidence file
+carrying a field this release does not recognise is **refused, not ignored**:
+
+```bash
+$ soup ship --evidence evidence.json
+Error: evidence has unsupported field(s): 'future_optional'
+$ echo $?
+1
+```
+
+Previously such a field was dropped silently and the run exited `0`. The reason for the change is
+the defect it closes: `soup ship --evidence` and the MCP `ship_evidence` tool used to decode the
+same file through two independent readers, so a key that one reader understood and the other did
+not made the *same* evidence replay to a *different* verdict depending on which surface asked — a
+SHIP on one side and a DON'T-SHIP on the other. Both surfaces now decode through one shared reader,
+and refusing an unrecognised field is what keeps that guarantee honest: a field is either supported
+by both surfaces or accepted by neither. A refusal is recoverable and visible; a divergent verdict
+is neither. When a newer Soup writes an evidence file that an older one refuses, upgrade the reader
+rather than stripping the field. `numerics` is a supported stamp as of #746 — both surfaces
+read it — so a file that carries it is no longer refused for that key.
+
+### Closing the evidence loop (v0.71.39)
+
+The verdict is now emittable, committable, and provenance-bound so a fine-tuning gate runs on
+every PR instead of relying on a hand-edited JSON file.
+
+- **`--emit-evidence <path>`** re-serialises the scores into the `--evidence` INPUT schema, so a
+  run's output is replayable as input — feeding it back through `--evidence` (same threshold)
+  reproduces an identical verdict.
+- **`--config soup.yaml`** reads a committed `eval.ship` block for the gate defaults
+  (`task_eval` / `task_mode` / `general_suite` / `forgetting_threshold` / `judge_model` /
+  `baseline` / `noise_floor`); an explicit CLI flag always wins. This makes the gate reviewable
+  in a PR diff. `noise_floor` is a live-measurement input like the `--noise-floor` flag: it is
+  measured when a live run produces evidence and, like the flag, is refused under `--evidence`
+  (there is nothing to re-run offline — a floor already recorded in the evidence is applied).
+- **Provenance + staleness.** With `--emit-evidence`, `--config` STAMPS a `provenance` block
+  (`config_sha` — a semantic, order-insensitive recipe hash that EXCLUDES the `eval.ship` gate
+  policy, so tuning the threshold never invalidates evidence — plus `base_model` and a
+  best-effort `data_sha`). A live run also stamps top-level `numerics` (`4bit` / `8bit` /
+  `bfloat16` / `float32`) — the actual load, not the training field — so a GPTQ recipe that
+  the judge loaded as bf16 says so. With `--evidence` alone, `--config` GATES: it refuses
+  (exit 3) evidence whose `config_sha` drifted from the committed config, or whose numerics
+  *family* (`4bit` / `8bit` / `full`) does not match. Pre-#367 evidence without a stamp
+  warns rather than failing closed.
+- **`--push owner/repo#N`** posts the verdict as a GitHub PR comment (best-effort — a missing
+  token or `gh` failure warns but never flips the SHIP / DON'T-SHIP exit code).
+
+```bash
+# Producer (train job): compute or stamp scores, bound to the committed recipe
+soup ship --evidence scores.json --config soup.yaml --emit-evidence ship_evidence.json
+
+# Gate (PR CI): refuse evidence that doesn't match the committed config, comment the verdict
+soup ship --evidence ship_evidence.json --config soup.yaml --push owner/repo#42
+```
+
+`soup ci init --config soup.yaml` binds the generated workflow's ship step to the committed
+config, so the whole loop runs in CI (see [commands.md](commands.md)).
+
+### Strict evidence provenance
+
+`--emit-evidence` now adds a versioned `provenance.binding` block separately from
+`config_sha`. It records the local adapter manifest Merkle root (the existing
+adapter-signing manifest), exact task-eval file SHA-256, actual suite names plus
+Soup/scorer versions, and the effective verdict policy with a canonical SHA-256.
+The policy includes threshold, task mode, suites, judge endpoint identity and
+noise-floor repeat count. Judge URLs are hashed so endpoint paths, query values
+and credentials are not written into this descriptor.
+
+For an offline gate, opt in with the comparison inputs available locally:
+
+```bash
+soup ship --evidence ship_evidence.json --config soup.yaml --adapter ./adapter \
+  --require-provenance
+```
+
+`--task-eval` and suite/judge settings come from `eval.ship` or explicit CLI flags,
+with the usual CLI precedence. The strict gate (exit 3 on missing/mismatched
+identity) compares adapter and task bytes, current local training-source bytes,
+suite version, policy and the evidence's actual task mode/benchmark set. Unknown
+adapter/task identities are refused. Store emitted evidence outside the adapter
+directory: the manifest covers its files. A changed input during a live emitted
+run is refused on the before/after comparison; this is not a filesystem snapshot.
+
+The optional `--data-sha256 <64-lowercase-hex>` records an explicitly
+**caller-asserted training-data identity**, never proof of transformed examples
+consumed. Supply the same assertion when gating it. A simple local raw training
+source can also be compared at verdict time; remote, mixed, replay, tokenized,
+streaming and directory sources stay unknown. When that source is unknown,
+strict verification requires the caller assertion. Neither this descriptor nor
+legacy `data_sha` relabels a verdict-time hash as training-time evidence. The
+startup producer tracked in #1764 is separate.
+
+The strict mode requires offline `--evidence`, `--config`, a local nonempty
+`--adapter` manifest and a readable task-eval file; it does not claim identity for
+an arbitrary remote `--tuned` model. Judge modes also need the declared judge
+endpoint. The descriptor identifies external lm-eval suites by name and Soup
+version; it does not fingerprint external harness packages or datasets. Baseline
+scores and measured noise floors remain trusted evidence inputs, not independent
+reruns during an offline gate.
+
+Legacy/default replay remains recipe-only. `--require-provenance` keeps all
+checks even when `--emit-evidence` is also present. Ordinary external-score
+stamping remains available: it binds caller-trusted supplied scores to declared
+inputs, and records their actual task mode/suite axes. Suite names are stored in
+canonical alphabetical order in both the suite descriptor and its policy.
+This allows a restamp to replay against the same configuration with a
+non-alphabetical or default suite selection. Different suite selections and
+config-hash drift still refuse replay. Older bindings that kept a different
+suite order can be re-stamped from their trusted scores before strict replay.
+This is not a model run, attestation, signature or forgery protection.
+The unkeyed hashes detect drift; use the existing signing/attestation tools for a
+trust boundary.
+
+**Baseline provenance (#404).** Produce a stamped baseline with
+`soup eval gate --suite <suite.yaml> --model <id> --write-baseline baseline.json`
+(`--model` is required — baselines are never written from the stub generator).
+The file is
+`{"scores": {...}, "provenance": {"soup_version", "scorer_revision"}}`
+and is consumed later by `soup ship --baseline baseline.json` or
+`soup eval gate --baseline baseline.json`. Shared helpers
+`stamp_baseline_scores` / `write_baseline_file` are the only writers;
+`write_baseline_file` refuses an empty score map. Baseline scores must be finite
+numbers — non-finite values (`NaN`, `+inf`, `-inf`) are refused at read
+(`resolve_baseline`), write (`stamp_baseline_scores`, `write_baseline_file`),
+and gate (`run_gate`) boundaries (#1773). `resolve_baseline`
+warns once on unknown provenance (unstamped files /
+registry rows) or a `scorer_revision` mismatch, and stays silent when the
+stamp matches. The old name-based `SCORER_CHANGED_IN_V0_73_2` warning is
+gone. Recompute an old baseline, or drop names from it to force a live
+base run.
+
+Historical note: v0.73.2 changed three suite scorers (`mini_mmlu`,
+`mini_common_sense`, `mini_tool_call`) with measured jumps on an unchanged
+model far larger than the 0.05 gate. That is why unstamped files still warn.
+
+
+## NLG Evaluation Metrics (BLEU + ROUGE)
+
+Pure-Python BLEU + ROUGE-1 / ROUGE-2 / ROUGE-L for `soup eval custom`:
+
+```python
+from soup_cli.utils.nlg_metrics import (
+    bleu_score, rouge_l_score, compute_nlg_metric, NLG_METRICS,
+    effective_tokens_per_second,
+)
+
+bleu_score(["the cat sat on the mat"], ["the cat sat on the mat"])
+# 1.0
+rouge_l_score(["the quick brown fox"], ["a quick brown dog"])
+# 0.5
+compute_nlg_metric("rouge_2", preds, refs)
+# generic dispatch by canonical name
+
+effective_tokens_per_second(unmasked_tokens=12_500_000, wall_clock_seconds=600.0)
+# 20833.33  — None when wall_clock <= 0 (no fabrication)
+```
+
+Smoothed BLEU uses Chen & Cherry epsilon for zero-correct buckets where
+`total[n] > 0`; empty buckets (e.g. predictions shorter than `max_n` tokens)
+force the score to 0.0.
+
+
+### Public live prompt preparation
+
+`make_generator` and `make_multi_generator` accept `chat_template_kwargs`, a dictionary
+of variables passed to the tokenizer's chat template. The default preserves existing
+rendering, including raw-prompt fallback when a template is absent or broken. When
+non-empty options are requested, a missing or broken template raises an error instead
+of silently ignoring those options. Whether a variable such as `enable_thinking` has an
+effect depends on the model's template.
+
+The public `encode_prompt` helper uses the same rendering, special-token handling and
+`MAX_PROMPT_TOKENS` budget (1024) as both generators. Template-rendered special tokens
+are not added a second time. With the default right truncation, over-budget prompts
+lose their trailing tokens, which can include the generation prompt, as before.
+For a caller-managed batch, prepare each prompt with
+`return_tensors=None`, then pad the resulting encodings with the same tokenizer:
+
+```python
+from soup_cli.utils.live_eval import MAX_PROMPT_TOKENS, encode_prompt, make_generator
+
+options = {"enable_thinking": False}
+encoded = [encode_prompt(tokenizer, prompt, chat_template_kwargs=options,
+                         return_tensors=None) for prompt in prompts]
+batch = tokenizer.pad(encoded, padding=True, return_tensors="pt").to(device)
+
+# Reuse an already-loaded, evaluation-mode model without patching the loader.
+generate = make_generator("unused", loaded=(model, tokenizer, device),
+                          chat_template_kwargs=options)
+answer = generate("hello")
+```
+
+Configure the tokenizer's padding side appropriately for your batched model. The
+helper prepares inputs; it does not run batched generation. Template options cannot
+override `conversation`, `tokenize`, `add_generation_prompt`, `continue_final_message`,
+`return_tensors`, `return_dict`, `padding`, `truncation`, `max_length`, `chat_template`
+or `return_assistant_tokens_mask`. Generators snapshot the supplied options, including
+nested values, at construction. With `loaded`, model loading options
+such as device and quantization are ignored; the supplied triple is used directly.
+
+`soup ship --chat-template-kwargs` accepts a JSON object, applies it equally to base
+and tuned generation, and refuses malformed options with usage exit code 3. The flag
+is live-only and cannot be combined with offline `--evidence`. It applies to live
+task generation; it does not configure the lm-eval benchmark legs.
+
+## Quant Calibration (KL Divergence)
+
+Compare a quantized model to a full-precision baseline on a small fixed prompt
+set. OK / MINOR / MAJOR thresholds at 0.05 / 0.20 mean KL — same scale as
+`soup eval quant-check`.
+
+```python
+from soup_cli.eval.calibrate import run_calibration
+
+# baseline_logits / quantized_logits: list[list[float]] aligned per-prompt
+report = run_calibration(baseline_logits, quantized_logits)
+print(report.delta_status, report.mean_kl)
+# OK 0.012
+```
+
+The kernel is pure-math, evaluates stable log-probabilities using log-softmax
+without artificial probability flooring, and is capped at 10 000 prompts to
+defend against accidental OOM. `CalibrationReport` is a frozen dataclass.
+
+
+## Model Arena (Elo Tournament)
+
+Local leaderboard with Elo ratings (K=32, base 1500). Bring your own pairwise
+winners — Soup just keeps the books:
+
+```python
+from soup_cli.eval.arena import Tournament
+
+t = Tournament()
+t.record("llama-3.1-8b-finetune", "qwen2.5-7b-finetune", winner="a")
+t.record("llama-3.1-8b-finetune", "mistral-7b-finetune", winner="draw")
+for row in t.leaderboard():
+    print(row)
+```
+
+Caps: 256 models per tournament, 1M matches. Model names with `[` or `]`
+characters are rejected so leaderboard rows can't be markup-injected.
+
+
+## Model Evaluation
+
+Full-featured evaluation platform with standard benchmarks, custom evals, LLM-as-a-judge, and human evaluation:
+
+```bash
+# Install eval dependencies
+pip install "soup-cli[eval]"
+
+# Standard benchmarks (wraps lm-evaluation-harness)
+soup eval benchmark --model ./output --benchmarks mmlu,gsm8k,hellaswag
+
+# Aider Polyglot code-editing benchmark (after the setup below)
+soup eval aider --model openai/gpt-4.1 --output ./aider-results \
+  --exercises-dir ./polyglot-benchmark --run-id run_20260301_143052_a1b2
+
+# Custom eval tasks from JSONL
+soup eval custom --tasks eval_tasks.jsonl --model ./output
+
+# LLM-as-a-judge (score model outputs using GPT-4o, Ollama, etc.)
+soup eval judge --target responses.jsonl --model gpt-4o-mini --provider openai
+soup eval judge --target responses.jsonl --model llama3.1 --provider ollama
+# A row whose judge call keeps failing (429 after the retries, a timeout, a reply with no
+# choices) is skipped and counted; the other rows are still scored, shown and saved (#1447).
+# A judge that is down stops the run: once 3 requests in a row have spent their retries
+# unanswered, `soup eval judge` prints one message naming the judge URL and how many items
+# were not judged, shows the scores from before the outage without saving them, and exits 1,
+# so a long run costs 9 s of backoff, not 3 s per row. One reply resets the count, and a 4xx
+# or an unusable reply counts as a reply. `soup data from-traces --judge` stops the same way
+# and writes no output; `soup data best-of-n` and `soup ship --task-mode pairwise`, which
+# already stopped at the first unanswered request, now say how many prompts or pairs were
+# left. A judge-ranked training run is unchanged: it keeps asking, and resumes on the first
+# reply (#1522).
+
+# Auto-eval after training (configure in soup.yaml)
+soup eval auto --config soup.yaml
+
+# Compare eval results between two training runs
+soup eval compare run_20260301_143052_a1b2 run_20260315_091023_c3d4
+
+# Local leaderboard across all evaluated models
+soup eval leaderboard
+soup eval leaderboard --format json
+soup eval leaderboard --format csv
+
+# Human A/B evaluation with Elo ratings
+soup eval human --input prompts.jsonl --model-a ./model_a --model-b ./model_b
+```
+
+Judge HTTP replies are limited to 1 MiB of decoded content while streaming,
+before JSON parsing, including gzip expansion. An oversized response is an
+unusable reply rather than a transient outage: it is not retried. The error names
+the cap and the endpoint selectors (`--api-base`, `--judge-api-base`, `judge_model`),
+with credentials removed from the judge URL. Existing row-failure policies apply.
+
+`soup eval benchmark` saves only requested names with numeric metrics, including a real
+`0.0` (not a boolean). Missing or scoreless results are skipped, named and counted;
+the saved banner reports the saved count. It exits `0` when at least one result was
+saved, or `1` when nothing was measured or saved. A requested group needs its own
+numeric entry in `results`; this command does not save its sub-task rows automatically.
+
+`soup eval judge` asks the judge for one JSON object, `{"scores": {"<criterion>": <number>, ...}, "reasoning": "..."}`, and reads the first object in the reply that has a `scores` key, so reasoning that quotes JSON of its own does not get in the way. Criterion names match case-insensitively, and a score given as `{"score": N}` is read as `N`. A reply with no JSON object, with no finite number for a rubric criterion, or with one criterion under two spellings (`Helpfulness` and `helpfulness`) is an error that names the criterion where there is one, instead of a score at the scale minimum. A reply longer than 65,536 characters is refused unread; the judge is asked for at most 1,024 tokens, so only a runaway reply gets that long. `soup eval judge` skips such an item with a warning that carries the error and counts it (it exits `1` only when every item fails), an eval-gate judge task fails with the error as its reason (`soup eval gate` exits `2`), and `soup ship --task-mode judge_score` stops with `live ship verdict failed: ValueError: ...` and exits `1` without a verdict.
+
+soup eval compare and soup eval leaderboard use the newest eval row for each benchmark (on the leaderboard, for each model and benchmark), so re-running a benchmark replaces its score; rows with the same created_at resolve to the later insert. soup registry diff compares eval scores the same way.
+
+### Aider Polyglot
+
+The `aider-chat` wheel does not include Aider's benchmark harness. The
+`[aider]` extra installs the normal Aider CLI, but it does not make
+`soup eval aider` runnable by itself. Build the official image from an Aider
+source checkout and clone the exercises once:
+
+```bash
+pip install "soup-cli[aider]"
+git clone https://github.com/Aider-AI/aider.git
+cd aider
+./benchmark/docker_build.sh
+cd ..
+git clone https://github.com/Aider-AI/polyglot-benchmark.git
+```
+
+Start Docker, then run Soup from the project whose contained output directory
+should receive the results:
+
+```bash
+soup eval aider \
+  --model openai/gpt-4.1 \
+  --output ./aider-results \
+  --exercises-dir ./polyglot-benchmark \
+  --run-id run_20260301_143052_a1b2
+```
+
+`--model` is an Aider/LiteLLM model identifier, not a local Hugging Face model
+path. Soup checks the Docker CLI, daemon, and local `aider-benchmark` image
+before starting. It mounts the exercise corpus read-only, forwards supported
+provider credentials by environment-variable name (never by value in command
+arguments), and executes the upstream harness without a shell. The output
+directory must resolve under the current working directory.
+An exercises directory outside the current working directory is allowed but
+produces a warning and remains read-only in the container.
+
+Host-loopback access is disabled by default. For an explicitly trusted local
+OpenAI-compatible endpoint, `--allow-host-services` adds Docker's
+`host.docker.internal:host-gateway` mapping. Enabling it also lets untrusted
+model-generated code reach other services listening on the host, so leave it
+off for remote providers.
+
+Aider writes one `.aider.results.json` per exercise. Soup bounds and validates
+those files, then writes `soup_result.json` with `model`, `task`, `score`,
+`errors`, and aggregate details. Passing an existing `--run-id` also stores the
+`aider_polyglot` score in Soup's experiment tracker, so it participates in the
+normal comparison command:
+
+```bash
+soup eval compare run_before run_after
+```
+
+The benchmark executes model-generated code. Keep Docker's isolation enabled;
+Soup deliberately does not offer a host-execution fallback.
+
+### Quant-Lobotomy Checker
+
+Before you ship a quantized model, verify it didn't lose skills. The checker runs the same task list against the `--before` and `--after` models and renders an aggregate suite OK / MINOR / MAJOR verdict.
+
+```bash
+# Compare a pre-quant model with its post-quant version
+soup eval quant-check \
+  --before ./output/base \
+  --after  ./output/quantized \
+  --tasks  ./evals/sanity.jsonl
+
+# Both sides may be registry refs
+soup eval quant-check \
+  --before registry://llama31-chat-v1 \
+  --after  registry://llama31-chat-v1-q4 \
+  --tasks  ./evals/sanity.jsonl
+
+# Render as JSON for CI integration (exits 2 on MAJOR, 0 on OK/MINOR)
+soup eval quant-check --before X --after Y --tasks t.jsonl --format json
+
+# Use deterministic stubs in CI when weights are unavailable
+soup eval quant-check --before X --after Y --tasks t.jsonl --allow-stub
+```
+
+**Verdict thresholds (aggregate suite verdict):**
+- `OK` — score drop < 2% (or score improved)
+- `MINOR` — score drop 2–5% (investigate)
+- `MAJOR` — score drop ≥ 5% (do NOT ship, exits code 2)
+
+Paths are containment-checked, and `registry://` refs are resolved with an optional `kinds` filter so you never pick the wrong artifact. Standalone `.gguf` file paths are refused up front; pass directory paths containing safetensors/HuggingFace weights or `registry://` references.
+
+### Custom Eval Format
+
+`scoring` must be a supported string label; omitted values default to `exact`.
+Invalid values name the `scoring` field and physical JSONL line, including blank
+lines, before model loading or result writes. `soup eval custom` exits 1 for these errors.
+
+Regex-scored custom tasks reject structurally unsafe patterns before matching
+model output and name `eval.custom.expected` in the error. The diagnose
+`format` probe applies the same check to `regex_pattern` without running a
+canary search. Ordinary patterns, including single-character alternation,
+remain valid.
+
+```jsonl
+{"prompt": "What is 2+2?", "expected": "4", "category": "math", "scoring": "answer"}
+{"prompt": "Explain gravity", "expected": "force.*attraction", "scoring": "regex"}
+{"prompt": "Capital of France?", "expected": "Paris", "scoring": "contains"}
+```
+
+How the string scorers read an output:
+
+| `scoring` | Scores | `expected: "4"` vs `The answer is 4.` | vs `14` |
+|---|---|---|---|
+| `answer` | The final answer each side states, read with the parser GRPO's `accuracy` reward uses (`#### 4`, `\boxed{4}`, `The answer is 4.`); numbers compare by value | match | no match |
+| `contains` | `expected` as a whole alphanumeric-bounded token, case-insensitive via `str.lower()` on both sides (so `istanbul` does not match `İstanbul`, nor `s` match `ſ`) | match | no match |
+| `exact` | The whole stripped output, case-insensitive | no match | no match |
+
+The two tool-call scorers parse the call and compare `arguments` as **JSON**, not as
+strings, and `1` is not `true` there: JSON has one boolean type and one number type, and a
+boolean compared with `==` against a number would be equal in Python (`True == 1`). So
+
+| `scoring` | Scores | gold `{"enabled": true}` vs `{"enabled": true}` | vs `{"enabled": 1}` |
+|---|---|---|---|
+| `tool_call_match` | the parsed `arguments` objects must be equal, JSON types included; the function name must match too | match | no match |
+| `tool_call_args_subset` | `0.5` for the function name plus `0.5` for the fraction of expected arguments present with a matching value | `1.0` | `0.5` — the name matched, the argument did not |
+
+Numbers still compare equal across forms, so gold `{"n": 1}` matches `{"n": 1.0}`; that is
+existing behaviour and not a rounding of the policy. The rule applies inside nested objects
+and lists, and whether `arguments` is an object or a JSON string does not change it.
+
+`answer` refuses, at load time, an `expected` that states no single answer (a multi-line
+worked solution with no `####`, an empty `\boxed{}`, a hedge between values), naming the line.
+`contains` cannot read negation: `It is not 4, so 5.` still contains `4`. Its bound is an
+ASCII alphanumeric run, so `4` still matches inside `3.4`, `4.5` and `v1.42.3`. `answer`
+reads the answer a model *states*: `The capital of France is Paris.` scores `False` for a
+gold `Paris` while `Answer: Paris` and `Paris` score `True` — prefer `answer` for math and
+short-answer tasks, where the model states its answer. The eval gate's `scorer:` override
+accepts `answer` too.
+
+**Changed:** `contains` used to be a raw substring test, so it paid `14` for an expected `4`.
+Scores recorded with the old test (a `soup eval gate --baseline` file or `registry://` row, or
+a `soup eval custom --run-id` result) can be higher than the same outputs score now. The
+baseline scorer stamp covers the bundled suites only and will not warn: re-measure those
+baselines, or compare new runs only with runs made on this version.
+
+### Auto-Eval Config (soup.yaml)
+
+Benchmarks need the `eval` extra:
+
+```bash
+pip install "soup-cli[eval]"
+```
+
+```yaml
+eval:
+  auto_eval: true
+  benchmarks: [mmlu, gsm8k]
+  custom_tasks: eval_tasks.jsonl
+  judge:
+    model: gpt-4o-mini
+    provider: openai
+```
+
+When `eval.auto_eval: true`, Soup runs the configured evaluation once after `soup train` finishes and the trained model/adapter has been saved. The evaluation uses the output artifact produced by that training run.
+
+- `benchmarks` runs the configured `lm-eval-harness` benchmarks. Install the `soup-cli[eval]` extra above before enabling them.
+- `custom_tasks` runs the configured custom evaluation tasks against the trained model.
+- `judge` is not part of auto-evaluation; configure and run judge evaluation separately.
+- Auto-evaluation follows the run's `--trust-remote-code` flag: `soup train --trust-remote-code` passes it to the evaluation of the trained model (benchmarks and custom tasks); without the flag it stays off. There is no `soup.yaml` key for it.
+- If auto-evaluation fails, Soup reports the failure but does not fail an otherwise successful training run.
+- Auto-evaluation can take a significant amount of time. For example, MMLU evaluates multiple subtasks.
+
+
+## Tunability Probe (`soup tunability`)
+
+Before committing to a single base model, run a short LoRA probe on every reasonable candidate against your held-out slice. v0.64.0 ships an 8-entry default catalogue covering Qwen3, Llama-3.2, Gemma 3, Phi-4, SmolLM3, and Qwen2.5 across the 0.6 B – 3.8 B band.
+
+```bash
+# List the built-in catalogue
+soup tunability --list
+
+# Dry-run a sweep across a subset
+soup tunability --dataset ./eval.jsonl --candidates qwen3-0.6b,phi-4-mini --plan-only
+
+# Run the full sweep + write a JSON report
+soup tunability --dataset ./eval.jsonl --probe-steps 100 --output ./tunability.json
+```
+
+The report is a Pareto frontier over (eval delta from base, train cost, license) — candidates that nothing dominates on both axes survive, so you see a clean shortlist instead of a noisy single-leaderboard score. By default the probe is a deterministic offline heuristic; pass `--live` (v0.71.7) to run a real per-candidate LoRA probe (loads each `repo_id`, trains `--probe-steps` on a held-out-excluded slice, reports the held-out-loss drop). `--device` selects cuda / cpu.
+
+
+## Eval Depth (`soup eval behavior / capability / checklist / irt-subset`)
+
+v0.65 ships five new evaluation surfaces that close the "judges are biased, suites are arbitrary, eval costs are high" gaps that SaaS evals (Galileo, Braintrust) don't address.
+
+**Judge calibration** — refuse to use an uncalibrated judge in production:
+
+```python
+from soup_cli.eval.calibrate import (
+    PairwiseJudgement, run_pairwise_calibration, ensure_judge_calibrated,
+)
+
+# Run your judge on a calibration set with positions swapped.
+judgements = [PairwiseJudgement(...) for _ in oracle_set]
+report = run_pairwise_calibration(judgements, scores=confidence_scores)
+ensure_judge_calibrated(report)  # raises RuntimeError if not calibrated
+```
+
+The report carries `position_bias` ∈ [-1, 1] (0 = no slot preference), a conformal abstention threshold from the score quantile, agreement-rate vs the oracle, and a `calibrated` bool. `ensure_judge_calibrated` refuses on missing report, low agreement, or extreme bias — so production scoring code can fail loud, not silent.
+
+Persist a calibration once and reuse it across runs (v0.71.1): `write_judge_calibration(report, "calib.json")` writes a cwd-contained JSON, and `load_judge_calibration("calib.json")` re-validates it on load (a corrupt or out-of-range field on disk is rejected, since it's the production-gate safety net). The artifact attaches to the registry under the new `judge_calibration` kind.
+
+**Behaviour battery** — pre/post diff on bundled safety / refusal / sycophancy probe sets:
+
+```bash
+# Score over-refusal regression on XSTest (operator supplies evidence JSON)
+soup eval behavior my_run --battery xstest --evidence ev.json --output diff.json
+
+# LIVE (v0.71.7): generate pre/post responses on the bundled battery + score the diff
+soup eval behavior my_run --battery xstest \
+    --base-model HuggingFaceTB/SmolLM2-135M --adapter ./out
+
+# Bundled batteries: xstest, harmbench, jailbreakbench (live or --evidence);
+# elephant, syceval (--evidence only)
+# Harmful prompts ship REDACTED — pull real sets from upstream papers.
+```
+
+Without the live `--base-model` path, `--evidence` is required. An evidence-less
+run is an input error (exit `3`), not a neutral OK report; the error names the
+expected `pre_responses`, `post_responses`, and `oracle` arrays.
+
+Scoring depends on the path. With `--evidence`, each `oracle` entry is a word that must appear in the matching response (as a whole word and case-insensitive, so `"safe"` does not match `"unsafe"`, while a label with punctuation such as `(B)` or `-5` still matches). With `--base-model`, each generation is classified as a refusal or not: `safe` (XSTest) and `answer` (JailbreakBench) expect an answer, and `refuse` (HarmBench, JailbreakBench) expects a refusal. `elephant` and `syceval` (oracle `disagree`) need a judgement a refusal classifier cannot make, so `--base-model` refuses them before loading a model (exit `3`); score saved generations with `--evidence`. OK/MINOR/MAJOR thresholds match the v0.26 / v0.56 taxonomy.
+
+**Capability auto-suite** — pre-bundled profile selector with friendly `lm-eval-harness` task ids:
+
+```bash
+soup eval capability my_run --suite math --output cap.json   # AIME + MATH-500
+soup eval capability my_run --suite code --output cap.json   # HumanEval+ + SWE-bench-Verified
+soup eval capability my_run --suite fast --output cap.json   # MMLU-Pro + HumanEval+
+soup eval capability my_run --suite full --output cap.json   # all 7 benchmarks
+
+# LIVE (v0.71.7): invoke lm-eval-harness per task against a real model
+soup eval capability my_run --live --model HuggingFaceTB/SmolLM2-135M \
+    --tasks arc_easy --limit 1 --device cpu
+```
+
+Without `--live` it emits the (benchmark, lm-eval task) manifest; chain into the existing `soup eval benchmark` surface. With `--live --model <id>` (v0.71.7) it runs lm-eval-harness per resolved task — or a `--tasks` override — isolating per-task failures and capping examples with `--limit`.
+
+**CheckList behavioural DSL** — Ribeiro et al. 2020 MFT / INV / DIR tests:
+
+```yaml
+# tests.yaml
+tests:
+  - name: capital-france
+    kind: mft
+    prompts: ["What is the capital of France?"]
+    expected: ["paris"]
+  - name: paraphrase-add
+    kind: inv
+    prompts:
+      - "Add 2 and 2."
+      - "Add two and two."
+```
+
+```bash
+soup eval checklist tests.yaml --evidence responses.json
+```
+
+`--evidence` is required and maps each CheckList test name to its response
+strings. Omitting it exits `3` instead of rendering an OK result with zero
+measurements.
+
+`mft` = response must contain a keyword as a whole word (`"sand"` won't pass for `"and"`, and keywords may start or end with punctuation, such as `-5`, `(B)` or `C++`); `inv` = all paraphrases must agree; `dir` = directional expectation under perturbation.
+
+**IRT subset selection** — pick a smaller eval set that preserves ranking power:
+
+```bash
+# Pick top-info 30% of items (5-10x eval-bill cut without losing power)
+soup eval irt-subset per_item_correctness.jsonl --size small --output plan.json
+
+# Richer item models: 2PL learns per-item discrimination, 3PL adds a guessing floor
+soup eval irt-subset per_item_correctness.jsonl --size small --model 2pl
+```
+
+`--model` picks the item-response model (default `1pl`). `1pl` is the closed-form Rasch fit (`β̂_i = -log(p̂_i / (1 - p̂_i))`); `2pl` adds a per-item discrimination parameter and `3pl` a guessing floor, both via joint coordinate-ascent MLE (v0.71.6). Items rank by Fisher information at θ=0 (`p̂ · (1-p̂)` in 1PL — maximised at 50/50 items, since extremes carry no new ranking information). `full` keeps 100%, `small` keeps 30%, `tiny` keeps 10%.

@@ -1,0 +1,59 @@
+---
+title: Gradient Heading
+description: Gradient text heading for React and shadcn/ui with CVA variants for color, size, and weight, plus asChild, for hero headlines.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="gradient-heading-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="All variations"
+/>
+
+GradientHeading is a React heading component for shadcn/ui built with bg-clip-text and class-variance-authority. Use it for landing page headlines, section titles, and marketing page hero copy.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/gradient-heading
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="gradient-heading" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+```tsx
+export default function GradientHeadingExample() {
+  return (
+    <GradientHeading variant="default" size="lg" weight="bold">
+      Like and subscribe
+    </GradientHeading>
+  );
+}
+```

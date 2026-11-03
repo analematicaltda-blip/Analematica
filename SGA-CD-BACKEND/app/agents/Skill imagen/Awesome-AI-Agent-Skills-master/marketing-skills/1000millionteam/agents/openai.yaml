@@ -1,0 +1,4 @@
+interface:
+  display_name: "Billion Dollar AI Team"
+  short_description: "Audit offers, funnels, copy, sales, and positioning with a sharp operator panel"
+  default_prompt: "Use $billion-dollar-ai-team to review this business, offer, funnel, landing page, launch, or sales strategy and give a blunt operator diagnosis."

@@ -1,0 +1,89 @@
+---
+title: Cutout Card
+description: Composable image card for React and shadcn/ui with cutout corner accents, inset labels, pins, and actions revealed on hover.
+component: true
+links: {}
+---
+
+<ComponentPreview
+  name="cutout-card-demo"
+  className="[&_.preview>[data-orientation=vertical]]:sm:max-w-[70%]"
+  description="Reference, editorial, and brutalist variants"
+/>
+
+CutoutCard is a composable React card component for shadcn/ui, animated with Motion. Use it for portfolio grids, product galleries, or template showcases.
+
+## Installation
+
+<CodeTabs>
+
+<TabsList>
+  <TabsTrigger value="cli">CLI</TabsTrigger>
+  <TabsTrigger value="manual">Manual</TabsTrigger>
+</TabsList>
+
+<TabsContent value="cli">
+
+```bash
+npx shadcn@latest add @cult-ui/cutout-card
+```
+
+</TabsContent>
+
+<TabsContent value="manual">
+
+<Steps>
+
+<Step>Copy and paste the following code into your project.</Step>
+
+<ComponentSource name="cutout-card" />
+
+<Step>Update the import paths to match your project setup.</Step>
+
+</Steps>
+
+</TabsContent>
+
+</CodeTabs>
+
+## Usage
+
+`CutoutCard` is a composable layout: wrap content in `CutoutCardMedia`, `CutoutCardContent`, and optional `CutoutCardInsetLabel`, `CutoutCardPin`, and `CutoutCardAction`. Use `CutoutCorner` inside labels or pins for the masked corner shape. `CutoutCardImage` wraps `next/image` with sensible defaults (`fill`, `sizes`).
+
+```tsx
+import {
+  CutoutCard,
+  CutoutCardAction,
+  CutoutCardContent,
+  CutoutCardFooter,
+  CutoutCardImage,
+  CutoutCardInsetLabel,
+  CutoutCardMedia,
+  CutoutCardOverlay,
+  CutoutCardPin,
+  CutoutCorner,
+  cutoutCardSurfaceClassName,
+  useCutoutCard,
+  useCutoutContentStaggerVariants,
+} from "@/components/ui/cutout-card";
+```
+
+```tsx
+<CutoutCard className={cutoutCardSurfaceClassName}>
+  <CutoutCardMedia className="h-72">
+    <CutoutCardImage alt="Preview" src="/your-image.jpg" />
+    <CutoutCardOverlay />
+    <CutoutCardInsetLabel className="bottom-0 left-0 rounded-tr-[20px] bg-stone-50 px-5 py-3">
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-stone-500">
+        Featured
+      </span>
+      <CutoutCorner className="absolute -right-[31px] -bottom-px rotate-90 text-stone-50" />
+      <CutoutCorner className="absolute -top-[31px] -left-px rotate-90 text-stone-50" />
+    </CutoutCardInsetLabel>
+  </CutoutCardMedia>
+  <CutoutCardContent>{/* title, body */}</CutoutCardContent>
+  <CutoutCardAction className="right-6 bottom-6">
+    {/* e.g. button */}
+  </CutoutCardAction>
+</CutoutCard>
+```

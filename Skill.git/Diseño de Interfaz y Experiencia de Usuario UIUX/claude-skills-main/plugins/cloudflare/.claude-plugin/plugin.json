@@ -1,0 +1,8 @@
+{
+  "name": "cloudflare",
+  "description": "Scaffold a full-stack Vite + React + Cloudflare Workers app from vite-flare-starter.",
+  "author": {
+    "name": "Jeremy Dawes / Jezweb",
+    "email": "jeremy@jezweb.net"
+  }
+}

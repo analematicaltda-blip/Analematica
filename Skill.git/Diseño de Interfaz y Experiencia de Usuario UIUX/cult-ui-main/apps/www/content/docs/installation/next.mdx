@@ -1,0 +1,64 @@
+---
+title: Next.js
+description: Set up a Next.js App Router project with shadcn/ui and Tailwind CSS, then add Cult UI components with the shadcn CLI.
+---
+
+Next.js is the best-supported framework for Cult UI. Every component works in the App Router, including the ones that use `next/image` and `next/link`.
+
+<Steps>
+
+### Create a project with shadcn/ui
+
+This scaffolds a Next.js app with Tailwind CSS v4, the `@/` alias, `components.json`, and theme tokens:
+
+```bash
+npx shadcn@latest init -t next
+```
+
+When it asks for a component library, any choice works. Cult UI components that build on shadcn/ui components use the version you pick.
+
+Already have a Next.js app? Run `npx shadcn@latest init` inside it. The [shadcn Next.js guide](https://ui.shadcn.com/docs/installation/next) covers the prompts in detail.
+
+### Add a Cult UI component
+
+```bash
+npx shadcn@latest add @cult-ui/prompt-composer
+```
+
+### Use it from any page
+
+Cult UI components that need the browser already start with `"use client"`, so you can import them directly into Server Components:
+
+```tsx title="app/page.tsx"
+import { PromptComposer } from "@/components/ui/prompt-composer"
+
+export default function Page() {
+  return (
+    <main className="mx-auto max-w-xl p-8">
+      <PromptComposer placeholder="Ask anything" />
+    </main>
+  )
+}
+```
+
+</Steps>
+
+## Next.js notes
+
+### Dark mode
+
+Components style dark mode through the `.dark` class that shadcn uses. Add [next-themes](https://ui.shadcn.com/docs/dark-mode/next) with `attribute="class"` to toggle it. Globe, Gradient Button Group, and Shader Lens Blur also read the active theme from `next-themes`, so they need its `ThemeProvider` in your root layout.
+
+### Remote images
+
+Components that render `next/image`, such as Cutout Card, Dither Image, and Minimal Card, follow the usual Next.js rule for remote images. Add the image host to `images.remotePatterns` in `next.config.ts`, or use local files from `public/`.
+
+### Fonts
+
+Components inherit your font tokens, so `next/font` works as usual. The Pixel Heading and Pixel Paragraph components use the Geist pixel fonts from the `geist` package. Their pages show the layout and `@theme` setup.
+
+## Next steps
+
+- Browse components in the sidebar and copy the install command from any page.
+- Adjust colors and radius in [Theming](/docs/theming).
+- Let your editor's agent install components through the [MCP Server](/docs/mcp-server).

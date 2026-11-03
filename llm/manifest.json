@@ -1,0 +1,67 @@
+{
+  "catalog_version": "1.0",
+  "project": "SGA-CD",
+  "last_updated": "2026-10-27T23:00:00Z",
+  "models": [
+    {
+      "id": "gemma3-4b-desktop",
+      "name": "Gemma 3 4B Instruct",
+      "provider": "Google DeepMind",
+      "variant": "gemma3:4b",
+      "format": "GGUF / Ollama Blob",
+      "quantization": "INT4",
+      "runtime": "Ollama v0.40+",
+      "platform": "Desktop (Windows, Linux, macOS)",
+      "official_source": "https://ollama.com/library/gemma3",
+      "effective_location": "~/.ollama/models/blobs/",
+      "size_bytes": 3650722201,
+      "integrity_hash": "sha256:68ceab7e468a356230f4a8bdf496884148b17b6a7182fb0671607f2ef8c1e403",
+      "verification_status": "inferencia_verificada",
+      "hardware_requirements": {
+        "min_ram_gb": 8.0,
+        "recommended_ram_gb": 16.0,
+        "disk_free_gb": 10.0
+      }
+    },
+    {
+      "id": "phi3-mini-onnx-lab",
+      "name": "Phi-3 Mini 4K Instruct ONNX",
+      "provider": "Microsoft",
+      "variant": "cpu-int4-rtn-block-32-acc-level-4",
+      "format": "ONNX + ONNX Data",
+      "quantization": "INT4 RTN",
+      "runtime": "onnxruntime_genai 0.6.0",
+      "platform": "AI-Lab / Android PoC",
+      "official_source": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-onnx",
+      "effective_location": "SGA-CD-APK.git/ai-lab/phi-3-mini/weights/",
+      "size_bytes": 2812901452,
+      "integrity_hash": "sha256:385cd1b908a0d2f8634e86d30236f6dbb7ae660eb3943fd1ef5bdc3847326480",
+      "verification_status": "inferencia_verificada_en_laboratorio",
+      "hardware_requirements": {
+        "min_ram_gb": 8.0,
+        "recommended_ram_gb": 12.0,
+        "disk_free_gb": 5.0
+      }
+    },
+    {
+      "id": "phi3-mini-gguf-mobile",
+      "name": "Phi-3 Mini 4K Instruct GGUF",
+      "provider": "Microsoft / TheBloke",
+      "variant": "Phi-3-mini-4k-instruct.Q4_K_M.gguf",
+      "format": "GGUF",
+      "quantization": "Q4_K_M",
+      "runtime": "LlamaCpp / Flet Mobile",
+      "platform": "Android Mobile App",
+      "official_source": "https://huggingface.co/TheBloke/Phi-3-mini-4k-instruct-GGUF",
+      "effective_location": "SGA-CD-APK.git/assets/models/phi-3-mini-4k-instruct.Q4_K_M.gguf",
+      "size_bytes": 2390000000,
+      "integrity_hash": "sha256:e839e557b49bd11ff5a43ff32906bb187b5a8e03e5cbb463690d56b026850d99",
+      "verification_status": "disponible",
+      "hardware_requirements": {
+        "min_ram_gb": 7.5,
+        "recommended_ram_gb": 8.0,
+        "disk_free_gb": 4.0
+      }
+    }
+  ]
+}

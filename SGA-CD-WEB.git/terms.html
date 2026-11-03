@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y Condiciones del Servicio — SGA-CD</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="theme-color" content="#070B14">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body {
+            background-color: #070B14;
+            color: #E2E8F0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-bar {
+            background: #0D1424;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-bar a.logo {
+            color: #38BDF8;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .terms-container {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .hero-title-card {
+            background: #0D1424;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-title-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
+        }
+
+        .hero-title-card h1 {
+            color: #38BDF8;
+            font-size: 2.2rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 800;
+        }
+
+        .hero-title-card p {
+            color: #94A3B8;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .accordion-grid {
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        .accordion-item {
+            background: #0D1424;
+            border: 1px solid rgba(26, 38, 66, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .accordion-item:hover {
+            border-color: #38BDF8;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.15);
+        }
+
+        .accordion-header {
+            padding: 1.25rem 1.75rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 20, 36, 0.8);
+            user-select: none;
+        }
+
+        .accordion-header h3 {
+            margin: 0;
+            color: #38BDF8;
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .accordion-header i.chevron {
+            color: #38BDF8;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-content {
+            padding: 0 1.75rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
+            background: rgba(7, 11, 20, 0.4);
+            color: #E2E8F0;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .accordion-item.active .accordion-content {
+            padding: 1.25rem 1.75rem;
+            max-height: 1000px;
+            transition: max-height 0.5s ease-in-out, padding 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-header i.chevron {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content ul {
+            padding-left: 1.25rem;
+            margin: 0.75rem 0;
+        }
+
+        .accordion-content ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .accordion-content a {
+            color: #38BDF8;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            background: #0D1424;
+            border-top: 1px solid rgba(56, 189, 248, 0.15);
+            color: #94A3B8;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #38BDF8;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-bar">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-shield-halved"></i> SGA-CD
+        </a>
+        <a href="index.html" style="color: #38BDF8; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Inicio
+        </a>
+    </header>
+
+    <main class="terms-container">
+        <div class="hero-title-card">
+            <h1>Términos y Condiciones del Servicio</h1>
+            <p><i class="fa-regular fa-clock" style="color:#38BDF8; margin-right: 0.4rem;"></i><strong>Última actualización:</strong> Octubre 2026 — SGA-CD Plataforma Oficial</p>
+        </div>
+
+        <div class="accordion-grid">
+            <!-- Sección 1 -->
+            <div class="accordion-item active">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h3><i class="fa-solid fa-file-contract"></i> 1. Aceptación de los Términos</h3>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>Al acceder, registrarse o utilizar el Sistema Estudiantil, Cultural y Deportivo (<strong>SGA-CD</strong>), la organización, los profesores, acudientes y usuarios aceptan cumplir los presentes Términos y Condiciones del Servicio.</p>
+                </div>
+            </div>
+
+            <!-- Sección 2 -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h3><i class="fa-solid fa-user-shield"></i> 2. Uso Autorizado y Protección de Menores</h3>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>SGA-CD está diseñado para la gestión de instituciones estudiantiles, culturales y deportivas. Los programas pueden atender a menores de edad desde los <strong>5 años de edad</strong>. Es condición indispensable para el uso del sistema:</p>
+                    <ul>
+                        <li>Que el registro y vinculación de estudiantes menores de edad sea realizado o autorizado expresamente por su padre, madre o acudiente legal.</li>
+                        <li>Que los datos de los estudiantes solo sean consultados por el personal docente directamente asignado y por la dirección institucional autorizada.</li>
+                        <li>Queda estrictamente prohibido cualquier intento de acceso no autorizado, recolección masiva de datos o compartición de credenciales de acceso.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sección 3 -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h3><i class="fa-solid fa-key"></i> 3. Cuentas y Responsabilidad de Credenciales</h3>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>Cada usuario es responsable de mantener la confidencialidad de sus credenciales (usuario y contraseña). En caso de detectar accesos no autorizados, el usuario debe notificar inmediatamente a la administración de su institución.</p>
+                </div>
+            </div>
+
+            <!-- Sección 4 -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h3><i class="fa-solid fa-copyright"></i> 4. Propiedad Intelectual</h3>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>El software SGA-CD, sus marcas, código fuente, componentes e interfaces son propiedad exclusiva de SGA-CD. El usuario conserva la propiedad de todo el contenido, marcas y datos ingresados en su espacio de trabajo institucional.</p>
+                </div>
+            </div>
+
+            <!-- Sección 5 -->
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h3><i class="fa-solid fa-ban"></i> 5. Modificaciones y Cancelación</h3>
+                    <i class="fa-solid fa-chevron-down chevron"></i>
+                </div>
+                <div class="accordion-content">
+                    <p>Las instituciones y los usuarios pueden solicitar la cancelación de su servicio o la supresión de sus datos personales conforme a la <a href="privacy.html">Política de Privacidad</a>.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 SGA-CD. Todos los derechos reservados. | <a href="privacy.html">Política de Privacidad</a> | <a href="terms.html">Términos del Servicio</a></p>
+    </footer>
+
+    <script>
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const isOpen = item.classList.contains('active');
+
+            // Colapsar los demás acordeones para estética fluida
+            document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
+
+            if (!isOpen) {
+                item.classList.add('active');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.from('.hero-title-card', { opacity: 0, y: -20, duration: 0.8, ease: 'power2.out' });
+            gsap.from('.accordion-item', { opacity: 0, y: 20, duration: 0.6, stagger: 0.15, ease: 'power2.out' });
+        });
+    </script>
+</body>
+</html>

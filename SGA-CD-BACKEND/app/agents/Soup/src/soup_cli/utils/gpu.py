@@ -1,0 +1,689 @@
+"""GPU detection, memory calculation, and auto batch size."""
+
+from __future__ import annotations
+
+import json
+import math
+import os
+import re
+import sys
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    import torch
+
+# A safetensors file starts with a u64 little-endian header length, then a
+# JSON header carrying each tensor's dtype + shape. Reading it costs a few
+# KB — the weights themselves are never touched.
+_ST_HEADER_LEN_BYTES = 8
+_MAX_ST_HEADER_BYTES = 100 * 1024 * 1024  # sanity bound on a crafted file
+
+
+def _params_from_local_safetensors(path: str) -> float | None:
+    """EXACT parameter count (billions) for a local checkpoint, or None.
+
+    A local directory's NAME often carries no size marker at all — a model
+    merged to ``./denseA`` or ``./out`` looks nameless to the size guesser,
+    which then falls back to the 7B default and makes the hardware-fit gate
+    refuse to train a 135M model. The checkpoint knows its own size, so ask
+    it instead of guessing.
+    """
+    from soup_cli.utils.checkpoint_files import checkpoint_files
+
+    try:
+        if not os.path.isdir(path):
+            return None
+        # #1806: the checkpoint is what the index names (or model.safetensors /
+        # the model-*-of-* shards), never every *.safetensors: Mistral's repos
+        # keep a consolidated.safetensors copy beside the shards, which doubled
+        # the count here and everything sized from it.
+        selected = checkpoint_files(path)
+        shards = [
+            os.path.join(path, name)
+            for name in selected.weights
+            if os.path.isfile(os.path.join(path, name))
+        ]
+        if not shards:
+            return None
+        total = 0
+        for shard in shards:
+            with open(shard, "rb") as handle:
+                raw = handle.read(_ST_HEADER_LEN_BYTES)
+                if len(raw) < _ST_HEADER_LEN_BYTES:
+                    return None
+                header_len = int.from_bytes(raw, "little")
+                if header_len <= 0 or header_len > _MAX_ST_HEADER_BYTES:
+                    return None
+                header = json.loads(handle.read(header_len))
+            if not isinstance(header, dict):
+                return None
+            for name, meta in header.items():
+                if name == "__metadata__" or not isinstance(meta, dict):
+                    continue
+                shape = meta.get("shape")
+                if not isinstance(shape, list) or not shape:
+                    continue
+                numel = 1
+                for dim in shape:
+                    if not isinstance(dim, int) or dim < 0:
+                        return None
+                    numel *= dim
+                total += numel
+        return (total / 1e9) if total else None
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return None  # unreadable/crafted -> fall back to the name guess
+
+
+def resolve_device_map(device: str):
+    """``device_map`` for ``from_pretrained``, correct under a distributed launch.
+
+    ``device_map="auto"`` shards one model across every visible GPU. Under
+    ``torchrun`` / ``accelerate launch`` / ``deepspeed`` that is wrong twice
+    over — every rank would try to shard across every card — and transformers
+    refuses outright:
+
+        ValueError: You can't train a model that has been loaded with
+        `device_map='auto'` in any distributed mode.
+
+    Each rank must pin its own GPU instead. Measured on 8x H100
+    (benchmarks/gate-h100-validation.md, FINDING 4): without this, the exact
+    ``accelerate launch --num_processes 8 soup train -c ...`` command that
+    ``soup train --gpus 8`` prints fails immediately, with and without
+    ``--deepspeed``.
+
+    A malformed ``LOCAL_RANK`` / ``WORLD_SIZE`` falls back to ``"auto"``: that is
+    the single-process behaviour, which is what a process with no usable
+    distributed environment actually is.
+    """
+    if str(device) == "cpu":
+        return "cpu"
+    local_rank = os.environ.get("LOCAL_RANK")
+    if local_rank is None:
+        return "auto"
+    try:
+        if int(os.environ.get("WORLD_SIZE", "1") or "1") <= 1:
+            return "auto"
+        return {"": int(local_rank)}
+    except (TypeError, ValueError):
+        return "auto"
+
+
+def resolve_inference_device_map_and_dtype(
+    device: Optional[str],
+) -> tuple[str | dict, "torch.dtype"]:
+    """Map an inference ``--device`` value to ``from_pretrained`` kwargs (#1443).
+
+    ``infer.py``, ``chat.py`` and ``diff.py`` each accept a ``device`` argument
+    (explicit ``--device`` flag, or auto-detected via :func:`detect_device`)
+    but used to hard-code ``device_map="auto", torch_dtype=torch.float16`` on
+    every ``from_pretrained`` call regardless of it. ``device_map="auto"``
+    lets ``accelerate`` place the model on any visible accelerator, which is
+    exactly wrong when the user asked for the CPU on purpose (to leave VRAM
+    free for a training job, or because the model does not fit on the GPU).
+
+    This lives next to :func:`resolve_device_map` because both decide what a
+    device string becomes for ``device_map=``, but they answer different
+    questions and must not be merged: :func:`resolve_device_map` pins one
+    *rank* of a ``torchrun`` / ``accelerate launch`` training job by reading
+    ``LOCAL_RANK`` / ``WORLD_SIZE`` from the environment. There is no rank
+    here — only the single device the user named or auto-detection picked —
+    so a plain, unindexed accelerator (``"cuda"``) is left as ``"auto"``
+    (harmless with one visible device, and how every trainer in this module
+    already treats that case), while an explicit index (``"cuda:0"``) or
+    ``"mps"`` is pinned directly instead.
+
+    Args:
+        device: ``"cpu"``, ``"cuda"``, ``"cuda:<n>"``, ``"mps"``, ``"mlx"``
+            (any case — MLX has its own load path and never reaches
+            ``from_pretrained`` in normal use, but a caller that lands here
+            anyway must not pass ``"mlx"`` through as a torch device), or
+            ``None``/empty when it was genuinely never resolved. Any other
+            value raises :class:`ValueError` instead of being silently
+            ignored.
+
+    Returns:
+        A ``(device_map, torch_dtype)`` pair to splat into
+        ``from_pretrained(**kwargs)``: ``{"": "cpu"}`` and ``float32`` for
+        CPU/MLX, ``{"": device}`` (lower-cased) and ``float16`` for
+        MPS or an explicitly indexed ``cuda:<n>``, ``"auto"`` and ``float16``
+        for plain ``cuda`` (accelerate may use every visible GPU), or
+        the pre-#1443 ``"auto"``/``float16`` default when ``device`` is
+        unset.
+    """
+    import torch
+
+    if not device:
+        return "auto", torch.float16
+
+    normalized = str(device).strip().lower()
+    if not re.fullmatch(r"cpu|mlx|mps|cuda(:\d+)?", normalized):
+        raise ValueError(
+            f"Unsupported --device {device!r}: use cpu, cuda, cuda:<index> or mps."
+        )
+
+    if normalized in ("cpu", "mlx"):
+        return {"": "cpu"}, torch.float32
+
+    if normalized == "mps" or ":" in normalized:
+        return {"": normalized}, torch.float16
+
+    return "auto", torch.float16
+
+
+def detect_device(backend: Optional[str] = None) -> tuple[str, str]:
+    """Detect available accelerator device with full Apple Silicon runtime disambiguation.
+
+    Args:
+        backend: Optional configured backend ('mlx', 'unsloth', 'transformers').
+                 When 'mlx' is specified, prioritizes Apple Silicon MLX
+                 runtime over PyTorch MPS.
+
+    Returns:
+        tuple[str, str]: (device_string, human_name)
+            device_string is one of: 'cuda', 'mps', 'mlx', 'cpu'
+            human_name is a descriptive string (e.g. 'NVIDIA A100-SXM4-80GB',
+            'Apple Silicon (Apple M2 Max)', 'CPU (no GPU detected)')
+    """
+    # 1. If MLX backend is explicitly requested, prioritize MLX
+    if backend == "mlx":
+        try:
+            from soup_cli.utils.mlx import detect_mlx, get_chip_info, is_apple_silicon
+
+            if is_apple_silicon() and detect_mlx():
+                chip_name = get_chip_info().get("chip")
+                name = f"Apple Silicon ({chip_name})" if chip_name else "Apple Silicon (MLX)"
+                return "mlx", name
+        except (ImportError, OSError, ValueError):
+            pass
+
+    # 2. Probe PyTorch accelerators (CUDA -> MPS)
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            name = torch.cuda.get_device_name(0)
+            return "cuda", name
+        if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            return "mps", "Apple Silicon (MPS)"
+    except ImportError:
+        pass
+
+    # 3. Fallback: Opportunistic Apple Silicon MLX probe if torch is absent or non-accelerated
+    try:
+        from soup_cli.utils.mlx import detect_mlx, get_chip_info, is_apple_silicon
+
+        if is_apple_silicon() and detect_mlx():
+            chip_name = get_chip_info().get("chip")
+            name = f"Apple Silicon ({chip_name})" if chip_name else "Apple Silicon (MLX)"
+            return "mlx", name
+    except (ImportError, OSError, ValueError):
+        pass
+
+    return "cpu", "CPU (no GPU detected)"
+
+
+def configure_cuda_alloc_hint(stream_layers: bool) -> None:
+    """Set PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True for a streamed run (#2149).
+
+    The CUDA allocator reads the variable once, when the context is created, and
+    ``detect_device()`` creates it, so ``soup train`` calls this first. By the time
+    ``expandable_segments_status()`` runs, in the streamed setup, it is too late to
+    set it there. Linux only (WSL2 included): Windows ignores the hint and macOS has
+    no CUDA, so their environment is left as it is. A CPU-only Linux box gets it too,
+    harmlessly; checking for a card here would start CUDA, which is the bug. A value
+    the user exported is kept; an empty one counts as unset. No torch import: setting a
+    variable does not need it.
+    """
+    if stream_layers and sys.platform.startswith("linux"):
+        if not os.environ.get("PYTORCH_CUDA_ALLOC_CONF"):
+            os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
+
+def configure_mps_async_load(device: Optional[str] = None) -> None:
+    """Set HF_DEACTIVATE_ASYNC_LOAD=1 by default when running on Apple Silicon MPS (#2076).
+
+    On Apple Silicon MPS hardware, Transformers' threaded weight loader can
+    crash with SIGABRT in _materialize_copy during model loading. Enforce
+    synchronous model loading by default while preserving any explicit user
+    environment setting.
+    """
+    if device is not None:
+        if str(device).startswith("mps"):
+            os.environ.setdefault("HF_DEACTIVATE_ASYNC_LOAD", "1")
+    else:
+        try:
+            import torch
+
+            if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+                os.environ.setdefault("HF_DEACTIVATE_ASYNC_LOAD", "1")
+        except (ImportError, AttributeError):
+            pass
+
+
+def resolve_quantization(
+    device: str,
+    backend: Optional[str],
+    quantization: str,
+) -> tuple[str, str | None]:
+    """Decide whether ``quantization`` should be kept, downgraded, or refused.
+
+    This is the explicit decision the maintainer requested in #423: MLX 4-bit
+    is a genuinely different mechanism from bitsandbytes NF4.  An
+    ``mlx-community`` checkpoint is *already* quantized, so ``quantization``
+    is forwarded to ``load_mlx_model`` as-is.  8-bit on MLX is rejected
+    separately by ``MLXTrainer._check_unsupported()``.
+
+    On CPU, bitsandbytes 4-bit / 8-bit cannot run — the guard downgrades to
+    ``"none"`` with a warning.  On CUDA / MPS the value is passed through
+    unchanged (bitsandbytes handles it).
+
+    Returns:
+        (resolved_quantization, warning_message | None)
+    """
+    # Explicit MLX 4-bit preservation: pre-quantized weights, not NF4.
+    if backend == "mlx" and quantization == "4bit":
+        return quantization, None
+
+    # CPU cannot run bitsandbytes quantisation.
+    if device == "cpu" and quantization in ("4bit", "8bit"):
+        msg = (
+            f"Warning: {quantization} quantization is not supported on CPU. "
+            "Switching to quantization: none."
+        )
+        return "none", msg
+
+    return quantization, None
+
+
+def get_gpu_info(backend: Optional[str] = None) -> dict:
+    """Get GPU memory and telemetry info.
+
+    Args:
+        backend: Optional configured backend ('mlx', 'unsloth', 'transformers').
+
+    Returns a dictionary containing:
+        - memory_total: Human-readable total memory string
+        - memory_total_bytes: Exact bytes (int)
+        - gpu_count: Number of accelerator devices (int)
+    """
+    # 1. If MLX backend is explicitly requested, query Apple Silicon unified memory
+    if backend == "mlx":
+        try:
+            from soup_cli.utils.mlx import detect_mlx, get_unified_memory_bytes, is_apple_silicon
+
+            if is_apple_silicon() and detect_mlx():
+                mem = get_unified_memory_bytes()
+                if mem and mem > 0:
+                    mem_gb = mem / (1024**3)
+                    return {
+                        "memory_total": f"{mem_gb:.1f} GB (unified)",
+                        "memory_total_bytes": mem,
+                        "gpu_count": 1,
+                    }
+                return {
+                    "memory_total": "shared (Apple Silicon MLX)",
+                    "memory_total_bytes": 0,
+                    "gpu_count": 1,
+                }
+        except (ImportError, OSError, ValueError):
+            pass
+
+    # 2. Probe PyTorch GPU info
+    try:
+        import torch
+
+        if torch.cuda.is_available():
+            total = torch.cuda.get_device_properties(0).total_memory
+            total_gb = total / (1024**3)
+            return {
+                "memory_total": f"{total_gb:.1f} GB",
+                "memory_total_bytes": total,
+                "gpu_count": torch.cuda.device_count(),
+            }
+        if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            return {
+                "memory_total": "shared (Apple Silicon)",
+                "memory_total_bytes": 0,
+                "gpu_count": 1,
+            }
+    except ImportError:
+        pass
+
+    # 3. Fallback: MLX unified memory check
+    try:
+        from soup_cli.utils.mlx import detect_mlx, get_unified_memory_bytes, is_apple_silicon
+
+        if is_apple_silicon() and detect_mlx():
+            mem = get_unified_memory_bytes()
+            if mem and mem > 0:
+                mem_gb = mem / (1024**3)
+                return {
+                    "memory_total": f"{mem_gb:.1f} GB (unified)",
+                    "memory_total_bytes": mem,
+                    "gpu_count": 1,
+                }
+            return {
+                "memory_total": "shared (Apple Silicon MLX)",
+                "memory_total_bytes": 0,
+                "gpu_count": 1,
+            }
+    except (ImportError, OSError, ValueError):
+        pass
+
+    return {
+        "memory_total": "N/A (CPU mode)",
+        "memory_total_bytes": 0,
+        "gpu_count": 0,
+    }
+
+
+def estimate_batch_size(
+    model_params_b: float,
+    seq_length: int,
+    gpu_memory_bytes: int,
+    quantization: str = "4bit",
+    lora_r: int = 64,
+) -> int:
+    """Estimate max batch size that fits in GPU memory.
+
+    Conservative estimate — better to start smaller and gradient accumulate.
+    """
+    if gpu_memory_bytes == 0:
+        return 1  # CPU fallback
+
+    gpu_gb = gpu_memory_bytes / (1024**3)
+
+    # Rough memory per param based on quantization
+    bytes_per_param = {"4bit": 0.5, "8bit": 1.0, "none": 2.0}  # FP16
+    bpp = bytes_per_param.get(quantization, 2.0)
+
+    # Model memory (static)
+    model_mem_gb = model_params_b * bpp
+
+    # LoRA trainable params (usually ~1-3% of total)
+    lora_ratio = min(lora_r * 2 / 4096, 0.05)  # rough estimate
+    trainable_mem_gb = model_params_b * 2 * lora_ratio  # FP16 for trainable
+
+    # Optimizer states (Adam: 2x params)
+    optimizer_mem_gb = trainable_mem_gb * 2
+
+    # Available for activations
+    overhead_gb = 1.5  # CUDA overhead, fragmentation
+    available_gb = gpu_gb - model_mem_gb - trainable_mem_gb - optimizer_mem_gb - overhead_gb
+
+    if available_gb <= 0:
+        return 1
+
+    # Rough activation memory per sample per token
+    # ~2 bytes per hidden dim per layer per token for a transformer
+    activation_per_sample_gb = (seq_length * model_params_b * 0.001)  # very rough
+    activation_per_sample_gb = max(activation_per_sample_gb, 0.5)  # minimum 0.5 GB
+
+    batch_size = max(1, int(available_gb / activation_per_sample_gb))
+    # Clamp to power of 2 (common practice)
+    batch_size = 2 ** int(math.log2(batch_size)) if batch_size > 1 else 1
+
+    return min(batch_size, 32)  # cap at 32
+
+
+def model_size_from_name(model_name: str) -> float:
+    """Model size in billions: exact for a local checkpoint, else guessed.
+
+    A LOCAL path is measured, not guessed — `soup merge` writes directories
+    like ``./denseA`` whose name carries no size marker, so the name-based
+    fallback called them 7B and the hardware-fit gate refused to train a
+    135M model. That blocked merge -> train-from-merged, the ordinary
+    continual-learning flow (found by the v0.71.36 replay smoke; same class
+    as the v0.71.32 whisper and v0.71.33 "M suffix" fixes, which were both
+    the name guess over-predicting a small model).
+    """
+    exact = _params_from_local_safetensors(model_name)
+    if exact is not None:
+        return exact
+
+    name_lower = model_name.lower()
+
+    # Whisper ASR checkpoints carry the size in the name suffix, not an "Nb"
+    # token — check these first so a 39M whisper-tiny isn't mistaken for the
+    # 7B default (v0.71.32: the default guess blocked ASR training on the
+    # hardware-fit gate).
+    whisper_markers = [
+        ("whisper-large", 1.55), ("whisper-medium", 0.769),
+        ("whisper-small", 0.244), ("whisper-base", 0.074),
+        ("whisper-tiny", 0.039),
+    ]
+    for marker, size in whisper_markers:
+        if marker in name_lower:
+            return size
+
+    # OLMoE names the ACTIVE count before the total ("OLMoE-1B-7B": 1B active,
+    # 6.9B total), so its first size token is not the total (#1198).
+    if "olmoe-1b-7b" in name_lower:
+        return 6.9
+
+    # MoE models specify expert count and expert size (e.g. Mixtral 8x7B, 8x22B,
+    # or generic NxMb). Handle explicitly before standard billion tokens:
+    # 8x7B has ~46.7B total parameters, 8x22B has ~141.0B total parameters (#1198).
+    moe_match = re.search(r"(?<![a-z0-9.])(\d+)x(\d+(?:\.\d+)?)b(?![a-z0-9])", name_lower)
+    if moe_match:
+        n_exp = int(moe_match.group(1))
+        exp_sz = float(moe_match.group(2))
+        if (n_exp, exp_sz) == (8, 7.0):
+            return 46.7
+        if (n_exp, exp_sz) == (8, 22.0):
+            return 141.0
+        return n_exp * exp_sz
+
+    # Llama 4 names carry the ACTIVE count and the expert count ("17B-16E"), so the
+    # size token is not the total (#1198). Known totals first; otherwise active x
+    # experts, an over-estimate, which is the safe direction for this gate.
+    llama4_totals = {(17.0, 16): 109.0, (17.0, 128): 400.0}
+    active_experts = re.search(
+        r"(?<![a-z0-9.])(\d+(?:\.\d+)?)b-(\d+)e(?![a-z0-9]|[-+]\d)", name_lower
+    )
+    if active_experts:
+        active, experts = float(active_experts.group(1)), int(active_experts.group(2))
+        return llama4_totals.get((active, experts), active * experts)
+
+    # Strip active-parameter tokens with separator spellings (e.g. "-a-22b",
+    # "_act_22b") so total parameters are parsed rather than active parameters
+    # if the active count appears earlier and uses hyphenated separators (#1198).
+    cleaned = re.sub(r"[-_]a(?:ct(?:ive)?)?[-_]?\d+(?:\.\d+)?b(?![a-z0-9])", "", name_lower)
+
+    # Parse total parameter size token in billions (e.g. 72b, 32b, 14b, 405b, 4b, 1.7b).
+    # Uses boundary lookarounds to avoid substring false matches (such as "11b" matching
+    # "1b", "17b" or "27b" matching "7b", or "0.8b" matching "8b") (#1198).
+    b_match = re.search(r"(?<![a-z0-9.])(\d+(?:\.\d+)?)b(?![a-z0-9])", cleaned)
+    if b_match:
+        return float(b_match.group(1))
+
+    # Sub-billion checkpoints carry their size in MILLIONS (SmolLM2-135M,
+    # SmolVLM-256M, ...). Without this they fell through to the 7B default and
+    # the hardware-fit gate refused to train them — which blocked `soup draft`
+    # for exactly the tiny models drafts are made of (v0.71.33 live smoke;
+    # same class as the v0.71.32 whisper fix).
+    #
+    # Checked AFTER the "b" markers on purpose: `Qwen2.5-7B-Instruct-1M` is a
+    # 7B model with a 1M *context*, not a 1M-parameter model.
+    million = re.search(r"(?<![a-z0-9.])(\d+(?:\.\d+)?)m(?![a-z0-9])", name_lower)
+    if million:
+        return float(million.group(1)) / 1000.0
+
+    # Common encoder / embedding checkpoints (BGE, E5, GTE, BERT, RoBERTa, MiniLM)
+    # carry -small / -base / -large suffixes rather than "Nb" or "Nm" (#1234).
+    encoder_prefixes = ("bge-", "e5-", "gte-", "bert-", "roberta-", "minilm")
+    if any(p in name_lower for p in encoder_prefixes):
+        if "large" in name_lower:
+            return 0.335
+        if "base" in name_lower:
+            return 0.11
+        if "small" in name_lower:
+            return 0.033
+        if "mini" in name_lower or "tiny" in name_lower:
+            return 0.022
+        return 0.335
+
+    return 7.0  # default guess
+
+
+def cuda_supports_bf16() -> bool:
+    """Does the current CUDA device support bf16? Ampere (sm_80) and later.
+
+    A T4 (sm_75, Colab's free tier), a P100 (Kaggle), a V100, a GTX 16xx or an
+    RTX 20xx does not. Every trainer wrapper used to spell this as
+    ``bf16=self.device == "cuda"``, so all fourteen of them asked for a dtype
+    the card has no units for (#385, #387).
+
+    This docstring used to say that transformers refuses outright on that
+    hardware, quoting *"Your setup doesn't support bf16/gpu. You need Ampere+
+    GPU with cuda>=11.0"*, and that every task therefore died before step 0.
+    **That was wrong and is retracted in the CHANGELOG**: the error had been
+    produced by a local stub forcing ``is_bf16_supported()`` to False, while
+    transformers gates on the same permissive call described below, which a T4
+    answers True to. So on the current stack nothing raised; the run simply
+    proceeded in an emulated dtype. Established by running it on a real T4
+    rather than by reasoning about one.
+
+    One function rather than a per-wrapper expression, and it asks the driver
+    rather than comparing a compute-capability number, so it cannot disagree
+    with :func:`get_compute_dtype` below.
+    """
+    try:
+        import torch
+
+        if not torch.cuda.is_available():
+            return False
+        try:
+            # NOT the bare call. ``is_bf16_supported()`` defaults to
+            # ``including_emulation=True``, and its fast path (CUDA >= 11 AND
+            # compute capability >= 8) is only the FIRST branch: when that
+            # fails it falls through to merely constructing a bf16 tensor,
+            # which succeeds on a T4 through software emulation. So the default
+            # answers "can this device hold a bf16 value", while every caller
+            # here is asking "does this device have bf16 hardware".
+            return bool(torch.cuda.is_bf16_supported(including_emulation=False))
+        except TypeError:
+            # torch too old for the keyword, and its bare answer is the
+            # permissive one we are trying to avoid — ask the capability.
+            major, _ = torch.cuda.get_device_capability()
+            return major >= 8
+    except (ImportError, RuntimeError, AssertionError, OSError):
+        # The same narrow set ``sft._resolve_mixed_precision`` already catches —
+        # broad ``except Exception`` here would swallow a real CUDA error and
+        # silently downgrade a working card to fp16.
+        return False
+
+
+def mps_supports_bf16() -> bool:
+    """Return whether the live MPS runtime accepts native bfloat16 tensors.
+
+    PyTorch exposes no public ``is_bf16_supported`` equivalent for MPS.  Probe
+    the exact runtime instead of inferring support from a macOS or torch version:
+    this also covers builds compiled without MPS and older Metal runtimes.
+    """
+    try:
+        import torch
+
+        mps = getattr(torch.backends, "mps", None)
+        if mps is None or not mps.is_available():
+            return False
+        probe = torch.empty(1, dtype=torch.bfloat16, device="mps")
+        del probe
+        return True
+    except (
+        ImportError,
+        RuntimeError,
+        TypeError,
+        NotImplementedError,
+        AssertionError,
+        OSError,
+    ):
+        return False
+
+
+def bf16_fp16_flags(
+    device: str, *, allow_mps_bf16: bool = False
+) -> tuple[bool, bool]:
+    """``(bf16, fp16)`` for ``TrainingArguments`` on ``device``.
+
+    bf16 where the card has it, fp16 where CUDA requires it, neither on CPU.
+    MPS is opt-in per trainer until that trainer has a real Apple Silicon smoke:
+    several audio/vision kernels have a different support surface from causal-LM
+    text training, so a successful scalar allocation cannot certify every task.
+
+    A ``"cuda"`` string with no CUDA runtime behind it gets neither, rather than
+    fp16 on a card that is not there — the run cannot proceed either way, and
+    asking for mixed precision on a phantom device only obscures the real error.
+    """
+    device_name = str(device).lower()
+    if device_name.startswith("mps"):
+        return (allow_mps_bf16 and mps_supports_bf16(), False)
+    if not device_name.startswith("cuda"):
+        return (False, False)
+    try:
+        import torch
+
+        if not torch.cuda.is_available():
+            return (False, False)
+    except (ImportError, RuntimeError, AssertionError, OSError):
+        return (False, False)
+    supported = cuda_supports_bf16()
+    return (supported, not supported)
+
+
+def resolve_frozen_base_load_dtype(device: str):
+    """``torch_dtype`` for ``from_pretrained`` when loading a frozen (LoRA) base.
+
+    A frozen base never receives an optimizer step, so there is no reason to
+    upcast it to the HF default of float32 on load: keep the checkpoint's own
+    dtype (``"auto"``). The one exception is a pre-Ampere CUDA card (T4, P100,
+    V100, GTX 16xx, RTX 20xx): ``bf16_fp16_flags`` already routes mixed
+    precision compute to float16 there, since those cards have no bf16 units.
+    An ``"auto"`` load of a bf16-saved checkpoint would then leave the
+    resident weights in bf16 storage while every other tensor on the card is
+    float16, the same storage/compute split v0.73.1 (#385/#387) removed from
+    the other bf16-hardcoded call sites. Returning ``torch.float16`` there
+    keeps storage and compute in the same dtype. On CPU this still returns
+    ``"auto"``: the VRAM-saving reason for keeping the checkpoint's own dtype
+    does not apply there, but CPU use in this codebase is smoke tests only,
+    so a bf16-saved checkpoint loading bf16 on CPU is harmless in practice.
+    """
+    _, fp16_only = bf16_fp16_flags(device)
+    if fp16_only:
+        import torch
+
+        return torch.float16
+    return "auto"
+
+
+def resolve_base_load_dtype(device: str, *, full_finetune: bool):
+    """Resolve model-load dtype without drifting between trainer wrappers.
+
+    An optimizer that steps the base needs explicit fp32 master weights. A
+    frozen LoRA base instead keeps the checkpoint/card-aware policy above.
+    """
+    if full_finetune:
+        import torch
+
+        return torch.float32
+    return resolve_frozen_base_load_dtype(device)
+
+
+def get_compute_dtype():
+    """Return the best compute dtype for the current device.
+
+    Uses bfloat16 on CUDA GPUs that support it, float16 otherwise.
+    On CPU, uses float32 to avoid dtype mismatch errors.
+
+    Delegates the capability question to :func:`cuda_supports_bf16` rather than
+    calling ``is_bf16_supported()`` itself: the bare call includes software
+    EMULATION and answers True on a T4, so this function used to hand bf16 to
+    cards with no bf16 units (#385 follow-up, found on a real T4).
+    """
+    import torch
+
+    if torch.cuda.is_available():
+        if cuda_supports_bf16():
+            return torch.bfloat16
+        return torch.float16
+    return torch.float32

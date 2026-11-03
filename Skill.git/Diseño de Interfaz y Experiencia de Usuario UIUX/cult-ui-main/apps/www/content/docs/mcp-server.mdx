@@ -1,0 +1,122 @@
+---
+title: MCP Server
+description: Connect the shadcn MCP server to Cursor, Claude Code, or VS Code so AI agents can search and install Cult UI components.
+---
+
+The [shadcn MCP server](https://ui.shadcn.com/docs/mcp) lets your editor's AI agent search the Cult UI registry, read component examples, and install components into your project. You ask in plain language, such as "add a prompt input from cult-ui to the chat page", and the agent runs the right `shadcn add` command.
+
+<Steps>
+
+### List Cult UI in components.json
+
+The MCP server only searches the registries listed in your project's `components.json`. The CLI adds Cult UI there the first time you run `npx shadcn@latest add @cult-ui/<name>`. If you have not added a component yet, add the entry yourself:
+
+```json title="components.json"
+{
+  "registries": {
+    "@cult-ui": "https://www.cult-ui.com/r/{name}.json"
+  }
+}
+```
+
+The default `@shadcn` registry is always available and does not need an entry.
+
+### Connect your editor
+
+Run the init command for your client from the project root:
+
+<Tabs defaultValue="cursor">
+  <TabsList>
+    <TabsTrigger value="cursor">Cursor</TabsTrigger>
+    <TabsTrigger value="claude">Claude Code</TabsTrigger>
+    <TabsTrigger value="vscode">VS Code</TabsTrigger>
+  </TabsList>
+  <TabsContent value="cursor" className="mt-4">
+
+```bash
+npx shadcn@latest mcp init --client cursor
+```
+
+This writes `.cursor/mcp.json`. Open **Cursor Settings**, then **MCP**, and enable the shadcn server. A green dot means it is connected.
+
+  </TabsContent>
+  <TabsContent value="claude" className="mt-4">
+
+```bash
+npx shadcn@latest mcp init --client claude
+```
+
+This writes `.mcp.json`. Restart Claude Code and run `/mcp`. The shadcn server should show as connected.
+
+  </TabsContent>
+  <TabsContent value="vscode" className="mt-4">
+
+```bash
+npx shadcn@latest mcp init --client vscode
+```
+
+This writes `.vscode/mcp.json`. Open the file and click **Start** next to the shadcn server, then use GitHub Copilot in agent mode.
+
+  </TabsContent>
+</Tabs>
+
+To configure it by hand, add this server to your client's MCP config file:
+
+```json
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    }
+  }
+}
+```
+
+### Ask for components
+
+Mention Cult UI by name so the agent searches the right registry:
+
+- Show me the form controls in the cult-ui registry
+- Add the Halo Select and Halo Switch from cult-ui to the settings page
+- Build a pricing section using Halo Card and Border Beam Button from cult-ui
+- Replace the chat input with Prompt Composer from cult-ui
+
+</Steps>
+
+## Give the agent more context
+
+The MCP server returns component source and examples, which is enough for most installs. For larger tasks, also point the agent at the docs written for LLMs, and add the Cult UI rules to your `AGENTS.md`. Both are on the [LLMs & Agents](/docs/llms) page.
+
+## Troubleshooting
+
+<Accordion type="multiple">
+
+<AccordionItem value="not-found">
+<AccordionTrigger>The agent only finds shadcn components, not Cult UI</AccordionTrigger>
+<AccordionContent>
+
+Check that `components.json` has the `@cult-ui` entry above and that you mentioned "cult-ui" in the prompt. Restart the MCP server after changing `components.json`.
+
+</AccordionContent>
+</AccordionItem>
+
+<AccordionItem value="no-tools">
+<AccordionTrigger>The client shows "No tools or prompts"</AccordionTrigger>
+<AccordionContent>
+
+Clear the npx cache with `npx clear-npx-cache`, then disable and re-enable the server. In Cursor, check the logs under **View**, then **Output**, and pick `MCP: project-*` from the dropdown.
+
+</AccordionContent>
+</AccordionItem>
+
+<AccordionItem value="install-fails">
+<AccordionTrigger>Installs fail or write files to the wrong folder</AccordionTrigger>
+<AccordionContent>
+
+The MCP server uses the same CLI and `components.json` as a manual install. Run `npx shadcn@latest add @cult-ui/halo-button` in the terminal to see the full error, and check the `aliases` in `components.json`.
+
+</AccordionContent>
+</AccordionItem>
+
+</Accordion>

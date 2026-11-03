@@ -1,0 +1,348 @@
+"""``soup data canary insert|check`` — Secret-Sharer canaries (v0.71.36).
+
+insert: add K high-entropy secrets to a dataset + write the manifest.
+check:  measure whether a model memorized them, by comparing each canary's
+        loss against N never-inserted controls from the same secret space.
+
+Exit 0 = OK/MINOR, 2 = MAJOR (a canary was memorized), 1 = runtime error.
+Mirrors ``soup diagnose`` / ``soup ship`` exit conventions so CI can gate.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+from pathlib import Path
+from typing import TYPE_CHECKING, NoReturn, Optional
+
+import typer
+from rich.console import Console
+from rich.markup import escape
+from rich.table import Table
+
+from soup_cli.config.schema import DataConfig
+from soup_cli.data.formats import detect_format
+from soup_cli.data.loader import _split_val, load_raw_data
+from soup_cli.utils.canary import (
+    CANARY_FORMATS,
+    _harden_permissions,
+    build_canary_report,
+    canary_report_to_dict,
+    canary_rows,
+    generate_canaries,
+    generate_controls,
+    interleave_canary_rows,
+    load_manifest,
+    write_manifest,
+)
+from soup_cli.utils.live_eval import compute_pair_losses
+from soup_cli.utils.paths import atomic_write_text, is_under_cwd
+from soup_cli.utils.terminal import for_terminal
+
+if TYPE_CHECKING:  # static types only — transformers stays a lazy import
+    from transformers import PreTrainedModel, PreTrainedTokenizerBase
+
+console = Console()
+app = typer.Typer(
+    no_args_is_help=True, help="Dataset canaries (memorization probe)."
+)
+
+# Fixed seed for the control draw: controls are a null distribution, not a
+# secret, so reproducibility is the useful property here.
+_CONTROL_SEED = 12345
+_VERDICT_COLOUR = {"OK": "green", "MINOR": "yellow", "MAJOR": "red"}
+
+
+def _load_pair(
+    base: str, adapter: Optional[str], device: str
+) -> "tuple[PreTrainedModel, PreTrainedTokenizerBase, str]":
+    """Seam: load ``(model, tokenizer, device)``. Patched in tests."""
+    from soup_cli.utils.live_eval import load_model_and_tokenizer
+
+    return load_model_and_tokenizer(base, adapter=adapter, device=device)
+
+
+def _guard_under_cwd(target: str, label: str) -> None:
+    if not is_under_cwd(Path(target)):
+        console.print(
+            f"[red]{label} path is outside the working directory: "
+            f"{escape(str(target))}[/]"
+        )
+        raise typer.Exit(1)
+
+
+# What ``-o`` may be: the loader reads a ``.json`` file as ONE array and
+# ``.jsonl`` line by line; any other suffix would not load back as written.
+_OUTPUT_SUFFIXES = (".jsonl", ".json")
+
+
+def _refuse(message: str) -> NoReturn:
+    console.print(f"[red]{escape(message)}[/]")
+    raise typer.Exit(1)
+
+
+def _json_type(value: object) -> str:
+    """The JSON name for a parsed value, for error messages."""
+    if isinstance(value, bool):
+        return "boolean"
+    if isinstance(value, (int, float)):
+        return "number"
+    if isinstance(value, str):
+        return "string"
+    if isinstance(value, list):
+        return "array"
+    return "null" if value is None else type(value).__name__
+
+
+def _resolve_format(rows: list, requested: str, path: str) -> str:
+    """The format the canaries are rendered in, or refuse (#1216).
+
+    A canary row the loader cannot convert is dropped before training, and
+    ``check`` then reports OK on secrets the model never saw. So the rows
+    are written in the format the file loads as, and a format ``check``
+    cannot score is refused rather than written.
+    """
+    supported = ", ".join(CANARY_FORMATS)
+    if requested != "auto" and requested not in CANARY_FORMATS:
+        _refuse(
+            f"canary insert cannot write '{requested}' rows. "
+            f"Supported: {supported}"
+        )
+    if not rows:
+        if requested == "auto":
+            _refuse(
+                f"{path} is empty, so its format cannot be detected; "
+                f"pass --format ({supported})"
+            )
+        return requested
+    if not isinstance(rows[0], dict):
+        # The canary carrier is written into row 0, so it must be an object.
+        # (detect_format itself now skips non-dict rows rather than raising.)
+        _refuse(
+            f"{path}: the first row is a JSON {_json_type(rows[0])}, not an "
+            "object; canary insert reads each row as a JSON object"
+        )
+    try:
+        detected = detect_format(rows)
+    except ValueError as exc:
+        _refuse(f"{exc}. canary insert supports: {supported}")
+    if requested != "auto" and requested != detected:
+        # `data.format: auto` would read the file as `detected` and drop
+        # every canary rendered as `requested`.
+        _refuse(
+            f"--format {requested} was given, but {path} is '{detected}'; "
+            "canaries written in one format are dropped when the file loads "
+            "as the other"
+        )
+    if detected not in CANARY_FORMATS:
+        _refuse(
+            f"{path} is '{detected}', which canary insert cannot write. "
+            f"Supported: {supported}"
+        )
+    return detected
+
+
+@app.command()
+def insert(
+    path: str = typer.Argument(..., help="Path to dataset file"),
+    output: str = typer.Option(
+        ..., "--output", "-o",
+        help="Output file: .jsonl, or .json for a JSON array",
+    ),
+    manifest: str = typer.Option(
+        ..., "--manifest",
+        help="Where to write the canary manifest (CONTAINS THE SECRETS)",
+    ),
+    count: int = typer.Option(16, "--count", "-k", help="Number of canaries"),
+    seed: int = typer.Option(0, "--seed", help="Seed for the canaries and the rows they go to"),
+    data_format: str = typer.Option(
+        "auto", "--format",
+        help="Dataset format to write the canaries in: auto (detect), "
+        + ", ".join(CANARY_FORMATS),
+    ),
+):
+    """Insert K unique canaries into a dataset and record them."""
+    file_path = Path(path)
+    if not file_path.exists():
+        console.print(f"[red]File not found: {escape(str(file_path))}[/]")
+        raise typer.Exit(1)
+    _guard_under_cwd(output, "Output")
+    _guard_under_cwd(manifest, "Manifest")
+    suffix = Path(output).suffix.lower()
+    if suffix not in _OUTPUT_SUFFIXES:
+        _refuse(
+            f"--output must end in {' or '.join(_OUTPUT_SUFFIXES)}, "
+            f"got {output!r}"
+        )
+
+    # _resolve_format needs the raw first row; insert writes later rows back as read.
+    rows = load_raw_data(file_path, skip_non_object=False)
+    fmt = _resolve_format(rows, data_format, path)
+    try:
+        canaries = generate_canaries(count=count, seed=seed)
+    except (ValueError, TypeError) as exc:
+        console.print(f"[red]{escape(str(exc))}[/]")
+        raise typer.Exit(1)
+
+    # Spread through the file, not appended: the loader holds out the file's
+    # tail as validation, which would have held every canary (#1331).
+    mixed, positions = interleave_canary_rows(
+        rows, canary_rows(canaries, fmt), seed=seed
+    )
+    # Manifest FIRST. If the dataset were written first and the manifest
+    # then failed (disk full, permissions), a canary-poisoned dataset would
+    # survive on disk with nothing left to identify the secrets in it — a
+    # user who missed the error and trained on it could never audit what
+    # was inserted. Failing before the data is written leaves no artifact.
+    try:
+        write_manifest(
+            canaries, manifest, fmt,
+            positions=positions, total_rows=len(mixed),
+        )
+    except (ValueError, OSError) as exc:
+        console.print(f"[red]{escape(str(exc))}[/]")
+        raise typer.Exit(1)
+    try:
+        if suffix == ".json":
+            text = json.dumps(mixed, indent=2) + "\n"
+        else:
+            text = "\n".join(json.dumps(row) for row in mixed) + "\n"
+        atomic_write_text(text, output)
+    except (ValueError, OSError) as exc:
+        # The manifest now describes canaries that are in no dataset. Say so
+        # rather than leaving a manifest that looks authoritative.
+        console.print(
+            f"[red]Could not write {escape(str(output))}: "
+            f"{escape(str(exc))}[/]\n"
+            f"[yellow]{escape(str(manifest))} was already written and now "
+            "describes canaries that were NOT inserted — delete it or re-run."
+            "[/]"
+        )
+        raise typer.Exit(1)
+
+    console.print(
+        f"[green]Inserted {len(canaries)} {fmt} canaries:[/] "
+        f"{len(rows)} -> {len(mixed)} rows\n"
+        f"Output: [bold]{escape(output)}[/]\n"
+        f"Manifest: [bold]{escape(manifest)}[/]"
+    )
+    # The loader's own split, so the count is what `soup train` holds out.
+    val_split = DataConfig.model_fields["val_split"].default
+    train_part, _ = _split_val(list(range(len(mixed))), val_split)
+    trained = sum(1 for position in positions if position < len(train_part))
+    console.print(
+        f"At the default data.val_split ({val_split}), {trained} of "
+        f"{len(canaries)} canaries are in the training split; the rest are "
+        "in the held-out tail."
+    )
+    console.print(
+        "[yellow]The manifest contains the secret canaries. Do NOT commit it "
+        "alongside the dataset it protects — anyone holding it can reproduce "
+        "them.[/]"
+    )
+
+
+@app.command()
+def check(
+    manifest: str = typer.Option(..., "--manifest", help="Canary manifest"),
+    base: str = typer.Option(..., "--base", help="Base model id or path"),
+    adapter: Optional[str] = typer.Option(
+        None, "--adapter", help="LoRA adapter to check"
+    ),
+    controls: int = typer.Option(
+        128, "--controls", help="Never-inserted controls to rank against"
+    ),
+    device: str = typer.Option("auto", "--device", help="auto/cpu/cuda"),
+    output: Optional[str] = typer.Option(
+        None, "--output", "-o", help="Write the report as JSON"
+    ),
+):
+    """Check a model for memorization of the manifest's canaries."""
+    if output is not None:
+        _guard_under_cwd(output, "Output")
+    try:
+        canaries = load_manifest(manifest)
+    except (ValueError, OSError) as exc:
+        console.print(f"[red]{escape(str(exc))}[/]")
+        raise typer.Exit(1)
+    if not canaries:
+        console.print("[red]Manifest contains no canaries.[/]")
+        raise typer.Exit(1)
+
+    try:
+        control_set = generate_controls(
+            count=controls, seed=_CONTROL_SEED,
+            exclude={canary.secret for canary in canaries},
+        )
+    except (ValueError, TypeError) as exc:
+        console.print(f"[red]{escape(str(exc))}[/]")
+        raise typer.Exit(1)
+
+    try:
+        model, tokenizer, dev = _load_pair(base, adapter, device)
+    except ImportError:
+        console.print(
+            "[red]soup data canary check needs PyTorch + transformers.[/]\n"
+            # \[train] escaped: Rich would eat the bracket and print a
+            # command that installs WITHOUT the extra.
+            "Install with: [bold]pip install \"soup-cli\\[train]\"[/]"
+        )
+        raise typer.Exit(1)
+    except (ValueError, OSError, RuntimeError) as exc:
+        console.print(f"[red]Could not load model: {escape(str(exc))}[/]")
+        raise typer.Exit(1)
+
+    pairs = [(canary.carrier, canary.secret) for canary in canaries]
+    pairs += [(control.carrier, control.secret) for control in control_set]
+    losses = compute_pair_losses(model, tokenizer, pairs, device=dev)
+    # compute_pair_losses is index-aligned, so the split follows the counts.
+    canary_losses = losses[: len(canaries)]
+    control_losses = losses[len(canaries):]
+
+    try:
+        report = build_canary_report(
+            canary_losses, control_losses,
+            [canary.secret for canary in canaries],
+        )
+    except ValueError as exc:
+        console.print(f"[red]{escape(str(exc))}[/]")
+        raise typer.Exit(1)
+
+    table = Table(
+        title=f"Canary exposure — {len(canaries)} canaries vs "
+              f"{report.n_controls} controls"
+    )
+    table.add_column("Canary")
+    table.add_column("Loss", justify="right")
+    table.add_column("Percentile", justify="right")
+    table.add_column("Memorized", justify="right")
+    for exposure in report.exposures:
+        loss_text = (
+            "nan" if math.isnan(exposure.loss) else f"{exposure.loss:.4f}"
+        )
+        table.add_row(
+            for_terminal(exposure.secret.strip()),
+            loss_text,
+            f"{exposure.percentile * 100:.1f}%",
+            "[red]YES[/]" if exposure.memorized else "no",
+        )
+    console.print(table)
+    colour = _VERDICT_COLOUR[report.verdict]
+    console.print(f"[{colour}]Verdict: {report.verdict}[/]")
+
+    if output is not None:
+        # The report embeds every secret, so it is as sensitive as the
+        # manifest and gets the same 0600 + warning. `insert` warns about
+        # the manifest; without this the report would be the quiet leak.
+        atomic_write_text(
+            json.dumps(canary_report_to_dict(report), indent=2), output
+        )
+        _harden_permissions(output)
+        console.print(f"[green]Report written:[/] [bold]{escape(output)}[/]")
+        console.print(
+            "[yellow]The report lists the canary secrets — treat it like the "
+            "manifest and do not commit it.[/]"
+        )
+
+    if report.verdict == "MAJOR":
+        raise typer.Exit(2)

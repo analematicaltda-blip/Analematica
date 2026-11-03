@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+*.key
+
+# Local Banana state
+.banana/
+
+# Local Claude permissions and settings
+.claude/settings.local.json
+
+# Packages
+*.skill
+*.tar.gz
+
+# Root-level build scripts
+/scripts/
+
+# Firebase
+firebase-debug.log
+cover-options/

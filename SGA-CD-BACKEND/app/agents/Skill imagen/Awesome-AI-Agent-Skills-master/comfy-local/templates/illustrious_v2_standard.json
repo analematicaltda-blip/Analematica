@@ -1,0 +1,17 @@
+{
+  "name": "SDXL Illustrious Standard (Civitai Optimized)",
+  "model": "Illustrious-XL-v2.0.safetensors",
+  "vae": "sdxl-vae-fp16-fix.safetensors",
+  "parameters": {
+    "cfg": 4.0,
+    "steps": 28,
+    "sampler": "euler_ancestral",
+    "scheduler": "karras",
+    "width": 1024,
+    "height": 1024
+  },
+  "prompts": {
+    "positive_prefix": "masterpiece, best quality, highres, absurdres, newest, rating: general",
+    "negative": "worst quality, bad quality, low quality, lowres, displeasing, very displeasing, bad anatomy, bad hands, extra digits, multiple views, comic, 2koma, 4koma, sketch, monochrome, greyscale"
+  }
+}

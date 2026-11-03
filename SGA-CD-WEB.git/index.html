@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGA-CD — Plataforma de Gestión Deportiva y Formación Cultural</title>
+    <meta name="description" content="Plataforma SaaS integral SGA-CD para la gestión académica, inscripciones a escuelas deportivas, talleres culturales y diagnóstico físico institucional.">
+    <link rel="canonical" href="https://sga-cd.org/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sga-cd.org/">
+    <meta property="og:title" content="SGA-CD — Disciplinas Deportivas, Modalidades Culturales y Talleres">
+    <meta property="og:description" content="Gestión académica, deportiva (Disciplinas) y cultural (Talleres de Danza: Joropo/Llanera, Salsa, Vallenato e Instrumentos: Guitarra, Arpa) de alto rendimiento.">
+    <meta property="og:image" content="https://sga-cd.org/css/logo.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SGA-CD — Disciplinas Deportivas y Modalidades Culturales">
+    <meta name="twitter:description" content="Gestión estudiantil, disciplinas deportivas y talleres culturales para instituciones educativas y deportivas.">
+    <meta name="twitter:image" content="https://sga-cd.org/css/logo.png">
+
+    <!-- Structured Data JSON-LD Schema for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "SGA-CD",
+      "operatingSystem": "Web, Android, iOS, Windows, macOS",
+      "applicationCategory": "EducationalApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Sistema de Gestión Académica, Disciplinas Deportivas, Modalidades Culturales y Talleres (Danza: Joropo, Salsa, Vallenato; Instrumentos: Guitarra, Arpa).",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1280"
+      },
+      "keywords": "Disciplinas Deportivas, Modalidades Culturales, Talleres, Joropo, Vallenato, Salsa, Guitarra, Arpa, SGA-CD"
+    }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/vanguard.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#070B14">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="site-wrapper">
+        <header role="banner">
+            <a href="index.html" class="sga-brand-logo" aria-label="SGA-CD Logo Corporativo">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                    <circle cx="32" cy="32" r="30" fill="#0D1424" stroke="#38BDF8" stroke-width="2.5" />
+                    <path d="M16 22 L32 12 L48 22 L32 32 Z" fill="url(#sgaGradHeader)" />
+                    <path d="M16 30 L32 40 L48 30" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M16 38 L32 48 L48 38" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="32" cy="22" r="3.5" fill="#FFFFFF" />
+                    <defs>
+                        <linearGradient id="sgaGradHeader" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#38BDF8" />
+                            <stop offset="100%" stop-color="#0284C7" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="sga-brand-title">SGA-CD</span>
+            </a>
+            <nav role="navigation" aria-label="Navegación Principal">
+                <a href="#hero" class="nav-icon-link" aria-label="Inicio">
+                    <svg class="ui-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <span>Inicio</span>
+                </a>
+                <a href="#monitor-vivo" class="nav-icon-link" aria-label="Buscador de actividades">
+                    <svg class="ui-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span>Actividades</span>
+                </a>
+                <a href="#funcionalidades">Funcionalidades</a>
+                <a href="#estadisticas">Métricas</a>
+                <a href="#partners">Clientes</a>
+                <a href="#faq">Preguntas</a>
+                <a href="#planes">Planes</a>
+                <a href="register.html" class="cta-button" style="padding: 0.4rem 1.2rem; min-height: unset;">Registrarse</a>
+                <button class="ui-icon-btn mobile-menu-btn" aria-label="Menú Hamburguesa Responsive" style="display:none;">
+                    <svg class="ui-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Floating Social Brand Icons Bar -->
+        <div class="floating-social-bar" aria-label="Canales Sociales Oficiales">
+            <a href="https://wa.me/573000000000?text=Hola%20SGA-CD,%20deseo%20información%20sobre%20las%20Disciplinas%20Deportivas%20y%20Talleres" target="_blank" rel="noopener noreferrer" class="ui-icon-btn social-brand-link" data-platform="whatsapp" aria-label="Contacto WhatsApp SGA-CD">
+                <svg class="ui-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </a>
+            <a href="https://instagram.com/sgacd_official" target="_blank" rel="noopener noreferrer" class="ui-icon-btn social-brand-link" data-platform="instagram" aria-label="Instagram Oficial SGA-CD">
+                <svg class="ui-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+            </a>
+            <a href="https://tiktok.com/@sgacd_official" target="_blank" rel="noopener noreferrer" class="ui-icon-btn social-brand-link" data-platform="tiktok" aria-label="TikTok Oficial SGA-CD">
+                <svg class="ui-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+            </a>
+        </div>
+
+        <main role="main">
+            <!-- Hero Section High-Conversion Recruitment Tool -->
+            <section id="hero" style="position:relative; overflow:hidden;">
+                <!-- Video Background Layer for Hero Launch -->
+                <div id="hero-video-container" style="position:absolute; inset:0; z-index:0;">
+                    <video id="main-hero-launch-video" autoplay muted loop playsinline class="hero-launch-video" style="width:100%; height:100%; object-fit:cover; opacity:0.35;">
+                        <source src="assets/video/sga_cd_institutional_5min.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-pointer-shield" style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg, rgba(7,11,20,0.6) 0%, rgba(7,11,20,0.95) 100%);"></div>
+                </div>
+                <div style="position:relative; z-index:1;">
+                <h1 class="hero-title">
+                    Transforma la Formación <span class="hero-highlight">Deportiva y Cultural</span> Institucional
+                </h1>
+                <p class="hero-tagline">
+                    Plataforma SaaS multi-inquilino de alto rendimiento para el seguimiento atlético, control de plantillas deportivas, talleres culturales y diagnóstico biométrico.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="register.html" class="cta-button"><i class="fa-solid fa-rocket" style="margin-right: 0.5rem;"></i> Comenzar Ahora</a>
+                    <a href="#funcionalidades" class="cta-button" style="background: rgba(255,255,255,0.08); color: var(--color-text-primary); border: 1px solid var(--color-border-specular); box-shadow: none;">Explorar Módulos</a>
+                </div>
+
+                <!-- High-Impact Animated Statistics Grid -->
+                <div id="estadisticas" class="hero-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="200000">0</div>
+                        <div class="stat-label">Estudiantes Activos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="4000">0</div>
+                        <div class="stat-label">Entrenadores & Profesores</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="150">0</div>
+                        <div class="stat-label">Instituciones Conectadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="99">0</div>
+                        <div class="stat-label">% Uptime Acreditado</div>
+                    </div>
+                </div>
+                </div>
+            </section>
+
+            <!-- Modern 10-Image Floating Text Carousel Section -->
+            <section id="carrusel-moderno" style="margin: 3rem 0;">
+                <h2 style="text-align:center; color:#38BDF8; font-size:2rem; font-weight:800; margin-bottom:0.5rem;">
+                    <i class="fa-solid fa-layer-group" style="margin-right:0.5rem;"></i> Ecosistema Tecnológico SGA-CD
+                </h2>
+                <p class="section-subtitle" style="text-align:center; color:#94A3B8; margin-bottom:2rem;">
+                    Descubre las 10 fortalezas clave que impulsan el rendimiento en Disciplinas Deportivas y Modalidades Culturales.
+                </p>
+                <div id="modern-carousel-container"></div>
+            </section>
+
+            <!-- Video Section HTML5 Native Background Canvas with Pointer Shield -->
+            <section id="presentacion">
+                <h2>Demostración en Vivo</h2>
+                <p class="section-subtitle">Descubre cómo nuestra suite optimiza la administración de escenarios deportivos y auditorios culturales en tiempo real.</p>
+                <div id="video-container" class="video-container">
+                    <video autoplay muted loop playsinline class="hero-bg-video" style="width:100%; height:100%; object-fit:cover;">
+                        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+                        Tu navegador no soporta reproducción de video HTML5.
+                    </video>
+                    <!-- Pointer Event Shield Overlay ensuring full interactivity with operational forms & controls -->
+                    <div class="video-pointer-shield" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; background:linear-gradient(180deg, rgba(7,11,20,0.3) 0%, rgba(7,11,20,0.7) 100%);"></div>
+                </div>
+            </section>
+
+            <!-- Live Monitor Athletic & Cultural Feed Section -->
+            <section id="monitor-vivo">
+                <h2>Monitor en Vivo Atlético y Cultural</h2>
+                <p class="section-subtitle">Feeds de torneos, talleres y medallero institucional en tiempo real con filtrado dinámico.</p>
+
+                <div class="filter-tabs" role="tablist" aria-label="Filtro de Monitor">
+                    <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true"><i class="fa-solid fa-layer-group"></i> Todos</button>
+                    <button class="filter-btn" data-filter="deporte" role="tab" aria-selected="false"><i class="fa-solid fa-trophy"></i> Deportes</button>
+                    <button class="filter-btn" data-filter="cultura" role="tab" aria-selected="false"><i class="fa-solid fa-masks-theater"></i> Cultura</button>
+                </div>
+
+                <div id="monitor-grid" class="monitor-grid">
+                    <!-- Skeleton Loader blocks before data resolution -->
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </section>
+
+            <!-- GPU-Bound GSAP Showcase Carousel -->
+            <section id="carrusel-destacados">
+                <h2>Muestras de Rendimiento & Testimonios</h2>
+                <p class="section-subtitle">Acreditaciones de atletas, producciones culturales y testimonios institucionales en tiempo real.</p>
+
+                <div class="carousel-wrapper">
+                    <button id="carousel-prev" class="carousel-control" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div id="carousel-track" class="carousel-track">
+                        <!-- Dynamic GPU Slides -->
+                    </div>
+                    <button id="carousel-next" class="carousel-control" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </section>
+
+            <!-- Key Features Section (Bento Grid) -->
+            <section id="funcionalidades">
+                <h2>Módulos Especializados</h2>
+                <p class="section-subtitle">Arquitectura modular diseñada para satisfacer las demandas operativas de coordinadores, atletas, profesores y administradores.</p>
+                <div id="features-grid" class="bento-grid"></div>
+                <div style="text-align: center; margin-top: 3rem;">
+                    <a href="#planes" class="cta-button">Ver Planes Institucionales</a>
+                </div>
+            </section>
+
+            <!-- Verified Clients & Corporate Allies Matrix -->
+            <section id="partners">
+                <h2>Instituciones que Confían en SGA-CD</h2>
+                <div id="clients-grid" class="partners-grid"></div>
+
+                <h2 style="text-align: center; color: #38BDF8; margin-top: 4rem; font-size: 2rem; font-weight: 800;">
+                    <i class="fa-solid fa-handshake-angle" style="margin-right: 0.5rem;"></i> Empresas Aliadas Corporativas & Co-Patrocinadores
+                </h2>
+                <p class="section-subtitle" style="text-align: center;">Alianzas estratégicas que impulsan el desarrollo atlético y cultural en las regiones.</p>
+
+                <div id="corporate-allies-grid" class="allies-grid">
+                    <!-- Dynamic rendering of corporate allies cards -->
+                </div>
+
+                <h3 style="text-align: center; color: var(--color-text-muted); margin-top: 3rem; font-size: 1.1rem;">Organizaciones en Período de Prueba</h3>
+                <div id="testers-grid" class="partners-grid"></div>
+            </section>
+
+            <!-- Admin Control Panel for Territorial Jurisdiction Asset Management -->
+            <section id="admin-territorial-control" style="margin: 4rem 0;">
+                <div class="admin-panel-card glass-panel">
+                    <h2 style="color:#38BDF8; font-size:1.6rem; font-weight:800; margin-top:0; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fa-solid fa-sliders"></i> Panel Administrativo Territorial (Nacional, Departamental y Municipal)
+                    </h2>
+                    <p style="color:#94A3B8; font-size:0.95rem; margin-bottom:1.5rem;">
+                        Gestión en tiempo real de galerías multifoto de talleres/deportes y marcas de empresas aliadas jurisdiccionales.
+                    </p>
+
+                    <form id="admin-asset-form" onsubmit="event.preventDefault(); window.handleAdminAssetSubmit();">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
+                            <div class="admin-form-group">
+                                <label for="admin-jurisdiction">Nivel Territorial</label>
+                                <select id="admin-jurisdiction" class="admin-input">
+                                    <option value="nacional">Nacional (Ministerio / Federación)</option>
+                                    <option value="departamental">Departamental (Gobernación / Inder)</option>
+                                    <option value="municipal" selected>Municipal (Alcaldía / Instituto)</option>
+                                </select>
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label for="admin-activity-target">Actividad / Taller Objetivo</label>
+                                <select id="admin-activity-target" class="admin-input">
+                                    <option value="taekwondo">Taekwondo (Deporte)</option>
+                                    <option value="joropo">Danza: Joropo/Llanera (Cultura)</option>
+                                    <option value="vallenato">Danza: Vallenato (Cultura)</option>
+                                    <option value="guitarra">Instrumentos: Guitarra (Cultura)</option>
+                                    <option value="arpa">Instrumentos: Arpa (Cultura)</option>
+                                </select>
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label for="admin-photos-count">Fotos Cargadas en Galería</label>
+                                <input type="text" id="admin-photos-count" class="admin-input" value="5 / 5 Fotos Verificadas WebP" readonly>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:1rem; margin-top:1.2rem; align-items:center;">
+                            <button type="submit" class="cta-button" style="padding:0.6rem 1.4rem; font-size:0.9rem; min-height:44px;">
+                                <i class="fa-solid fa-cloud-arrow-up" style="margin-right:0.4rem;"></i> Sincronizar Assets Territorial
+                            </button>
+                            <span id="admin-shield-status" style="color:#38BDF8; font-size:0.85rem; font-weight:700;">
+                                <i class="fa-solid fa-shield-halved"></i> AgentShield ECC Protegido
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section id="faq">
+                <h2>Preguntas Frecuentes</h2>
+                <p class="section-subtitle">Respuestas claras sobre seguridad, cumplimiento normativo y facilidades de despliegue.</p>
+                <div id="faq-container" class="faq-container"></div>
+            </section>
+
+            <!-- Pricing Plans -->
+            <section id="planes">
+                <h2>Planes y Licenciamiento</h2>
+                <p class="section-subtitle">Escalabilidad transparente adaptada a pequeñas escuelas deportivas hasta redes de campus gubernamentales.</p>
+                <div id="pricing-grid" class="pricing-grid"></div>
+            </section>
+
+            <!-- Launch Offer Banner -->
+            <section id="oferta-lanzamiento">
+                <div class="glass-panel" style="text-align: center; border-color: var(--color-accent-cyan);">
+                    <h2 style="margin-top: 0; color: var(--color-accent-cyan);"><i class="fa-solid fa-gift"></i> Programa Especial de Lanzamiento</h2>
+                    <div id="launch-offer-container" class="offer-container"></div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section id="registro" style="text-align: center;">
+                <h2>¿Listo para Revolucionar tu Institución?</h2>
+                <p class="section-subtitle">Accede a la prueba gratuita e integra tu primera plantilla deportiva o taller cultural en minutos.</p>
+                <a href="register.html" class="cta-button"><i class="fa-solid fa-user-plus" style="margin-right: 0.5rem;"></i> Crear Cuenta Institucional</a>
+            </section>
+        </main>
+
+        <footer id="main-footer">
+            <div class="footer-content">
+                <div id="company-info" class="footer-section"></div>
+                <div id="contact-info" class="footer-section"></div>
+                <div id="social-media" class="footer-section"></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- AI Sales Agent Floating Widget -->
+    <div id="ai-agent-widget" role="region" aria-label="Asistente Virtual de Ventas">
+        <button id="ai-agent-toggle" aria-label="Abrir asistente de ventas por IA" aria-expanded="false"><i class="fa-solid fa-robot"></i></button>
+        <div id="ai-agent-chatbox" class="hidden" role="dialog" aria-label="Chat del Asistente Virtual">
+            <div id="chatbox-header">
+                <i class="fa-solid fa-brain"></i> Asistente Institucional IA
+            </div>
+            <div id="chatbox-messages"></div>
+            <div id="chatbox-input-container">
+                <input type="text" id="chatbox-input" placeholder="Consulta sobre planes, módulos o seguridad...">
+                <button id="chatbox-send">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GSAP & ScrollTrigger Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Global App Configuration -->
+    <script src="js/config.js"></script>
+    <script src="js/utils/error_handler.js"></script>
+    <script src="js/utils/network_interceptor.js"></script>
+    <script src="js/utils/seo_optimizer.js"></script>
+    <script src="js/utils/dynamic_island.js"></script>
+    <script src="js/utils/marketing_publisher.js"></script>
+    <script src="js/components/modern_carousel.js"></script>
+    <script src="js/privacy.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
