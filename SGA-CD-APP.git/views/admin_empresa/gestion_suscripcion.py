@@ -56,7 +56,7 @@ def gestion_suscripcion_view(page: ft.Page, tenant_id: int):
                 "cancelada": ft.colors.GREY,
             }
             status_badge.bgcolor = status_colors.get(sub_details[1], ft.colors.GREY)
-            status_badge.content = ft.Text(sub_details[1].upper(), color="white", weight="bold")
+            status_badge.content = ft.Text(sub_details[1].upper(), color="#38BDF8", weight="bold")
         else:
             plan_name.value = "No se encontró una suscripción."
 

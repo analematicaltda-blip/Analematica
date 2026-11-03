@@ -408,7 +408,7 @@ function renderNavigation(roleName) {
     const links = navLinks[roleName] || navLinks.default;
 
     let navHtml = '';
-    links.forEach(link => {
+    links.forEach((link, index) => {
         if (link.submenu && Array.isArray(link.submenu)) {
             // Renderizar grupo con submenú
             let subHtml = '';
@@ -427,11 +427,11 @@ function renderNavigation(roleName) {
             });
 
             navHtml += `<div class="nav-group">
-                            <button class="nav-group-title" aria-expanded="false" tabindex="0">
+                            <button type="button" class="nav-group-title" aria-label="${link.text}" title="${link.text}" aria-expanded="false" aria-controls="nav-submenu-${index}" tabindex="0">
                                 <span><i class="fas ${link.icon}"></i> <span class="nav-text">${link.text}</span></span>
                                 <i class="fas fa-chevron-down nav-arrow"></i>
                             </button>
-                            <div class="nav-submenu">
+                            <div class="nav-submenu" id="nav-submenu-${index}" hidden>
                                 ${subHtml}
                             </div>
                         </div>`;
@@ -450,6 +450,12 @@ function renderNavigation(roleName) {
 }
 
 function setupSubmenuInteractions(navContainer) {
+    navContainer.querySelectorAll('a[data-view]').forEach(link => {
+        link.addEventListener('click', () => {
+            navContainer.querySelectorAll('[aria-current]').forEach(item => item.removeAttribute('aria-current'));
+            link.setAttribute('aria-current', 'page');
+        });
+    });
     // Interacción Click/Touch para desplegar submenús
     navContainer.querySelectorAll('.nav-group-title').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -458,9 +464,14 @@ function setupSubmenuInteractions(navContainer) {
             const isOpen = group.classList.contains('open');
 
             // Cerrar otros grupos
-            navContainer.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+            navContainer.querySelectorAll('.nav-group').forEach(g => {
+                g.classList.remove('open');
+                g.querySelector('.nav-group-title').setAttribute('aria-expanded', 'false');
+                g.querySelector('.nav-submenu').hidden = true;
+            });
             if (!isOpen) {
                 group.classList.add('open');
+                group.querySelector('.nav-submenu').hidden = false;
                 btn.setAttribute('aria-expanded', 'true');
             } else {
                 btn.setAttribute('aria-expanded', 'false');

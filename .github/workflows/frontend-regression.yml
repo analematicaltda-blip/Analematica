@@ -1,0 +1,39 @@
+name: Frontend regression
+on:
+  push:
+    paths:
+      - 'SGA-CD-WEB.git/**'
+      - 'scripts/update_demo_web.py'
+      - 'scripts/flet_preview/web-manifest.json'
+      - 'tests/frontend/**'
+      - '.github/workflows/frontend-regression.yml'
+  pull_request:
+    paths:
+      - 'SGA-CD-WEB.git/**'
+      - 'scripts/**'
+      - 'tests/frontend/**'
+      - '.github/workflows/frontend-regression.yml'
+permissions:
+  contents: read
+jobs:
+  landing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install browser test tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/sgacd-browser" --no-package-lock playwright@1.60.0
+          "$RUNNER_TEMP/sgacd-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Test landing and offline updates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 18090 --bind 127.0.0.1 --directory SGA-CD-WEB.git > "$RUNNER_TEMP/sgacd-web.log" 2>&1 &
+          web_server_pid=$!
+          trap 'kill "$web_server_pid"' EXIT
+          node tests/frontend/service-worker.cjs
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing.cjs

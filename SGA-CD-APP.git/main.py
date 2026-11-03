@@ -4,6 +4,7 @@ import os
 
 # --- App-specific Imports ---
 from utils.theme import create_light_theme, create_dark_theme
+from utils.palette import apply_sky_palette, fit_view_widths
 from utils.i18n_service import Translator
 from agent.llm_service import initialize_llm, get_llm_status
 from utils.database_manager import initialize_local_database
@@ -30,7 +31,7 @@ def main(page: ft.Page):
     # --- Theme Setup ---
     page.theme = create_light_theme()
     page.dark_theme = create_dark_theme()
-    page.theme_mode = page.session.get("theme_mode") or ft.ThemeMode.LIGHT
+    page.theme_mode = page.session.get("theme_mode") or ft.ThemeMode.DARK
 
     def toggle_theme(e):
         page.theme_mode = (
@@ -39,6 +40,9 @@ def main(page: ft.Page):
             else ft.ThemeMode.LIGHT
         )
         page.session.set("theme_mode", page.theme_mode)
+        for view in page.views:
+            apply_sky_palette(view)
+            fit_view_widths(view, page.width)
         page.update()
 
     theme_switcher_button = ft.IconButton(
@@ -62,6 +66,9 @@ def main(page: ft.Page):
             page.views.append(selection_view(page))
             if page.route != "/selection":
                 page.go("/selection")
+            for view in page.views:
+                apply_sky_palette(view)
+                fit_view_widths(view, page.width)
             page.update()
             return
 
@@ -86,6 +93,8 @@ def main(page: ft.Page):
             tenant_id = page.session.get("tenant_id")
 
             def add_view(view_function, **kwargs):
+                if view_function is dashboard_view:
+                    kwargs["user_role"] = user_role
                 view = view_function(page=page, user_id=user_id, tenant_id=tenant_id, **kwargs)
                 if hasattr(view, 'appbar') and view.appbar:
                     if not hasattr(view.appbar, 'actions'):
@@ -110,6 +119,9 @@ def main(page: ft.Page):
                         break
             if not route_found:
                 page.go('/dashboard')
+        for view in page.views:
+            apply_sky_palette(view)
+            fit_view_widths(view, page.width)
         page.update()
 
     def view_pop(view):
@@ -117,6 +129,12 @@ def main(page: ft.Page):
         top_view = page.views[-1]
         page.go(top_view.route)
 
+    def resize_views(event):
+        for view in page.views:
+            fit_view_widths(view, page.width)
+        page.update()
+
+    page.on_resized = resize_views
     page.on_route_change = route_change
     page.on_view_pop = view_pop
 
