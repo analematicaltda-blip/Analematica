@@ -11,12 +11,13 @@ def get_db_path(page: ft.Page) -> str:
     Usa page.user_data_path para asegurar que se guarde en una ubicación persistente
     y específica del usuario en cualquier plataforma (Windows, macOS, Linux, Android, iOS).
     """
-    if not page.user_data_path:
+    user_data_path = getattr(page, "user_data_path", None) or os.getenv("FLET_APP_STORAGE_DATA")
+    if not user_data_path:
         # Fallback para contextos donde page.user_data_path no esté disponible
         return DB_NAME
 
     # Crea un subdirectorio para nuestra aplicación para mantener las cosas ordenadas
-    db_dir = os.path.join(page.user_data_path, "SGA-CD_Data")
+    db_dir = os.path.join(user_data_path, "SGA-CD_Data")
     if not os.path.exists(db_dir):
         try:
             os.makedirs(db_dir)

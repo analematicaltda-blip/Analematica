@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sga-cd-pwa-v2';
+const CACHE_NAME = 'sga-cd-pwa-v3-sky';
 const urlsToCache = [
   '/',
   'index.html',
@@ -9,6 +9,7 @@ const urlsToCache = [
   'offline.html',
   'css/style.css',
   'css/app.css',
+  'css/sky-theme.css',
   'js/main.js',
   'js/app.js',
   'js/navigation.js',

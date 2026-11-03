@@ -84,7 +84,7 @@ def planificador_calendario_view(page: ft.Page, user_id: int):
                     for topic_name in scheduled_topics[day]:
                         day_content_column.controls.append(
                             ft.Container(
-                                content=ft.Text(topic_name, size=10, color="white"),
+                                content=ft.Text(topic_name, size=10, color="#38BDF8"),
                                 bgcolor=ft.colors.BLUE_GREY_500,
                                 border_radius=3,
                                 padding=2,

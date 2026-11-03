@@ -1,0 +1,138 @@
+{
+  "404.html": {
+    "before": "694dc7cac56059f9a2f736568eb2ba731591e472e7f9ef86a247f6f0fede00ba",
+    "accepted": [
+      "694dc7cac56059f9a2f736568eb2ba731591e472e7f9ef86a247f6f0fede00ba",
+      "7edb0e55b994847455e7c8734710f452ef4ca54a191343a7237f2b13453c1333"
+    ],
+    "after": "7edb0e55b994847455e7c8734710f452ef4ca54a191343a7237f2b13453c1333"
+  },
+  "api_test.html": {
+    "before": "499165b69313446bf2ce1140fdfd637d05e52d93326c05a33a3d328d197a1f25",
+    "accepted": [
+      "499165b69313446bf2ce1140fdfd637d05e52d93326c05a33a3d328d197a1f25",
+      "c8610ee9ccf575ec9eb92bd79939b280a976f77f49a1989ca6d10f363a5e6987"
+    ],
+    "after": "c8610ee9ccf575ec9eb92bd79939b280a976f77f49a1989ca6d10f363a5e6987"
+  },
+  "app.html": {
+    "before": "2f8cd913bb6a82bec73adc18fee7651b12266911e1894164ce33954a43ee768c",
+    "accepted": [
+      "2f8cd913bb6a82bec73adc18fee7651b12266911e1894164ce33954a43ee768c",
+      "b4a46ed65ec2e40e5af630616efcea288c8502caa5490381dfaa7c47fb607a14"
+    ],
+    "after": "b4a46ed65ec2e40e5af630616efcea288c8502caa5490381dfaa7c47fb607a14"
+  },
+  "checkout.html": {
+    "before": "8e282cc2fe3f0cc2e728433ae78dc8715d82fa62d8e648c3f6b3ec7902835705",
+    "accepted": [
+      "8e282cc2fe3f0cc2e728433ae78dc8715d82fa62d8e648c3f6b3ec7902835705",
+      "b8b59b14cf57aee0e9cc392bd9354919c535b8843a3d72d08d45a1aa15b87862"
+    ],
+    "after": "b8b59b14cf57aee0e9cc392bd9354919c535b8843a3d72d08d45a1aa15b87862"
+  },
+  "css/app.css": {
+    "before": "30d3609db0f9b1322bb713e3f309d8e4be3ebc746a336af96a10cea059e65155",
+    "accepted": [
+      "30d3609db0f9b1322bb713e3f309d8e4be3ebc746a336af96a10cea059e65155",
+      "a70b51ab62562a4afbc13c99db1328c462116c66ff8007a2b3a122e619dd90f5"
+    ],
+    "after": "a70b51ab62562a4afbc13c99db1328c462116c66ff8007a2b3a122e619dd90f5"
+  },
+  "js/app.js": {
+    "before": "492d6697186f4d36d11205cf56977d56f6f07761497799c5f781305075b2c1de",
+    "accepted": [
+      "492d6697186f4d36d11205cf56977d56f6f07761497799c5f781305075b2c1de",
+      "08a86575af4bfb46e7f6c41cab236a7732e7b345d3f56ba59d8b4b8e423af27f"
+    ],
+    "after": "08a86575af4bfb46e7f6c41cab236a7732e7b345d3f56ba59d8b4b8e423af27f"
+  },
+  "js/main.js": {
+    "before": "6367784c9cfbb9166307d7f0be81ff446fd035e7273a192181d2444acfa5ad4b",
+    "accepted": [
+      "6367784c9cfbb9166307d7f0be81ff446fd035e7273a192181d2444acfa5ad4b",
+      "f30031c49723d45d8ac3d1ae826349980f6499cb1c7c45006bbea48efd8a2d91"
+    ],
+    "after": "f30031c49723d45d8ac3d1ae826349980f6499cb1c7c45006bbea48efd8a2d91"
+  },
+  "js/navigation.js": {
+    "before": "66ecfae855f3d2cdd3e25d1e9e00b26905a877e7c2b404814904ff045b47acf9",
+    "accepted": [
+      "66ecfae855f3d2cdd3e25d1e9e00b26905a877e7c2b404814904ff045b47acf9",
+      "f9de29b68d9b1ef909930b9f13e7658d1d296e99ab052ca4d25a1a31ce34a0c6"
+    ],
+    "after": "f9de29b68d9b1ef909930b9f13e7658d1d296e99ab052ca4d25a1a31ce34a0c6"
+  },
+  "login.html": {
+    "before": "df98995963e4d6ca9b0a84fef6994d3b5be014f114c2346d7c2145688b87ebd5",
+    "accepted": [
+      "df98995963e4d6ca9b0a84fef6994d3b5be014f114c2346d7c2145688b87ebd5",
+      "3afa41c046d0a4d8411cd4b49bcd3f542058d416022f8eb82ec237a5da3f5090"
+    ],
+    "after": "3afa41c046d0a4d8411cd4b49bcd3f542058d416022f8eb82ec237a5da3f5090"
+  },
+  "offline.html": {
+    "before": "6312ca79db0cc4d76a531ead4263d11bf86641a7e9f84af93c944ce19b30b72c",
+    "accepted": [
+      "6312ca79db0cc4d76a531ead4263d11bf86641a7e9f84af93c944ce19b30b72c",
+      "f611dafd59031e4fa28a54e43fbc181dbc40b8670921c0f0b7411aa2a036e473"
+    ],
+    "after": "f611dafd59031e4fa28a54e43fbc181dbc40b8670921c0f0b7411aa2a036e473"
+  },
+  "payment_cancel.html": {
+    "before": "1c7beaa08161b71abe64bcc17791e4bea414942af2e2af31e2562c6dd5c84769",
+    "accepted": [
+      "1c7beaa08161b71abe64bcc17791e4bea414942af2e2af31e2562c6dd5c84769",
+      "e672d3e37ed1f0bd917fd397b148bf0972ccf12a31b0fe307e76d5a66af0cb0a"
+    ],
+    "after": "e672d3e37ed1f0bd917fd397b148bf0972ccf12a31b0fe307e76d5a66af0cb0a"
+  },
+  "payment_success.html": {
+    "before": "e544f5b2275ec60dfd1eac0bb0ad20c07eb93f69e4b5b640c3b06dd2e6881432",
+    "accepted": [
+      "e544f5b2275ec60dfd1eac0bb0ad20c07eb93f69e4b5b640c3b06dd2e6881432",
+      "f17cfd8697e3bf3df380e6f13710c044b58d88dcf476f96779b3a6c5fa87679a"
+    ],
+    "after": "f17cfd8697e3bf3df380e6f13710c044b58d88dcf476f96779b3a6c5fa87679a"
+  },
+  "privacy.html": {
+    "before": "d3054ed5c0c233350ddcb2a212807c6424095fd667b9df25c2c1a68c8e8ba69a",
+    "accepted": [
+      "d3054ed5c0c233350ddcb2a212807c6424095fd667b9df25c2c1a68c8e8ba69a",
+      "955a8e3dfac86ce95839a6773a106e8dd1b727e0ae53ae68941cbc27977d7f00"
+    ],
+    "after": "955a8e3dfac86ce95839a6773a106e8dd1b727e0ae53ae68941cbc27977d7f00"
+  },
+  "register.html": {
+    "before": "100b4cf756adf41024ed1be59937d284bf66b60493d0a2aa33b76d25cee70b76",
+    "accepted": [
+      "100b4cf756adf41024ed1be59937d284bf66b60493d0a2aa33b76d25cee70b76",
+      "35dcec15ad13e60b240ec9e53ed728d72c37cbb286567f0cbbbd98958839de2a"
+    ],
+    "after": "35dcec15ad13e60b240ec9e53ed728d72c37cbb286567f0cbbbd98958839de2a"
+  },
+  "service-worker.js": {
+    "before": "fe54bced24ce0b1f4ec8c12ffcf19782b350f3f08038d136b8f50cee9062dd7b",
+    "accepted": [
+      "fe54bced24ce0b1f4ec8c12ffcf19782b350f3f08038d136b8f50cee9062dd7b",
+      "f514d98508214460e6dc1a797a403c5e5795a53a32254d0b64c82c4abff796cc"
+    ],
+    "after": "f514d98508214460e6dc1a797a403c5e5795a53a32254d0b64c82c4abff796cc"
+  },
+  "terms.html": {
+    "before": "7ad039f58aa55a8571713727e546149bdd1c4725b33e0ad2b0ed367d61038c14",
+    "accepted": [
+      "7ad039f58aa55a8571713727e546149bdd1c4725b33e0ad2b0ed367d61038c14",
+      "932fb78b57e735f477f806b833d9e972f12be28445f24ad28cd7445546ae6e36"
+    ],
+    "after": "932fb78b57e735f477f806b833d9e972f12be28445f24ad28cd7445546ae6e36"
+  },
+  "css/sky-theme.css": {
+    "before": null,
+    "accepted": [
+      null,
+      "6c97a096e95e1761e615643d3da5d93886e854d612124dd1fd64d69ae28459da"
+    ],
+    "after": "6c97a096e95e1761e615643d3da5d93886e854d612124dd1fd64d69ae28459da"
+  }
+}

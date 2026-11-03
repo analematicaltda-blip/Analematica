@@ -90,7 +90,7 @@ def admin_gestion_listas(page: ft.Page, tenant_id: int):
             content=ft.Text(f"¿Estás seguro de que quieres eliminar '{item_name}' de la lista '{table}'?"),
             actions=[
                 ft.TextButton("Cancelar", on_click=lambda e: setattr(page.dialog, 'open', False) or page.update()),
-                ft.ElevatedButton("Eliminar", on_click=on_confirm_delete, bgcolor="red", color="white"),
+                ft.ElevatedButton("Eliminar", on_click=on_confirm_delete, bgcolor="red", color="#38BDF8"),
             ]
         )
         page.dialog.open = True

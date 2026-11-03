@@ -9,8 +9,8 @@
     "border_hover": "#38BDF8",
     "accent_cyan": "#38BDF8",
     "accent_glow": "rgba(56, 189, 248, 0.35)",
-    "text_primary": "#E2E8F0",
-    "text_muted": "#94A3B8",
+    "text_primary": "#38BDF8",
+    "text_muted": "#7DD3FC",
     "secondary_gold": "#F59E0B",
     "danger_red": "#EF4444",
     "success_green": "#10B981"

@@ -73,88 +73,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Sidebar Collapsible & Mobile Responsive Mechanics (GSAP Orchestration) ---
     function setupSidebarMechanics() {
         const sidebar = document.getElementById('app-sidebar');
-        const toggleBtn = document.getElementById('sidebar-toggle-btn');
-        const toggleIcon = document.getElementById('sidebar-toggle-icon');
-        const hamburgerBtn = document.getElementById('mobile-hamburger-btn');
+        const toggle = document.getElementById('sidebar-toggle-btn');
+        const hamburger = document.getElementById('mobile-hamburger-btn');
         const overlay = document.getElementById('sidebar-overlay');
-        const navContainer = document.getElementById('app-nav');
-
-        if (!sidebar) return;
-
-        let isCollapsed = false;
-
-        // Desktop Collapsible Toggle via GSAP Timeline
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                isCollapsed = !isCollapsed;
-
-                if (window.gsap) {
-                    const tl = gsap.timeline({ defaults: { duration: 0.3, ease: 'power2.inOut' } });
-                    const brand = sidebar.querySelector('.sidebar-brand h2');
-                    const navTexts = sidebar.querySelectorAll('.nav-text');
-
-                    if (isCollapsed) {
-                        tl.to(navTexts, { opacity: 0, duration: 0.15, onComplete: () => {
-                            navTexts.forEach(el => el.style.display = 'none');
-                        }})
-                        .to(brand, { opacity: 0, duration: 0.15, onComplete: () => {
-                            if (brand) brand.style.display = 'none';
-                        }}, 0)
-                        .to(sidebar, { width: 80 }, 0.05)
-                        .to(toggleIcon, { rotation: 180 }, 0.05);
-                        sidebar.classList.add('collapsed');
-                    } else {
-                        sidebar.classList.remove('collapsed');
-                        navTexts.forEach(el => el.style.display = 'inline-block');
-                        if (brand) brand.style.display = 'inline-block';
-
-                        tl.to(sidebar, { width: 270 })
-                        .to(toggleIcon, { rotation: 0 }, 0)
-                        .to([brand, ...navTexts], { opacity: 1, duration: 0.2 }, 0.1);
-                    }
-                } else {
-                    sidebar.classList.toggle('collapsed', isCollapsed);
-                }
-            });
-        }
-
-        // Mobile Hamburger Drawer & Overlay
-        const closeMobileSidebar = () => {
-            if (window.gsap) {
-                gsap.to(sidebar, { x: '-100%', duration: 0.3, ease: 'power2.in', onComplete: () => {
-                    sidebar.classList.remove('mobile-open');
-                    sidebar.style.transform = '';
-                }});
-                gsap.to(overlay, { opacity: 0, duration: 0.3, onComplete: () => {
-                    overlay.classList.remove('active');
-                }});
-            } else {
-                sidebar.classList.remove('mobile-open');
-                overlay.classList.remove('active');
-            }
+        const nav = document.getElementById('app-nav');
+        const mobile = window.matchMedia('(max-width: 768px)');
+        if (!sidebar || !toggle || !hamburger || !overlay) return;
+        hamburger.setAttribute('aria-controls', sidebar.id);
+        hamburger.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-expanded', 'true');
+        const close = (restoreFocus = false) => {
+            sidebar.classList.remove('mobile-open');
+            sidebar.inert = mobile.matches;
+            overlay.classList.remove('active');
+            sidebar.removeAttribute('aria-modal');
+            sidebar.removeAttribute('role');
+            hamburger.setAttribute('aria-expanded', 'false');
+            if (restoreFocus) hamburger.focus();
         };
-
-        if (hamburgerBtn && overlay) {
-            hamburgerBtn.addEventListener('click', () => {
-                sidebar.classList.add('mobile-open');
-                overlay.classList.add('active');
-                if (window.gsap) {
-                    gsap.fromTo(sidebar, { x: '-100%' }, { x: '0%', duration: 0.35, ease: 'power2.out' });
-                    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.35 });
-                }
-            });
-
-            overlay.addEventListener('click', closeMobileSidebar);
-        }
-
-        if (navContainer) {
-            navContainer.addEventListener('click', (e) => {
-                const link = e.target.closest('a');
-                if (link && window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
-                    closeMobileSidebar();
-                }
-            });
-        }
+        const focusable = () => [...sidebar.querySelectorAll('button, a[href], input, select')]
+            .filter(el => !el.disabled && el.getClientRects().length);
+        hamburger.addEventListener('click', () => {
+            if (sidebar.classList.contains('mobile-open')) return close(true);
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.add('mobile-open');
+            sidebar.inert = false;
+            overlay.classList.add('active');
+            sidebar.setAttribute('role', 'dialog');
+            sidebar.setAttribute('aria-modal', 'true');
+            sidebar.setAttribute('aria-label', 'Navegación principal');
+            hamburger.setAttribute('aria-expanded', 'true');
+            focusable()[0]?.focus();
+        });
+        toggle.addEventListener('click', () => {
+            const collapsed = sidebar.classList.toggle('collapsed');
+            toggle.setAttribute('aria-expanded', String(!collapsed));
+            toggle.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Retraer menú');
+        });
+        overlay.addEventListener('click', () => close(true));
+        nav?.addEventListener('click', e => {
+            if (e.target.closest('.nav-group-title') && sidebar.classList.contains('collapsed')) toggle.click();
+            if (e.target.closest('a[data-view]') && mobile.matches) close(true);
+        });
+        document.addEventListener('keydown', e => {
+            if (!sidebar.classList.contains('mobile-open')) return;
+            if (e.key === 'Escape') close(true);
+            if (e.key === 'Tab') {
+                const items = focusable();
+                const first = items[0], last = items[items.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+            }
+        });
+        mobile.addEventListener('change', () => { close(); sidebar.classList.remove('collapsed'); toggle.setAttribute('aria-expanded', 'true'); });
+        close();
     }
 
     // --- Silent-Refresh Cycle (Automated JWT Token Renewal) ---

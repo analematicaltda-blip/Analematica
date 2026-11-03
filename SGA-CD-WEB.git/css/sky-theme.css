@@ -1,0 +1,53 @@
+/* Shared sky-blue palette. Keep semantic success/error colors intact. */
+:root, body[data-theme] {
+    color-scheme: dark;
+    --color-bg-deep: #070B14;
+    --color-surface-solid: #0D1424;
+    --color-accent-cyan: #38BDF8;
+    --color-text-primary: #38BDF8;
+    --color-text-muted: #7DD3FC;
+    --text-primary: #38BDF8;
+    --text-secondary: #7DD3FC;
+    --text-light: #38BDF8;
+    --color-white: #38BDF8;
+}
+body { color: #38BDF8; background-color: #070B14; }
+button, input, select, textarea { font: inherit; }
+button, input[type=submit], input[type=button] {
+    background: #38BDF8;
+    color: #070B14;
+    border: 1px solid #38BDF8;
+    border-radius: 10px;
+    min-height: 44px;
+    padding: .65rem 1rem;
+    cursor: pointer;
+    white-space: normal;
+}
+input:not([type=checkbox]):not([type=radio]):not([type=submit]), select, textarea {
+    background-color: #0D1424;
+    color: #38BDF8;
+    border: 1px solid #2476A0;
+    border-radius: 8px;
+    min-height: 44px;
+    max-width: 100%;
+}
+input::placeholder, textarea::placeholder { color: #7DD3FC; opacity: .8; }
+option { background: #0D1424; color: #38BDF8; }
+input[type=checkbox], input[type=radio] { accent-color: #38BDF8; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+:focus-visible { outline: 2px solid #7DD3FC; outline-offset: 3px; }
+* { scrollbar-width: thin; scrollbar-color: #2476A0 #0D1424; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0D1424; }
+::-webkit-scrollbar-thumb { background: #2476A0; border-radius: 8px; }
+[style*="color:#e2e8f0" i], [style*="color: #e2e8f0" i],
+[style*="color:#f8fafc" i], [style*="color: #f8fafc" i],
+[style*="color:white" i], [style*="color: white" i],
+[style*="color:#fff;" i], [style*="color: #fff;" i],
+[style*="color:#ffffff" i], [style*="color: #ffffff" i] { color: #38BDF8 !important; }
+[style*="background:white" i], [style*="background: white" i],
+[style*="background:#fff;" i], [style*="background: #fff;" i],
+[style*="background:#ffffff" i], [style*="background: #ffffff" i] { background: #0D1424 !important; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

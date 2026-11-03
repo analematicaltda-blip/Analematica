@@ -10,7 +10,7 @@ class NotificationBell(ft.Container):
         self.menu_items = []
 
         self.badge = ft.Container(
-            content=ft.Text(str(self.unread_count), size=10, color="white"),
+            content=ft.Text(str(self.unread_count), size=10, color="#38BDF8"),
             width=16,
             height=16,
             bgcolor="red",

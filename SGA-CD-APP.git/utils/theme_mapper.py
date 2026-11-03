@@ -17,8 +17,8 @@ def load_design_tokens():
             "border_specular": "#1A2642",
             "border_hover": "#38BDF8",
             "accent_cyan": "#38BDF8",
-            "text_primary": "#E2E8F0",
-            "text_muted": "#94A3B8",
+            "text_primary": "#38BDF8",
+            "text_muted": "#7DD3FC",
             "secondary_gold": "#F59E0B"
         }
     }
@@ -27,25 +27,27 @@ DESIGN_TOKENS = load_design_tokens()
 
 def create_dark_metallic_blue_theme():
     colors = DESIGN_TOKENS.get("colors", {})
-    return ft.Theme(
+    theme = ft.Theme(
         color_scheme=ft.ColorScheme(
             background=colors.get("bg_deep", "#070B14"),
             primary=colors.get("accent_cyan", "#38BDF8"),
             primary_container=colors.get("surface_card", "#0D1424"),
             secondary=colors.get("secondary_gold", "#F59E0B"),
-            on_background=colors.get("text_primary", "#E2E8F0"),
-            on_surface=colors.get("text_primary", "#E2E8F0"),
+            on_background=colors.get("text_primary", "#38BDF8"),
+            on_surface=colors.get("text_primary", "#38BDF8"),
             on_primary="#070B14",
             surface=colors.get("surface_card", "#0D1424"),
             error="#0D1424",  # Forzar error sobre superficie #0D1424 con texto de resalte
             on_error="#38BDF8"
-        ),
-        custom_colors={
-            "secondary_text": colors.get("text_muted", "#94A3B8"),
-            "card_border": colors.get("border_specular", "#1A2642"),
-            "border_hover": colors.get("border_hover", "#38BDF8")
-        }
+        )
     )
+    theme.custom_colors ={
+        "secondary_text": colors.get("text_muted", "#7DD3FC"),
+        "card_border": colors.get("border_specular", "#1A2642"),
+        "border_hover": colors.get("border_hover", "#38BDF8")
+    }
+    return theme
+
 
 def create_custom_alert_dialog(title_text: str, content_text: str, on_confirm=None) -> ft.AlertDialog:
     """
@@ -57,7 +59,7 @@ def create_custom_alert_dialog(title_text: str, content_text: str, on_confirm=No
     return ft.AlertDialog(
         bgcolor=colors.get("surface_card", "#0D1424"),
         title=ft.Text(title_text, color=colors.get("accent_cyan", "#38BDF8"), weight=ft.FontWeight.BOLD),
-        content=ft.Text(content_text, color=colors.get("text_primary", "#E2E8F0")),
+        content=ft.Text(content_text, color=colors.get("text_primary", "#38BDF8")),
         actions=[
             ft.ElevatedButton(
                 "ACEPTAR",

@@ -11,12 +11,13 @@ def get_db_path(page: ft.Page) -> str:
     It uses Flet's user_data_path to ensure the database is stored
     in a persistent, user-specific location on any platform.
     """
-    if not page.user_data_path:
+    user_data_path = getattr(page, "user_data_path", None) or os.getenv("FLET_APP_STORAGE_DATA")
+    if not user_data_path:
         # Fallback for environments where user_data_path might not be available initially
         # (e.g., during very early startup or in some testing contexts)
         return DB_NAME
 
-    db_dir = os.path.join(page.user_data_path, "SGA-CD_Data")
+    db_dir = os.path.join(user_data_path, "SGA-CD_Data")
 
     # Ensure the directory exists
     if not os.path.exists(db_dir):

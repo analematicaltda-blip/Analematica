@@ -1,3 +1,7 @@
+const skyTheme = document.createElement("link");
+skyTheme.rel = "stylesheet";
+skyTheme.href = "css/sky-theme.css";
+document.head.appendChild(skyTheme);
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- XSS Escaping Helper ---
