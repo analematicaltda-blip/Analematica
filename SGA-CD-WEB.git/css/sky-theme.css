@@ -106,3 +106,15 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Gallery layout stays usable even if the optional vanguard stylesheet fails. */
+.monitor-card.multi-photo-card { padding:0; min-width:0; overflow:hidden; display:flex; flex-direction:column; }
+.monitor-card .card-gallery-wrapper { position:relative; width:100%; height:180px; flex-shrink:0; overflow:hidden; background:#070B14; }
+.monitor-card .card-gallery-strip { display:flex; width:500%; height:100%; transition:transform .5s ease; }
+.monitor-card .card-gallery-img { display:block; width:20%; height:100%; max-width:none; object-fit:cover; flex:0 0 20%; margin:0; }
+.monitor-card .gallery-arrow-btn { position:absolute; top:50%; transform:translateY(-50%); z-index:2; width:44px; height:44px; padding:0; border-radius:50%; background:#0D1424E8; color:#38BDF8; border:1px solid #2476A0; opacity:1; }
+.monitor-card .gallery-arrow-btn.prev { left:8px; }
+.monitor-card .gallery-arrow-btn.next { right:8px; }
+.monitor-card .gallery-nav-dots { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); display:flex; gap:6px; }
+.monitor-card .gallery-dot { display:block; width:8px; height:8px; border-radius:50%; background:#12304A; border:1px solid #38BDF8; cursor:pointer; }
+.monitor-card .gallery-dot.active { background:#38BDF8; }

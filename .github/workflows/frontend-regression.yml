@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'SGA-CD-WEB.git/**'
-      - 'scripts/update_demo_web.py'
+      - 'scripts/**'
       - 'scripts/flet_preview/web-manifest.json'
       - 'tests/frontend/**'
       - '.github/workflows/frontend-regression.yml'
@@ -32,8 +32,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m http.server 18090 --bind 127.0.0.1 --directory SGA-CD-WEB.git > "$RUNNER_TEMP/sgacd-web.log" 2>&1 &
+          python3 tests/frontend/publisher.py
+          mkdir -p "$RUNNER_TEMP/sgacd-demo"
+          cp -R SGA-CD-WEB.git "$RUNNER_TEMP/sgacd-demo/web"
+          python3 scripts/update_demo_web.py --demo-dir "$RUNNER_TEMP/sgacd-demo"
+          python3 -m http.server 18090 --bind 127.0.0.1 --directory "$RUNNER_TEMP/sgacd-demo/web" > "$RUNNER_TEMP/sgacd-web.log" 2>&1 &
           web_server_pid=$!
           trap 'kill "$web_server_pid"' EXIT
           node tests/frontend/service-worker.cjs
           PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing.cjs
+          SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing-resilience.cjs

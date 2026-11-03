@@ -1,7 +1,9 @@
+if (!document.querySelector('link[href*="sky-theme.css"]')) {
 const skyTheme = document.createElement("link");
 skyTheme.rel = "stylesheet";
 skyTheme.href = "css/sky-theme.css";
 document.head.appendChild(skyTheme);
+}
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- XSS Escaping Helper ---
@@ -646,8 +648,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-gallery-strip" style="transform: translate3d(0%, 0, 0);">
                         ${galleryImgsHtml}
                     </div>
-                    <button class="gallery-arrow-btn prev" aria-label="Foto Anterior"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="gallery-arrow-btn next" aria-label="Foto Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button class="gallery-arrow-btn prev" aria-label="Foto Anterior"><span aria-hidden="true">❮</span></button>
+                    <button class="gallery-arrow-btn next" aria-label="Foto Siguiente"><span aria-hidden="true">❯</span></button>
                     <div class="gallery-nav-dots">
                         <span class="gallery-dot active" data-dot="0"></span>
                         <span class="gallery-dot" data-dot="1"></span>
