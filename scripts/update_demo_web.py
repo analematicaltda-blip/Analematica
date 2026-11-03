@@ -42,6 +42,10 @@ for source, target, name in changes:
         shutil.copy2(target, saved)
 for source, target, name in changes:
     target.parent.mkdir(parents=True, exist_ok=True)
+    for parent in target.parents:
+        if parent == published:
+            break
+        parent.chmod(0o755)
     shutil.copy2(source, target)
     target.chmod(0o644)
 print('Archivos web actualizados:', len(changes))

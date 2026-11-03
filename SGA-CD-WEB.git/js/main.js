@@ -978,6 +978,12 @@ document.addEventListener('DOMContentLoaded', () => {
         startAutoLoop();
     }
 
+    // Keep the existing territorial controls directly below the image carousel.
+    // Move the actual node so its IDs, options and submit handler are preserved.
+    const imageCarousel = document.getElementById('carrusel-moderno');
+    const publicControls = document.getElementById('admin-territorial-control');
+    if (imageCarousel && publicControls) imageCarousel.after(publicControls);
+
     // --- App Init ---
     loadAndRenderContent();
     loadLiveMonitor();

@@ -53,7 +53,7 @@
       "6367784c9cfbb9166307d7f0be81ff446fd035e7273a192181d2444acfa5ad4b",
       "f30031c49723d45d8ac3d1ae826349980f6499cb1c7c45006bbea48efd8a2d91"
     ],
-    "after": "f30031c49723d45d8ac3d1ae826349980f6499cb1c7c45006bbea48efd8a2d91"
+    "after": "77e7a73a9ff55f5731a8f88e24df91f878177567851c806dc3c03435f2046557"
   },
   "js/navigation.js": {
     "before": "66ecfae855f3d2cdd3e25d1e9e00b26905a877e7c2b404814904ff045b47acf9",
@@ -117,7 +117,7 @@
       "fe54bced24ce0b1f4ec8c12ffcf19782b350f3f08038d136b8f50cee9062dd7b",
       "f514d98508214460e6dc1a797a403c5e5795a53a32254d0b64c82c4abff796cc"
     ],
-    "after": "f514d98508214460e6dc1a797a403c5e5795a53a32254d0b64c82c4abff796cc"
+    "after": "250e3db1a859fe0817e5fa39eef1c64721471554308ebb9c54ea10731b39a2a0"
   },
   "terms.html": {
     "before": "7ad039f58aa55a8571713727e546149bdd1c4725b33e0ad2b0ed367d61038c14",
@@ -133,6 +133,20 @@
       null,
       "6c97a096e95e1761e615643d3da5d93886e854d612124dd1fd64d69ae28459da"
     ],
-    "after": "6c97a096e95e1761e615643d3da5d93886e854d612124dd1fd64d69ae28459da"
+    "after": "78a5f7a00605246e47b9e589d917e57d800657e827064dd366e35c95465a7229"
+  },
+  "js/components/modern_carousel.js": {
+    "before": "143117d50cae30622e2ad4acdb713b66cc1ca6d7dc368ad4e8c90982235c1481",
+    "accepted": [
+      "143117d50cae30622e2ad4acdb713b66cc1ca6d7dc368ad4e8c90982235c1481"
+    ],
+    "after": "b105b1fc717b80b569ed412045c61b2e15532951a4808a4334f4fc84f433ac48"
+  },
+  "assets/images/carousel-fallback.svg": {
+    "before": null,
+    "accepted": [
+      null
+    ],
+    "after": "f7ba2c40e3ebf86d6d0479d36183d7cf6f4dd9ec8893406c395d4a08da6394a9"
   }
 }
