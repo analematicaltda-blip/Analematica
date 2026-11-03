@@ -42,3 +42,4 @@ jobs:
           node tests/frontend/service-worker.cjs
           PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing.cjs
           SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing-resilience.cjs
+          SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/landing-order.cjs

@@ -1,0 +1,7 @@
+PASS gallery 1440 five photos, next/previous, filters, missing optional CSS: false
+PASS gallery 390 five photos, next/previous, filters, missing optional CSS: false
+PASS gallery 320 five photos, next/previous, filters, missing optional CSS: false
+PASS gallery 1440 five photos, next/previous, filters, missing optional CSS: true
+PASS gallery 390 five photos, next/previous, filters, missing optional CSS: true
+PASS gallery 320 five photos, next/previous, filters, missing optional CSS: true
+PASS static landing: ten slides, search directly below, theme loaded without JavaScript, versioned assets

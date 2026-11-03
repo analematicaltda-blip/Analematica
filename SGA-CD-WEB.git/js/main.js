@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const settings = await response.json();
+            renderFallbackContent();
 
             // Inject Admin General Dynamic Settings to Landing Page
             if (settings.hero_title) {
@@ -29,15 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (titleEl) titleEl.textContent = settings.hero_title;
             }
             if (settings.hero_subtitle) {
-                const subEl = document.querySelector('#hero p.lead');
+                const subEl = document.querySelector('#hero .hero-tagline');
                 if (subEl) subEl.textContent = settings.hero_subtitle;
             }
             if (settings.hero_video_url) {
-                const videoSource = document.querySelector('#hero-video-container video source');
-                if (videoSource && settings.hero_video_url) {
-                    videoSource.src = settings.hero_video_url;
-                    const videoEl = document.querySelector('#hero-video-container video');
-                    if (videoEl) videoEl.load();
+                renderVideo(settings.hero_video_url);
+                const source = document.querySelector('#hero-video-container video source');
+                if (source && /^(https?:|assets\/)/i.test(settings.hero_video_url) && !/youtu/i.test(settings.hero_video_url)) {
+                    source.src = settings.hero_video_url;
+                    source.parentElement.load();
                 }
             }
             if (settings.carousel_slides_json && window.SGAModernCarousel) {
@@ -60,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (p1) p1.textContent = `$${settings.plan_tier1_price}`;
             }
 
-            renderFallbackContent();
             initializeGSAPAnimations();
 
         } catch (error) {
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFeatures(defaultFeatures);
         renderPlans(defaultPlans);
         renderFaq([]);
-        renderVideo("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        renderPartners([]);
         renderLaunchOffer("¡Invita a 10 instituciones o empresas y recibe 6 meses de licenciamiento completamente gratis!");
         renderFooter({
             nombre_empresa: "SGA-CD Inc.",
@@ -152,24 +152,42 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderVideo(videoUrl) {
         const container = document.getElementById('video-container');
         if (!container || !videoUrl) return;
-
+        let url;
+        try { url = new URL(videoUrl, window.location.href); } catch { return; }
+        if (!['http:', 'https:'].includes(url.protocol)) return;
+        const host = url.hostname.replace(/^www\./, '');
         let videoId = '';
-        if (videoUrl.includes('youtube.com/watch?v=')) {
-            videoId = videoUrl.split('v=')[1].split('&')[0];
-        } else if (videoUrl.includes('youtu.be/')) {
-            videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+        if (['youtube.com', 'youtube-nocookie.com'].includes(host)) {
+            videoId = url.searchParams.get('v') || (url.pathname.startsWith('/embed/') ? url.pathname.split('/')[2] : '');
+        } else if (host === 'youtu.be') videoId = url.pathname.slice(1);
+        let player;
+        if (videoId && /^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+            player = document.createElement('iframe');
+            player.src = 'https://www.youtube-nocookie.com/embed/' + videoId;
+            player.title = 'Video Institucional SGA-CD';
+            player.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+            player.allowFullscreen = true;
+        } else if (/\.(mp4|webm|ogg)$/i.test(url.pathname)) {
+            player = document.createElement('video');
+            player.src = url.href;
+            player.controls = true;
+            player.playsInline = true;
+            player.preload = 'metadata';
+            player.setAttribute('aria-label', 'Video Institucional SGA-CD');
         }
-
-        if (videoId) {
-            const cleanVideoId = sanitizeHTML(videoId);
-            container.innerHTML = `
-                <iframe
-                    src="https://www.youtube-nocookie.com/embed/${cleanVideoId}"
-                    title="Video Institucional SGA-CD"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-                </iframe>`;
+        if (player) {
+            if (player.tagName === 'VIDEO') {
+                player.addEventListener('error', () => {
+                    if (container.querySelector('.video-status')) return;
+                    const status = document.createElement('p');
+                    status.className = 'video-status';
+                    status.setAttribute('role', 'status');
+                    status.textContent = 'El video institucional no está disponible en este momento.';
+                    container.appendChild(status);
+                });
+                player.addEventListener('canplay', () => container.querySelector('.video-status')?.remove());
+            }
+            container.replaceChildren(player);
         }
     }
 
@@ -359,7 +377,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. GSAP & ScrollTrigger Animations ---
     function initializeGSAPAnimations() {
-        if (typeof gsap === 'undefined') return;
+        if (typeof gsap === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.querySelectorAll('.stat-number[data-target]').forEach(stat => {
+                const value = Number(stat.dataset.target);
+                stat.textContent = value.toLocaleString('es-CO') + (value === 4000 ? '+' : '');
+            });
+            return;
+        }
 
         if (typeof ScrollTrigger !== 'undefined') {
             gsap.registerPlugin(ScrollTrigger);
@@ -873,6 +897,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `).join('');
+        const controls = document.createElement('div');
+        controls.className = 'allies-carousel-controls';
+        controls.innerHTML = '<button type="button" aria-label="Empresa anterior">❮</button><button type="button" aria-label="Empresa siguiente">❯</button>';
+        controls.querySelectorAll('button').forEach((button,index) => {
+            button.onclick = () => {
+                const direction = index ? 1 : -1;
+                const end = grid.scrollWidth - grid.clientWidth;
+                const next = grid.scrollLeft + direction * (grid.firstElementChild.getBoundingClientRect().width + 20);
+                grid.scrollTo({left: next > end + 2 ? 0 : next < -2 ? end : Math.max(0,next), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+            };
+        });
+        grid.setAttribute('role','region');
+        grid.setAttribute('aria-label','Empresas afiliadas');
+        grid.tabIndex = 0;
+        grid.after(controls);
     }
 
     // --- Admin Territorial Asset Submit Handler ---
@@ -980,11 +1019,40 @@ document.addEventListener('DOMContentLoaded', () => {
         startAutoLoop();
     }
 
-    // Keep the existing territorial controls directly below the image carousel.
-    // Move the actual node so its IDs, options and submit handler are preserved.
-    const imageCarousel = document.getElementById('carrusel-moderno');
-    const publicControls = document.getElementById('admin-territorial-control');
-    if (imageCarousel && publicControls) imageCarousel.after(publicControls);
+    // Keep the same section nodes and IDs in the requested public reading order.
+    const landingMain = document.querySelector('main');
+    ['carrusel-moderno','admin-territorial-control','presentacion','partners','hero',
+     'monitor-vivo','carrusel-destacados','funcionalidades','faq','planes','oferta-lanzamiento','registro']
+        .forEach(id => { const node = document.getElementById(id); if (node && landingMain) landingMain.appendChild(node); });
+    const header = document.querySelector('header[role="banner"]');
+    const navigation = header?.querySelector('nav');
+    const menuButton = header?.querySelector('.mobile-menu-btn');
+    if (navigation && menuButton) {
+        document.documentElement.classList.add('landing-js');
+        navigation.id = 'landing-navigation';
+        navigation.querySelector('[aria-label="Inicio"]')?.setAttribute('href','#carrusel-moderno');
+        navigation.querySelector('[aria-label="Buscador de actividades"]')?.setAttribute('href','#admin-territorial-control');
+        header.appendChild(menuButton);
+        menuButton.setAttribute('aria-controls', navigation.id);
+        menuButton.setAttribute('aria-expanded', 'false');
+        const closeMenu = () => { navigation.classList.remove('is-open'); menuButton.setAttribute('aria-expanded','false'); };
+        menuButton.onclick = () => {
+            const open = navigation.classList.toggle('is-open');
+            menuButton.setAttribute('aria-expanded', String(open));
+        };
+        navigation.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
+        document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeMenu(); menuButton.focus(); } });
+        document.addEventListener('click', event => { if (!header.contains(event.target)) closeMenu(); });
+    }
+
+    // Keep passive utility widgets out of the public forms; alerts still float when expanded.
+    const landingFooter = document.getElementById('main-footer');
+    ['dynamic-island-container'].forEach(id => {
+        const widget = document.getElementById(id);
+        if (widget && landingFooter) landingFooter.appendChild(widget);
+    });
+    const socialBar = document.querySelector('.floating-social-bar');
+    if (socialBar && landingFooter) landingFooter.appendChild(socialBar);
 
     // --- App Init ---
     loadAndRenderContent();
