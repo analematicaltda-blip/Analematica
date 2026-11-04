@@ -2,7 +2,7 @@
 window.SGAWorkspace=(()=>{
  const roles={admin_general:'Administrador general',admin_empresa:'Administrador de empresa',jefe_area:'Jefe de área',profesional_area:'Profesional de área',tecnico_area:'Técnico de área',coordinador:'Coordinador',profesor:'Profesor / Instructor',alumno:'Alumno',padre_acudiente:'Padre o acudiente',jefe_almacen:'Jefe de almacén',almacenista:'Almacenista',jefe_escenarios:'Jefe de escenarios'};
  const labels={crm:'CRM y contactos',media:'Estudio multimedia',publish:'Publicaciones',inbox:'Mensajería social'};
- const advanced={'crm-empresa':'crm','media-ia-empresa':'media','motor-predis-media':'media',estudio:'media',publicaciones:'publish',mensajeria:'inbox',canales:'publish'};
+ const advanced={'crm-empresa':'crm','media-ia-empresa':'media','motor-predis-media':'media',estudio:'media',publicaciones:'publish',mensajeria:'inbox',canales:'publish',campanas:'publish',calendario:'publish',audiencia:'crm',adaptaciones:'media'};
  let session=null,activeRole=null,sequence=0,renderLegacy=null;
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const token=()=>localStorage.getItem('accessToken');
@@ -29,6 +29,9 @@ window.SGAWorkspace=(()=>{
   const premium=[];
   for(const [permission,view]of[['crm','crm-empresa'],['media','estudio'],['publish','publicaciones'],['inbox','mensajeria']])if(session?.permissions[permission])premium.push({text:labels[permission],view,icon:permission==='media'?'fa-film':'fa-bullhorn'});
   if(session?.manage_channels&&session?.full_enabled)premium.push({text:'Canales de la organización',view:'canales',icon:'fa-plug'});
+  if(session?.permissions.publish)premium.push({text:'Campañas y envíos',view:'campanas'},{text:'Calendario de publicaciones',view:'calendario'});
+  if(session?.permissions.crm)premium.push({text:'Audiencia y consentimiento',view:'audiencia'});
+  if(session?.permissions.media)premium.push({text:'Adaptar videos por plataforma',view:'adaptaciones'});
   if(premium.length)start.push({text:'CRM y comunicación · Full',icon:'fa-bullhorn',submenu:premium});
   const links=[...start,...original];
   nav.innerHTML='<label class="workspace-nav-search">Buscar una función<input id="workspace-nav-search" type="search" placeholder="Usuarios, clases, contenido…"></label>'+links.map((group,index)=>{
@@ -49,6 +52,7 @@ window.SGAWorkspace=(()=>{
   let content=`<div class="workspace-summary"><div><span>Organización</span><strong>${esc(session?.organization||'Permisos pendientes de verificar')}</strong></div><div><span>Usuario</span><strong>${esc(session?.user.name||'')}</strong></div><div><span>Acceso comercial</span><strong>${session?.full_enabled?'Funciones Full habilitadas':'Operación institucional'}</strong></div></div><h3>¿Qué necesitas hacer?</h3><div class="workspace-grid">`;
   if(session?.manage_team)content+=card('Equipo administrativo','Asigna funciones a miembros de tu organización.','equipo');
   for(const [permission,view]of[['crm','crm-empresa'],['media','estudio'],['publish','publicaciones'],['inbox','mensajeria']])if(session?.permissions[permission])content+=card(labels[permission],permission==='media'?'Guiones, imágenes y reels desde este panel.':'Acceso según tu plan y los permisos de tu empresa.',view);
+  if(session?.permissions.publish)content+=card('Campañas y calendario','Programa videos y mensajes para los canales de tu organización.','campanas');
   content+=card('Operación y módulos','Accede a las funciones de tu rol sin concentrarlas en una sola pantalla.','operacion')+card('Plan y disponibilidad','Consulta tus capacidades y cuotas.','plan')+'</div>';
   frame('Tu espacio de trabajo','Inicio organizado. Las funciones existentes continúan en el menú.',content);
  }
@@ -80,12 +84,13 @@ window.SGAWorkspace=(()=>{
   document.getElementById('ws-draft').onclick=async()=>{if(!payload().asset_id||!payload().title)return message('Selecciona un reel y escribe un título.');try{await api('/social/draft',{method:'POST',body:JSON.stringify(payload())});message('Borrador guardado. No se ha enviado contenido.')}catch(error){message(error.message)}};
   form.onsubmit=async event=>{event.preventDefault();if(!document.getElementById('ws-confirm').checked)return message('Confirma el envío privado antes de continuar.');const button=form.querySelector('[type=submit]');button.disabled=true;try{const result=await api('/youtube/upload-private',{method:'POST',body:JSON.stringify({...payload(),made_for_kids:form.elements.made_for_kids.value==='yes',confirm_private:true})});message('Video confirmado como privado en YouTube: '+result.video_id)}catch(error){message(error.message)}finally{button.disabled=false}};
  }
- async function inbox(){const data=await api('/inbox/status');frame('Mensajería social','Función de Plan Full y acceso delegado por tu administrador.',`<p>${esc(data.message)}</p><div class="workspace-grid">${data.channels.map(channel=>`<div class="workspace-card"><h3>${esc(channel.provider)}</h3><p>${channel.connected?'Conectado':'Pendiente de autorización y webhook'}</p></div>`).join('')}</div>`);}
+ async function inbox(){const data=await api('/inbox/status');frame('Mensajería social','Función de Plan Full y acceso delegado por tu administrador.',`<p>${esc(data.message)}</p><div class="workspace-grid">${data.channels.map(channel=>`<div class="workspace-card"><h3>${esc(channel.provider)}</h3><p>${channel.connected?'Conectado':channel.outbound_configured?'Salida configurada; bandeja pendiente del webhook':'Pendiente de autorización y webhook'}</p></div>`).join('')}</div>`);}
  function operations(){frame('Operación y módulos','Conserva los módulos existentes y abre uno a la vez.',`<div class="workspace-grid">${originalViews(activeRole).filter(view=>window.sgaViewRegistry[activeRole]?.[view]&&!advanced[view]&&!['dashboard','inicio'].includes(view)).map(view=>card(view.replaceAll('-',' '),'Módulo existente de tu rol.',view)).join('')}${window.sgaViewRegistry[activeRole]?.['resumen-operativo']?card('Resumen operativo','Panel original conservado.','resumen-operativo'):''}</div>`);}
  async function render(view){
   const permission=advanced[view];
   if(permission&&!session?.permissions[permission]){frame('Acceso no habilitado','El plan y los permisos se comprueban en el servidor.',`<p>${session?.full_enabled?'Solicita al administrador de tu empresa que habilite esta función.':'CRM, contenido, publicaciones y mensajería social requieren Plan Full vigente.'}</p>`);return true;}
   if(view==='equipo'&&!session?.manage_team){frame('Acceso restringido','Solo el administrador habilita al equipo.','');return true;}
+  if(window.SGACampaigns?.views.includes(view)){await SGACampaigns.render(view,{session,role:activeRole,frame});return true;}
   const renders={inicio:home,plan,paneles:directory,equipo:team,estudio:studio,'media-ia-empresa':studio,'motor-predis-media':studio,'crm-empresa':crm,canales:channels,publicaciones:publishing,mensajeria:inbox,operacion:operations};
   if(!renders[view])return false;
   await renders[view]();return true;

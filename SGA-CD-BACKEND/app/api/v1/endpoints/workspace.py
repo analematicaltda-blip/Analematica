@@ -187,9 +187,10 @@ def publish(body:Publish,db=Depends(deps.get_db),access=Depends(context)):
     return {'privacy':'private','video_id':asset.publish_video_id}
 
 @router.get('/inbox/status')
-def inbox(access=Depends(context)):
+def inbox(access=Depends(context),db=Depends(deps.get_db)):
     access.require('inbox')
-    return {'channels':[{'provider':provider,'connected':False,'state':'pending_authorization'} for provider in ['whatsapp','instagram','facebook']],'automatic_replies':False,'message':'Las conversaciones aparecerán después de autorizar los canales y configurar sus webhooks; no se muestran mensajes simulados.'}
+    configured={row.provider for row in db.query(WorkspaceChannel).filter_by(scope=access.scope).all()}
+    return {'channels':[{'provider':provider,'connected':False,'outbound_configured':provider in configured,'state':'pending_webhooks' if provider in configured else 'pending_authorization'} for provider in ['whatsapp','instagram','facebook']],'automatic_replies':False,'message':'Las campañas usan las cuentas de salida configuradas. La bandeja de entrada y las respuestas requieren autorización y webhooks propios; no se muestran conversaciones simuladas.'}
 
 @router.put('/providers/gemini')
 async def configure_provider(request:Request,access=Depends(context)):
@@ -200,3 +201,7 @@ async def configure_provider(request:Request,access=Depends(context)):
     except (ValidationError,ValueError):raise HTTPException(422,'Configuración no válida; no se devolvieron credenciales.') from None
     decoded(ws.worker('/internal/providers/gemini',{'api_key':body.api_key.get_secret_value(),'text_model':body.text_model,'image_model':body.image_model},method='PUT'))
     return {'configured':True,'verified':False}
+
+# Integrated campaign studio shares the exact same JWT, plan and tenant context.
+from app.api.v1.endpoints import campaigns as integrated_campaigns
+router.include_router(integrated_campaigns.router,prefix='/campaigns',tags=['Campaign calendar'])

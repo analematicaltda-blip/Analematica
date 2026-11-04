@@ -11,6 +11,8 @@ from pydantic import BaseModel, Field, ValidationError, SecretStr
 from fastapi.exceptions import RequestValidationError
 from .engine import Config, Engine, WorkerError
 from .youtube import YouTube
+from .adaptation import adapt,PROFILES
+from .campaign_dispatch import dispatch as deliver_campaign,result as campaign_result
 
 class Prompt(BaseModel):
     prompt:str=Field(min_length=1,max_length=6000)
@@ -46,6 +48,26 @@ class ProviderSettings(BaseModel):
     api_key:SecretStr
     text_model:str=Field(pattern=r'^[A-Za-z0-9._-]{1,120}$')
     image_model:str=Field(pattern=r'^[A-Za-z0-9._-]{1,120}$')
+    model_config={'extra':'forbid'}
+
+class Adaptation(BaseModel):
+    filename:str
+    profile:Literal['youtube','instagram','facebook','whatsapp','x','tiktok','gmail']
+    model_config={'extra':'forbid'}
+class CampaignDelivery(BaseModel):
+    workspace:str=Field(pattern=r'^(platform|tenant:[0-9]+)$')
+    job_id:str=Field(pattern=r'^[a-f0-9-]{36}$')
+    phase:int=Field(ge=0,le=1000)
+    provider:Literal['youtube','instagram','facebook','whatsapp','x','tiktok','gmail']
+    filename:str
+    credentials:dict[str,SecretStr]
+    title:str=Field(min_length=1,max_length=100)
+    description:str=Field(default='',max_length=2000)
+    recipient:str=Field(default='',max_length=254)
+    provider_state:dict=Field(default_factory=dict)
+    options:dict=Field(default_factory=dict)
+    public_video_url:str=''
+    unsubscribe_url:str=''
     model_config={'extra':'forbid'}
 
 TOOLS=[
@@ -106,6 +128,16 @@ def create_app(config=None):
         with open(temp,'w',opener=lambda name,flags:os.open(name,flags,0o600)) as stream:json.dump(values,stream)
         os.replace(temp,path);config.api_key=values['api_key'];config.text_model=values['text_model'];config.image_model=values['image_model'];engine.gemini_inference_verified=False
         return {'configured':True,'verified':False}
+    @app.get('/internal/campaigns/profiles',dependencies=[Depends(auth)])
+    def profiles():return {'profiles':PROFILES}
+    @app.post('/internal/campaigns/adapt',dependencies=[Depends(auth)])
+    def adaptation(body:Adaptation):return adapt(engine,body.filename,body.profile)
+    @app.post('/internal/campaigns/deliver',dependencies=[Depends(auth)])
+    def delivery(body:CampaignDelivery):
+        if os.getenv('NODE6_CAMPAIGNS_ENABLED','0')!='1':raise HTTPException(409,'Las campañas están en modo preparación sin envíos externos.')
+        return deliver_campaign(engine,body)
+    @app.get('/internal/campaigns/result/{workspace}/{job_id}/{phase}',dependencies=[Depends(auth)])
+    def delivery_result(workspace:str,job_id:str,phase:int):return campaign_result(engine,workspace,job_id,phase)
     @app.get('/artifacts/{filename}',dependencies=[Depends(auth)])
     def artifact(filename:str):return FileResponse(engine.artifact(filename),filename=filename)
     @app.post('/mcp',dependencies=[Depends(auth)])

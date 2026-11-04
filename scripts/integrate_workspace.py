@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import sys
 
-BACKEND_FILES=['models/workspace.py','services/workspace_service.py','services/workspace_guard.py','services/workspace_schema.py','api/v1/endpoints/workspace.py','services/plan_capability_service.py','crud/tenancy.py','schemas/tenancy.py']
+BACKEND_FILES=['models/workspace.py','services/workspace_service.py','services/workspace_guard.py','services/workspace_schema.py','api/v1/endpoints/workspace.py','services/plan_capability_service.py','crud/tenancy.py','schemas/tenancy.py','models/campaigns.py','services/campaign_service.py','services/campaign_schema.py','services/campaign_worker.py','api/v1/endpoints/campaigns.py']
 
 def run(argv,**kw):return subprocess.run(argv,check=True,**kw)
 def install(args):
@@ -63,16 +63,21 @@ def install(args):
  token=values.get('NODE6_TOKEN')
  if not token or any(c in token for c in '\r\n'):raise SystemExit('NODE6_TOKEN no está configurado en el archivo privado del nodo.')
  private=demo/'workspace.env'
- with open(private,'w',opener=lambda name,flags:os.open(name,flags,0o600)) as stream:stream.write('NODE6_URL=http://node6:8606\nNODE6_TOKEN='+token+'\n')
+ private_values=dict(line.split('=',1) for line in private.read_text().splitlines() if '=' in line and not line.startswith('#')) if private.exists() else {}
+ private_values.setdefault('CAMPAIGN_DELIVERY_ENABLED','0')
+ if private_values['CAMPAIGN_DELIVERY_ENABLED'] not in ['0','1']:raise SystemExit('Modo de campañas no válido; utiliza 0 para preparación sin envíos.')
+ node.setdefault('environment',{})['NODE6_CAMPAIGNS_ENABLED']=private_values['CAMPAIGN_DELIVERY_ENABLED']
+ private_values.update(NODE6_URL='http://node6:8606',NODE6_TOKEN=token)
+ with open(private,'w',opener=lambda name,flags:os.open(name,flags,0o600)) as stream:stream.write('\n'.join(key+'='+value for key,value in private_values.items())+'\n')
  private.chmod(0o600)
  backend_env=backend.setdefault('env_file',[])
  if isinstance(backend_env,str):backend_env=[backend_env];backend['env_file']=backend_env
  if str(private) not in backend_env:backend_env.append(str(private))
  # Explicit environment values take precedence over env_file: preserve all except managed pair.
  if isinstance(backend.get('environment'),dict):
-  for key in ['NODE6_URL','NODE6_TOKEN']:backend['environment'].pop(key,None)
- elif isinstance(backend.get('environment'),list):backend['environment']=[line for line in backend['environment'] if line.split('=',1)[0] not in ['NODE6_URL','NODE6_TOKEN']]
- for filename in ['engine.py','main.py','youtube.py']:
+  for key in ['NODE6_URL','NODE6_TOKEN','CAMPAIGN_DELIVERY_ENABLED']:backend['environment'].pop(key,None)
+ elif isinstance(backend.get('environment'),list):backend['environment']=[line for line in backend['environment'] if line.split('=',1)[0] not in ['NODE6_URL','NODE6_TOKEN','CAMPAIGN_DELIVERY_ENABLED']]
+ for filename in ['engine.py','main.py','youtube.py','adaptation.py','social.py','campaign_dispatch.py']:
   copied=overlay/'node6'/filename;copied.parent.mkdir(exist_ok=True);shutil.copy2(repo/'infra/node6'/filename,copied);copied.chmod(0o644)
   target='/app/infra/node6/'+filename;value=str(copied)+':'+target+':ro';volumes=node.setdefault('volumes',[])
   for mount in volumes:
@@ -81,6 +86,17 @@ def install(args):
     if not any(source.is_relative_to(root) for root in [demo/'workspace-overlay',demo/'workspace-overlays',repo/'infra/node6']):raise SystemExit('Montaje Node 6 personalizado; no se sustituyó.')
   volumes[:]=[mount for mount in volumes if destination(mount)!=target]
   volumes.append(value)
+ # The scheduler uses the same backend code, credentials and DB, with no listening port.
+ import copy
+ scheduler=copy.deepcopy(backend)
+ for key in ['ports','expose','container_name','depends_on']:scheduler.pop(key,None)
+ scheduler['command']=['python','-m','app.services.campaign_worker']
+ scheduler['restart']='unless-stopped'
+ scheduler['healthcheck']={'test':['CMD','python','-c',"from pathlib import Path; import time; p=Path('/tmp/sgacd-campaign-heartbeat'); assert p.exists() and time.time()-p.stat().st_mtime<600"],'interval':'30s','timeout':'5s','retries':5,'start_period':'30s'}
+ scheduler.setdefault('labels',{})['io.sgacd.managed']='campaign-scheduler'
+ previous_scheduler=config['services'].get('campaign-scheduler')
+ if previous_scheduler and previous_scheduler.get('labels',{}).get('io.sgacd.managed')!='campaign-scheduler':raise SystemExit('Ya existe un planificador personalizado; se conservó compose.json.')
+ config['services']['campaign-scheduler']=scheduler
  path.write_text(json.dumps(config,indent=2)+'\n');path.chmod(0o600)
  print('Respaldo privado:',backup)
  print('Integración preparada; conserva usuarios, credenciales, volúmenes y bases Flet.')
@@ -88,10 +104,12 @@ def install(args):
  if subprocess.run(['docker','image','inspect',node.get('image','sgacd-node6:demo')],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:run(compose+['build','node6'])
  run(compose+['up','-d','--no-deps','--force-recreate','--wait','--wait-timeout','180','node6','backend'])
  run(compose+['exec','-T','backend','python','-m','app.services.workspace_schema'])
+ run(compose+['exec','-T','backend','python','-m','app.services.campaign_schema'])
+ run(compose+['up','-d','--no-deps','--force-recreate','--wait','--wait-timeout','180','campaign-scheduler'])
  run([sys.executable,str(repo/'scripts/update_demo_web.py'),'--demo-dir',str(demo)])
  run(compose+['exec','-T','web','nginx','-t'])
  run(compose+['exec','-T','web','nginx','-s','reload'])
- run(compose+['ps','backend','node6','web'])
+ run(compose+['ps','backend','node6','web','campaign-scheduler'])
  print('Actualización aplicada. Abre el puerto 8080 y recarga con Ctrl+Shift+R. Los accesos están en app.html#/ROL/inicio.')
 
 if __name__=='__main__':

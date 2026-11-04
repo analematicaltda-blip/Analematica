@@ -46,3 +46,4 @@ jobs:
           SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" GSAP_DIST="$RUNNER_TEMP/sgacd-browser/node_modules/gsap/dist" node tests/frontend/monitor-animations.cjs
           SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" node tests/frontend/oauth.cjs
           SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" GSAP_DIST="$RUNNER_TEMP/sgacd-browser/node_modules/gsap/dist" node tests/frontend/workspace.cjs
+          SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE="$RUNNER_TEMP/sgacd-browser/node_modules/playwright" GSAP_DIST="$RUNNER_TEMP/sgacd-browser/node_modules/gsap/dist" node tests/frontend/campaigns.cjs

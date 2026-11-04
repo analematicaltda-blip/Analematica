@@ -11,7 +11,7 @@ WORKDIR /app
 COPY engine.py /app/infra/node6/engine.py
 COPY main.py /app/infra/node6/main.py
 COPY youtube.py /app/infra/node6/youtube.py
-COPY studio.html studio.js studio.css /app/infra/node6/
+COPY studio.html studio.js studio.css adaptation.py social.py campaign_dispatch.py /app/infra/node6/
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 NODE6_OUTPUT=/state/generated
 EXPOSE 8606
 CMD ["uvicorn","infra.node6.main:app","--host","0.0.0.0","--port","8606","--no-access-log"]

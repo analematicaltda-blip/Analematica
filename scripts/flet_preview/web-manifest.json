@@ -19,9 +19,10 @@
     "before": "2f8cd913bb6a82bec73adc18fee7651b12266911e1894164ce33954a43ee768c",
     "accepted": [
       "2f8cd913bb6a82bec73adc18fee7651b12266911e1894164ce33954a43ee768c",
-      "b4a46ed65ec2e40e5af630616efcea288c8502caa5490381dfaa7c47fb607a14"
+      "b4a46ed65ec2e40e5af630616efcea288c8502caa5490381dfaa7c47fb607a14",
+      "8675e98ae063b2d68db80b466e589e2b18bc9896275de4f7e1ab944cff0ec786"
     ],
-    "after": "8675e98ae063b2d68db80b466e589e2b18bc9896275de4f7e1ab944cff0ec786"
+    "after": "81a4227cf11f6fe7513209e415f64f430c8eba2886405a72b91e2d1c52041d74"
   },
   "checkout.html": {
     "before": "8e282cc2fe3f0cc2e728433ae78dc8715d82fa62d8e648c3f6b3ec7902835705",
@@ -203,8 +204,23 @@
   "js/workspace.js": {
     "before": null,
     "accepted": [
+      null,
+      "a4c83e5ac0073178465a6f1302064763a7efd45fc2de4f8d83055e330effaa0a"
+    ],
+    "after": "e71bd28f095b7f8f61c74ab89938099a13d89cb653699e337d18b0ac7b1a7849"
+  },
+  "js/campaigns.js": {
+    "before": null,
+    "accepted": [
       null
     ],
-    "after": "a4c83e5ac0073178465a6f1302064763a7efd45fc2de4f8d83055e330effaa0a"
+    "after": "a23b39bd00bdf776bb77d1696f61499bc2955f5b62acc79dcc1f7c0ff6870579"
+  },
+  "css/campaigns.css": {
+    "before": null,
+    "accepted": [
+      null
+    ],
+    "after": "03baa90df1400a7dc46313c5253876881867d7e4f9647a069152c2e9976b47bc"
   }
 }

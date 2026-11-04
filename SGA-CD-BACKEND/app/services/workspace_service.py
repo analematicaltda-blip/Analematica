@@ -109,11 +109,13 @@ def asset_for(db,access,asset_id,kind=None):
     if not row or kind and row.kind!=kind:raise HTTPException(404,'Archivo no encontrado en tu espacio.')
     return row
 
-def save_asset(db,access,result,kind,title=''):
+def save_asset(db,access,result,kind,title='',commit=True):
     filename=result.get('filename','')
     if not re.fullmatch(r'[a-f0-9]{32}\.(png|mp4|json)',filename) or not filename.endswith({'image':'.png','reel':'.mp4','draft':'.json'}[kind]):raise HTTPException(502,'El estudio devolvió un archivo no válido.')
     row=WorkspaceAsset(id=str(uuid.uuid4()),scope=access.scope,filename=filename,kind=kind,title=title[:120],created_by=access.user.id)
-    db.add(row);db.commit()
+    db.add(row)
+    if commit:db.commit()
+    else:db.flush()
     return asset_dict(row)
 
 def asset_dict(row):return {'id':row.id,'kind':row.kind,'title':row.title,'created_at':row.created_at.isoformat() if row.created_at else None,'download_url':'/api/v1/workspace/assets/'+row.id+'/download','publish_status':row.publish_status,'video_id':row.publish_video_id}
