@@ -1,0 +1,568 @@
+/* ==========================================================================
+   ANALEMÁTICA - PANEL DE ADMINISTRADOR GENERAL & CONSOLA DE AGENTES MILITARES
+   PALETA ESTRICTA: Tonos de Azul Metálico y Azul Claro ÚNICAMENTE.
+   PROHIBIDO: Blanco, Rojo, Amarillo.
+   ========================================================================== */
+
+:root {
+  /* Paleta Azul Metálico */
+  --metal-deep-950: #060b17;     /* Fondo base ultra oscuro metálico */
+  --metal-navy-900: #0a1128;     /* Fondo secundario oscuro */
+  --metal-surface-850: #0e1b38;  /* Tarjetas y superficies */
+  --metal-elevated-800: #142850; /* Paneles elevados */
+  --metal-card-750: #1a3262;     /* Tarjetas hover / acentos metálicos */
+  --metal-border-700: #1e3a8a;   /* Bordes metálicos */
+  --metal-steel-600: #2563eb;    /* Acero azul reflectante */
+
+  /* Paleta Azul Claro */
+  --sky-bright-300: #7dd3fc;     /* Títulos principales, highlights */
+  --sky-vibrant-400: #38bdf8;    /* Acentos activos, botones primarios */
+  --sky-cyan-500: #0ea5e9;       /* Botones hover y enlaces */
+  --sky-pale-200: #bae6fd;       /* Texto primario claro (reemplaza blanco) */
+  --sky-muted-300: #93c5fd;      /* Texto de subtítulos y párrafos */
+  --sky-subtle-400: #60a5fa;     /* Bordes iluminados y detalles */
+
+  /* Tipografías */
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Efectos y Sombras Metálicas */
+  --shadow-metallic: 0 10px 30px -10px rgba(14, 165, 233, 0.25), 0 0 1px 1px #1e3a8a;
+  --shadow-metallic-hover: 0 20px 40px -12px rgba(56, 189, 248, 0.4), 0 0 15px rgba(56, 189, 248, 0.25);
+  --glass-metallic: rgba(14, 27, 56, 0.85);
+  --glass-blur: blur(14px);
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--metal-deep-950);
+  color: var(--sky-pale-200);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header de la consola de administración */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--glass-metallic);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--metal-border-700);
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-logo-img {
+  width: 38px;
+  height: 38px;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--sky-bright-300);
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  font-size: 0.7rem;
+  color: var(--sky-subtle-400);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Botones con estilo metálico estricto (Azul Metálico / Claro) */
+.btn-admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.btn-admin-primary {
+  background: linear-gradient(135deg, var(--sky-vibrant-400), var(--metal-steel-600));
+  color: var(--metal-deep-950);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+}
+
+.btn-admin-primary:hover {
+  background: linear-gradient(135deg, var(--sky-bright-300), var(--sky-cyan-500));
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+}
+
+.btn-admin-secondary {
+  background-color: var(--metal-surface-850);
+  color: var(--sky-pale-200);
+  border: 1px solid var(--metal-border-700);
+}
+
+.btn-admin-secondary:hover {
+  background-color: var(--metal-elevated-800);
+  border-color: var(--sky-subtle-400);
+  color: var(--sky-bright-300);
+}
+
+.btn-admin-outline {
+  background: transparent;
+  color: var(--sky-muted-300);
+  border: 1px solid var(--metal-border-700);
+}
+
+.btn-admin-outline:hover {
+  background-color: rgba(56, 189, 248, 0.1);
+  color: var(--sky-bright-300);
+  border-color: var(--sky-vibrant-400);
+}
+
+/* Layout Principal con Menú Lateral Táctico */
+.admin-layout {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 65px);
+}
+
+.admin-sidebar {
+  width: 290px;
+  background-color: var(--metal-navy-900);
+  border-right: 1px solid var(--metal-border-700);
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 0.75rem;
+}
+
+.sidebar-heading {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sky-subtle-400);
+  padding: 0.5rem 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.nav-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--sky-muted-300);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.nav-tab-btn:hover {
+  background-color: var(--metal-surface-850);
+  color: var(--sky-bright-300);
+  border-color: rgba(56, 189, 248, 0.2);
+}
+
+.nav-tab-btn.active {
+  background: linear-gradient(90deg, var(--metal-surface-850), var(--metal-elevated-800));
+  color: var(--sky-bright-300);
+  border-color: var(--sky-vibrant-400);
+  box-shadow: inset 3px 0 0 var(--sky-vibrant-400);
+}
+
+.nav-tab-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--sky-vibrant-400);
+}
+
+/* Área de Contenido Principal */
+.admin-content {
+  flex: 1;
+  padding: 2rem;
+  background: radial-gradient(circle at 10% 10%, rgba(14, 27, 56, 0.4), transparent 40%),
+              radial-gradient(circle at 90% 90%, rgba(20, 40, 80, 0.3), transparent 40%),
+              var(--metal-deep-950);
+  overflow-y: auto;
+  max-height: calc(100vh - 65px);
+}
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pane-header {
+  margin-bottom: 1.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--metal-border-700);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pane-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--sky-bright-300);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.pane-subtitle {
+  color: var(--sky-muted-300);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* Tarjetas y Bento Grid */
+.admin-card {
+  background-color: var(--metal-surface-850);
+  border: 1px solid var(--metal-border-700);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-metallic);
+  transition: border-color 0.25s ease;
+}
+
+.admin-card:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.card-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(30, 58, 138, 0.5);
+}
+
+.card-title-bar h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--sky-pale-200);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Formularios e Inputs (Estricto Azul Metálico) */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.form-group-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.form-group-admin label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--sky-subtle-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-input-admin,
+.form-textarea-admin {
+  background-color: var(--metal-navy-900);
+  border: 1px solid var(--metal-border-700);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  color: var(--sky-pale-200);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.form-input-admin:focus,
+.form-textarea-admin:focus {
+  outline: none;
+  border-color: var(--sky-vibrant-400);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+  background-color: var(--metal-surface-850);
+}
+
+.form-textarea-admin {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Consola Táctica Militar de Agentes DEAA-V2.1 */
+.tactical-console {
+  background-color: var(--metal-navy-900);
+  border: 1px solid var(--sky-vibrant-400);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
+  margin-bottom: 2rem;
+}
+
+.tactical-console-header {
+  background: linear-gradient(90deg, var(--metal-surface-850), var(--metal-navy-900));
+  border-bottom: 1px solid var(--metal-border-700);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tactical-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--sky-bright-300);
+  letter-spacing: 0.06em;
+}
+
+.tactical-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  background-color: rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--sky-vibrant-400);
+  font-size: 0.75rem;
+  color: var(--sky-bright-300);
+  font-weight: 600;
+}
+
+.tactical-status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--sky-vibrant-400);
+  box-shadow: 0 0 8px var(--sky-vibrant-400);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.tactical-terminal-logs {
+  background-color: #04070f;
+  padding: 1rem 1.25rem;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.85rem;
+  color: var(--sky-pale-200);
+  height: 180px;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--metal-border-700);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.log-entry {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.log-time {
+  color: var(--sky-subtle-400);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.log-tag {
+  color: var(--sky-vibrant-400);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.log-msg {
+  color: var(--sky-pale-200);
+}
+
+.tactical-command-bar {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--metal-surface-850);
+}
+
+.tactical-input-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.tactical-input {
+  width: 100%;
+  background-color: var(--metal-deep-950);
+  border: 1px solid var(--metal-border-700);
+  border-radius: 8px;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  color: var(--sky-pale-200);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.tactical-input:focus {
+  outline: none;
+  border-color: var(--sky-vibrant-400);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.tactical-input-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sky-subtle-400);
+}
+
+.btn-mic {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: var(--metal-navy-900);
+  border: 1px solid var(--metal-border-700);
+  color: var(--sky-vibrant-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-mic:hover {
+  background-color: var(--metal-card-750);
+  border-color: var(--sky-vibrant-400);
+}
+
+.btn-mic.listening {
+  background-color: rgba(56, 189, 248, 0.25);
+  border-color: var(--sky-bright-300);
+  color: var(--sky-bright-300);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+  animation: pulse 1s infinite;
+}
+
+/* Feedback Toast Notification */
+.admin-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  background-color: var(--metal-navy-900);
+  border: 1px solid var(--sky-vibrant-400);
+  color: var(--sky-pale-200);
+  padding: 0.85rem 1.4rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 12px rgba(56, 189, 248, 0.4);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.admin-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Insignias de la Jerarquía Militar */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background-color: rgba(30, 58, 138, 0.6);
+  border: 1px solid var(--metal-border-700);
+  color: var(--sky-bright-300);
+}
+
+.typewriter-highlight {
+  outline: 2px solid var(--sky-vibrant-400) !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
+  transition: all 0.2s ease;
+}
