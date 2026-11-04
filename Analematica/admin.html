@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body data-admin-pending>
 
     <!-- Header Superior de Administración -->
     <header class="admin-header">
@@ -784,7 +784,7 @@
                 <div class="admin-card">
                     <div class="card-title-bar">
                         <h3><span class="rank-badge">CRM LEADS</span> Bandeja de Prospectos Registrados</h3>
-                        <button type="button" class="btn-admin btn-admin-outline" id="btnClearLeads">Limpiar Historial</button>
+                        <button type="button" class="btn-admin btn-admin-outline" id="btnClearLeads">Actualizar prospectos</button>
                     </div>
                     <div id="leadsTableContainer" style="overflow-x:auto;">
                         <table style="width:100%; border-collapse:collapse; font-size:0.85rem; color:var(--sky-pale-200);">
@@ -846,6 +846,7 @@
 
     <!-- Ejército de Agentes Tácticos de Analemática (DEAA-V2.1) -->
     <script src="agents/analematica_army.js"></script>
+    <script src="js/connection.js"></script>
     <script src="js/admin.js"></script>
 </body>
 </html>

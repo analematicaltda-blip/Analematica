@@ -91,7 +91,7 @@ const DEFAULT_CONFIG = {
             desc: "Optimice escuelas de formación, instructores y reservas de escenarios deportivos o culturales desde una sola plataforma. Administre disciplinas, talleres de danza e instrumentos con seguimiento biométrico y acreditaciones en tiempo real.",
             notice: "Al hacer clic en este módulo, será redireccionado de forma exclusiva a la página oficial de ventas e Onboarding del sistema SGA-CD.",
             btn_text: "Visitar Plataforma SGA-CD ↗",
-            url: "../SGA-CD-WEB.git/index.html"
+            url: "/sga/"
         }
     },
     adn: {
@@ -140,7 +140,7 @@ const DEFAULT_CONFIG = {
         title: "Modernice su organización hoy mismo.",
         desc: "El camino hacia una gestión eficiente y ciudadana comienza con una infraestructura tecnológica correcta. Déjenos sus datos y uno de nuestros ingenieros senior de Analemática se pondrá en contacto con usted para realizar un diagnóstico técnico de sus sistemas actuales y diseñar una solución a la medida de sus desafíos operativos.",
         btn_text: "Enviar Solicitud de Diagnóstico",
-        success_msg: "Un ingeniero senior de Analemática se comunicará en menos de 24 horas para coordinar la sesión de diagnóstico técnico institucional."
+        success_msg: "La solicitud quedó registrada en el CRM de Analemática para su atención por el equipo autorizado."
     },
     footer: {
         bio: "Desarrollamos soluciones de alta precisión para ordenar el caos administrativo y transformar la relación entre entidades y ciudadanos.",
@@ -150,6 +150,8 @@ const DEFAULT_CONFIG = {
 };
 
 let currentConfig = null;
+let publishedRevision=0;
+let saving=false;
 
 // Acceso y modificación segura de propiedades anidadas
 function getNestedValue(obj, path) {
@@ -194,7 +196,7 @@ function populateForms() {
 }
 
 // Guardar configuración en localStorage
-function saveConfig(showToastMsg = true) {
+async function saveConfig(showToastMsg = true) {
     const inputs = document.querySelectorAll('[data-key]');
     inputs.forEach(input => {
         const key = input.getAttribute('data-key');
@@ -203,9 +205,12 @@ function saveConfig(showToastMsg = true) {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(currentConfig));
 
-    if (showToastMsg) {
-        showToast("¡Configuración 100% guardada y sincronizada con la Landing!");
-    }
+    if (!showToastMsg) return; // Local draft; publish explicitly with Guardar Todo.
+    if(saving){showToast('Hay una publicación en curso. Espera antes de guardar de nuevo.');return;}
+    saving=true;const button=document.getElementById('btnGlobalSave');if(button)button.disabled=true;
+    try {const result=await AnaleConnection.request('/config',{authorized:true,method:'PUT',body:JSON.stringify({config:currentConfig,revision:publishedRevision})});publishedRevision=result.revision;showToast('Configuración publicada en el servidor de Analemática.');}
+    catch(error){showToast(error.message+' El borrador local se conserva.');}
+    finally{saving=false;if(button)button.disabled=false;}
 }
 
 // Toast de notificación
@@ -241,32 +246,12 @@ function setupTabs() {
 }
 
 // Bandeja de Leads
-function renderLeads() {
-    const tbody = document.getElementById('leadsTableBody');
-    if (!tbody) return;
-
-    let leads = [];
-    try {
-        const raw = localStorage.getItem(LEADS_KEY);
-        if (raw) leads = JSON.parse(raw);
-    } catch (e) {
-        leads = [];
-    }
-
-    if (!leads || leads.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="padding:1rem; text-align:center; color:var(--sky-muted-300);">No hay prospectos registrados aún.</td></tr>`;
-        return;
-    }
-
-    tbody.innerHTML = leads.map(l => `
-        <tr style="border-bottom:1px solid var(--metal-border-700);">
-            <td style="padding:0.6rem; color:var(--sky-subtle-400);">${l.fecha || 'Reciente'}</td>
-            <td style="padding:0.6rem; font-weight:600; color:var(--sky-bright-300);">${l.nombre || ''}</td>
-            <td style="padding:0.6rem;">${l.entidad || ''}</td>
-            <td style="padding:0.6rem;">${l.correo || ''}</td>
-            <td style="padding:0.6rem;">${l.telefono || ''}</td>
-        </tr>
-    `).join('');
+async function renderLeads() {
+    const tbody=document.getElementById('leadsTableBody');if(!tbody)return;
+    try {const data=await AnaleConnection.request('/inquiries',{authorized:true});tbody.replaceChildren();
+        for(const lead of data.leads){const row=document.createElement('tr');for(const key of ['fecha','nombre','entidad','correo','telefono']){const cell=document.createElement('td');cell.style.padding='0.6rem';cell.textContent=lead[key]||'';row.append(cell);}tbody.append(row);}
+        if(!data.leads.length){const row=tbody.insertRow(),cell=row.insertCell();cell.colSpan=5;cell.textContent='No hay solicitudes registradas en el servidor.';}
+    }catch(error){tbody.replaceChildren();const row=tbody.insertRow(),cell=row.insertCell();cell.colSpan=5;cell.textContent=error.message;}
 }
 
 // =============================================================================
@@ -414,7 +399,7 @@ async function processAgentCommand(orderText) {
     // 7. Despacho Estratégico al Backend (JARVI & N.E.K.O.)
     appendTacticalLog("JARVI SUPREMO", `Enrutando orden hacia la jerarquía de combate: "${cleanOrder}"...`);
     try {
-        const token = localStorage.getItem('token') || localStorage.getItem('accessToken') || 'DEMO_BEARER_TOKEN';
+        const token = localStorage.getItem('token') || localStorage.getItem('accessToken') || '';
         const res = await fetch('/api/v1/agent/command', {
             method: 'POST',
             headers: {
@@ -483,8 +468,10 @@ function setupSpeechRecognition() {
 }
 
 // Configurar eventos globales
-document.addEventListener('DOMContentLoaded', () => {
-    loadConfig();
+document.addEventListener('DOMContentLoaded', async () => {
+    try {await AnaleConnection.owner();const published=await AnaleConnection.request('/config');loadConfig();if(Object.keys(published.config).length)currentConfig=published.config;publishedRevision=published.revision;}
+    catch(error){document.body.removeAttribute('data-admin-pending');document.body.replaceChildren();const section=document.createElement('main');section.style.padding='2rem';const title=document.createElement('h1');title.textContent='Administración de Analemática';const text=document.createElement('p');text.textContent=error.message;const login=document.createElement('a');login.href='/sga/login.html';login.textContent='Iniciar sesión en SGA-CD';const home=document.createElement('a');home.href='/';home.textContent='Volver a Analemática';section.append(title,text,login,document.createElement('br'),home);document.body.append(section);return;}
+    document.body.removeAttribute('data-admin-pending');
     populateForms();
     setupTabs();
     setupSpeechRecognition();
@@ -560,7 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentConfig = parsed;
                     populateForms();
                     saveConfig(true);
-                    showToast("¡Configuración importada y restaurada exitosamente!");
+        
                 } catch (err) {
                     alert("Error: Archivo JSON no válido.");
                 }
@@ -577,20 +564,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentConfig = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
                 populateForms();
                 saveConfig(true);
-                showToast("Valores de fábrica restablecidos.");
+
             }
         });
     }
 
-    // Limpiar leads
-    const btnClearLeads = document.getElementById('btnClearLeads');
-    if (btnClearLeads) {
-        btnClearLeads.addEventListener('click', () => {
-            if (confirm("¿Desea limpiar el historial de prospectos de Analemática?")) {
-                localStorage.removeItem(LEADS_KEY);
-                renderLeads();
-                showToast("Historial de prospectos limpiado.");
-            }
-        });
-    }
+    // Refresh only: never delete public inquiries or CRM history from this page.
+    const btnRefresh=document.getElementById('btnClearLeads');
+    if(btnRefresh){btnRefresh.textContent='Actualizar prospectos';btnRefresh.addEventListener('click',renderLeads);}
 });

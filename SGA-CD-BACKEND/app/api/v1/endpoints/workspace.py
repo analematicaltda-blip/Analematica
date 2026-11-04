@@ -208,3 +208,6 @@ router.include_router(integrated_campaigns.router,prefix='/campaigns',tags=['Cam
 
 from app.api.v1.endpoints import institutional as institutional_panels
 router.include_router(institutional_panels.router,prefix='/institutional',tags=['Institutional role panels'])
+
+from app.api.v1.endpoints import corporate as corporate_landing
+router.include_router(corporate_landing.router,prefix="/corporate",tags=["Analematica"])

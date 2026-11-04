@@ -29,7 +29,8 @@
                 </div>
             </a>
 
-            <nav class="main-nav" aria-label="Navegación principal">
+            <nav id="corporate-navigation" class="main-nav" aria-label="Navegación principal">
+                <a href="/sga/" class="nav-link">SGA-CD</a>
                 <a href="#desafio" class="nav-link">El Desafío</a>
                 <a href="#filosofia" class="nav-link">Filosofía</a>
                 <a href="#mision-vision" class="nav-link">Misión y Visión</a>
@@ -39,7 +40,7 @@
                 <a href="#contacto" class="btn btn-secondary nav-cta">Diagnóstico</a>
             </nav>
 
-            <button class="mobile-toggle" aria-label="Abrir menú" id="mobileMenuBtn">
+            <button class="mobile-toggle" aria-label="Abrir menú" id="mobileMenuBtn" aria-controls="corporate-navigation" aria-expanded="false">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -311,7 +312,7 @@
                             <span>Al hacer clic en este módulo, será redireccionado de forma exclusiva a la página oficial de ventas e Onboarding del sistema SGA-CD.</span>
                         </div>
                         <div class="card-cta-wrapper">
-                            <a href="../SGA-CD-WEB.git/index.html" class="btn btn-sgacd" id="btnVisitarSgaCd" target="_blank" rel="noopener noreferrer">
+                            <a href="/sga/" class="btn btn-sgacd" id="btnVisitarSgaCd" target="_blank" rel="noopener noreferrer">
                                 Visitar Plataforma SGA-CD ↗
                             </a>
                         </div>
@@ -458,6 +459,9 @@
                         </div>
 
                         <div class="form-action">
+                            <label class="corporate-consent"><input type="checkbox" id="contactConsent" required> Autorizo a Analemática a usar estos datos para atender esta solicitud de diagnóstico. No autoriza campañas masivas.</label>
+                            <label class="corporate-honeypot" aria-hidden="true">Sitio web<input name="website" id="contactWebsite" tabindex="-1" autocomplete="off"></label>
+                            <p id="formErrorMessage" role="alert" hidden></p>
                             <button type="submit" class="btn btn-submit" id="submitFormBtn">
                                 Enviar Solicitud de Diagnóstico
                                 <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -477,7 +481,7 @@
                         </div>
                         <div>
                             <h4 class="feedback-title">¡Solicitud Registrada con Éxito!</h4>
-                            <p class="feedback-text">Un ingeniero senior de Analemática se comunicará en menos de 24 horas para coordinar la sesión de diagnóstico técnico institucional.</p>
+                            <p class="feedback-text">La solicitud quedó registrada en el CRM de Analemática para su atención por el equipo autorizado.</p>
                         </div>
                     </div>
                 </div>
@@ -506,7 +510,7 @@
                 <ul class="footer-list">
                     <li><a href="#verticales">Trámites y Servicios</a></li>
                     <li><a href="#verticales">Recaudo y Finanzas</a></li>
-                    <li><a href="../SGA-CD-WEB.git/index.html" class="sga-link-subtle" target="_blank" rel="noopener noreferrer">Plataforma SGA-CD ↗</a></li>
+                    <li><a href="/sga/" class="sga-link-subtle" target="_blank" rel="noopener noreferrer">Plataforma SGA-CD ↗</a></li>
                 </ul>
             </div>
 
@@ -542,6 +546,7 @@
         </div>
     </footer>
 
+    <script src="js/connection.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
