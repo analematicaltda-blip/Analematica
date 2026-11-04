@@ -46,3 +46,5 @@ google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 oauth2client
+# IANA zones for institutional cohort dates on all deployment platforms
+tzdata>=2024.1

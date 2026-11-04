@@ -69,7 +69,7 @@ def team(db=Depends(deps.get_db),access=Depends(context)):
     for user in db.query(Usuario).filter(Usuario.inquilino_id==access.tenant.id).all():
         roles=ws.roles_of(user)
         grants={row.permission:row.enabled for row in db.query(WorkspaceGrant).filter(WorkspaceGrant.tenant_id==access.tenant.id,WorkspaceGrant.user_id==user.id).all()}
-        result.append({'id':user.id,'name':user.nombre_completo or user.nombre_usuario,'roles':sorted(roles),'active':user.activo,'delegable':bool(user.activo and roles&ws.TEAM_ROLES) and not roles&{'admin_general','admin_empresa'},'permissions':{name:grants.get(name,False) for name in sorted(ws.PERMISSIONS)}})
+        result.append({'id':user.id,'name':user.nombre_completo or user.nombre_usuario,'roles':sorted(roles),'active':user.activo,'delegable':bool(user.activo and roles&ws.TEAM_ROLES) and not roles&{'admin_general','admin_empresa'},'permissions':{name:bool(access.full and (roles&ws.TEAM_ROLES or roles&{'admin_empresa','admin_general'}) and grants.get(name,True)) for name in sorted(ws.PERMISSIONS)}})
     return {'members':result,'full_enabled':access.full}
 
 @router.put('/team/{user_id}/permissions')
@@ -205,3 +205,6 @@ async def configure_provider(request:Request,access=Depends(context)):
 # Integrated campaign studio shares the exact same JWT, plan and tenant context.
 from app.api.v1.endpoints import campaigns as integrated_campaigns
 router.include_router(integrated_campaigns.router,prefix='/campaigns',tags=['Campaign calendar'])
+
+from app.api.v1.endpoints import institutional as institutional_panels
+router.include_router(institutional_panels.router,prefix='/institutional',tags=['Institutional role panels'])

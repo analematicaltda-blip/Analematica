@@ -12,6 +12,7 @@ const providers={youtube:{label:'YouTube',fields:['client_id','client_secret','r
   await page.route('**/*',async route=>{const req=route.request(),url=new URL(req.url());
    if(url.pathname.includes('/api/')){
     if(url.pathname.endsWith('/workspace/session'))return route.fulfill({json:session});
+    if(url.pathname.endsWith('/institutional/context'))return route.fulfill({json:{role:actualRole,plan:full?'full':'basico',review:false,company:{id:1,name:session.organization},permissions:session.permissions,full_enabled:full,contract:{name:actualRole,duties:[],commercial_eligible:full}}});
     if(url.pathname.endsWith('/workspace/assets'))return route.fulfill({json:{assets:[{id:asset,title:'Video original',kind:'reel'}]}});
     if(url.pathname.endsWith('/assets/'+asset+'/download'))return route.fulfill({body:Buffer.from('test-video'),contentType:'video/mp4'});
     if(url.pathname.includes('/workspace/campaigns')){

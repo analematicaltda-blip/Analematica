@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     localStorage.setItem('userId',String(result.user.id));
                     localStorage.setItem('userInquilinoId',String(result.user.inquilino_id));
                     localStorage.setItem('userName',result.user.nombre||'');
-                    const next=sessionStorage.getItem('sga-panel-return')||'';sessionStorage.removeItem('sga-panel-return');window.location.assign('app.html'+(/^#\/[a-z_]+\/[a-z0-9-]+$/.test(next)?next:''));
+                    const next=sessionStorage.getItem('sga-panel-return')||'';sessionStorage.removeItem('sga-panel-return');window.location.assign('app.html'+(/^#\/(?:revision\/)?[a-z_]+\/(?:(?:basico|full)\/)?[a-z0-9-]+$/.test(next)?next:''));
                     return;
                 }
                 throw new Error('El acceso venció. Intenta de nuevo.');

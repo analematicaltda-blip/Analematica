@@ -22,7 +22,8 @@ from app.models.user import Usuario
 from app.models.workspace import WorkspaceGrant,WorkspaceAsset,WorkspaceChannel
 from app.services.plan_capability_service import PlanCapabilityService,FULL_QUOTAS,normalize_plan_code
 
-TEAM_ROLES={'jefe_area','profesional_area','tecnico_area','coordinador','jefe_almacen','almacenista','jefe_escenarios'}
+from app.services.role_contracts import ADMIN_TEAM
+TEAM_ROLES=ADMIN_TEAM
 PERMISSIONS={'crm','media','publish','inbox'}
 
 def roles_of(user):
@@ -68,19 +69,19 @@ def access_for(db,user):
     if starts and starts.tzinfo is None:starts=starts.replace(tzinfo=timezone.utc)
     begun=starts is None or starts<=datetime.now(timezone.utc)
     full=owner or begun and caps.canonical_plan=='full' and caps.is_active and subscription is not None and normalize_plan_code(subscription.plan)=='full'
-    grants={row.permission for row in db.query(WorkspaceGrant).filter(WorkspaceGrant.tenant_id==tenant.id,WorkspaceGrant.user_id==user.id,WorkspaceGrant.enabled.is_(True)).all()}
-    permissions={name:bool(full and (owner or 'admin_empresa' in roles or bool(roles&TEAM_ROLES) and name in grants)) for name in PERMISSIONS}
+    grants={row.permission:row.enabled for row in db.query(WorkspaceGrant).filter(WorkspaceGrant.tenant_id==tenant.id,WorkspaceGrant.user_id==user.id).all()}
+    permissions={name:bool(full and (owner or 'admin_empresa' in roles or bool(roles&TEAM_ROLES) and grants.get(name,True))) for name in PERMISSIONS}
     return Access(user,roles,tenant,caps,owner,permissions,bool(full))
 
 def reserve(db,access,key):
-    limit=(FULL_QUOTAS if access.owner else access.caps.monthly_limits).get(key,0)
-    if limit<=0:raise HTTPException(429,'No hay cuota disponible para esta operación.')
+    limit=None if access.owner else access.caps.monthly_limits.get(key,0)
+    if limit is not None and limit<=0:raise HTTPException(429,'No hay cuota disponible para esta operación.')
     period=datetime.now(timezone.utc).strftime('%Y-%m');capability=('platform_' if access.owner else '')+key
     values=dict(inquilino_id=access.tenant.id,periodo=period,capacidad=capability,cantidad_usada=1)
     dialect=db.get_bind().dialect.name
     insert=pg_insert if dialect=='postgresql' else sqlite_insert if dialect=='sqlite' else None
     if insert is None:raise HTTPException(503,'Motor de cuotas no disponible.')
-    statement=insert(ConsumoInquilino).values(**values).on_conflict_do_update(index_elements=['inquilino_id','periodo','capacidad'],set_={'cantidad_usada':ConsumoInquilino.cantidad_usada+1},where=ConsumoInquilino.cantidad_usada<limit).returning(ConsumoInquilino.cantidad_usada)
+    statement=insert(ConsumoInquilino).values(**values).on_conflict_do_update(index_elements=['inquilino_id','periodo','capacidad'],set_={'cantidad_usada':ConsumoInquilino.cantidad_usada+1},where=ConsumoInquilino.cantidad_usada<limit if limit is not None else None).returning(ConsumoInquilino.cantidad_usada)
     count=db.execute(statement).scalar_one_or_none();db.commit()
     if count is None:raise HTTPException(429,'Has alcanzado la cuota mensual de esta operación.')
     return (access.tenant.id,period,capability)
