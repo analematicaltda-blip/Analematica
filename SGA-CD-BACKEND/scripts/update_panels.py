@@ -14,6 +14,16 @@ import sys
 BACKEND_FILES=['models/corporate.py','api/v1/endpoints/corporate.py','models/workspace.py','services/workspace_service.py','services/workspace_guard.py','services/workspace_schema.py','api/v1/endpoints/workspace.py','services/plan_capability_service.py','crud/tenancy.py','schemas/tenancy.py','models/campaigns.py','services/campaign_service.py','services/campaign_schema.py','services/campaign_worker.py','api/v1/endpoints/campaigns.py','api/v1/endpoints/admin.py','models/institutional.py','services/role_contracts.py','services/institutional_service.py','services/institutional_schema.py','api/v1/endpoints/institutional.py']
 
 def run(argv,**kw):return subprocess.run(argv,check=True,**kw)
+def ensure_web_running(compose):
+ # The web service may have been stopped before this update (or by Codespaces).
+ # Start only it; keep database/Flet volumes and already-running services intact.
+ try:
+  run(compose+['up','-d','--no-deps','--wait','--wait-timeout','90','web'])
+ except subprocess.CalledProcessError:
+  raise SystemExit('No se pudo iniciar el servicio web. Revisa docker compose -f '+compose[3]+' logs --tail 60 web. No se eliminaron volúmenes.') from None
+ run(compose+['exec','-T','web','nginx','-t'])
+ run(compose+['exec','-T','web','nginx','-s','reload'])
+
 def install(args):
  repo=Path(__file__).resolve().parents[2];demo=args.demo_dir.resolve();path=demo/'compose.json'
  if not path.exists():raise SystemExit('No se encontró compose.json. No se modificó la demo.')
@@ -108,8 +118,7 @@ def install(args):
  run(compose+['exec','-T','backend','python','-m','app.services.institutional_schema'])
  run(compose+['up','-d','--no-deps','--force-recreate','--wait','--wait-timeout','180','campaign-scheduler'])
  run([sys.executable,str(repo/'SGA-CD-WEB.git/scripts/publish.py'),'--demo-dir',str(demo)])
- run(compose+['exec','-T','web','nginx','-t'])
- run(compose+['exec','-T','web','nginx','-s','reload'])
+ ensure_web_running(compose)
  run(compose+['ps','backend','node6','web','campaign-scheduler'])
  print('Actualización aplicada. Abre el puerto 8080 y recarga con Ctrl+Shift+R. Los accesos están en app.html#/ROL/inicio.')
 
