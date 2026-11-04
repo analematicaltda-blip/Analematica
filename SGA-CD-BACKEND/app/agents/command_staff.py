@@ -8,6 +8,8 @@ from app.agents.corps.formacion_cultura_colonel import get_formacion_cultura_col
 from app.agents.corps.ventas_crm_colonel import get_ventas_crm_colonel_graph
 from app.agents.corps.multimedia_colonel import get_multimedia_colonel_graph
 from app.agents.corps.redes_sociales_colonel import get_redes_sociales_colonel_graph
+from app.agents.corps.units.tenancy_governance_captain import get_tenancy_governance_captain_graph
+from app.agents.corps.units.security_vault_captain import get_security_vault_captain_graph
 
 logger = logging.getLogger("sga_cd_command_staff")
 
@@ -47,7 +49,9 @@ class JarviGeneralOrchestrator:
         self.colonel_ventas = get_ventas_crm_colonel_graph(self.llm)
         self.colonel_multimedia = get_multimedia_colonel_graph(self.llm)
         self.colonel_redes = get_redes_sociales_colonel_graph(self.llm)
-        print("--- ✅ GENERAL JARVI: Los 5 Coroneles en posición con LLM activo. ---")
+        self.captain_tenancy = get_tenancy_governance_captain_graph(self.llm)
+        self.captain_security = get_security_vault_captain_graph(self.llm)
+        print("--- ✅ GENERAL JARVI: Los 5 Coroneles + Capitanes de Gobernanza y Seguridad en posición con LLM activo. ---")
 
     async def execute_mission(self, envelope: MissionDispatchEnvelope) -> Dict[str, Any]:
         text_lower = envelope.raw_utterance.lower()
@@ -59,6 +63,16 @@ class JarviGeneralOrchestrator:
             "intent_action": envelope.intent_action,
             "parameters": envelope.extracted_parameters
         }
+
+        # Gobernanza Multi-Inquilino y Empresas
+        if envelope.target_division == "GOBERNANZA" or any(w in text_lower for w in ["inquilino", "empresa", "tenancy", "rol", "permiso", "rbac", "cuota"]):
+            res = await self.captain_tenancy.ainvoke({"coronel_order": envelope.raw_utterance, "app_context": context})
+            return {"final_report": {"text": res.get("final_report", "Gobernanza inquilinos ejecutada.")}}
+
+        # Seguridad Criptográfica, Vault y Auditoría STAR
+        if envelope.target_division == "SEGURIDAD" or any(w in text_lower for w in ["llave", "apikey", "api key", "vault", "cifrado", "star", "auditoria"]):
+            res = await self.captain_security.ainvoke({"coronel_order": envelope.raw_utterance, "app_context": context})
+            return {"final_report": {"text": res.get("final_report", "Seguridad STAR ejecutada.")}}
 
         # Redes Sociales, Ads y Vinculación Oficial
         if envelope.target_division == "MARKETING" or any(w in text_lower for w in ["perfil", "bio", "portada", "avatar", "publicar", "difundir", "redes", "post", "facebook", "instagram", "ads", "analematica"]):
@@ -88,7 +102,13 @@ class NekoConversationalGeneral:
         cmd_lower = command_text.lower()
         
         # Enrutamiento Semántico de División
-        if any(w in cmd_lower for w in ["facebook", "instagram", "redes", "ads", "post", "perfil", "bio", "analematica"]):
+        if any(w in cmd_lower for w in ["inquilino", "empresa", "tenancy", "rol", "permiso", "rbac", "cuota"]):
+            target_div = "GOBERNANZA"
+            action = "GOBERNANZA_MULTI_INQUILINO"
+        elif any(w in cmd_lower for w in ["llave", "apikey", "api key", "vault", "cifrado", "star", "auditoria"]):
+            target_div = "SEGURIDAD"
+            action = "SEGURIDAD_CRIPTOGRAFICA_STAR"
+        elif any(w in cmd_lower for w in ["facebook", "instagram", "redes", "ads", "post", "perfil", "bio", "analematica"]):
             target_div = "MARKETING"
             action = "VINCULACION_REDES_Y_ADS"
         elif any(w in cmd_lower for w in ["prospecto", "lead", "venta", "cotizacion", "bold", "plan", "club"]):

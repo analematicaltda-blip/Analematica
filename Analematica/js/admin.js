@@ -318,9 +318,25 @@ async function typeWriterIntoElement(element, text) {
     }, 1200);
 }
 
+// Instancia del Coronel Comandante de la Landing Page de Analemática
+let coronelAnalematicaInstance = null;
+
+function getCoronelAnalematica() {
+    if (!coronelAnalematicaInstance && typeof window.CoronelAnalematica === 'function') {
+        coronelAnalematicaInstance = new window.CoronelAnalematica(appendTacticalLog, showToast);
+    }
+    return coronelAnalematicaInstance;
+}
+
 // Intérprete semántico de órdenes de mando
 async function processAgentCommand(orderText) {
     if (!orderText || !orderText.trim()) return;
+
+    const coronel = getCoronelAnalematica();
+    if (coronel) {
+        await coronel.recibirOrden(orderText);
+        return;
+    }
 
     const cleanOrder = orderText.trim();
     appendTacticalLog("COMANDO RECIBIDO", cleanOrder);
