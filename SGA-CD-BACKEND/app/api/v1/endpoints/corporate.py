@@ -48,9 +48,27 @@ def sanitize(value,path='',depth=0):
         if value.startswith('//') or parsed.scheme not in ['','https','http'] or '\\' in value or any(ord(c)<32 for c in value):raise HTTPException(422,'Enlace no permitido.')
     parser=Inline(rich=path=='.hero.title');parser.feed(value);return ''.join(parser.parts)
 def owner(db=Depends(deps.get_db),user=Depends(deps.get_current_active_user)):
-    actor=access_for(db,user)
-    if not actor.owner:raise HTTPException(403,'Solo el dueño de SGA-CD administra Analemática.')
-    return actor
+    from app.services.corporate_policy import require_owner
+    return require_owner(db,user)
+
+from fastapi.security import OAuth2PasswordRequestForm
+from app.core.rate_limiter import rate_limit
+
+@router.post('/login',dependencies=[Depends(rate_limit('analematica_login',10,60))])
+def login(form:OAuth2PasswordRequestForm=Depends(),db=Depends(deps.get_db)):
+    from app.core.security import verify_password,create_access_token
+    user=db.query(Usuario).filter(Usuario.nombre_usuario==form.username.strip()).first()
+    try:valid=bool(user and verify_password(form.password,user.password_hash))
+    except (ValueError,TypeError):valid=False
+    if not valid:raise HTTPException(401,'Usuario o contraseña incorrectos.')
+    actor=owner(db,user)
+    token=create_access_token({'sub':str(user.id),'roles':sorted(actor.roles),'inquilino_id':user.inquilino_id,'nombre_completo':user.nombre_completo})
+    return {'access_token':token,'token_type':'bearer','user':{'id':user.id,'name':user.nombre_completo or user.nombre_usuario,'roles':sorted(actor.roles)}}
+
+@router.get('/session')
+def private_session(actor=Depends(owner)):
+    return {'user':{'id':actor.user.id,'name':actor.user.nombre_completo or actor.user.nombre_usuario,'roles':sorted(actor.roles)},'scope':'platform','console':'analematica'}
+
 @router.get('/config')
 def public_config(response:Response,db=Depends(deps.get_db)):
     response.headers['Cache-Control']='no-store';row=db.get(CorporatePage,'analematica')
@@ -79,8 +97,9 @@ def inquiry(body:Inquiry,db=Depends(deps.get_db)):
         if existing.scope!='platform':raise HTTPException(409,'No se pudo registrar esta referencia; genera otra solicitud.')
         return {'received':True}
     # Ownership is the platform; public visitors never choose a tenant or impersonate a user.
-    user=db.query(Usuario).filter(Usuario.rol==RolesEnum.admin_general,Usuario.activo.is_(True)).order_by(Usuario.id).first()
-    if not user:raise HTTPException(503,'El canal de contacto aún no está disponible.')
+    from app.models.corporate import CorporateOwner
+    binding=db.get(CorporateOwner,1);user=db.get(Usuario,binding.user_id) if binding else None
+    if not user or not user.activo:raise HTTPException(503,'El canal de contacto aún no está disponible.')
     notes=json.dumps({'source':SOURCE,'entidad':body.entidad.strip(),'telefono':body.telefono.strip(),'consent':True,'consent_at':datetime.now(timezone.utc).isoformat()},ensure_ascii=False)
     db.add(WorkspaceLead(id=lead_id,scope='platform',name=body.nombre.strip(),email=str(body.correo),stage='nuevo',notes=notes,created_by=user.id))
     try:db.commit()
@@ -98,3 +117,24 @@ def list_inquiries(db=Depends(deps.get_db),actor=Depends(owner)):
         if not isinstance(metadata,dict) or metadata.get('source')!=SOURCE:continue
         result.append({'id':row.id,'fecha':row.created_at.isoformat() if row.created_at else '', 'nombre':row.name,'correo':row.email,'entidad':metadata.get('entidad',''),'telefono':metadata.get('telefono','')})
     return {'leads':result,'limit':1000}
+
+class Command(Body):
+    command:str=Field(min_length=1,max_length=4000)
+    target:str=Field(default='sga',pattern=r'^(sga|analematica)$')
+    request_id:UUID4
+
+@router.post('/commands')
+def commands(body:Command,db=Depends(deps.get_db),actor=Depends(owner)):
+    from app.services.corporate_commands import execute
+    return execute(db,actor,body.command,body.target,str(body.request_id))
+
+@router.get('/commands')
+def command_history(db=Depends(deps.get_db),actor=Depends(owner)):
+    from app.models.corporate import CorporateCommand
+    return {'commands':[{'id':row.id,'target':row.target,'operation':row.operation,'status':row.status,'undone':bool(row.undone_by),'created_at':row.created_at.isoformat() if row.created_at else None} for row in db.query(CorporateCommand).filter_by(actor_id=actor.user.id).order_by(CorporateCommand.created_at.desc(),CorporateCommand.id.desc()).limit(100)]}
+
+@router.get('/sga-content')
+def public_sga_content(response:Response,db=Depends(deps.get_db)):
+    from app.services.corporate_commands import FIELDS,Setting
+    response.headers['Cache-Control']='no-store'
+    return {key:row.value for key in FIELDS.values() if (row:=db.get(Setting,key)) is not None}

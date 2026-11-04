@@ -4,7 +4,10 @@ import test_institutional_panels as fixtures
 from app.models.workspace import WorkspaceLead
 from app.api.v1.endpoints import corporate
 class CorporateTests(unittest.TestCase):
- setUp=fixtures.InstitutionalTests.setUp
+ def setUp(self):
+  fixtures.InstitutionalTests.setUp(self)
+  from app.models.corporate import CorporateOwner
+  self.db.add(CorporateOwner(id=1,user_id=self.users['owner-admin_general']));self.db.commit()
  tearDown=fixtures.InstitutionalTests.tearDown
  login=fixtures.InstitutionalTests.login
  root='/api/v1/workspace/corporate'

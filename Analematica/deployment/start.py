@@ -2,7 +2,7 @@
 import argparse,json,os,shutil,subprocess,sys
 from datetime import datetime,timezone
 from pathlib import Path
-PUBLIC=['index.html','admin.html','assets/analema-logo.svg','css/style.css','css/admin.css','js/main.js','js/admin.js','js/connection.js','agents/analematica_army.js']
+PUBLIC=['login.html','css/console.css','js/login.js','index.html','admin.html','assets/analema-logo.svg','css/style.css','css/admin.css','js/main.js','js/admin.js','js/connection.js','agents/analematica_army.js']
 def prepare(demo,port,repo):
     demo=demo.resolve();path=demo/'compose.json'
     if not 1024<=port<=65535:raise ValueError('Puerto no válido.')
@@ -34,6 +34,6 @@ def main():
     if args.prepare_only:print('Nodo preparado; no se iniciaron servicios.');return
     subprocess.run(compose+['up','-d','--no-deps','--wait','--wait-timeout','90','analematica'],check=True)
     subprocess.run(compose+['exec','-T','analematica','nginx','-t'],check=True)
-    print(f'Analemática: puerto {args.port}. Landing / · SGA-CD /sga/ · Administración /admin.html (sesión del dueño).')
+    print(f'Analemática: puerto {args.port}. Landing / · Ingreso del dueño /login.html · Consola central /admin.html · SGA-CD público /sga/.')
     print('Conserva la visibilidad privada en Codespaces. Respaldo de configuración:',release/'compose.before.json')
 if __name__=='__main__':main()

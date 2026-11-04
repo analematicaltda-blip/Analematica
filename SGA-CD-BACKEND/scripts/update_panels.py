@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import sys
 
-BACKEND_FILES=['models/corporate.py','api/v1/endpoints/corporate.py','models/workspace.py','services/workspace_service.py','services/workspace_guard.py','services/workspace_schema.py','api/v1/endpoints/workspace.py','services/plan_capability_service.py','crud/tenancy.py','schemas/tenancy.py','models/campaigns.py','services/campaign_service.py','services/campaign_schema.py','services/campaign_worker.py','api/v1/endpoints/campaigns.py','api/v1/endpoints/admin.py','models/institutional.py','services/role_contracts.py','services/institutional_service.py','services/institutional_schema.py','api/v1/endpoints/institutional.py']
+BACKEND_FILES=['services/corporate_policy.py','services/corporate_commands.py','models/corporate.py','api/v1/endpoints/corporate.py','models/workspace.py','services/workspace_service.py','services/workspace_guard.py','services/workspace_schema.py','api/v1/endpoints/workspace.py','services/plan_capability_service.py','crud/tenancy.py','schemas/tenancy.py','models/campaigns.py','services/campaign_service.py','services/campaign_schema.py','services/campaign_worker.py','api/v1/endpoints/campaigns.py','api/v1/endpoints/admin.py','models/institutional.py','services/role_contracts.py','services/institutional_service.py','services/institutional_schema.py','api/v1/endpoints/institutional.py']
 
 def run(argv,**kw):return subprocess.run(argv,check=True,**kw)
 def ensure_web_running(compose):
