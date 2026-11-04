@@ -11,25 +11,30 @@ def create_tenant_and_admin(db: Session, *, obj_in: TenantCreate) -> Inquilino:
     Creates a new Tenant (Inquilino) and its initial admin user.
     This function handles the transaction for creating both records.
     """
+    email=str(obj_in.admin_email).strip().lower()
+    if db.query(Usuario).filter(Usuario.correo==email).first() or db.query(Usuario).filter(Usuario.nombre_usuario==email).first():
+        raise ValueError('No se pudo registrar esta cuenta; comprueba los datos o inicia sesión.')
     # Start a transaction
     with db.begin_nested():
         # 1. Create the Inquilino (Tenant)
         db_tenant = Inquilino(
             nombre_empresa=obj_in.nombre_empresa,
             tipo_organizacion=obj_in.tipo_organizacion,
-            ambito_organizacional=obj_in.ambito_organizacional
+            ambito_organizacional=obj_in.ambito_organizacional,
+            plan="basico",
+            activo=True
         )
         db.add(db_tenant)
         db.flush() # Flush to get the ID for the new tenant
 
         # 2. Create the admin user for this tenant
         hashed_password = get_password_hash(obj_in.admin_password)
-        # Use email prefix as username for simplicity
-        admin_username = obj_in.admin_email.split('@')[0]
+        # Full email avoids collisions between different email domains.
+        admin_username = email
 
         db_admin = Usuario(
             nombre_usuario=admin_username,
-            correo=obj_in.admin_email,
+            correo=email,
             password_hash=hashed_password,
             nombre_completo=obj_in.admin_nombre_completo,
             rol='admin_empresa', # Set the role name
@@ -52,8 +57,9 @@ def create_tenant_and_admin(db: Session, *, obj_in: TenantCreate) -> Inquilino:
         )
         db.execute(assign_role_query, {"user_id": db_admin.id, "role_id": role_id})
 
-    # The transaction is committed here upon exiting the 'with' block
+    # Persist both the company and its initial administrator atomically.
     # We need to refresh the tenant object to load relationships
+    db.commit()
     db.refresh(db_tenant)
     # Manually attach the admin for the response model
     db_tenant.admin = db_admin

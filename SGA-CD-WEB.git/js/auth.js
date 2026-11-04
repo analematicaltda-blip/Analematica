@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Redirigir si el usuario ya está logueado
     if (localStorage.getItem('accessToken')) {
-        window.location.href = 'app.html';
+        const next=sessionStorage.getItem('sga-panel-return')||'';sessionStorage.removeItem('sga-panel-return');window.location.assign('app.html'+(/^#\/[a-z_]+\/[a-z0-9-]+$/.test(next)?next:''));
     }
 
     if (loginForm) {
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     showMessage('Inicio de sesión verificado. Cargando panel...', 'success');
                     setTimeout(() => {
-                        window.location.href = 'app.html';
+                        const next=sessionStorage.getItem('sga-panel-return')||'';sessionStorage.removeItem('sga-panel-return');window.location.assign('app.html'+(/^#\/[a-z_]+\/[a-z0-9-]+$/.test(next)?next:''));
                     }, 1000);
                 } else {
                     const status = response.status || 401;

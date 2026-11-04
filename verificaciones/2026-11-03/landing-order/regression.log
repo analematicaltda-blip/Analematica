@@ -1,0 +1,38 @@
+[
+  {
+    "width": 1440,
+    "overflow": false,
+    "formOverflow": false,
+    "background": "rgb(13, 20, 36)",
+    "color": "rgb(56, 189, 248)",
+    "radius": 12,
+    "sections": 12
+  },
+  {
+    "width": 768,
+    "overflow": false,
+    "formOverflow": false,
+    "background": "rgb(13, 20, 36)",
+    "color": "rgb(56, 189, 248)",
+    "radius": 12,
+    "sections": 12
+  },
+  {
+    "width": 390,
+    "overflow": false,
+    "formOverflow": false,
+    "background": "rgb(13, 20, 36)",
+    "color": "rgb(56, 189, 248)",
+    "radius": 12,
+    "sections": 12
+  },
+  {
+    "width": 320,
+    "overflow": false,
+    "formOverflow": false,
+    "background": "rgb(13, 20, 36)",
+    "color": "rgb(56, 189, 248)",
+    "radius": 12,
+    "sections": 12
+  }
+]

@@ -9,11 +9,13 @@ from starlette.staticfiles import StaticFiles
 from app.api.v1.api import api_router
 from app.core.config import settings
 from app.core.logging_config import setup_logging
+from app.services.workspace_guard import WorkspaceLegacyGuard
 
 # Initialize Structured Logging
 logger = setup_logging()
 
 app = FastAPI(title=settings.PROJECT_NAME)
+app.add_middleware(WorkspaceLegacyGuard)
 
 # Correlation ID and Request Latency Middleware
 @app.middleware("http")

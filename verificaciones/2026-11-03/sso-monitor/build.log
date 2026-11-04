@@ -1,0 +1,45 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 732B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 260B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/sgacd-sso-base:decdab13e127942b
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 12.32kB done
+#5 DONE 0.0s
+
+#6 [1/5] FROM docker.io/library/sgacd-sso-base:decdab13e127942b
+#6 CACHED
+
+#7 [2/5] COPY sso_service.py /opt/backend/app/services/sso_service.py
+#7 DONE 6.8s
+
+#8 [3/5] COPY sso.py /opt/backend/app/api/v1/endpoints/sso.py
+#8 DONE 7.2s
+
+#9 [4/5] COPY register.py /tmp/register_sso.py
+#9 DONE 4.1s
+
+#10 [5/5] RUN python /tmp/register_sso.py
+#10 DONE 10.3s
+
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 2.5s done
+#11 writing image sha256:aec1f1214c24035a00205cc014557c98b751cb61d508473ea31b7121241cd49f
+#11 writing image sha256:aec1f1214c24035a00205cc014557c98b751cb61d508473ea31b7121241cd49f 0.0s done
+#11 naming to docker.io/library/sgacd-backend-sso:demo 0.1s done
+#11 DONE 2.7s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ sgacd-backend-sso:demo  Built

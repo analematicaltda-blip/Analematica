@@ -1,0 +1,9 @@
+AssertionError [ERR_ASSERTION]: Monitor cards must be visible before reaching the Modules trigger: 0,0,0,0
+    at /workspace/SGA-CD/tests/frontend/monitor-animations.cjs:28:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}

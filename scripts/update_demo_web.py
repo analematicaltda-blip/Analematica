@@ -5,9 +5,11 @@ import argparse
 import hashlib
 import json
 import shutil
+from render_landing import render
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--demo-dir', type=Path, default=Path.home() / 'sgacd-demo')
+parser.add_argument('--check', action='store_true', help='Validate source and conflicts without writing files')
 args = parser.parse_args()
 repo = Path(__file__).resolve().parent.parent
 published = args.demo_dir.resolve() / 'web'
@@ -18,6 +20,9 @@ if not published.is_dir():
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
 
+state_path = args.demo_dir.resolve() / "web-deployment.json"
+state = json.loads(state_path.read_text()) if state_path.exists() else {}
+new_state = {}
 changes = []
 for name, entry in manifest.items():
     source = repo / 'SGA-CD-WEB.git' / name
@@ -26,28 +31,39 @@ for name, entry in manifest.items():
         raise SystemExit('Ruta publicada inesperada: ' + name)
     if digest(source) != entry['after']:
         raise SystemExit('El código cambió después de preparar la entrega: ' + name)
+    payload = render(repo / 'SGA-CD-WEB.git', published) if name == 'index.html' else source.read_bytes()
+    desired = hashlib.sha256(payload).hexdigest()
+    new_state[name] = desired
     actual = digest(target)
-    if actual == entry['after']:
+    if actual == desired:
         continue
-    if actual not in entry.get('accepted', [entry['before']]):
+    accepted = entry.get('accepted', [entry['before']]) + [entry['after']]
+    if name in state:
+        accepted = accepted + [state[name]]
+    if actual not in accepted:
         raise SystemExit('Conflicto en ' + str(target) + '. No se modificó ningún archivo.')
-    changes.append((source, target, name))
+    changes.append((payload, target, name))
+
+if args.check:
+    print('Verificación web correcta; archivos previstos:', len(changes))
+    raise SystemExit(0)
 
 stamp = datetime.now(timezone.utc).strftime('%Y-%m-%d/respaldo-web-%H%M%S-%f')
 backup = repo / 'verificaciones' / stamp
-for source, target, name in changes:
+for payload, target, name in changes:
     if target.exists():
         saved = backup / name
         saved.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(target, saved)
-for source, target, name in changes:
+for payload, target, name in changes:
     target.parent.mkdir(parents=True, exist_ok=True)
     for parent in target.parents:
         if parent == published:
             break
         parent.chmod(0o755)
-    shutil.copy2(source, target)
+    target.write_bytes(payload)
     target.chmod(0o644)
+state_path.write_text(json.dumps(new_state, indent=2) + '\n')
 print('Archivos web actualizados:', len(changes))
 if changes:
     print('Respaldo:', backup)

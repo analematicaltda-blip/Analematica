@@ -1,121 +1,59 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    const facebookLoginBtn = document.getElementById('facebook-login-btn');
-    const microsoftLoginBtn = document.getElementById('microsoft-login-btn');
-
-    // --- 1. Configuración de Proveedores OAuth ---
-    // IMPORTANTE: Los client_id deben ser reemplazados con los IDs reales
-    // obtenidos al registrar la aplicación en cada plataforma.
-    const oauthConfig = {
-        google: {
-            authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
-            clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-            redirectUri: window.location.origin + '/login.html', // Redirigir de vuelta a la página de login
-            scope: 'openid email profile',
-            responseType: 'code'
-        },
-        facebook: {
-            authUrl: 'https://www.facebook.com/v12.0/dialog/oauth',
-            clientId: 'YOUR_FACEBOOK_APP_ID',
-            redirectUri: window.location.origin + '/login.html',
-            scope: 'email public_profile',
-            responseType: 'code'
-        },
-        microsoft: {
-            authUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-            clientId: 'YOUR_MICROSOFT_CLIENT_ID',
-            redirectUri: window.location.origin + '/login.html',
-            scope: 'openid email profile User.Read',
-            responseType: 'code'
-        }
-    };
-
-    // --- 2. Manejadores de Eventos para los Botones ---
-    if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', () => {
-            redirectToProvider('google');
-        });
-    }
-    if (facebookLoginBtn) {
-        facebookLoginBtn.addEventListener('click', () => {
-            redirectToProvider('facebook');
-        });
-    }
-    if (microsoftLoginBtn) {
-        microsoftLoginBtn.addEventListener('click', () => {
-            redirectToProvider('microsoft');
-        });
-    }
-
-    function redirectToProvider(provider) {
-        const config = oauthConfig[provider];
-        const params = new URLSearchParams({
-            client_id: config.clientId,
-            redirect_uri: config.redirectUri,
-            scope: config.scope,
-            response_type: config.responseType,
-            // state: 'un_valor_aleatorio_y_seguro' // Opcional pero recomendado para seguridad
-        });
-
-        const authorizationUrl = `${config.authUrl}?${params.toString()}`;
-        window.location.href = authorizationUrl;
-    }
-
-    // --- 3. Manejo del Callback del Proveedor ---
-    // Al cargar la página, verificar si venimos de una redirección de OAuth
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const state = urlParams.get('state'); // Si se usa 'state'
-
-    if (code) {
-        // Asumimos que podemos identificar al proveedor por el 'state' o por un parámetro adicional.
-        // Para este ejemplo, supondremos un endpoint genérico en el backend.
-        // El backend necesita saber de qué proveedor viene el código.
-        const providerName = 'google'; // Esto debería determinarse dinámicamente.
-
-        console.log(`Código de autorización recibido: ${code}`);
-        // Limpiar la URL para no dejar el código visible
-        window.history.replaceState({}, document.title, "/login.html");
-
-        // Enviar el código al backend para intercambiarlo por un token de la app
-        exchangeCodeForToken(providerName, code);
-    }
-
-    async function exchangeCodeForToken(provider, authCode) {
-        const messageDiv = document.getElementById('login-mensaje');
-        if (messageDiv) {
-            messageDiv.textContent = 'Verificando autorización...';
-            messageDiv.className = 'message-info';
-        }
-
-        try {
-            // El backend debe tener un endpoint como /api/auth/{provider}/callback
-            const response = await fetch(`${config.apiBaseUrl}/api/auth/${provider}/callback`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: authCode }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.access_token) {
-                localStorage.setItem('accessToken', data.access_token);
-                if (messageDiv) {
-                    messageDiv.textContent = 'Inicio de sesión exitoso. Redirigiendo...';
-                    messageDiv.className = 'message-success';
+/* All clients use the same backend broker. No provider secret belongs in this file. */
+document.addEventListener('DOMContentLoaded', async () => {
+    const buttons = {google: document.getElementById('google-login-btn'), microsoft: document.getElementById('microsoft-login-btn')};
+    const message = document.getElementById('login-mensaje');
+    const api = config.apiBaseUrl.replace(/\/$/, '') + '/api/v1/sso';
+    let busy = false;
+    const show = text => { if (message) { message.textContent = text; message.setAttribute('role','status'); } };
+    const pause = ms => new Promise(resolve => setTimeout(resolve,ms));
+    for (const [provider, button] of Object.entries(buttons)) {
+        if (!button) continue;
+        button.disabled = true;
+        button.textContent = provider === 'google' ? 'Continuar con Google' : 'Continuar con Microsoft (Outlook / Hotmail)';
+        button.onclick = async () => {
+            if (busy) return;
+            const password = document.getElementById('password')?.value || '';
+            if(!password) { show('Escribe tu contraseña de SGA-CD y continúa con el proveedor.'); return; }
+            // Open synchronously to avoid popup blocking, then navigate to the broker.
+            const popup = window.open('about:blank', '_blank');
+            if (!popup) { show('Permite abrir la ventana de acceso e intenta de nuevo.'); return; }
+            popup.opener = null;
+            busy = true;
+            try {
+                const start = await fetch(api+'/'+provider+'/start', {method:'POST'});
+                if (!start.ok) throw new Error('Este proveedor todavía no está configurado.');
+                const flow = await start.json();
+                popup.location.href = flow.authorization_url;
+                show('Completa el acceso en la ventana de '+(provider==='google'?'Google.':'Microsoft.'));
+                const expires = Date.now()+flow.expires_in*1000;
+                while (Date.now()<expires) {
+                    await pause(2500);
+                    const response = await fetch(api+'/result', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flow_id:flow.flow_id,proof:flow.proof,password})});
+                    if (!response.ok) throw new Error('La cuenta no está autorizada o el acceso venció.');
+                    const result = await response.json();
+                    if (result.status !== 'authenticated') continue;
+                    localStorage.setItem('accessToken',result.access_token);
+                    localStorage.setItem('refreshToken',result.refresh_token);
+                    localStorage.setItem('userRoles',JSON.stringify(result.user.roles));
+                    localStorage.setItem('userId',String(result.user.id));
+                    localStorage.setItem('userInquilinoId',String(result.user.inquilino_id));
+                    localStorage.setItem('userName',result.user.nombre||'');
+                    const next=sessionStorage.getItem('sga-panel-return')||'';sessionStorage.removeItem('sga-panel-return');window.location.assign('app.html'+(/^#\/[a-z_]+\/[a-z0-9-]+$/.test(next)?next:''));
+                    return;
                 }
-                setTimeout(() => {
-                    window.location.href = 'app.html';
-                }, 1500);
-            } else {
-                throw new Error(data.detail || 'No se pudo iniciar sesión con el proveedor.');
-            }
-        } catch (error) {
-            console.error('Error en el intercambio de código:', error);
-             if (messageDiv) {
-                messageDiv.textContent = `Error: ${error.message}`;
-                messageDiv.className = 'message-error';
-            }
-        }
+                throw new Error('El acceso venció. Intenta de nuevo.');
+            } catch (error) { popup.close(); show(error.message || 'No se pudo completar el acceso.'); }
+            finally { busy = false; }
+        };
     }
+    try {
+        const response = await fetch(api+'/providers',{cache:'no-store'});
+        if (!response.ok) throw new Error();
+        const enabled = await response.json();
+        for (const [provider,button] of Object.entries(buttons)) if(button) {
+            button.disabled = enabled[provider] !== true;
+            if(button.disabled) button.title = 'Pendiente de configurar por la administración';
+        }
+        if(!enabled.google && !enabled.microsoft) show('El acceso con Google y Microsoft aún no está habilitado. Puedes usar tu usuario y contraseña.');
+    } catch { show('No se pudo consultar el acceso con proveedores. Puedes usar tu usuario y contraseña.'); }
 });

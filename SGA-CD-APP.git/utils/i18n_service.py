@@ -10,7 +10,7 @@ class Translator:
 
     def _load_languages(self):
         """Loads all .json language files from the i18n directory."""
-        i18n_dir = "i18n"
+        i18n_dir = os.path.join(os.path.dirname(__file__), "..", "i18n")
         if not os.path.exists(i18n_dir):
             print(f"Warning: Directory '{i18n_dir}' not found.")
             return

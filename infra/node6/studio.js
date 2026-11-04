@@ -1,0 +1,16 @@
+let credential='',imageName=null,reelName=null;
+const $=id=>document.getElementById(id);
+async function api(path,body){
+ if(!credential)throw new Error('Conecta primero con la clave privada del nodo.');
+ const response=await fetch(path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+credential,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
+ if(!response.ok){const error=await response.json();throw new Error(typeof error.detail==='string'?error.detail:'Revisa los datos de la solicitud.');}
+ return response.json();
+}
+async function asset(filename){const response=await fetch('/artifacts/'+encodeURIComponent(filename),{headers:{Authorization:'Bearer '+credential}});if(!response.ok)throw new Error('No se pudo descargar el archivo.');return URL.createObjectURL(await response.blob());}
+function action(id,work){$(id).onclick=async()=>{const button=$(id);button.disabled=true;$('message').textContent='Procesando…';try{await work();$('message').textContent='Operación completada.';}catch(error){$('message').textContent=error.message;}finally{button.disabled=false;}};}
+action('connect',async()=>{credential=$('token').value;const status=await api('/status');$('status').textContent='Nodo activo · Gemini: '+(status.gemini_key_configured?(status.remote_inference_verified?'inferencia realizada':'clave configurada; llamada real pendiente de comprobar'):'pendiente de configurar')+' · Reels: FFmpeg · YouTube: solo privado con canal autorizado.';$('token').value='';$('script').disabled=!status.gemini_key_configured;$('image').disabled=!status.gemini_key_configured;});
+action('script',async()=>{$('script-output').textContent=(await api('/studio/script',{prompt:$('prompt').value})).text;});
+action('image',async()=>{const result=await api('/studio/image',{prompt:$('prompt').value});imageName=result.filename;$('image-preview').src=await asset(imageName);$('image-preview').hidden=false;});
+action('reel',async()=>{const result=await api('/studio/reel',{title:$('title').value,caption:$('caption').value,duration:Number($('duration').value),image:imageName});reelName=result.filename;const url=await asset(reelName);$('video-preview').src=url;$('video-preview').hidden=false;$('download').href=url;$('download').download=reelName;$('download').hidden=false;});
+action('draft',async()=>{if(!reelName)throw new Error('Crea primero un reel.');const draft=await api('/social/draft',{filename:reelName,title:$('title').value,description:$('caption').value,platforms:['youtube']});$('result').textContent='Borrador preparado para YouTube. Todavía no se ha publicado.';const link=document.createElement('a');link.href=await asset(draft.filename);link.download=draft.filename;link.textContent=' Descargar borrador';$('result').appendChild(link);});
+action('upload',async()=>{if(!reelName)throw new Error('Crea primero un reel.');if(!$('confirm').checked||!$('kids').value)throw new Error('Selecciona la clasificación y confirma el envío privado.');const result=await api('/youtube/upload-private',{filename:reelName,title:$('title').value,description:$('caption').value,made_for_kids:$('kids').value==='yes',confirm_private:true});$('result').textContent='Video confirmado como privado en YouTube: '+result.video_id;});
