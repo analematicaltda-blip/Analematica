@@ -8,6 +8,8 @@ from app.agents.corps.formacion_cultura_colonel import get_formacion_cultura_col
 from app.agents.corps.ventas_crm_colonel import get_ventas_crm_colonel_graph
 from app.agents.corps.multimedia_colonel import get_multimedia_colonel_graph
 from app.agents.corps.redes_sociales_colonel import get_redes_sociales_colonel_graph
+from app.agents.corps.ciberdefensa_colonel import get_ciberdefensa_colonel_graph
+from app.agents.corps.operaciones_sistemas_colonel import get_operaciones_sistemas_colonel_graph
 from app.agents.corps.units.tenancy_governance_captain import get_tenancy_governance_captain_graph
 from app.agents.corps.units.security_vault_captain import get_security_vault_captain_graph
 
@@ -49,9 +51,11 @@ class JarviGeneralOrchestrator:
         self.colonel_ventas = get_ventas_crm_colonel_graph(self.llm)
         self.colonel_multimedia = get_multimedia_colonel_graph(self.llm)
         self.colonel_redes = get_redes_sociales_colonel_graph(self.llm)
+        self.colonel_ciberdefensa = get_ciberdefensa_colonel_graph(self.llm)
+        self.colonel_sistemas = get_operaciones_sistemas_colonel_graph(self.llm)
         self.captain_tenancy = get_tenancy_governance_captain_graph(self.llm)
         self.captain_security = get_security_vault_captain_graph(self.llm)
-        print("--- ✅ GENERAL JARVI: Los 5 Coroneles + Capitanes de Gobernanza y Seguridad en posición con LLM activo. ---")
+        print("--- ✅ GENERAL JARVI: Los 7 Coroneles (incluye Ciberdefensa y Sistemas/SEO/Legal) en posición con LLM activo. ---")
 
     async def execute_mission(self, envelope: MissionDispatchEnvelope) -> Dict[str, Any]:
         text_lower = envelope.raw_utterance.lower()
@@ -68,6 +72,14 @@ class JarviGeneralOrchestrator:
         if envelope.target_division == "GOBERNANZA" or any(w in text_lower for w in ["inquilino", "empresa", "tenancy", "rol", "permiso", "rbac", "cuota"]):
             res = await self.captain_tenancy.ainvoke({"coronel_order": envelope.raw_utterance, "app_context": context})
             return {"final_report": {"text": res.get("final_report", "Gobernanza inquilinos ejecutada.")}}
+
+        # Ciberdefensa, Mitigación de Ataques, WAF, DDoS y Vulnerabilidades
+        if envelope.target_division == "CIBERDEFENSA" or any(w in text_lower for w in ["ataque", "ciber", "ddos", "waf", "vulnerab", "owasp", "penetration", "intruso", "firewall"]):
+            return await self.colonel_ciberdefensa.ainvoke({"general_order": envelope.raw_utterance, "app_context": context})
+
+        # Sistemas, Mantenimiento, SEO dinámico y Cumplimiento Legal (Habeas Data)
+        if envelope.target_division in ["MANTENIMIENTO", "SEO", "LEGAL"] or any(w in text_lower for w in ["seo", "sitemap", "habeas data", "legal", "mantenimiento", "limpieza cache", "optimizar db", "terminos"]):
+            return await self.colonel_sistemas.ainvoke({"general_order": envelope.raw_utterance, "app_context": context})
 
         # Seguridad Criptográfica, Vault y Auditoría STAR
         if envelope.target_division == "SEGURIDAD" or any(w in text_lower for w in ["llave", "apikey", "api key", "vault", "cifrado", "star", "auditoria"]):
@@ -105,6 +117,12 @@ class NekoConversationalGeneral:
         if any(w in cmd_lower for w in ["inquilino", "empresa", "tenancy", "rol", "permiso", "rbac", "cuota"]):
             target_div = "GOBERNANZA"
             action = "GOBERNANZA_MULTI_INQUILINO"
+        elif any(w in cmd_lower for w in ["ataque", "ciber", "ddos", "waf", "vulnerab", "owasp", "intruso", "firewall"]):
+            target_div = "CIBERDEFENSA"
+            action = "MITIGACION_ATAQUES_Y_CIBERDEFENSA"
+        elif any(w in cmd_lower for w in ["seo", "sitemap", "habeas data", "legal", "mantenimiento", "cache", "optimizar db"]):
+            target_div = "MANTENIMIENTO"
+            action = "SISTEMAS_SEO_LEGAL_MANTENIMIENTO"
         elif any(w in cmd_lower for w in ["llave", "apikey", "api key", "vault", "cifrado", "star", "auditoria"]):
             target_div = "SEGURIDAD"
             action = "SEGURIDAD_CRIPTOGRAFICA_STAR"
