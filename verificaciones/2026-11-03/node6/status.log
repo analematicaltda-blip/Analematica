@@ -1,0 +1,13 @@
+{
+  "node": 6,
+  "gemini_key_configured": false,
+  "text_model": "gemini-2.5-flash",
+  "image_model": "gemini-2.5-flash-image",
+  "remote_inference_verified": false,
+  "colibri_configured": false,
+  "local_weights_required_for_gemini": false,
+  "reel_renderer": "ffmpeg",
+  "social_publishing": "YouTube private only, requires channel OAuth; other networks draft only",
+  "matrix_integration": "MCP adapter; registration and kernel credentials required",
+  "ai_video": "Not configured; Gemini text access does not imply Veo access"
+}

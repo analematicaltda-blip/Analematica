@@ -1,0 +1,7 @@
+PASS order/menu/affiliates/admin settings 1440
+PASS order/menu/affiliates/admin settings 1024
+PASS order/menu/affiliates/admin settings 768
+PASS order/menu/affiliates/admin settings 390
+PASS order/menu/affiliates/admin settings 320
+PASS missing configured native video: source preserved and status shown
+PASS published section order without JavaScript

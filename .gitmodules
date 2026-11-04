@@ -1,0 +1,6 @@
+[submodule "matrix-os"]
+	path = matrix-os
+	url = https://github.com/HamedMP/matrix-os.git
+[submodule "colibri"]
+	path = colibri
+	url = https://github.com/JustVugg/colibri.git

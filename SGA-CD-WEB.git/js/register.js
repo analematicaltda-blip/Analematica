@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (response.ok) {
-                showMessage('¡Organización registrada con éxito! Serás redirigido a la página de inicio de sesión.', 'success');
+                showMessage('¡Organización registrada! Usa tu correo como nombre de usuario para iniciar sesión.', 'success');
                 setTimeout(() => {
                     window.location.href = 'login.html'; // Redirect to login page on success
                 }, 3000);

@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 1. Proteger la ruta y validar Token JWT con Expiración ---
     if (!token) {
+        window.SGAWorkspace?.remember();
         window.location.href = 'login.html';
         return;
     }
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         const payloadBase64 = token.split('.')[1];
         if (!payloadBase64) throw new Error('JWT inválido');
-        const decodedPayload = JSON.parse(atob(payloadBase64));
+        const decodedPayload = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))));
         const currentTime = Math.floor(Date.now() / 1000);
 
         if (decodedPayload.exp && decodedPayload.exp < currentTime) {
@@ -138,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const payloadBase64 = currentToken.split('.')[1];
                 if (!payloadBase64) return;
-                const decoded = JSON.parse(atob(payloadBase64));
+                const decoded = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))));
                 const now = Math.floor(Date.now() / 1000);
                 const remainingSec = decoded.exp - now;
 
@@ -146,7 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('[Security]: Renovando token de sesión JWT silenciosamente...');
                     const response = await fetch(`${config.apiBaseUrl}/api/v1/auth/refresh`, {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${currentToken}` }
+                        headers: { 'Authorization': `Bearer ${currentToken}`, 'Content-Type':'application/json' },
+                        body: JSON.stringify({refresh_token:localStorage.getItem('refreshToken')})
                     });
                     if (response.ok) {
                         const data = await response.json();
@@ -182,13 +184,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         renderUserInfo(currentUser);
-        renderNavigation(currentUser.primaryRole);
+        if (!window.SGAWorkspace) renderNavigation(currentUser.primaryRole);
         setupEventListeners(token, currentUser.primaryRole);
         setupSidebarMechanics();
         translatePage();
         initializeNotifications();
         startSilentTokenRefresh();
-        renderContentForView('dashboard', token, currentUser.primaryRole);
+        if (window.SGAWorkspace) window.SGAWorkspace.start();
+        else renderContentForView('dashboard', token, currentUser.primaryRole);
     }
 
     // --- 4. Configurar listeners de eventos ---

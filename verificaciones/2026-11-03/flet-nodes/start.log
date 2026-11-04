@@ -1,0 +1,62 @@
+Los nodos ya estaban configurados; se conservaron sus servicios y volúmenes.
+Previsualizaciones preparadas: escritorio 8501, móvil 8502.
+Mantén ambos puertos privados. La conexión de login Flet con la API sigue pendiente.
+#1 [internal] load local bake definitions
+#1 reading from stdin 737B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 440B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 0.3s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [stage-0 1/5] FROM docker.io/library/python:3.12-slim@sha256:b18b261e1b4974b4f321451ad5251ded85abb22c2b8b262da527dda1d031ab30
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 80B done
+#6 DONE 0.0s
+
+#7 [stage-0 3/5] RUN --mount=type=secret,id=proxy_ca if [ -f /run/secrets/proxy_ca ]; then export PIP_CERT=/run/secrets/proxy_ca; fi; pip install --no-cache-dir -r /tmp/requirements-preview.txt
+#7 CACHED
+
+#8 [stage-0 4/5] COPY run_preview.py /opt/run_preview.py
+#8 CACHED
+
+#9 [stage-0 2/5] COPY requirements-preview.txt /tmp/requirements-preview.txt
+#9 CACHED
+
+#10 [stage-0 5/5] WORKDIR /state
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 writing image sha256:6d4d6f5fbdbc343cb0d3075305f478f7dc032f54adcb22316eb4eae912a5b972 done
+#11 naming to docker.io/library/sgacd-flet-preview:0.25.2 done
+#11 DONE 0.0s
+
+#12 resolving provenance for metadata file
+#12 DONE 0.0s
+ sgacd-flet-preview:0.25.2  Built
+ Container sgacd-flet-nodes-flet-desktop-1  Running
+ Container sgacd-flet-nodes-flet-mobile-1  Running
+ Container sgacd-flet-nodes-flet-desktop-1  Waiting
+ Container sgacd-flet-nodes-flet-mobile-1  Waiting
+ Container sgacd-flet-nodes-flet-mobile-1  Healthy
+ Container sgacd-flet-nodes-flet-desktop-1  Healthy
+OK 8501: HTTP 200, sesión WebSocket, vista inicial y paleta azul cielo
+OK 8502: HTTP 200, sesión WebSocket, vista inicial y paleta azul cielo
+NAME                              IMAGE                       COMMAND                  SERVICE        CREATED              STATUS                        PORTS
+sgacd-flet-nodes-flet-desktop-1   sgacd-flet-preview:0.25.2   "python /opt/run_pre…"   flet-desktop   About a minute ago   Up About a minute (healthy)   127.0.0.1:8501->8501/tcp
+sgacd-flet-nodes-flet-mobile-1    sgacd-flet-preview:0.25.2   "python /opt/run_pre…"   flet-mobile    About a minute ago   Up About a minute (healthy)   127.0.0.1:8502->8502/tcp
+
+Nodos Flet listos. Mantén privados los puertos 8501 (escritorio) y 8502 (móvil).
+Escritorio: http://127.0.0.1:8501
+Móvil: http://127.0.0.1:8502
+Son vistas previas: su login SQLite todavía es independiente del backend web.

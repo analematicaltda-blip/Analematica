@@ -1,26 +1,52 @@
-# Demo web y vistas Flet en Codespaces
+# Nodos Flet móvil y escritorio
 
-Desde la raíz de SGA-CD, con la demo existente en `~/sgacd-demo`:
+Con la demo existente en `~/sgacd-demo`, ejecuta desde el repositorio:
 
 ```sh
-python3 scripts/update_demo_web.py
-python3 scripts/setup_flet_previews.py
-docker compose -f "$HOME/sgacd-demo/compose.json" build flet-desktop
-docker compose -f "$HOME/sgacd-demo/compose.json" up -d --wait flet-desktop flet-mobile
+python3 scripts/start_flet_nodes.py
 ```
 
-Puertos privados: web 8080, escritorio Flet 8501 y móvil Flet 8502.
-Los dos últimos son previsualizaciones web, no paquetes nativos instalados.
-Se probaron imagen, healthchecks, sesiones WebSocket reales, controles
-adaptables y paleta azul. El navegador del entorno de pruebas no pudo cargar
-CanvasKit de gstatic; la revisión gráfica de Flet debe completarse en navegador
-con acceso a esa CDN. La web sí se verificó con Chromium en cinco tamaños.
+El comando prepara los dos servicios, construye una imagen compartida, los
+arranca y comprueba HTTP y una sesión WebSocket real con la vista inicial.
+Se puede repetir. Conserva los servicios existentes y los volúmenes de datos;
+si los nodos tienen otra configuración, se detiene antes de sustituirla.
+La primera preparación guarda un respaldo de compose.json.
 
-Las vistas Flet conservan su login SQLite heredado: todavía no se conectó a
-las credenciales del backend. Tampoco se validaron sincronización ni todas sus
-rutas. No son clientes completos de producción. No se descargan modelos LLM.
+| Nodo | Fuente montada en lectura | Puerto privado |
+| --- | --- | --- |
+| Escritorio | SGA-CD-APP.git | 8501 |
+| Móvil | SGA-CD-APK.git | 8502 |
 
-El actualizador web verifica hashes y conflictos antes de escribir, conserva
-`js/config.js` y guarda respaldos fechados. El preparador de Flet conserva la
-configuración Compose anterior y se detiene si esos servicios ya existen.
-No ejecutar `docker compose down -v`: eliminaría volúmenes de datos.
+En Codespaces, abre **Puertos**, agrega 8501 y 8502 si no aparecen y conserva
+la visibilidad **Private**. Abre la dirección reenviada de cada fila. El comando
+también imprime las direcciones cuando reconoce las variables de Codespaces.
+No cambies la visibilidad a pública.
+
+Estos son servidores de vista previa web de las aplicaciones Flet, no
+instaladores Android/iOS/Windows/macOS/Linux. El login SQLite heredado sigue
+independiente del backend. El acceso central Google/Microsoft tiene su pantalla
+de cuenta verificada; requiere configurar los proveedores según
+[la guía SSO](../../docs/SSO-GOOGLE-MICROSOFT.md). Las bases locales se conservan para trabajar sin conexión y sincronizar
+posteriormente; esta integración de acceso no sustituye ni certifica ese mecanismo.
+No se descargan modelos LLM al arrancar. La comprobación de sesión no sustituye
+la revisión visual ni valida todos los módulos. CanvasKit y recursos externos
+pueden requerir acceso desde el navegador.
+
+Diagnóstico:
+
+```sh
+docker compose -f "$HOME/sgacd-demo/compose.json" ps flet-desktop flet-mobile
+docker compose -f "$HOME/sgacd-demo/compose.json" logs --tail 60 flet-desktop flet-mobile
+```
+
+Para detener solo estos nodos sin borrar datos:
+
+```sh
+docker compose -f "$HOME/sgacd-demo/compose.json" stop flet-desktop flet-mobile
+```
+
+Para otra demo, usa `--demo-dir /ruta/demo`. En un entorno con CA de proxy,
+`--proxy-ca /ruta/ca.pem` pasa la CA como secreto de construcción sin desactivar
+TLS. No ejecutar `down -v`, pues elimina volúmenes.
+
+La actualización de la web es independiente: `python3 scripts/update_demo_web.py`.

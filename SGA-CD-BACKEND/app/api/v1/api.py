@@ -1,4 +1,4 @@
-from app.api.v1.endpoints import payments
+from app.api.v1.endpoints import payments, sso, workspace
 from fastapi import APIRouter
 from .endpoints import (
     auth,
@@ -33,6 +33,8 @@ from .endpoints import (
 )
 
 api_router = APIRouter()
+api_router.include_router(workspace.router, prefix="/workspace", tags=["Administrative Workspace"])
+api_router.include_router(sso.router, prefix="/sso", tags=["Single Sign-On"])
 
 # API Routers
 api_router.include_router(sales_agent.router, prefix="/sales_agent", tags=["Sales Agent"])

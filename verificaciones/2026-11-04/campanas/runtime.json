@@ -1,0 +1,28 @@
+{
+  "delivery_enabled": false,
+  "scheduler_recent": true,
+  "providers": 7,
+  "source_preserved": true,
+  "adaptations": {
+    "whatsapp": {
+      "width": 480,
+      "height": 854,
+      "codec": "h264",
+      "bytes": 10741
+    },
+    "gmail": {
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "bytes": 9483
+    },
+    "facebook": {
+      "width": 1080,
+      "height": 1080,
+      "codec": "h264",
+      "bytes": 13839
+    }
+  },
+  "draft_targets": 3,
+  "approval_blocked_in_preview": true
+}

@@ -1,0 +1,2 @@
+PASS real GSAP/ScrollTrigger: all monitor cards visible
+PASS real GSAP/ScrollTrigger: compact empty feed

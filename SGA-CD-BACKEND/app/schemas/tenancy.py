@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Dict, Any, Optional
 
 class TenantCreate(BaseModel):
@@ -11,10 +11,11 @@ class TenantCreate(BaseModel):
 
 class Tenant(BaseModel):
     id: int
-    nombre: str
+    nombre_empresa: str
+    nombre: str = Field(validation_alias="nombre_empresa")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TenantAdmin(BaseModel):
     id: int
@@ -22,7 +23,7 @@ class TenantAdmin(BaseModel):
     correo: EmailStr
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TenantCreateResponse(BaseModel):
     tenant: Tenant

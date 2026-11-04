@@ -1,5 +1,6 @@
 import flet as ft
 import sqlite3
+from utils.sso_client import begin_sso
 from utils.audit_logger import log_action
 from utils.i18n_service import Translator
 from gamification.engine import process_gamified_action
@@ -53,8 +54,7 @@ def login_view(page: ft.Page, google_provider, microsoft_provider):
             page.update()
 
     def handle_oauth_login(e, provider_name):
-        if provider_name == "Google": page.login(google_provider)
-        elif provider_name == "Microsoft": page.login(microsoft_provider)
+        begin_sso(page, 'google' if provider_name == 'Google' else 'microsoft', mensaje_login, password_input.value)
 
     # --- UI Controls ---
     usuario_input = ft.TextField(label=t("login.username_label"), width=350)
