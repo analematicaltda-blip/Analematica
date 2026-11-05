@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('prepare_meta', ROOT/'deployment/prepare_meta.py')
+spec = importlib.util.spec_from_file_location('prepare_meta', ROOT.parent/'backend/deployment/prepare_meta.py')
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import httplib2
 import requests
 import tempfile
@@ -9,7 +10,7 @@ from googleapiclient.http import MediaFileUpload
 from oauth2client.client import OAuth2Credentials
 
 # --- Constants ---
-CLIENT_SECRETS_FILE = "SGA-CD-FASTAPI-BACKEND/client_secrets.json"
+CLIENT_SECRETS_FILE = os.environ.get('YOUTUBE_CLIENT_SECRETS_FILE', str(Path(__file__).resolve().parents[2] / 'client_secrets.json'))
 YOUTUBE_UPLOAD_SCOPE = "https://www.googleapis.com/auth/youtube.upload"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"

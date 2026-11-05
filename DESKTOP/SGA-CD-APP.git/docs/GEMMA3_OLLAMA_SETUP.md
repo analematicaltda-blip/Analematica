@@ -104,7 +104,7 @@ Invoke-RestMethod -Uri "http://localhost:11434/api/chat" -Method Post -ContentTy
 Navegue a `DESKTOP/SGA-CD-APP.git/` y ejecute:
 
 ```bash
-PYTHONPATH=.:../SGA-CD-FASTAPI-BACKEND python3 test_gemma3_ollama_integration.py
+PYTHONPATH=.:../BAKEND/SGA-CD-BACKEND python3 test_gemma3_ollama_integration.py
 ```
 
 La suite valida:

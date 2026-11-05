@@ -13,9 +13,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--demo-dir', type=Path, default=Path.home() / 'sgacd-demo')
 parser.add_argument('--check', action='store_true', help='Validate source and conflicts without writing files')
 args = parser.parse_args()
-repo = Path(__file__).resolve().parents[2]
+repo = Path(__file__).resolve().parents[3]
 published = args.demo_dir.resolve() / 'web'
-manifest = json.loads((repo / 'SGA-CD-WEB.git/deployment/manifest.json').read_text())
+manifest = json.loads((repo / 'FRONTEND/SGA-CD-WEB.git/deployment/manifest.json').read_text())
 if not published.is_dir():
     raise SystemExit('No se encontró la copia web de la demo: ' + str(published))
 
@@ -27,13 +27,13 @@ state = json.loads(state_path.read_text()) if state_path.exists() else {}
 new_state = {}
 changes = []
 for name, entry in manifest.items():
-    source = repo / 'SGA-CD-WEB.git' / name
+    source = repo / 'FRONTEND/SGA-CD-WEB.git' / name
     target = published / name
     if not target.resolve().is_relative_to(published):
         raise SystemExit('Ruta publicada inesperada: ' + name)
     if digest(source) != entry['after']:
         raise SystemExit('El código cambió después de preparar la entrega: ' + name)
-    payload = render(repo / 'SGA-CD-WEB.git', published) if name == 'index.html' else source.read_bytes()
+    payload = render(repo / 'FRONTEND/SGA-CD-WEB.git', published) if name == 'index.html' else source.read_bytes()
     desired = hashlib.sha256(payload).hexdigest()
     new_state[name] = desired
     actual = digest(target)
@@ -51,7 +51,7 @@ if args.check:
     raise SystemExit(0)
 
 stamp = datetime.now(timezone.utc).strftime('%Y-%m-%d/respaldo-web-%H%M%S-%f')
-backup = repo / 'SGA-CD-WEB.git' / 'deployment' / 'backups' / stamp
+backup = repo / 'FRONTEND/SGA-CD-WEB.git' / 'deployment' / 'backups' / stamp
 for payload, target, name in changes:
     if target.exists():
         saved = backup / name

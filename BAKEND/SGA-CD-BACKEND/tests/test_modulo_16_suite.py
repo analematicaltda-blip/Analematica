@@ -292,9 +292,9 @@ def test_12_limitacion_solicitudes_rate_limit(client, db):
 def test_13_navegacion_movil_accesibilidad(client, db):
     """ESCENARIO 13: Navegación móvil y accesibilidad."""
     import os
-    index_path = "SGA-CD-WEB.git/index.html"
+    index_path = "FRONTEND/SGA-CD-WEB.git/index.html"
     if not os.path.exists(index_path):
-        index_path = "../SGA-CD-WEB.git/index.html"
+        index_path = "../FRONTEND/SGA-CD-WEB.git/index.html"
     assert os.path.exists(index_path)
 
 

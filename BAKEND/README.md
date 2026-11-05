@@ -18,7 +18,7 @@ python3 BAKEND/SGA-CD-BACKEND/scripts/update_panels.py --start
 La consola del dueño conserva su instalador:
 
 ```bash
-python3 Analematica-SGA-CD/deployment/start.py
+python3 Analematica/backend/deployment/start.py
 ```
 
 La reorganización no mueve volúmenes Docker, no ejecuta SQL o migraciones y no

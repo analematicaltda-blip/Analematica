@@ -1,7 +1,7 @@
 # GATuristica
 
 - `BAKEND/SGA-ERP-TUR-BAKEND/`: anterior carpeta `Backend`.
-- `SGA-ERP-TUR-FRONTEND/`: anterior carpeta `Frontend`.
+- `FRONTEND/SGA-ERP-TUR-FRONTEND/`: anterior carpeta `Frontend`.
 
 Se conserva el nombre BAKEND solicitado. Las carpetas son directorios de
 componentes; los nombres de módulos Python internos no cambian. Turismo carga

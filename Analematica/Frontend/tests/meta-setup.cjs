@@ -1,8 +1,8 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
-const config=JSON.parse(fs.readFileSync('Analematica-SGA-CD/config/meta-public.json'));
-const source=fs.readFileSync('Analematica-SGA-CD/js/meta-setup.js','utf8');
+const config=JSON.parse(fs.readFileSync('Analematica/Frontend/config/meta-public.json'));
+const source=fs.readFileSync('Analematica/Frontend/js/meta-setup.js','utf8');
 async function test(origin,expected){
  let ready,writes=0;
  const fields=Object.fromEntries(['app_id','api_version','login_config_id','redirect_uris'].map(k=>[k,{value:''}]));

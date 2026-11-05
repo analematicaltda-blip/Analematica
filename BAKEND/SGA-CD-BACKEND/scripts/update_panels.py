@@ -33,7 +33,7 @@ def install(args):
  container=subprocess.check_output(compose+['ps','-q','backend'],text=True).strip()
  if not container:raise SystemExit('Primero inicia el backend existente.')
  run(['docker','exec',container,'python','-c','import requests,cryptography.fernet; import app.models.user'],stdout=subprocess.DEVNULL)
- run([sys.executable,str(repo/'SGA-CD-WEB.git/scripts/publish.py'),'--demo-dir',str(demo),'--check'])
+ run([sys.executable,str(repo/'FRONTEND/SGA-CD-WEB.git/scripts/publish.py'),'--demo-dir',str(demo),'--check'])
  stamp=datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S-%f');backup=demo/('workspace-backup-'+stamp);backup.mkdir(mode=0o700)
  shutil.copy2(path,backup/'compose.json');(backup/'compose.json').chmod(0o600)
  overlay=demo/'workspace-overlays'/stamp
@@ -117,7 +117,7 @@ def install(args):
  run(compose+['exec','-T','backend','python','-m','app.services.campaign_schema'])
  run(compose+['exec','-T','backend','python','-m','app.services.institutional_schema'])
  run(compose+['up','-d','--no-deps','--force-recreate','--wait','--wait-timeout','180','campaign-scheduler'])
- run([sys.executable,str(repo/'SGA-CD-WEB.git/scripts/publish.py'),'--demo-dir',str(demo)])
+ run([sys.executable,str(repo/'FRONTEND/SGA-CD-WEB.git/scripts/publish.py'),'--demo-dir',str(demo)])
  ensure_web_running(compose)
  run(compose+['ps','backend','node6','web','campaign-scheduler'])
  print('Actualización aplicada. Abre el puerto 8080 y recarga con Ctrl+Shift+R. Los accesos están en app.html#/ROL/inicio.')

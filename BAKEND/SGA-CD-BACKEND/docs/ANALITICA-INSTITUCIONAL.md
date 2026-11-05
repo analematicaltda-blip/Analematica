@@ -23,6 +23,6 @@ La empresa adopta las especialidades y vincula sus procesos. Administración reg
 
 ## Verificación
 
-Pruebas ORM/API en `tests/test_institutional_panels.py`; navegador en `../SGA-CD-WEB.git/tests/institutional.cjs`. Se prueban planes reales, revisiones del dueño, herencia Full, restricciones explícitas, aislamiento, personas frente a inscripciones, deserción explícita, catálogo, equipo y adaptación a pantallas.
+Pruebas ORM/API en `tests/test_institutional_panels.py`; navegador en `../FRONTEND/SGA-CD-WEB.git/tests/institutional.cjs`. Se prueban planes reales, revisiones del dueño, herencia Full, restricciones explícitas, aislamiento, personas frente a inscripciones, deserción explícita, catálogo, equipo y adaptación a pantallas.
 
 Resultado del 4 de noviembre de 2026: 16 pruebas institucionales y 32 regresiones de backend aprobadas; 111 recorridos institucionales en Chromium (11 roles, dos planes, cuatro anchos para revisión, más sesiones reales simuladas), 16 recorridos de campañas, publicador y service worker aprobados. El navegador usa respuestas controladas para la matriz completa. Además se verificó el servicio real con Nginx, JWT y PostgreSQL: 3 estudiantes, 4 inscripciones y 1 deserción con datos señalados de validación. Backend, nodo 6 y scheduler quedaron saludables en el entorno de validación. Los envíos externos permanecieron deshabilitados. Las capturas corresponden al entorno de validación, no a datos de clientes.

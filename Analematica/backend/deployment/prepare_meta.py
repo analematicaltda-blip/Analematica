@@ -35,7 +35,7 @@ def main():
         origin = resolve_origin(args.origin, port=args.port)
     except ValueError as error:
         parser.error(str(error))
-    config = json.loads((Path(__file__).parents[1] / 'config/meta-public.json').read_text())
+    config = json.loads((Path(__file__).parents[2] / 'Frontend/config/meta-public.json').read_text())
     print(json.dumps({**config, 'redirect_uri': origin + config['callback_path'],
                       'instagram_redirect_uri': origin + config['instagram_callback_path'],
                       'webhook_url': origin + '/api/v1/workspace/meta/webhooks/receive',

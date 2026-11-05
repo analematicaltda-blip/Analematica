@@ -5,7 +5,7 @@
 
 ## 1. Introducción
 
-Este documento detalla el análisis comparativo entre los 12 roles de usuario definidos en los requisitos del proyecto y su implementación actual en el frontend (`SGA-CD-WEB.git`).
+Este documento detalla el análisis comparativo entre los 12 roles de usuario definidos en los requisitos del proyecto y su implementación actual en el frontend (`FRONTEND/SGA-CD-WEB.git`).
 
 El análisis se basa en los menús de navegación definidos en `js/navigation.js` y las vistas correspondientes en `js/views.js`.
 
@@ -46,6 +46,6 @@ A continuación, se presenta el mapeo de requisitos a funcionalidades implementa
 
 ## 4. Conclusión General
 
-La estructura de roles y permisos en el frontend `SGA-CD-WEB.git` está **sólidamente implementada** y se alinea estrechamente con los requisitos del negocio. La base de navegación y las vistas existentes son un excelente punto de partida.
+La estructura de roles y permisos en el frontend `FRONTEND/SGA-CD-WEB.git` está **sólidamente implementada** y se alinea estrechamente con los requisitos del negocio. La base de navegación y las vistas existentes son un excelente punto de partida.
 
 La principal recomendación es asegurar que el **backend aplique rigurosamente los permisos detallados** (ej. prohibir la eliminación de registros para ciertos roles) para garantizar la integridad del sistema.

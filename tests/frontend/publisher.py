@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 
 repo=Path(__file__).resolve().parents[2]
-source=repo/'SGA-CD-WEB.git'
+source=repo/'FRONTEND/SGA-CD-WEB.git'
 manifest=json.loads((repo/'scripts/flet_preview/web-manifest.json').read_text())
 original=(source/'index.html').read_bytes()
 with tempfile.TemporaryDirectory() as tmp:

@@ -9,7 +9,7 @@
 
 ## 1. Resumen de la Implementación
 
-Se ha completado la implementación del nuevo sistema de Control de Acceso Basado en Roles (RBAC) en el backend `SGA-CD-FASTAPI-BACKEND`.
+Se ha completado la implementación del nuevo sistema de Control de Acceso Basado en Roles (RBAC) en el backend `BAKEND/SGA-CD-BACKEND`.
 
 Los cambios principales son:
 
@@ -32,7 +32,7 @@ Ejecuta el script `database_migration_script.sql` contra tu base de datos Postgr
 
 ### Paso 2: Crear Usuarios de Prueba
 
-Ejecuta el script `create_test_users.py` desde la raíz del repositorio `SGA-CD-FASTAPI-BACKEND`:
+Ejecuta el script `create_test_users.py` desde la raíz del repositorio `BAKEND/SGA-CD-BACKEND`:
 
 ```bash
 python create_test_users.py

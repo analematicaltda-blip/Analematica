@@ -23,7 +23,7 @@ Los contenedores existentes siguen usando sus versiones publicadas. Para futuras
 actualizaciones de la consola SGA-CD, la ruta del instalador es:
 
 ```bash
-python3 Analematica-SGA-CD/deployment/start.py
+python3 Analematica/backend/deployment/start.py
 ```
 
 Esta importación no sustituye automáticamente el frontend desplegado por el de

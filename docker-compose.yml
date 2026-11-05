@@ -58,7 +58,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./SGA-CD-WEB.git:/usr/share/nginx/html:ro
+      - ./FRONTEND/SGA-CD-WEB.git:/usr/share/nginx/html:ro
 
   # 4. Cliente Escritorio Flet
   flet-desktop-client:
@@ -96,7 +96,7 @@ services:
     ports:
       - "8001:8001"
     volumes:
-      - ./SGA-CD-WEB.git/assets/generated:/app/assets/generated
+      - ./FRONTEND/SGA-CD-WEB.git/assets/generated:/app/assets/generated
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:

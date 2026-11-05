@@ -49,8 +49,8 @@
 
 Se verificaron los checksums MD5 de los 5 archivos del perímetro protegido del proyecto:
 
-1. `SGA-CD-WEB.git/js/views/admin_general.js`: `52c83cfca2ba094b060661bdf259b51c` (INTACTO)
-2. `SGA-CD-FASTAPI-BACKEND/app/api/v1/endpoints/admin_general.py`: `b396d65984216013b45fd006e4eeffe8` (INTACTO)
-3. `SGA-CD-WEB.git/index.html`: `132c63fe3220bf746fe24b8d5a8fc2a8` (INTACTO)
-4. `SGA-CD-WEB.git/css/vanguard.css`: `256e0b2ae110280c1d94d4842bef4c8d` (INTACTO)
-5. `SGA-CD-WEB.git/css/style.css`: `35e60be9613c955b76e37c036f53063c` (INTACTO)
+1. `FRONTEND/SGA-CD-WEB.git/js/views/admin_general.js`: `52c83cfca2ba094b060661bdf259b51c` (INTACTO)
+2. `BAKEND/SGA-CD-BACKEND/app/api/v1/endpoints/admin_general.py`: `b396d65984216013b45fd006e4eeffe8` (INTACTO)
+3. `FRONTEND/SGA-CD-WEB.git/index.html`: `132c63fe3220bf746fe24b8d5a8fc2a8` (INTACTO)
+4. `FRONTEND/SGA-CD-WEB.git/css/vanguard.css`: `256e0b2ae110280c1d94d4842bef4c8d` (INTACTO)
+5. `FRONTEND/SGA-CD-WEB.git/css/style.css`: `35e60be9613c955b76e37c036f53063c` (INTACTO)

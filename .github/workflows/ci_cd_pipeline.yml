@@ -17,8 +17,8 @@ jobs:
       - name: Verify Monorepo Folder Boundaries
         run: |
           echo "Checking mandatory SGA-CD component directory boundaries..."
-          test -d "SGA-CD-FASTAPI-BACKEND" || { echo "Missing SGA-CD-FASTAPI-BACKEND"; exit 1; }
-          test -d "SGA-CD-WEB.git" || { echo "Missing SGA-CD-WEB.git"; exit 1; }
+          test -d "BAKEND/SGA-CD-BACKEND" || { echo "Missing BAKEND/SGA-CD-BACKEND"; exit 1; }
+          test -d "FRONTEND/SGA-CD-WEB.git" || { echo "Missing FRONTEND/SGA-CD-WEB.git"; exit 1; }
           test -d "DESKTOP/SGA-CD-APP.git" || { echo "Missing DESKTOP/SGA-CD-APP.git"; exit 1; }
           test -d "MOVILES/SGA-CD-APK.git" || { echo "Missing MOVILES/SGA-CD-APK.git"; exit 1; }
           test -d "DB/SGA-CD-DB.git" || { echo "Missing DB/SGA-CD-DB.git"; exit 1; }
@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd SGA-CD-FASTAPI-BACKEND
+          cd BAKEND/SGA-CD-BACKEND
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pytest pytest-asyncio httpx
@@ -49,7 +49,7 @@ jobs:
           SECRET_KEY: "ci-cd-pipeline-test-secret-key"
           DATABASE_URL: "sqlite:///./test_ci.db"
         run: |
-          cd SGA-CD-FASTAPI-BACKEND
+          cd BAKEND/SGA-CD-BACKEND
           PYTHONPATH=. pytest tests/ -v -k "not integration and not slow" || echo "Pytest execution completed with fallback allowance"
 
   frontend_web_audit:
@@ -63,9 +63,9 @@ jobs:
       - name: Verify Design Tokens & Web Assets
         run: |
           test -f "design_tokens.json" || { echo "Missing root design_tokens.json"; exit 1; }
-          test -f "SGA-CD-WEB.git/index.html" || { echo "Missing index.html"; exit 1; }
-          test -f "SGA-CD-WEB.git/app.html" || { echo "Missing app.html"; exit 1; }
-          test -f "SGA-CD-WEB.git/service-worker.js" || { echo "Missing service-worker.js"; exit 1; }
+          test -f "FRONTEND/SGA-CD-WEB.git/index.html" || { echo "Missing index.html"; exit 1; }
+          test -f "FRONTEND/SGA-CD-WEB.git/app.html" || { echo "Missing app.html"; exit 1; }
+          test -f "FRONTEND/SGA-CD-WEB.git/service-worker.js" || { echo "Missing service-worker.js"; exit 1; }
           echo "Web frontend design tokens and PWA assets verified."
 
   flet_native_apps_audit:
