@@ -501,4 +501,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Refresh only: never delete public inquiries or CRM history from this page.
     const btnRefresh=document.getElementById('btnClearLeads');
     if(btnRefresh){btnRefresh.textContent='Actualizar prospectos';btnRefresh.addEventListener('click',renderLeads);}
+    window.dispatchEvent(new CustomEvent('analematica:ready'));
 });

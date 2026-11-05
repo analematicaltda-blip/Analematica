@@ -11,5 +11,7 @@ def install():
     from app.services.corporate_policy import bootstrap_owner
     from app.db.session import SessionLocal
     with SessionLocal() as db:bootstrap_owner(db)
+    from app.services.advertising_schema import install as install_advertising
+    install_advertising()
     print('Tablas administrativas preparadas sin eliminar datos existentes.')
 if __name__=='__main__':install()

@@ -1,0 +1,11 @@
+{
+  "app_id": "2038457723991868",
+  "api_version": "v27.0",
+  "business_id": "1608262503758205",
+  "facebook_page_id": "1414458975087720",
+  "instagram_handle": "analematicaltda",
+  "user_login_config_id": "886964641103902",
+  "instagram_system_login_config_id": "1119082880751653",
+  "callback_path": "/api/v1/workspace/ads/meta/oauth/callback",
+  "instagram_callback_path": "/api/v1/workspace/instagram/oauth/callback"
+}

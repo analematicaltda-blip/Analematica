@@ -211,3 +211,12 @@ router.include_router(institutional_panels.router,prefix='/institutional',tags=[
 
 from app.api.v1.endpoints import corporate as corporate_landing
 router.include_router(corporate_landing.router,prefix="/corporate",tags=["Analematica"])
+
+from app.api.v1.endpoints import meta_ads as meta_advertising
+router.include_router(meta_advertising.router,prefix="/ads/meta",tags=["Meta Ads read-only"])
+
+from app.api.v1.endpoints import instagram as instagram_login
+router.include_router(instagram_login.router,prefix="/instagram",tags=["Instagram unified login"])
+
+from app.api.v1.endpoints import meta_webhooks
+router.include_router(meta_webhooks.router,prefix="/meta/webhooks",tags=["Meta signed inbox"])
