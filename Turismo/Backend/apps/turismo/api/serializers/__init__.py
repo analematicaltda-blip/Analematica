@@ -1,0 +1,1 @@
+from apps.turismo.serializers.divipola import DepartmentSerializer, MunicipalitySerializer

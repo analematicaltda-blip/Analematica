@@ -1,0 +1,110 @@
+[
+  {
+    "id": "210a9ea0",
+    "command": "Deshacer última orden",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:09:12",
+    "status": "executed",
+    "message": "Última orden táctica revertida al estado previo."
+  },
+  {
+    "id": "a58b3419",
+    "command": "Modifica la visión de Analemática a: Líder iberoamericano 2031",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:09:12",
+    "status": "executed",
+    "message": "Visión estratégica actualizada a: Líder iberoamericano 2031"
+  },
+  {
+    "id": "9c5ca298",
+    "command": "Estado del sistema",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:09:12",
+    "status": "read",
+    "message": "Estado del sistema verificado: Todo en orden operacional."
+  },
+  {
+    "id": "b9837e95",
+    "command": "Deshacer última orden",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:07:51",
+    "status": "executed",
+    "message": "Última orden táctica revertida al estado previo."
+  },
+  {
+    "id": "823e8511",
+    "command": "Modifica la visión de Analemática a: Líder iberoamericano 2031",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:07:51",
+    "status": "executed",
+    "message": "Visión estratégica actualizada a: Líder iberoamericano 2031"
+  },
+  {
+    "id": "8c09dad6",
+    "command": "Estado del sistema",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:07:51",
+    "status": "read",
+    "message": "Estado del sistema verificado: Todo en orden operacional."
+  },
+  {
+    "id": "4c1fc447",
+    "command": "Deshacer última orden",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:04:21",
+    "status": "executed",
+    "message": "Última orden táctica revertida al estado previo."
+  },
+  {
+    "id": "8d012f2c",
+    "command": "Modifica la visión de Analemática a: Líder iberoamericano 2031",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:04:21",
+    "status": "executed",
+    "message": "Visión estratégica actualizada a: Líder iberoamericano 2031"
+  },
+  {
+    "id": "9e27b8f8",
+    "command": "Estado del sistema",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:04:21",
+    "status": "read",
+    "message": "Estado del sistema verificado: Todo en orden operacional."
+  },
+  {
+    "id": "be7d46f3",
+    "command": "Deshacer última orden",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:03:24",
+    "status": "executed",
+    "message": "Última orden táctica revertida al estado previo."
+  },
+  {
+    "id": "c623588b",
+    "command": "Modifica la visión de Analemática a: Líder iberoamericano 2031",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:03:24",
+    "status": "executed",
+    "message": "Visión estratégica actualizada a: Líder iberoamericano 2031"
+  },
+  {
+    "id": "1523b121",
+    "command": "Estado del sistema",
+    "target": "analematica",
+    "user": "Dueño Institucional",
+    "timestamp": "2026-11-05 10:03:24",
+    "status": "read",
+    "message": "Estado del sistema verificado: Todo en orden operacional."
+  }
+]

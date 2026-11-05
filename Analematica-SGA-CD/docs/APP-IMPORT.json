@@ -1,0 +1,83 @@
+{
+  "source_repository": "analematicaltda-blip/APP",
+  "source_commit": "122723afde24b5c8d04b64dce55fbd83fddea1ab",
+  "preserved_console": "Analematica-SGA-CD",
+  "source_file_counts": {
+    "Analematica": 395,
+    "GATuristica": 771,
+    "Turismo": 2199,
+    "db": 129,
+    "llm": 1,
+    "skills-contabilidad": 62,
+    "Conta-Skills": 153
+  },
+  "source_bytes": 24086914,
+  "byte_mismatches": [],
+  "excluded_from_git": [
+    "GATuristica/Backend/keys/jwt-private.pem",
+    "Turismo/Backend/keys/jwt-private.pem"
+  ],
+  "python_syntax_findings_in_source": [
+    {
+      "path": "Analematica/backend/services/gov_reports.py",
+      "line": 4,
+      "error": "SyntaxError"
+    },
+    {
+      "path": "GATuristica/Backend/gestion_comercial/archive/urls.py",
+      "line": 8,
+      "error": "SyntaxError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_retenciones_y_otros_impuestos.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_inventarios_contabilidad.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_activos_fijos_contabilidad.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_nomina_contabilidad.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_auditoria_y_cumplimiento_niif.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_impuestos_sobre_ventas.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_cierre_mensual_y_anual.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_presupuesto_y_control.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/sarita_agents/agents/general/sarita/coroneles/prestadores/capitanes/gestion_contable/capitan_estados_financieros.py",
+      "line": 3,
+      "error": "IndentationError"
+    },
+    {
+      "path": "Turismo/Backend/apps/enterprise_core/services/self_healing.py",
+      "line": 71,
+      "error": "IndentationError"
+    }
+  ],
+  "execution": "No source application, migration, dependency install or import hook executed."
+}

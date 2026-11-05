@@ -8,3 +8,7 @@ tunnel.log
 **.mp4
 
 **/hyperframes-main/**/output/*
+
+/GATuristica/Backend/keys/jwt-private.pem
+
+/Turismo/Backend/keys/jwt-private.pem
