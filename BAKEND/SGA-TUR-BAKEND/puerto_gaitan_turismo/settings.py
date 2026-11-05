@@ -15,8 +15,8 @@ import sys
 import types
 import importlib.util
 
-REPO_ROOT = BASE_DIR.parent
-GATURISTICA_BACKEND = REPO_ROOT / 'SGA-ERP-TUR-BAKEND'
+REPO_ROOT = BASE_DIR.parent.parent
+GATURISTICA_BACKEND = REPO_ROOT / 'BAKEND' / 'SGA-ERP-TUR-BAKEND'
 if GATURISTICA_BACKEND.exists() and str(GATURISTICA_BACKEND) not in sys.path:
     sys.path.insert(0, str(GATURISTICA_BACKEND))
     # Vincular paquete apps.prestadores.mi_negocio al directorio SGA-ERP-TUR-BAKEND

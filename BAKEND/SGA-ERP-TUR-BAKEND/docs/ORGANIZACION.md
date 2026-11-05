@@ -1,6 +1,6 @@
 # GATuristica
 
-- `SGA-ERP-TUR-BAKEND/`: anterior carpeta `Backend`.
+- `BAKEND/SGA-ERP-TUR-BAKEND/`: anterior carpeta `Backend`.
 - `SGA-ERP-TUR-FRONTEND/`: anterior carpeta `Frontend`.
 
 Se conserva el nombre BAKEND solicitado. Las carpetas son directorios de

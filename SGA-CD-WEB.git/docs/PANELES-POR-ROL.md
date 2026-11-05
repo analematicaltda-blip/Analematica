@@ -33,7 +33,7 @@ bash -e <<'SH'
 cd /workspaces/SGA-CD
 git fetch origin codex/company-role-bi-panels
 git merge --ff-only FETCH_HEAD
-python3 SGA-CD-BACKEND/scripts/update_panels.py --start
+python3 BAKEND/SGA-CD-BACKEND/scripts/update_panels.py --start
 SH
 ```
 

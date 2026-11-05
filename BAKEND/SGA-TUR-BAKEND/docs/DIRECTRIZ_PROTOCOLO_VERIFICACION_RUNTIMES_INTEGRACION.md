@@ -81,7 +81,7 @@ curl -I http://localhost:8000/api/v1/marketplace/
 Código de estado HTTP `200 OK` y encabezados `Content-Type: application/json`.
 
 #### 3.1.3. Verificación de CORS y Seguridad Perimetral
-Validar que `CORS_ALLOWED_ORIGINS` en `SGA-TUR-BAKEND/puerto_gaitan_turismo/settings.py` autorice explícitamente el origen del frontend público:
+Validar que `CORS_ALLOWED_ORIGINS` en `BAKEND/SGA-TUR-BAKEND/puerto_gaitan_turismo/settings.py` autorice explícitamente el origen del frontend público:
 
 ```python
 CORS_ALLOWED_ORIGINS = [

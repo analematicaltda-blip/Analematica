@@ -51,8 +51,8 @@ python3 Analematica-SGA-CD/tests/meta_setup.py
 python3 Analematica-SGA-CD/tests/deployment.py
 node Analematica-SGA-CD/tests/meta-setup.cjs
 node --check Analematica-SGA-CD/js/meta-ads.js
-python -m unittest discover -s SGA-CD-BACKEND/tests -p test_instagram_login.py
-python -m unittest discover -s SGA-CD-BACKEND/tests -p test_meta_webhooks.py
+python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_instagram_login.py
+python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_meta_webhooks.py
 ```
 
 ## Actualizar el Codespace existente

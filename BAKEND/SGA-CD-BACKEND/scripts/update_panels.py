@@ -25,7 +25,7 @@ def ensure_web_running(compose):
  run(compose+['exec','-T','web','nginx','-s','reload'])
 
 def install(args):
- repo=Path(__file__).resolve().parents[2];demo=args.demo_dir.resolve();path=demo/'compose.json'
+ repo=Path(__file__).resolve().parents[3];demo=args.demo_dir.resolve();path=demo/'compose.json'
  if not path.exists():raise SystemExit('No se encontró compose.json. No se modificó la demo.')
  config=json.loads(path.read_text());backend=config['services'].get('backend')
  if not backend:raise SystemExit('No existe el backend de la demo.')
@@ -49,7 +49,7 @@ def install(args):
    source+='\n# SGACD_WORKSPACE_GUARD\nfrom app.services.workspace_guard import WorkspaceLegacyGuard\napp.add_middleware(WorkspaceLegacyGuard)\n'
   target=overlay/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(source)
  for relative in BACKEND_FILES:
-  target=overlay/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(repo/'SGA-CD-BACKEND/app'/relative,target);target.chmod(0o644)
+  target=overlay/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(repo/'BAKEND/SGA-CD-BACKEND/app'/relative,target);target.chmod(0o644)
  for relative in BACKEND_FILES+['api/v1/api.py','main.py']:
   target='/opt/backend/app/'+relative;new=str(overlay/relative)+':'+target+':ro';volumes=backend.setdefault('volumes',[])
   def destination(value):return value.split(':')[1] if isinstance(value,str) and ':' in value else value.get('target') if isinstance(value,dict) else None

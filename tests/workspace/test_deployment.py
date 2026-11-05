@@ -26,7 +26,7 @@ class DeploymentTests(unittest.TestCase):
   with patch.object(installer.subprocess,'run',side_effect=self.fake_run),patch.object(installer.subprocess,'check_output',return_value='test-backend\n'),contextlib.redirect_stdout(io.StringIO()):installer.install(argparse.Namespace(demo_dir=self.demo,start=False))
  def test_campaign_schema_resolves_dependencies_in_a_fresh_process(self):
   import os,sys
-  environment={**os.environ,'PYTHONPATH':str(ROOT/'SGA-CD-BACKEND'),'DATABASE_URL':'sqlite://','SECRET_KEY':'schema-test-only-not-real'}
+  environment={**os.environ,'PYTHONPATH':str(ROOT/'BAKEND/SGA-CD-BACKEND'),'DATABASE_URL':'sqlite://','SECRET_KEY':'schema-test-only-not-real'}
   code="from app.services import campaign_schema; from app.models.campaigns import Campaign; from sqlalchemy.schema import CreateTable; from sqlalchemy.dialects import postgresql; assert 'workspace_assets' in Campaign.metadata.tables; str(CreateTable(Campaign.__table__).compile(dialect=postgresql.dialect()))"
   subprocess.run([sys.executable,'-c',code],env=environment,check=True,capture_output=True)
  def test_preserves_services_offline_state_and_keeps_secrets_out_of_overlay(self):
