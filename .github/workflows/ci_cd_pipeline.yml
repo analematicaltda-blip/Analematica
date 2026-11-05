@@ -21,7 +21,7 @@ jobs:
           test -d "SGA-CD-WEB.git" || { echo "Missing SGA-CD-WEB.git"; exit 1; }
           test -d "SGA-CD-APP.git" || { echo "Missing SGA-CD-APP.git"; exit 1; }
           test -d "SGA-CD-APK.git" || { echo "Missing SGA-CD-APK.git"; exit 1; }
-          test -d "SGA-CD-DB.git" || { echo "Missing SGA-CD-DB.git"; exit 1; }
+          test -d "DB/SGA-CD-DB.git" || { echo "Missing DB/SGA-CD-DB.git"; exit 1; }
           echo "All SGA-CD component boundaries verified successfully."
 
   backend_test_suite:
