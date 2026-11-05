@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestor Comercial IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --background: 220 20% 99%; /* Almost white with a cool tint */
+        --foreground: 224 71% 4%; /* Very dark blue for text */
+        
+        --card: 0 0% 100%;
+        --card-foreground: 224 71% 4%;
+        
+        --popover: 0 0% 100%;
+        --popover-foreground: 224 71% 4%;
+        
+        --primary: 221 83% 53%; /* Vibrant Blue */
+        --primary-foreground: 0 0% 100%;
+        
+        --secondary: 220 14% 96%; /* Light gray-blue */
+        --secondary-foreground: 224 71% 4%;
+
+        --muted: 220 14% 96%; /* Same as secondary */
+        --muted-foreground: 220 9% 46%; /* Softer gray for secondary text */
+
+        --accent: 220 13% 91%; /* Slightly darker gray-blue for hover states */
+        --accent-foreground: 224 71% 4%;
+        
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 220 13% 91%;
+        --input: 220 13% 94%;
+        --ring: 221 83% 53%;
+
+        --radius: 0.75rem;
+      }
+      
+      .dark {
+        --background: 224 71% 4%; /* Dark Navy */
+        --foreground: 210 20% 98%; /* Almost white */
+
+        --card: 222 47% 11%; /* Slightly lighter navy */
+        --card-foreground: 210 20% 98%;
+
+        --popover: 224 71% 4%;
+        --popover-foreground: 210 20% 98%;
+        
+        --primary: 217 91% 60%; /* Brighter blue for dark mode */
+        --primary-foreground: 224 71% 4%;
+        
+        --secondary: 222 47% 11%;
+        --secondary-foreground: 210 20% 98%;
+
+        --muted: 215 28% 17%;
+        --muted-foreground: 215 20% 65%;
+
+        --accent: 215 28% 17%;
+        --accent-foreground: 210 20% 98%;
+        
+        --destructive: 0 63% 31%;
+        --destructive-foreground: 210 20% 98%;
+
+        --border: 215 28% 17%;
+        --input: 215 28% 17%;
+        --ring: 217 91% 60%;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      * {
+        border-color: hsl(var(--border));
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: hsl(var(--background));
+      }
+      ::-webkit-scrollbar-thumb {
+        background: hsl(var(--border));
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--accent-foreground));
+      }
+    </style>
+     <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              border: 'hsl(var(--border))',
+              input: 'hsl(var(--input))',
+              ring: 'hsl(var(--ring))',
+              background: 'hsl(var(--background))',
+              foreground: 'hsl(var(--foreground))',
+              primary: {
+                DEFAULT: 'hsl(var(--primary))',
+                foreground: 'hsl(var(--primary-foreground))',
+              },
+              secondary: {
+                DEFAULT: 'hsl(var(--secondary))',
+                foreground: 'hsl(var(--secondary-foreground))',
+              },
+              destructive: {
+                DEFAULT: 'hsl(var(--destructive))',
+                foreground: 'hsl(var(--destructive-foreground))',
+              },
+              muted: {
+                DEFAULT: 'hsl(var(--muted))',
+                foreground: 'hsl(var(--muted-foreground))',
+              },
+              accent: {
+                DEFAULT: 'hsl(var(--accent))',
+                foreground: 'hsl(var(--accent-foreground))',
+              },
+              popover: {
+                DEFAULT: 'hsl(var(--popover))',
+                foreground: 'hsl(var(--popover-foreground))',
+              },
+              card: {
+                DEFAULT: 'hsl(var(--card))',
+                foreground: 'hsl(var(--card-foreground))',
+              },
+            },
+             borderRadius: {
+              lg: `var(--radius)`,
+              md: `calc(var(--radius) - 2px)`,
+              sm: `calc(var(--radius) - 4px)`,
+            },
+          }
+        }
+      }
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+          "react/": "https://aistudiocdn.com/react@^19.2.0/",
+          "react": "https://aistudiocdn.com/react@^19.2.0",
+          "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
+          "react-dnd": "https://aistudiocdn.com/react-dnd@^16.0.1",
+          "react-dnd-html5-backend": "https://aistudiocdn.com/react-dnd-html5-backend@^16.0.1"
+        }
+      }
+    </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

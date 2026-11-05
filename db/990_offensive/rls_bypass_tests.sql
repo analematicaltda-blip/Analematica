@@ -1,0 +1,2 @@
+-- RLS BYPASS
+SELECT 1;

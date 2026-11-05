@@ -1,0 +1,42 @@
+[
+  {
+    "id": "0427dd1c-fdb5-4d54-a2a7-a284d996fd57",
+    "fecha": "2026-11-05 10:09:12",
+    "nombre": "Alcaldía Municipal de Prueba",
+    "entidad": "Secretaría de Tecnologías",
+    "correo": "contacto@alcaldia.gov.co",
+    "telefono": "+57 310 9876543",
+    "consent": true,
+    "request_id": "ba2c8275-b3bb-4552-a58e-20784cc72f78"
+  },
+  {
+    "id": "a6ab5393-2ab3-408f-b76f-13441bad6237",
+    "fecha": "2026-11-05 10:07:51",
+    "nombre": "Alcaldía Municipal de Prueba",
+    "entidad": "Secretaría de Tecnologías",
+    "correo": "contacto@alcaldia.gov.co",
+    "telefono": "+57 310 9876543",
+    "consent": true,
+    "request_id": "d3edea8f-6556-404b-99c0-ccbfaaa596a6"
+  },
+  {
+    "id": "a44ebb79-2fa6-42c7-84af-82ec8792f74b",
+    "fecha": "2026-11-05 10:04:21",
+    "nombre": "Alcaldía Municipal de Prueba",
+    "entidad": "Secretaría de Tecnologías",
+    "correo": "contacto@alcaldia.gov.co",
+    "telefono": "+57 310 9876543",
+    "consent": true,
+    "request_id": "4c3221e1-4150-4307-9ad1-b6682bdf18de"
+  },
+  {
+    "id": "79eb0d3e-1a1b-4b9a-90e9-588c15f5e82f",
+    "fecha": "2026-11-05 10:03:24",
+    "nombre": "Alcaldía Municipal de Prueba",
+    "entidad": "Secretaría de Tecnologías",
+    "correo": "contacto@alcaldia.gov.co",
+    "telefono": "+57 310 9876543",
+    "consent": true,
+    "request_id": "445f8d76-fdce-4c2b-8ea7-216d6c4dc3fa"
+  }
+]

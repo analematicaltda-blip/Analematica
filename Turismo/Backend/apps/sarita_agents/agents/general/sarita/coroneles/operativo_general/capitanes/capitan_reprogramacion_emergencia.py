@@ -1,0 +1,12 @@
+from apps.sarita_agents.agents.capitan_template import CapitanTemplate
+from apps.sarita_agents.models import PlanTáctico
+
+class CapitanReprogramacionEmergencia(CapitanTemplate):
+    def _get_tenientes(self) -> dict:
+        return {"operativo_admin_fisica": "operativo_admin_fisica"}
+
+    def plan(self, mision):
+        p = self.coronel.get_or_create_plan_tactico(mision, self.__class__.__name__)
+        p.pasos_del_plan = {"1": {"teniente": "operativo_admin_fisica", "descripcion": "Ejecución de CapitanReprogramacionEmergencia", "parametros": mision.directiva_original.get('parameters', {})}}
+        p.save()
+        return p

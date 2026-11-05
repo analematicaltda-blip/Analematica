@@ -1,0 +1,157 @@
+{
+  "config": {
+    "header": {
+      "brand_name": "ANALEMÁTICA",
+      "brand_tag": "INGENIERÍA MODULAR INTEGRADA",
+      "brand_logo": "assets/analema-logo.svg",
+      "nav_cta_text": "Diagnóstico",
+      "nav_cta_href": "#contacto"
+    },
+    "hero": {
+      "badge": "Plataforma Modular Multi-Inquilino 2031",
+      "title": "Sincronizamos la gestión institucional con el <span class=\"highlight-cyan\">ritmo de vida</span> de los ciudadanos.",
+      "subtitle": "En Analemática transformamos procesos administrativos complejos en soluciones digitales multi-inquilino, fluidas y seguras. Automatice la operación de su entidad, proteja sus datos y devuélvale el control del tiempo a su comunidad.",
+      "btn_primary": "Agendar Consultoría Técnica",
+      "btn_secondary": "Explorar Ecosistemas",
+      "metrics": [
+        {
+          "value": "40%",
+          "label": "Menor tiempo de espera"
+        },
+        {
+          "value": "100%",
+          "label": "Aislamiento Multi-Tenant"
+        },
+        {
+          "value": "24/7",
+          "label": "Auditoría STAR Inmutable"
+        }
+      ],
+      "card_badge": "PRECISIÓN DE ALTO NIVEL",
+      "card_legend": "Arquitectura cuántica de datos y sincronización armónica de tiempos administrativos."
+    },
+    "desafio": {
+      "tag": "EL DESAFÍO DE LA GESTIÓN CIUDADANA",
+      "title": "El costo invisible de los sistemas obsoletos.",
+      "desc": "Gestionar una institución o entidad pública con herramientas del pasado fragmenta la información, genera cuellos de botella y sobrecarga al personal administrativo. Cuando los ciudadanos se enfrentan a plataformas lentas, procesos desconectados y trámites manuales, la confianza institucional se debilita.",
+      "cards": [
+        {
+          "title": "Pérdida Crítica de Tiempo",
+          "desc": "Filas interminables, radicación presencial y demoras burocráticas que paralizan los trámites ciudadanos."
+        },
+        {
+          "title": "Bases de Datos Desconectadas",
+          "desc": "Silos de información aislados que duplican registros, dificultan el cruce de datos interdepartamental y provocan incongruencias operativas."
+        },
+        {
+          "title": "Falta de Trazabilidad y Auditoría",
+          "desc": "Vulnerabilidad ante manipulaciones, falta de bitácoras inmutables y opacidad en la rendición de cuentas."
+        }
+      ]
+    },
+    "filosofia": {
+      "tag": "ARQUITECTURA DE SINCRONIZACIÓN",
+      "title": "El tiempo institucional al servicio del tiempo ciudadano.",
+      "desc": "El analema representa la curva que describe el sol en el cielo a la misma hora a lo largo del año: una figura perfecta, constante e inmutable. Inspirados en esta precisión astronómica, diseñamos Analemática.",
+      "pillars": [
+        {
+          "title": "Sincronización Continua",
+          "desc": "Alineamos los ritmos de trabajo interno con la demanda real ciudadana, reduciendo esperas."
+        },
+        {
+          "title": "Modularidad Blindada",
+          "desc": "Cada módulo opera con soberanía técnica y aislamiento multi-tenant estricto."
+        },
+        {
+          "title": "Interoperabilidad Universal",
+          "desc": "Conectividad transparente con ecosistemas territoriales y plataformas como SGA-CD."
+        }
+      ],
+      "diagram_caption": "ARQUITECTURA DE FLUJO ARMONIZADO · SINCRONIZACIÓN CUÁNTICA DE TIEMPOS ADMINISTRATIVOS"
+    },
+    "mision": {
+      "title": "Misión Institucional",
+      "text": "Empoderar a entidades públicas y corporaciones con infraestructuras digitales autónomas, multi-inquilino y auditables que optimicen el flujo de información y devuelvan tiempo de valor a la sociedad."
+    },
+    "vision": {
+      "title": "Visión Estratégica 2031",
+      "text": "Líder iberoamericano 2031"
+    },
+    "verticales": {
+      "tag": "VERTICALES DE APLICACIÓN",
+      "title": "Soluciones modulares diseñadas para transformar territorios e instituciones.",
+      "desc": "Nuestra arquitectura se adapta a las exigencias regulatorias, operativas y humanas de cada sector, garantizando soberanía de datos y eficiencia operativa.",
+      "cards": [
+        {
+          "title": "Gobernanza Territorial & Servicios Ciudadanos",
+          "desc": "Digitalización de trámites, ventanilla única y gestión documental con trazabilidad criptográfica inmutable."
+        },
+        {
+          "title": "Ecosistemas Turísticos & Economía Local",
+          "desc": "Plataformas de caracterización, comercio, facturación electrónica y articulación con operadores regionales."
+        }
+      ],
+      "sgacd": {
+        "title": "SGA-CD — Sistema de Gestión Administrativa Ciudadana y Deportiva",
+        "desc": "Módulo insignia territorial implementado para la descentralización de servicios, reservas de escenarios, control documental y fidelización ciudadana con billetera soberana.",
+        "notice": "Nodo Corporativo Analemática enlazado con la instancia de producción SGA-CD.",
+        "btn_text": "Acceder al Ecosistema SGA-CD",
+        "url": "/sga/"
+      }
+    },
+    "adn": {
+      "tag": "ADN TECNOLÓGICO",
+      "title": "Ingeniería de clase mundial construida para durar.",
+      "desc": "Combinamos seguridad por diseño, gobernanza inmutable y rendimiento de baja latencia bajo estándares DEAA-V2.1.",
+      "cards": [
+        {
+          "title": "Aislamiento Multi-Tenant con RLS",
+          "desc": "Políticas Row Level Security estrictas a nivel de kernel de base de datos para garantizar cero contaminación entre organizaciones."
+        },
+        {
+          "title": "Trazabilidad Criptográfica STAR",
+          "desc": "Bitácoras forenses inmutables de transacciones auditadas por agentes autónomos certificados."
+        },
+        {
+          "title": "Interoperabilidad DIAN & API-First",
+          "desc": "Pipelines de facturación electrónica automatizada, validación CUFE y reportería en tiempo real."
+        }
+      ]
+    },
+    "impacto": {
+      "tag": "MÉTRICAS DE IMPACTO",
+      "title": "Resultados medibles en la experiencia ciudadana y administrativa.",
+      "desc": "La modernización tecnológica no es un fin en sí misma; es la herramienta para construir instituciones más ágiles, transparentes y humanas.",
+      "cards": [
+        {
+          "pill": "Eficiencia Operativa",
+          "title": "-40% en Tiempo de Trámites",
+          "desc": "Reducción dramática en tiempos de respuesta gracias a la automatización de flujos y eliminación de cuellos de botella."
+        },
+        {
+          "pill": "Transparencia Total",
+          "title": "100% Trazabilidad Auditable",
+          "desc": "Cada acción, radicación y pago cuenta con registro inmutable para auditoría pública y de control interno."
+        },
+        {
+          "pill": "Continuidad Operativa",
+          "title": "99.98% Disponibilidad de Servicios",
+          "desc": "Arquitectura distribuida y resiliente para operar 24/7 sin interrupciones en la atención al ciudadano."
+        }
+      ]
+    },
+    "contacto": {
+      "tag": "DIAGNÓSTICO TÉCNICO SIN COSTO",
+      "title": "Inicie la transformación digital de su organización.",
+      "desc": "Complete el formulario y nuestro equipo de ingenieros consultores se pondrá en contacto para evaluar las necesidades específicas de su entidad.",
+      "btn_text": "Enviar Solicitud de Diagnóstico",
+      "success_msg": "Solicitud radicada con éxito. Nuestro equipo se pondrá en contacto a la brevedad."
+    },
+    "footer": {
+      "bio": "Analemática desarrolla soluciones modulares de software multi-inquilino y gobernanza digital para instituciones que buscan operar con la máxima precisión, seguridad y transparencia.",
+      "copyright": "© 2026 Analemática Inc. Todos los derechos reservados. Arquitectura DEAA-V2.1.",
+      "status": "OPERACIÓN NORMAL · SISTEMAS SINCRONIZADOS"
+    }
+  },
+  "revision": 9
+}

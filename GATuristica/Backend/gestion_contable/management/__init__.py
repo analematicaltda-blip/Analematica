@@ -1,0 +1,2 @@
+# Contabilidad management init
+
