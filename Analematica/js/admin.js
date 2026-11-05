@@ -91,7 +91,7 @@ const DEFAULT_CONFIG = {
             desc: "Optimice escuelas de formación, instructores y reservas de escenarios deportivos o culturales desde una sola plataforma. Administre disciplinas, talleres de danza e instrumentos con seguimiento biométrico y acreditaciones en tiempo real.",
             notice: "Al hacer clic en este módulo, será redireccionado de forma exclusiva a la página oficial de ventas e Onboarding del sistema SGA-CD.",
             btn_text: "Visitar Plataforma SGA-CD ↗",
-            url: "../SGA-CD-WEB.git/index.html"
+            url: "/sga/"
         }
     },
     adn: {
@@ -140,7 +140,7 @@ const DEFAULT_CONFIG = {
         title: "Modernice su organización hoy mismo.",
         desc: "El camino hacia una gestión eficiente y ciudadana comienza con una infraestructura tecnológica correcta. Déjenos sus datos y uno de nuestros ingenieros senior de Analemática se pondrá en contacto con usted para realizar un diagnóstico técnico de sus sistemas actuales y diseñar una solución a la medida de sus desafíos operativos.",
         btn_text: "Enviar Solicitud de Diagnóstico",
-        success_msg: "Un ingeniero senior de Analemática se comunicará en menos de 24 horas para coordinar la sesión de diagnóstico técnico institucional."
+        success_msg: "La solicitud quedó registrada en el CRM de Analemática para su atención por el equipo autorizado."
     },
     footer: {
         bio: "Desarrollamos soluciones de alta precisión para ordenar el caos administrativo y transformar la relación entre entidades y ciudadanos.",
@@ -150,6 +150,10 @@ const DEFAULT_CONFIG = {
 };
 
 let currentConfig = null;
+let publishedRevision=0;
+let saving=false;
+function mergeContent(defaults,published){const value=JSON.parse(JSON.stringify(defaults));for(const [key,item] of Object.entries(published||{})){if(item&&typeof item==='object'&&!Array.isArray(item))value[key]=mergeContent(value[key]||{},item);else value[key]=item;}return value;}
+
 
 // Acceso y modificación segura de propiedades anidadas
 function getNestedValue(obj, path) {
@@ -194,7 +198,7 @@ function populateForms() {
 }
 
 // Guardar configuración en localStorage
-function saveConfig(showToastMsg = true) {
+async function saveConfig(showToastMsg = true) {
     const inputs = document.querySelectorAll('[data-key]');
     inputs.forEach(input => {
         const key = input.getAttribute('data-key');
@@ -203,9 +207,12 @@ function saveConfig(showToastMsg = true) {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(currentConfig));
 
-    if (showToastMsg) {
-        showToast("¡Configuración 100% guardada y sincronizada con la Landing!");
-    }
+    if (!showToastMsg) return; // Local draft; publish explicitly with Guardar Todo.
+    if(saving){showToast('Hay una publicación en curso. Espera antes de guardar de nuevo.');return;}
+    saving=true;const button=document.getElementById('btnGlobalSave');if(button)button.disabled=true;
+    try {const result=await AnaleConnection.request('/config',{authorized:true,method:'PUT',body:JSON.stringify({config:currentConfig,revision:publishedRevision})});publishedRevision=result.revision;showToast('Configuración publicada en el servidor de Analemática.');}
+    catch(error){showToast(error.message+' El borrador local se conserva.');}
+    finally{saving=false;if(button)button.disabled=false;}
 }
 
 // Toast de notificación
@@ -236,37 +243,18 @@ function setupTabs() {
             btn.classList.add('active');
             const targetPane = document.getElementById(tabId);
             if (targetPane) targetPane.classList.add('active');
+            if(innerWidth<=1024){document.getElementById('corporate-sidebar')?.classList.remove('console-menu-open');document.getElementById('console-menu-toggle')?.setAttribute('aria-expanded','false');}
         });
     });
 }
 
 // Bandeja de Leads
-function renderLeads() {
-    const tbody = document.getElementById('leadsTableBody');
-    if (!tbody) return;
-
-    let leads = [];
-    try {
-        const raw = localStorage.getItem(LEADS_KEY);
-        if (raw) leads = JSON.parse(raw);
-    } catch (e) {
-        leads = [];
-    }
-
-    if (!leads || leads.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="padding:1rem; text-align:center; color:var(--sky-muted-300);">No hay prospectos registrados aún.</td></tr>`;
-        return;
-    }
-
-    tbody.innerHTML = leads.map(l => `
-        <tr style="border-bottom:1px solid var(--metal-border-700);">
-            <td style="padding:0.6rem; color:var(--sky-subtle-400);">${l.fecha || 'Reciente'}</td>
-            <td style="padding:0.6rem; font-weight:600; color:var(--sky-bright-300);">${l.nombre || ''}</td>
-            <td style="padding:0.6rem;">${l.entidad || ''}</td>
-            <td style="padding:0.6rem;">${l.correo || ''}</td>
-            <td style="padding:0.6rem;">${l.telefono || ''}</td>
-        </tr>
-    `).join('');
+async function renderLeads() {
+    const tbody=document.getElementById('leadsTableBody');if(!tbody)return;
+    try {const data=await AnaleConnection.request('/inquiries',{authorized:true});tbody.replaceChildren();
+        for(const lead of data.leads){const row=document.createElement('tr');for(const key of ['fecha','nombre','entidad','correo','telefono']){const cell=document.createElement('td');cell.style.padding='0.6rem';cell.textContent=lead[key]||'';row.append(cell);}tbody.append(row);}
+        if(!data.leads.length){const row=tbody.insertRow(),cell=row.insertCell();cell.colSpan=5;cell.textContent='No hay solicitudes registradas en el servidor.';}
+    }catch(error){tbody.replaceChildren();const row=tbody.insertRow(),cell=row.insertCell();cell.colSpan=5;cell.textContent=error.message;}
 }
 
 // =============================================================================
@@ -279,11 +267,7 @@ function appendTacticalLog(tag, message) {
     const time = new Date().toLocaleTimeString();
     const entry = document.createElement('div');
     entry.className = 'log-entry';
-    entry.innerHTML = `
-        <span class="log-time">[${time}]</span>
-        <span class="log-tag">${tag}:</span>
-        <span class="log-msg">${message}</span>
-    `;
+    for(const [cls,value] of [['log-time','['+time+']'],['log-tag',tag+':'],['log-msg',message]]){const part=document.createElement('span');part.className=cls;part.textContent=value;entry.append(part);}
     container.appendChild(entry);
     container.scrollTop = container.scrollHeight;
 }
@@ -329,109 +313,33 @@ function getCoronelAnalematica() {
 }
 
 // Intérprete semántico de órdenes de mando
+let activeCommand=false,lastReversible=null,pendingCommand=null;
 async function processAgentCommand(orderText) {
-    if (!orderText || !orderText.trim()) return;
-
-    const coronel = getCoronelAnalematica();
-    if (coronel) {
-        await coronel.recibirOrden(orderText);
-        return;
+    let command=String(orderText||'').trim();if(!command)return;
+    if(activeCommand){showToast('Hay una orden en curso. Espera su resultado.');return;}
+    if(/^deshacer (?:la )?(?:última|ultima) orden$/i.test(command.replace(/[.!?]+$/,''))){
+        if(!lastReversible){showToast('No hay un cambio reciente que deshacer en esta sesión.');return;}
+        command='Deshacer '+lastReversible;
     }
-
-    const cleanOrder = orderText.trim();
-    appendTacticalLog("COMANDO RECIBIDO", cleanOrder);
-
-    const lower = cleanOrder.toLowerCase();
-
-    // 1. Diligenciado de Título de Hero
-    if (lower.includes("título del hero") || lower.includes("titulo del hero") || lower.includes("titulo hero") || lower.includes("título hero")) {
-        const parts = cleanOrder.split(/:| a /i);
-        const newText = parts.length > 1 ? parts.slice(1).join(' ').trim() : "Soluciones Modulares de Alta Precisión Institucional";
-        appendTacticalLog("SARGENTO TECLEADOR", `Diligenciando Título del Hero: "${newText}"`);
-        const el = document.getElementById('hero_title');
-        if (el) await typeWriterIntoElement(el, newText);
-        appendTacticalLog("CORONEL MULTIMEDIA", "Orden ejecutada y sincronizada.");
-        showToast("Título del Hero actualizado por orden militar");
-        return;
-    }
-
-    // 2. Subtítulo del Hero
-    if (lower.includes("subtítulo del hero") || lower.includes("subtitulo del hero") || lower.includes("subtitulo hero") || lower.includes("subtítulo hero")) {
-        const parts = cleanOrder.split(/:| a /i);
-        const newText = parts.length > 1 ? parts.slice(1).join(' ').trim() : "Transformamos procesos administrativos complejos en ecosistemas digitales seguros y auditables.";
-        appendTacticalLog("SARGENTO TECLEADOR", `Diligenciando Subtítulo del Hero: "${newText}"`);
-        const el = document.getElementById('hero_subtitle');
-        if (el) await typeWriterIntoElement(el, newText);
-        appendTacticalLog("CORONEL MULTIMEDIA", "Subtítulo actualizado.");
-        showToast("Subtítulo actualizado");
-        return;
-    }
-
-    // 3. Métrica 1
-    if (lower.includes("métrica 1") || lower.includes("metrica 1")) {
-        const parts = cleanOrder.split(/:| a /i);
-        const newText = parts.length > 1 ? parts.slice(1).join(' ').trim() : "50%";
-        appendTacticalLog("SARGENTO MÉTRICAS", `Diligenciando Métrica 1: "${newText}"`);
-        const el = document.getElementById('hero_metric1_val');
-        if (el) await typeWriterIntoElement(el, newText);
-        showToast("Métrica 1 actualizada");
-        return;
-    }
-
-    // 4. Misión
-    if (lower.includes("misión") || lower.includes("mision")) {
-        const parts = cleanOrder.split(/:| a /i);
-        const newText = parts.length > 1 ? parts.slice(1).join(' ').trim() : "Desarrollar soluciones tecnológicas que sincronicen la gestión institucional con la ciudadanía.";
-        appendTacticalLog("SARGENTO REDACCIÓN", `Diligenciando Misión Institucional.`);
-        const el = document.getElementById('mision_text');
-        if (el) await typeWriterIntoElement(el, newText);
-        showToast("Misión actualizada");
-        return;
-    }
-
-    // 5. Visión
-    if (lower.includes("visión") || lower.includes("vision")) {
-        const parts = cleanOrder.split(/:| a /i);
-        const newText = parts.length > 1 ? parts.slice(1).join(' ').trim() : "Convertir a Analemática en el estándar iberoamericano de gobernanza digital autónoma para 2031.";
-        appendTacticalLog("SARGENTO REDACCIÓN", `Diligenciando Visión 2031.`);
-        const el = document.getElementById('vision_text');
-        if (el) await typeWriterIntoElement(el, newText);
-        showToast("Visión actualizada");
-        return;
-    }
-
-    // 6. Email o Contacto
-    if (lower.includes("email") || lower.includes("correo") || lower.includes("contacto")) {
-        const parts = cleanOrder.split(/:| a /i);
-        const newText = parts.length > 1 ? parts.slice(1).join(' ').trim() : "contacto@analematica.com";
-        appendTacticalLog("CORONEL CRM", `Actualizando información de contacto institucional.`);
-        const el = document.getElementById('contacto_desc');
-        if (el) await typeWriterIntoElement(el, `Comuníquese con nuestra central de operaciones al correo ${newText}`);
-        showToast("Contacto actualizado");
-        return;
-    }
-
-    // 7. Despacho Estratégico al Backend (JARVI & N.E.K.O.)
-    appendTacticalLog("JARVI SUPREMO", `Enrutando orden hacia la jerarquía de combate: "${cleanOrder}"...`);
-    try {
-        const token = localStorage.getItem('token') || localStorage.getItem('accessToken') || 'DEMO_BEARER_TOKEN';
-        const res = await fetch('/api/v1/agent/command', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ command: cleanOrder })
-        });
-        if (res.ok) {
-            const data = await res.json();
-            appendTacticalLog("RESPUESTA N.E.K.O.", data.reply || "Misión completada por las divisiones del Estado Mayor.");
-        } else {
-            appendTacticalLog("ESTADO MAYOR", `Simulación táctica DEAA-V2.1 ejecutada con éxito para la orden: "${cleanOrder}".`);
+    const target=document.getElementById('console-target')?.value||'sga';
+    if(!pendingCommand||pendingCommand.command!==command||pendingCommand.target!==target)pendingCommand={command,target,request_id:crypto.randomUUID()};
+    activeCommand=true;const executeButton=document.getElementById('btnExecuteCommand');if(executeButton)executeButton.disabled=true;
+    const message=document.getElementById('command-message'),details=document.getElementById('command-data'),undo=document.getElementById('command-undo');
+    if(message)message.textContent='Procesando la orden en el servidor…';if(details)details.textContent='';
+    appendTacticalLog('ORDEN',command);
+    try{
+        const result=await AnaleConnection.request('/commands',{authorized:true,method:'POST',body:JSON.stringify(pendingCommand)});pendingCommand=null;
+        if(!['read','executed'].includes(result.status))throw new Error('El servidor no confirmó la operación.');
+        if(message)message.textContent=result.message+' Referencia: '+result.id;
+        if(details)details.textContent=JSON.stringify(result.data,null,2);
+        appendTacticalLog(result.status==='executed'?'CONFIRMADO':'CONSULTA',result.message);
+        if(result.reversible){lastReversible=result.id;if(undo)undo.hidden=false;}else if(result.operation==='undo'){lastReversible=null;if(undo)undo.hidden=true;}
+        if(result.target==='analematica'&&result.status==='executed'){
+            try{const published=await AnaleConnection.request('/config');currentConfig=mergeContent(DEFAULT_CONFIG,published.config);publishedRevision=published.revision;populateForms();}
+            catch{appendTacticalLog('AVISO','El cambio quedó confirmado. Recarga para actualizar los formularios.');}
         }
-    } catch (e) {
-        appendTacticalLog("ESTADO MAYOR", `Misión procesada por la tropa local DEAA-V2.1: "${cleanOrder}". Estado: OK.`);
-    }
+    }catch(error){if(message)message.textContent=error.message;appendTacticalLog('NO CONFIRMADO',error.message);}
+    finally{activeCommand=false;if(executeButton)executeButton.disabled=false;}
 }
 
 // Reconocimiento de Voz
@@ -442,6 +350,7 @@ function setupSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
         micBtn.title = "Reconocimiento de voz no soportado por este navegador.";
+        micBtn.disabled=true;
         micBtn.style.opacity = "0.5";
         return;
     }
@@ -483,10 +392,17 @@ function setupSpeechRecognition() {
 }
 
 // Configurar eventos globales
-document.addEventListener('DOMContentLoaded', () => {
-    loadConfig();
+document.addEventListener('DOMContentLoaded', async () => {
+    try {const identity=await AnaleConnection.owner();document.getElementById('console-owner-status').textContent=identity.user.name+' · Dueño';const published=await AnaleConnection.request('/config');loadConfig();currentConfig=mergeContent(DEFAULT_CONFIG,published.config);publishedRevision=published.revision;}
+    catch(error){sessionStorage.setItem('analematica-login-error',error.message);location.replace('/login.html');return;}
+
+    document.body.removeAttribute('data-admin-pending');
     populateForms();
     setupTabs();
+    document.getElementById('console-tools-toggle')?.addEventListener('click',()=>{const actions=document.querySelector('.admin-header-actions');actions.classList.toggle('console-editor-open');document.getElementById('console-tools-toggle').setAttribute('aria-expanded',String(actions.classList.contains('console-editor-open')));});
+    document.getElementById('console-menu-toggle')?.addEventListener('click',()=>{const menu=document.getElementById('corporate-sidebar');menu.classList.toggle('console-menu-open');document.getElementById('console-menu-toggle').setAttribute('aria-expanded',String(menu.classList.contains('console-menu-open')));});
+    document.getElementById('command-undo')?.addEventListener('click',()=>processAgentCommand('Deshacer última orden'));
+    document.getElementById('console-logout')?.addEventListener('click',()=>{for(const key of ['accessToken','refreshToken','userId','userName','userRoles'])localStorage.removeItem(key);sessionStorage.removeItem('sga-panel-return');location.replace('/login.html');});
     setupSpeechRecognition();
     renderLeads();
 
@@ -560,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentConfig = parsed;
                     populateForms();
                     saveConfig(true);
-                    showToast("¡Configuración importada y restaurada exitosamente!");
+        
                 } catch (err) {
                     alert("Error: Archivo JSON no válido.");
                 }
@@ -577,20 +493,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentConfig = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
                 populateForms();
                 saveConfig(true);
-                showToast("Valores de fábrica restablecidos.");
+
             }
         });
     }
 
-    // Limpiar leads
-    const btnClearLeads = document.getElementById('btnClearLeads');
-    if (btnClearLeads) {
-        btnClearLeads.addEventListener('click', () => {
-            if (confirm("¿Desea limpiar el historial de prospectos de Analemática?")) {
-                localStorage.removeItem(LEADS_KEY);
-                renderLeads();
-                showToast("Historial de prospectos limpiado.");
-            }
-        });
-    }
+    // Refresh only: never delete public inquiries or CRM history from this page.
+    const btnRefresh=document.getElementById('btnClearLeads');
+    if(btnRefresh){btnRefresh.textContent='Actualizar prospectos';btnRefresh.addEventListener('click',renderLeads);}
+    window.dispatchEvent(new CustomEvent('analematica:ready'));
 });

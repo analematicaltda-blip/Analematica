@@ -85,7 +85,7 @@ def settings(access=Depends(context),db=Depends(deps.get_db)):
     except HTTPException as error:origin='';media_warning=error.detail
     key=('platform_' if access.owner else '')+'social_posts'
     usage=db.query(ConsumoInquilino).filter_by(inquilino_id=access.tenant.id,periodo=cs.now().strftime('%Y-%m'),capacidad=key).first()
-    limit=(ws.FULL_QUOTAS if access.owner else access.caps.monthly_limits)['social_posts']
+    limit=None if access.owner else access.caps.monthly_limits['social_posts']
     return {'providers':cs.PROVIDERS,'delivery_enabled':cs.delivery_enabled(),'public_media_ready':bool(origin),'media_warning':media_warning,'scheduler_last_seen':cs.aware(pulse.last_seen).isoformat() if pulse else None,'scheduler_recent':bool(pulse and cs.aware(pulse.last_seen)>cs.now()-timedelta(minutes=10)),'monthly_sends':{'limit':limit,'used':usage.cantidad_usada if usage else 0},'max_targets':200,'adaptation':'H.264/AAC, ajuste con bandas sin recortar el original; no consume una nueva generación creativa.'}
 
 @router.put('/settings/media-origin')
@@ -221,8 +221,8 @@ def approve(campaign_id:str,body:Approval,access=Depends(context),db=Depends(dep
         if job.contact_id:
             contact=db.get(CampaignContact,job.contact_id)
             if not contact.subscribed:raise HTTPException(409,'Un destinatario se dio de baja; vuelve a crear la selección de audiencia.')
-    limit=(ws.FULL_QUOTAS if access.owner else access.caps.monthly_limits)['social_posts']
-    if len(jobs)>limit:raise HTTPException(429,'La campaña supera la cuota mensual de envíos de tu plan. Reduce la audiencia o amplía tu cupo.')
+    limit=None if access.owner else access.caps.monthly_limits['social_posts']
+    if limit is not None and len(jobs)>limit:raise HTTPException(429,'La campaña supera la cuota mensual de envíos de tu plan. Reduce la audiencia o amplía tu cupo.')
     # Lock/conditional update prevents double approvals with stale sessions.
     from sqlalchemy import update
     claimed=db.execute(update(Campaign).where(Campaign.id==row.id,Campaign.state=='draft',Campaign.scheduled_at==row.scheduled_at).values(state='scheduled',approved_by=access.user.id).returning(Campaign.id)).scalar_one_or_none()

@@ -209,65 +209,15 @@ def get_indicadores_institucionales(
     db: Session = Depends(deps.get_db),
     current_user: user_model.Usuario = Depends(deps.get_current_active_user)
 ):
-    """
-    Returns unified base institutional indicators for the user's tenant:
-    1. cantidad_instructores: Active teachers/instructors
-    2. cantidad_alumnos_inscritos: Active enrolled students
-    3. cantidad_alumnos_retirados: Inactive or withdrawn students
-    4. alumnos_por_especialidad: Breakdown of active students per sport/cultural specialty
-    """
-    tenant_id = current_user.inquilino_id
-
-    # 1. Active teachers count
-    from app.models.user import Profesor, Alumno
-    from app.models.academic import Inscripcion
-    from app.models.catalog import CatalogoEspecialidad, EmpresaEspecialidad
-
-    total_teachers = db.query(Profesor).filter(Profesor.inquilino_id == tenant_id).count()
-
-    # 2. Total active students
-    active_students_count = db.query(Alumno).join(user_model.Usuario).filter(
-        Alumno.inquilino_id == tenant_id,
-        user_model.Usuario.activo == True
-    ).count()
-
-    # 3. Total withdrawn students
-    withdrawn_students_count = db.query(Alumno).join(user_model.Usuario).filter(
-        Alumno.inquilino_id == tenant_id,
-        user_model.Usuario.activo == False
-    ).count()
-
-    # 4. Breakdown of enrolled students per specialty
-    # Query active enrollments grouped by specialty
-    specialties_breakdown = []
-    empresa_especialidades = db.query(EmpresaEspecialidad).filter(
-        EmpresaEspecialidad.inquilino_id == tenant_id,
-        EmpresaEspecialidad.activa == True
-    ).all()
-
-    for ee in empresa_especialidades:
-        spec = db.query(CatalogoEspecialidad).filter(CatalogoEspecialidad.id == ee.especialidad_id).first()
-        spec_name = spec.nombre if spec else f"Especialidad #{ee.especialidad_id}"
-        spec_category = spec.categoria if spec else "General"
-
-        # Count active enrollments for this specialty
-        student_count = db.query(Inscripcion).filter(
-            Inscripcion.inquilino_id == tenant_id,
-            Inscripcion.especialidad_id == ee.especialidad_id,
-            Inscripcion.estado == "activa"
-        ).count()
-
-        specialties_breakdown.append({
-            "especialidad_id": ee.especialidad_id,
-            "nombre": spec_name,
-            "categoria": spec_category,
-            "alumnos_inscritos": student_count
-        })
-
-    return {
-        "inquilino_id": tenant_id,
-        "cantidad_instructores": total_teachers,
-        "cantidad_alumnos_inscritos": active_students_count,
-        "cantidad_alumnos_retirados": withdrawn_students_count,
-        "alumnos_por_especialidad": specialties_breakdown
-    }
+    """Compatibility DTO backed by the same real, scoped semantic model as web BI."""
+    from app.services import workspace_service as ws,institutional_service as bi
+    from app.services.role_contracts import MANAGEMENT
+    actor=ws.access_for(db,current_user)
+    if actor.owner:
+        context=bi.context(db,actor,role='admin_empresa',plan='basico',tenant_id=actor.tenant.id,review=True)
+    else:
+        role=next((role for role in ['admin_empresa','jefe_area','profesional_area','tecnico_area','coordinador'] if role in actor.roles),None)
+        if not role:raise HTTPException(403,'El contrato de este rol no incluye indicadores institucionales generales.')
+        context=bi.context(db,actor,role=role)
+    result=bi.snapshot(db,context)
+    return {'inquilino_id':context['company']['id'],'cantidad_instructores':len(result['slicers']['teacher']),'cantidad_alumnos_inscritos':result['kpis']['students'],'cantidad_alumnos_retirados':result['states'].get('retirada',0),'alumnos_por_especialidad':[{'especialidad_id':row['id'],'nombre':row['name'],'categoria':row['vertical'],'alumnos_inscritos':row['students'],'inscripciones':row['enrollments'],'deserciones':row['dropouts']} for row in result['specialties']],'definicion':result['definition'],'actualizado':result['updated_at']}

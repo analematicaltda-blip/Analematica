@@ -566,3 +566,4 @@ body {
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
   transition: all 0.2s ease;
 }
+body[data-admin-pending]{visibility:hidden}

@@ -1,6 +1,6 @@
 /* First-party administration. Every operation is authorized again by the backend. */
 window.SGAWorkspace=(()=>{
- const roles={admin_general:'Administrador general',admin_empresa:'Administrador de empresa',jefe_area:'Jefe de área',profesional_area:'Profesional de área',tecnico_area:'Técnico de área',coordinador:'Coordinador',profesor:'Profesor / Instructor',alumno:'Alumno',padre_acudiente:'Padre o acudiente',jefe_almacen:'Jefe de almacén',almacenista:'Almacenista',jefe_escenarios:'Jefe de escenarios'};
+ const roles={admin_general:'Administrador general',admin_empresa:'Administrador de empresa',jefe_area:'Jefe de área',profesional_area:'Profesional de área',tecnico_area:'Técnico de área',coordinador:'Coordinador',profesor:'Profesor / Instructor',alumno:'Alumno',padre_acudiente:'Madre, padre o acudiente',jefe_almacen:'Jefe de almacén',almacenista:'Almacenista',jefe_escenarios:'Jefe de escenarios'};
  const labels={crm:'CRM y contactos',media:'Estudio multimedia',publish:'Publicaciones',inbox:'Mensajería social'};
  const advanced={'crm-empresa':'crm','media-ia-empresa':'media','motor-predis-media':'media',estudio:'media',publicaciones:'publish',mensajeria:'inbox',canales:'publish',campanas:'publish',calendario:'publish',audiencia:'crm',adaptaciones:'media'};
  let session=null,activeRole=null,sequence=0,renderLegacy=null;
@@ -13,26 +13,27 @@ window.SGAWorkspace=(()=>{
   return response.json();
  }
  async function refresh(){session=await api('/session');return session;}
- function route(role,view){return '#/'+role+'/'+view;}
- function desired(){const match=location.hash.match(/^#\/([a-z_]+)\/([a-z0-9-]+)$/);return match&&roles[match[1]]?{role:match[1],view:match[2]}:null;}
- function remember(){const next=desired();if(next)sessionStorage.setItem('sga-panel-return',route(next.role,next.view));}
+ function route(role,view){return window.SGAInstitutional?SGAInstitutional.route(role,view):'#/'+role+'/'+view;}
+ function desired(){const institutional=window.SGAInstitutional?.parse();if(institutional)return institutional;const match=location.hash.match(/^#\/([a-z_]+)\/([a-z0-9-]+)$/);return match&&roles[match[1]]?{role:match[1],view:match[2]}:null;}
+ function remember(){const next=desired();if(next)sessionStorage.setItem('sga-panel-return',location.hash);}
  function message(text){const node=document.querySelector('#workspace-feedback');if(node)node.textContent=text;}
  function card(title,text,view){return `<a class="workspace-card" href="${route(activeRole,view)}" data-workspace-view="${view}"><h3>${esc(title)}</h3><p>${esc(text)}</p><span>Abrir →</span></a>`;}
- function frame(title,subtitle,content){const area=document.getElementById('content-area');area.innerHTML=`<div class="workspace"><div class="workspace-heading"><div><p class="workspace-eyebrow">${esc(roles[activeRole]||'SGA-CD')}</p><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><span class="workspace-plan">${session?.scope==='platform'?'Plataforma SGA-CD':session?.full_enabled?'Plan Full':'Plan Básico / Operativo'}</span></div>${content}<p id="workspace-feedback" role="status"></p></div>`;document.getElementById('main-title').textContent=title;}
+ function frame(title,subtitle,content){const area=document.getElementById('content-area');area.innerHTML=`<div class="workspace"><div class="workspace-heading"><div><p class="workspace-eyebrow">${esc(roles[activeRole]||'SGA-CD')}</p><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><span class="workspace-plan">${session?.scope==='platform'?'Plataforma SGA-CD':session?.plan==='full'?'Entidad Full · Acceso según rol':'Entidad Básico'}</span></div>${content}<p id="workspace-feedback" role="status"></p></div>`;document.getElementById('main-title').textContent=title;}
  function originalViews(role){return [...new Set((navLinks[role]||[]).flatMap(item=>item.submenu?item.submenu.filter(sub=>!sub.isHeader).map(sub=>sub.view):[item.view]).filter(Boolean))];}
  function navigation(role){
   activeRole=role;
   const nav=document.getElementById('app-nav');if(!nav)return;
   const original=(navLinks[role]||navLinks.default).map(group=>({...group,submenu:group.submenu?.filter(link=>!advanced[link.view]||session?.permissions[advanced[link.view]])})).filter(group=>!group.submenu||group.submenu.some(link=>!link.isHeader));
   const start=[{text:'Mi espacio',icon:'fa-home',submenu:[{text:'Inicio',view:'inicio',icon:'fa-home'},{text:'Plan y disponibilidad',view:'plan',icon:'fa-list'},{text:'Direcciones de paneles',view:'paneles',icon:'fa-link'}]}];
-  if(session?.manage_team)start.push({text:'Equipo y permisos',icon:'fa-users',submenu:[{text:'Habilitar funciones al equipo',view:'equipo',icon:'fa-user-shield'},...(window.sgaViewRegistry[role]?.['usuarios-empresa']?[{text:'Alta y gestión de personal',view:'usuarios-empresa',icon:'fa-user-plus'}]:[])]});
+  if(role!=='admin_general'){const institutional=[{text:'Contrato y responsabilidades',view:'contrato'}];if(SGAInstitutional.management.has(role))institutional.unshift({text:'Indicadores institucionales',view:'indicadores-institucionales'},{text:'Catálogo 500 deportes / 500 modalidades',view:'catalogo-institucional'},{text:'Captura y calidad de datos',view:'datos-institucionales'});if(SGAInstitutional.management.has(role))institutional.push({text:'Equipo y jerarquía',view:'equipo'});if(role==='admin_empresa')institutional.unshift({text:'Datos de la entidad',view:'entidad'});start.push({text:'Gestión institucional · '+(session.plan==='full'?'Full':'Básico'),submenu:institutional});}
+  if(session?.manage_team)start.push({text:'Equipo y permisos',icon:'fa-users',submenu:[{text:role==='admin_general'?'Habilitar funciones al equipo':'Equipo administrativo, operativo y clientes',view:'equipo',icon:'fa-user-shield'},...(window.sgaViewRegistry[role]?.['usuarios-empresa']?[{text:'Alta y gestión de personal',view:'usuarios-empresa',icon:'fa-user-plus'}]:[])]});
   const premium=[];
   for(const [permission,view]of[['crm','crm-empresa'],['media','estudio'],['publish','publicaciones'],['inbox','mensajeria']])if(session?.permissions[permission])premium.push({text:labels[permission],view,icon:permission==='media'?'fa-film':'fa-bullhorn'});
   if(session?.manage_channels&&session?.full_enabled)premium.push({text:'Canales de la organización',view:'canales',icon:'fa-plug'});
   if(session?.permissions.publish)premium.push({text:'Campañas y envíos',view:'campanas'},{text:'Calendario de publicaciones',view:'calendario'});
   if(session?.permissions.crm)premium.push({text:'Audiencia y consentimiento',view:'audiencia'});
   if(session?.permissions.media)premium.push({text:'Adaptar videos por plataforma',view:'adaptaciones'});
-  if(premium.length)start.push({text:'CRM y comunicación · Full',icon:'fa-bullhorn',submenu:premium});
+  if(premium.length)start.push({text:role==='admin_general'?'CRM y comunicación · Plataforma':'CRM y comunicación · Full',icon:'fa-bullhorn',submenu:premium});
   const links=[...start,...original];
   nav.innerHTML='<label class="workspace-nav-search">Buscar una función<input id="workspace-nav-search" type="search" placeholder="Usuarios, clases, contenido…"></label>'+links.map((group,index)=>{
    const items=group.submenu||[group];return `<div class="nav-group"><button type="button" class="nav-group-title" aria-expanded="false" aria-controls="workspace-menu-${index}"><span>${esc(group.text)}</span><span aria-hidden="true">⌄</span></button><div class="nav-submenu" id="workspace-menu-${index}" hidden>${items.map(link=>link.isHeader?`<div class="nav-submenu-header">${esc(link.text)}</div>`:`<a href="${route(role,link.view||'inicio')}" data-view="${esc(link.view||'inicio')}" class="nav-subitem"><span class="nav-text">${esc(link.text)}</span></a>`).join('')}</div></div>`;
@@ -87,6 +88,8 @@ window.SGAWorkspace=(()=>{
  async function inbox(){const data=await api('/inbox/status');frame('Mensajería social','Función de Plan Full y acceso delegado por tu administrador.',`<p>${esc(data.message)}</p><div class="workspace-grid">${data.channels.map(channel=>`<div class="workspace-card"><h3>${esc(channel.provider)}</h3><p>${channel.connected?'Conectado':channel.outbound_configured?'Salida configurada; bandeja pendiente del webhook':'Pendiente de autorización y webhook'}</p></div>`).join('')}</div>`);}
  function operations(){frame('Operación y módulos','Conserva los módulos existentes y abre uno a la vez.',`<div class="workspace-grid">${originalViews(activeRole).filter(view=>window.sgaViewRegistry[activeRole]?.[view]&&!advanced[view]&&!['dashboard','inicio'].includes(view)).map(view=>card(view.replaceAll('-',' '),'Módulo existente de tu rol.',view)).join('')}${window.sgaViewRegistry[activeRole]?.['resumen-operativo']?card('Resumen operativo','Panel original conservado.','resumen-operativo'):''}</div>`);}
  async function render(view){
+  if(window.SGAInstitutional&&await SGAInstitutional.render(view,frame,session))return true;
+  if(view==='plan'&&session.scope==='platform'){frame('Acceso del propietario','El administrador general dispone de todas las funcionalidades de la plataforma sin contratar ni autorizar Plan Full.','<p>Las autorizaciones de cuentas externas, límites técnicos y permisos de los proveedores siguen siendo necesarios para operar sus servicios.</p>');return true;}
   const permission=advanced[view];
   if(permission&&!session?.permissions[permission]){frame('Acceso no habilitado','El plan y los permisos se comprueban en el servidor.',`<p>${session?.full_enabled?'Solicita al administrador de tu empresa que habilite esta función.':'CRM, contenido, publicaciones y mensajería social requieren Plan Full vigente.'}</p>`);return true;}
   if(view==='equipo'&&!session?.manage_team){frame('Acceso restringido','Solo el administrador habilita al equipo.','');return true;}
@@ -98,14 +101,18 @@ window.SGAWorkspace=(()=>{
  async function navigate(role,view){
   const turn=++sequence;try{await refresh()}catch(error){if(turn!==sequence)return;session=null;activeRole=role;frame('No se pudo verificar el acceso','No se habilitaron funciones Full sin confirmación del servidor.',`<p>${esc(error.message)}</p>`);return;}
   if(turn!==sequence)return;
-  if(!session.user.roles.includes(role)){activeRole=session.user.roles[0];frame('Este panel corresponde a otro rol','Inicia sesión con una cuenta autorizada para el panel solicitado.',`<p>Tu sesión no cambia de permisos por abrir un enlace.</p>`);return;}
+  const intent=desired();let institutional=null;
+  try{if(window.SGAInstitutional)institutional=await SGAInstitutional.enter(session,role,intent?.plan,intent?.review)}catch(error){if(turn!==sequence)return;activeRole=session.user.roles[0];navigation(activeRole);frame('No se pudo abrir este panel','Se conserva el acceso real de tu cuenta.',`<p>${esc(error.message)}</p>`);return;}
+  if(turn!==sequence)return;
+  if(!session.user.roles.includes(role)&&!institutional?.review){activeRole=session.user.roles[0];navigation(activeRole);frame('Este panel corresponde a otro rol','Inicia sesión con una cuenta autorizada para el panel solicitado.',`<p>Tu sesión no cambia de permisos por abrir un enlace.</p>`);return;}
+  if(institutional){session={...session,organization:institutional.company.name,plan:institutional.plan,full_enabled:institutional.full_enabled,permissions:institutional.permissions,scope:'company',viewer_owner:institutional.review,manage_team:role==='admin_empresa',manage_channels:role==='admin_empresa'};history.replaceState(null,'',SGAInstitutional.route(role,view));}
   activeRole=role;navigation(role);
-  const info=document.getElementById('user-info');if(info)info.textContent=session.user.name+' · '+roles[role];
+  const info=document.getElementById('user-info');if(info)info.textContent=session.user.name+' · '+(session.viewer_owner?'Dueño · Revisión de ':'')+roles[role];
   const sidebar=document.getElementById('app-sidebar');sidebar?.classList.remove('mobile-open');if(sidebar){sidebar.inert=window.matchMedia('(max-width: 768px)').matches;sidebar.removeAttribute('aria-modal');sidebar.removeAttribute('role')}document.getElementById('sidebar-overlay')?.classList.remove('active');document.getElementById('mobile-hamburger-btn')?.setAttribute('aria-expanded','false');
   try{if(!await render(view)){
    if(window.sgaViewRegistry[role]?.[view]||window.sgaViewRegistry.common?.[view])await renderLegacy(view,token(),role);
    else frame('Sección no encontrada','Selecciona una función disponible en el menú.','');
-  }}catch(error){frame('No se pudo abrir esta función','No se completó ninguna operación adicional.',`<p>${esc(error.message)}</p>`);}
+  }}catch(error){if(turn!==sequence)return;frame('No se pudo abrir esta función','No se completó ninguna operación adicional.',`<p>${esc(error.message)}</p>`);}
  }
  async function start(){
   renderLegacy=window.renderContentForView;
@@ -122,5 +129,5 @@ window.SGAWorkspace=(()=>{
   if(!desired())history.replaceState(null,'',route(next.role,next.view));
   await navigate(next.role,next.view);
  }
- return {start,remember,roles,refresh};
+ return {start,remember,roles,refresh,reload:()=>{const next=desired()||{role:activeRole,view:'inicio'};return navigate(next.role,next.view)}};
 })();

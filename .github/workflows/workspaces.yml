@@ -1,9 +1,9 @@
 name: Role workspaces
 on:
   push:
-    paths: ['SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
+    paths: ['Analematica/**', 'SGA-CD-BACKEND/tests/**', 'SGA-CD-BACKEND/scripts/**', 'SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
   pull_request:
-    paths: ['SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
+    paths: ['Analematica/**', 'SGA-CD-BACKEND/tests/**', 'SGA-CD-BACKEND/scripts/**', 'SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
 permissions:
   contents: read
 jobs:
@@ -17,3 +17,16 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install fastapi httpx sqlalchemy 'pydantic[email]' pydantic-settings 'python-jose[cryptography]' passlib bcrypt requests python-multipart
       - run: python -m unittest discover -s tests/workspace -v
+      - run: python -m unittest discover -s SGA-CD-BACKEND/tests -p test_institutional_panels.py -v
+      - run: python -m unittest discover -s SGA-CD-BACKEND/tests -p test_corporate_node.py -v
+      - run: python -m unittest discover -s SGA-CD-BACKEND/tests -p test_owner_console.py -v
+      - run: python -m unittest discover -s SGA-CD-BACKEND/tests -p test_web_startup.py -v
+      - run: python Analematica/tests/deployment.py -v
+      - run: python -m unittest discover -s SGA-CD-BACKEND/tests -p test_instagram_login.py -v
+      - run: python -m unittest discover -s SGA-CD-BACKEND/tests -p test_meta_webhooks.py -v
+      - run: python Analematica/tests/meta_setup.py -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node Analematica/tests/meta-setup.cjs
+      - run: node --check Analematica/js/instagram.js

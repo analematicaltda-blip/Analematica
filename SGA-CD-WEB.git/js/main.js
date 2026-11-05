@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             initializeGSAPAnimations();
+            import('./corporate-content.js').then(module=>module.applyCorporateContent()).catch(()=>{});
 
         } catch (error) {
             console.warn("Using default fallback content for marketing page due to API offline state:", error);

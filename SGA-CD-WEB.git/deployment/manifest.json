@@ -1,0 +1,256 @@
+{
+  "404.html": {
+    "before": "694dc7cac56059f9a2f736568eb2ba731591e472e7f9ef86a247f6f0fede00ba",
+    "accepted": [
+      "694dc7cac56059f9a2f736568eb2ba731591e472e7f9ef86a247f6f0fede00ba",
+      "7edb0e55b994847455e7c8734710f452ef4ca54a191343a7237f2b13453c1333"
+    ],
+    "after": "7edb0e55b994847455e7c8734710f452ef4ca54a191343a7237f2b13453c1333"
+  },
+  "api_test.html": {
+    "before": "499165b69313446bf2ce1140fdfd637d05e52d93326c05a33a3d328d197a1f25",
+    "accepted": [
+      "499165b69313446bf2ce1140fdfd637d05e52d93326c05a33a3d328d197a1f25",
+      "c8610ee9ccf575ec9eb92bd79939b280a976f77f49a1989ca6d10f363a5e6987"
+    ],
+    "after": "c8610ee9ccf575ec9eb92bd79939b280a976f77f49a1989ca6d10f363a5e6987"
+  },
+  "app.html": {
+    "before": "2f8cd913bb6a82bec73adc18fee7651b12266911e1894164ce33954a43ee768c",
+    "accepted": [
+      "2f8cd913bb6a82bec73adc18fee7651b12266911e1894164ce33954a43ee768c",
+      "b4a46ed65ec2e40e5af630616efcea288c8502caa5490381dfaa7c47fb607a14",
+      "8675e98ae063b2d68db80b466e589e2b18bc9896275de4f7e1ab944cff0ec786",
+      "81a4227cf11f6fe7513209e415f64f430c8eba2886405a72b91e2d1c52041d74"
+    ],
+    "after": "b732a2d7550a4c6ab660e2307463f338f64ee61addeaaa3e681e38ded840dc49"
+  },
+  "checkout.html": {
+    "before": "8e282cc2fe3f0cc2e728433ae78dc8715d82fa62d8e648c3f6b3ec7902835705",
+    "accepted": [
+      "8e282cc2fe3f0cc2e728433ae78dc8715d82fa62d8e648c3f6b3ec7902835705",
+      "b8b59b14cf57aee0e9cc392bd9354919c535b8843a3d72d08d45a1aa15b87862"
+    ],
+    "after": "b8b59b14cf57aee0e9cc392bd9354919c535b8843a3d72d08d45a1aa15b87862"
+  },
+  "css/app.css": {
+    "before": "30d3609db0f9b1322bb713e3f309d8e4be3ebc746a336af96a10cea059e65155",
+    "accepted": [
+      "30d3609db0f9b1322bb713e3f309d8e4be3ebc746a336af96a10cea059e65155",
+      "a70b51ab62562a4afbc13c99db1328c462116c66ff8007a2b3a122e619dd90f5"
+    ],
+    "after": "a70b51ab62562a4afbc13c99db1328c462116c66ff8007a2b3a122e619dd90f5"
+  },
+  "js/app.js": {
+    "before": "492d6697186f4d36d11205cf56977d56f6f07761497799c5f781305075b2c1de",
+    "accepted": [
+      "492d6697186f4d36d11205cf56977d56f6f07761497799c5f781305075b2c1de",
+      "08a86575af4bfb46e7f6c41cab236a7732e7b345d3f56ba59d8b4b8e423af27f"
+    ],
+    "after": "c326258b838b127ae018e4bc8f450d7f4efd0793171d8b3c9b42f6a5e317f6e9"
+  },
+  "js/main.js": {
+    "before": "6367784c9cfbb9166307d7f0be81ff446fd035e7273a192181d2444acfa5ad4b",
+    "accepted": [
+      "6367784c9cfbb9166307d7f0be81ff446fd035e7273a192181d2444acfa5ad4b",
+      "f30031c49723d45d8ac3d1ae826349980f6499cb1c7c45006bbea48efd8a2d91",
+      "77e7a73a9ff55f5731a8f88e24df91f878177567851c806dc3c03435f2046557",
+      "a7c13a3a1aade8aee0ec583881253a9c33933f762865976bb920646005fad351",
+      "ef9100bd6b54a9e46771c860a3008741b492ee3186920c89f1a6453fd4789608",
+      "75fe667e383e6773daada9331701b5db658a0d81817df21321c849eadb823902",
+      "2124c1e476fbfbb82759ed381838f4f3604fc3c61735f8242c71e33d6bee1c2a",
+      "cc6fb403772db1f02e91da44472d37a0aec473aa913f310bdef8c8a547030457",
+      "11128a16d63d8bbcf1cef4143cb03a5cfeafdf61360befef870c5c5764796433",
+      "ea7c1a942a11f0e570d5060325d574851543ab2b7ca5936b3f532ad75057844a"
+    ],
+    "after": "70dfd874af1d880651eb27164ba68141b903cb3f63303668e94056f893555ae4"
+  },
+  "js/navigation.js": {
+    "before": "66ecfae855f3d2cdd3e25d1e9e00b26905a877e7c2b404814904ff045b47acf9",
+    "accepted": [
+      "66ecfae855f3d2cdd3e25d1e9e00b26905a877e7c2b404814904ff045b47acf9",
+      "f9de29b68d9b1ef909930b9f13e7658d1d296e99ab052ca4d25a1a31ce34a0c6"
+    ],
+    "after": "f9de29b68d9b1ef909930b9f13e7658d1d296e99ab052ca4d25a1a31ce34a0c6"
+  },
+  "login.html": {
+    "before": "df98995963e4d6ca9b0a84fef6994d3b5be014f114c2346d7c2145688b87ebd5",
+    "accepted": [
+      "df98995963e4d6ca9b0a84fef6994d3b5be014f114c2346d7c2145688b87ebd5",
+      "3afa41c046d0a4d8411cd4b49bcd3f542058d416022f8eb82ec237a5da3f5090"
+    ],
+    "after": "3afa41c046d0a4d8411cd4b49bcd3f542058d416022f8eb82ec237a5da3f5090"
+  },
+  "offline.html": {
+    "before": "6312ca79db0cc4d76a531ead4263d11bf86641a7e9f84af93c944ce19b30b72c",
+    "accepted": [
+      "6312ca79db0cc4d76a531ead4263d11bf86641a7e9f84af93c944ce19b30b72c",
+      "f611dafd59031e4fa28a54e43fbc181dbc40b8670921c0f0b7411aa2a036e473"
+    ],
+    "after": "f611dafd59031e4fa28a54e43fbc181dbc40b8670921c0f0b7411aa2a036e473"
+  },
+  "payment_cancel.html": {
+    "before": "1c7beaa08161b71abe64bcc17791e4bea414942af2e2af31e2562c6dd5c84769",
+    "accepted": [
+      "1c7beaa08161b71abe64bcc17791e4bea414942af2e2af31e2562c6dd5c84769",
+      "e672d3e37ed1f0bd917fd397b148bf0972ccf12a31b0fe307e76d5a66af0cb0a"
+    ],
+    "after": "e672d3e37ed1f0bd917fd397b148bf0972ccf12a31b0fe307e76d5a66af0cb0a"
+  },
+  "payment_success.html": {
+    "before": "e544f5b2275ec60dfd1eac0bb0ad20c07eb93f69e4b5b640c3b06dd2e6881432",
+    "accepted": [
+      "e544f5b2275ec60dfd1eac0bb0ad20c07eb93f69e4b5b640c3b06dd2e6881432",
+      "f17cfd8697e3bf3df380e6f13710c044b58d88dcf476f96779b3a6c5fa87679a"
+    ],
+    "after": "f17cfd8697e3bf3df380e6f13710c044b58d88dcf476f96779b3a6c5fa87679a"
+  },
+  "privacy.html": {
+    "before": "d3054ed5c0c233350ddcb2a212807c6424095fd667b9df25c2c1a68c8e8ba69a",
+    "accepted": [
+      "d3054ed5c0c233350ddcb2a212807c6424095fd667b9df25c2c1a68c8e8ba69a",
+      "955a8e3dfac86ce95839a6773a106e8dd1b727e0ae53ae68941cbc27977d7f00"
+    ],
+    "after": "955a8e3dfac86ce95839a6773a106e8dd1b727e0ae53ae68941cbc27977d7f00"
+  },
+  "register.html": {
+    "before": "100b4cf756adf41024ed1be59937d284bf66b60493d0a2aa33b76d25cee70b76",
+    "accepted": [
+      "100b4cf756adf41024ed1be59937d284bf66b60493d0a2aa33b76d25cee70b76",
+      "35dcec15ad13e60b240ec9e53ed728d72c37cbb286567f0cbbbd98958839de2a"
+    ],
+    "after": "35dcec15ad13e60b240ec9e53ed728d72c37cbb286567f0cbbbd98958839de2a"
+  },
+  "service-worker.js": {
+    "before": "fe54bced24ce0b1f4ec8c12ffcf19782b350f3f08038d136b8f50cee9062dd7b",
+    "accepted": [
+      "fe54bced24ce0b1f4ec8c12ffcf19782b350f3f08038d136b8f50cee9062dd7b",
+      "f514d98508214460e6dc1a797a403c5e5795a53a32254d0b64c82c4abff796cc"
+    ],
+    "after": "250e3db1a859fe0817e5fa39eef1c64721471554308ebb9c54ea10731b39a2a0"
+  },
+  "terms.html": {
+    "before": "7ad039f58aa55a8571713727e546149bdd1c4725b33e0ad2b0ed367d61038c14",
+    "accepted": [
+      "7ad039f58aa55a8571713727e546149bdd1c4725b33e0ad2b0ed367d61038c14",
+      "932fb78b57e735f477f806b833d9e972f12be28445f24ad28cd7445546ae6e36"
+    ],
+    "after": "932fb78b57e735f477f806b833d9e972f12be28445f24ad28cd7445546ae6e36"
+  },
+  "css/sky-theme.css": {
+    "before": null,
+    "accepted": [
+      null,
+      "6c97a096e95e1761e615643d3da5d93886e854d612124dd1fd64d69ae28459da",
+      "78a5f7a00605246e47b9e589d917e57d800657e827064dd366e35c95465a7229",
+      "f856f4fff252ce0874784044e63b1f8b661a8cd7f305cf4f857f92521e42d083",
+      "063347dd6133f9804dde424a4f0fa787de817534742ac7d8e35da3d78c007191",
+      "c716e9c58518c47cf35ed894922cf01b6c2f7e46cbaedcbd5e2d17ed8a81f170",
+      "6c19b0aed9418cd31a8da29ebe007d21800e30e4d4a87ea042906a6494b47957"
+    ],
+    "after": "73fcbeaeb9d9d6587a17bb2b812323d9d6db732d4f01e7c2c95dcfe6df9d89ab"
+  },
+  "js/components/modern_carousel.js": {
+    "before": "143117d50cae30622e2ad4acdb713b66cc1ca6d7dc368ad4e8c90982235c1481",
+    "accepted": [
+      "143117d50cae30622e2ad4acdb713b66cc1ca6d7dc368ad4e8c90982235c1481"
+    ],
+    "after": "b105b1fc717b80b569ed412045c61b2e15532951a4808a4334f4fc84f433ac48"
+  },
+  "assets/images/carousel-fallback.svg": {
+    "before": null,
+    "accepted": [
+      null
+    ],
+    "after": "f7ba2c40e3ebf86d6d0479d36183d7cf6f4dd9ec8893406c395d4a08da6394a9"
+  },
+  "index.html": {
+    "before": "217e4fdb4e2a074c1ef750cf2325346f9ab493f86e4ca97d9e04c53f8e01ff85",
+    "accepted": [
+      "217e4fdb4e2a074c1ef750cf2325346f9ab493f86e4ca97d9e04c53f8e01ff85"
+    ],
+    "after": "217e4fdb4e2a074c1ef750cf2325346f9ab493f86e4ca97d9e04c53f8e01ff85"
+  },
+  "js/oauth.js": {
+    "before": "dd8624f729a7167027721e99da23719a8cf46887609c6d03855bc697a76d91d4",
+    "accepted": [
+      "dd8624f729a7167027721e99da23719a8cf46887609c6d03855bc697a76d91d4",
+      "e86a7cd6b10ff8280519e7982db95e7a803e74efcbd4b72a74bd75c9b4370af3",
+      "216502a566a942089e5d24c99fc9bc7e61972ed057a764136b486d36e7b02929",
+      "a95887c52b420690f3b6a3d0803e91fb2c7854b53d174bd9713abb8552064e26"
+    ],
+    "after": "59c167a2bb9add534701d9af9b4ad774804e9402ae322200ba221ba48d628c9e"
+  },
+  "js/auth.js": {
+    "before": "5c7d7d8fcc963f86bf6d7a664c9a456f8c97fb85f93fa9d7e0faae782897d49b",
+    "accepted": [
+      null,
+      "5c7d7d8fcc963f86bf6d7a664c9a456f8c97fb85f93fa9d7e0faae782897d49b",
+      "3f6e7d834794652d848a3fa1fcf19a108979620a13f52716fcb4d3dff5304d0d"
+    ],
+    "after": "42f158456163851c479d860a6a0a70d37abebc04b6f5ee0d7bc300a052728986"
+  },
+  "js/register.js": {
+    "before": "1d4b9cdbe418c0b730830ea0c48e091a9d930b64ca4e5ce9f8af3c075b56a9f3",
+    "accepted": [
+      null,
+      "1d4b9cdbe418c0b730830ea0c48e091a9d930b64ca4e5ce9f8af3c075b56a9f3"
+    ],
+    "after": "f7c982b8ef7e19089e0ec2af4dc74e6e4b486f40da5cf92fa027a3b9b5e1afcd"
+  },
+  "css/workspace.css": {
+    "before": null,
+    "accepted": [
+      null
+    ],
+    "after": "614eb305f853d3f8891699b65e2abf42883a183b0a69da62f91de5fd9fe43378"
+  },
+  "js/workspace.js": {
+    "before": null,
+    "accepted": [
+      null,
+      "a4c83e5ac0073178465a6f1302064763a7efd45fc2de4f8d83055e330effaa0a",
+      "e71bd28f095b7f8f61c74ab89938099a13d89cb653699e337d18b0ac7b1a7849"
+    ],
+    "after": "4aa19d027e864766100bdf0118751d9b81e8be61f7129cf5b049fb5df2ce9cf9"
+  },
+  "js/campaigns.js": {
+    "before": null,
+    "accepted": [
+      null,
+      "a23b39bd00bdf776bb77d1696f61499bc2955f5b62acc79dcc1f7c0ff6870579"
+    ],
+    "after": "8ec99af074deb6f346aa5feaa021e79280fe5b728600fa1a93269bb4c96d175c"
+  },
+  "css/campaigns.css": {
+    "before": null,
+    "accepted": [
+      null
+    ],
+    "after": "03baa90df1400a7dc46313c5253876881867d7e4f9647a069152c2e9976b47bc"
+  },
+  "js/institutional.js": {
+    "before": null,
+    "accepted": [
+      null
+    ],
+    "after": "1e051795ec3a4408fd61a7762d43c7fe98ee8a861dffcaf349cfa902295474d3"
+  },
+  "css/institutional.css": {
+    "before": null,
+    "accepted": [
+      null,
+      "ba6a0a297553bf79c2342d779d9dc50be27bcbf102ea34366d917e737ae8db3c"
+    ],
+    "after": "0be0f2039961613e6c7b9015cf56f734417ec8c0f0e1ec6fdcdd417d64188f75"
+  },
+  "js/corporate-content.js": {
+    "before": null,
+    "accepted": [
+      null,
+      "f13f01e2a933a841dde4194d3fe23da778de61807cf1164c7010d1ca3e713580",
+      "2fde1ca3bbed2432f8c54f217b26a30997b0762b5d0611d08b62449dbf90c79c"
+    ],
+    "after": "4705a2d26bdb4dd5fe7f6f6af5f92afe972ca1e2622cb86e8e467cda389d93e2"
+  }
+}

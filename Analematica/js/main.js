@@ -5,19 +5,10 @@
 
 const STORAGE_KEY = 'analematica_landing_config';
 const LEADS_KEY = 'analematica_leads_data';
+const safeTextHTML=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 // Función para aplicar dinámicamente cualquier personalización del panel de administrador
-function applyDynamicLandingContent() {
-    let config = null;
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            config = JSON.parse(stored);
-        }
-    } catch (e) {
-        console.error("Error al leer configuración dinámica:", e);
-    }
-
+function applyDynamicLandingContent(config) {
     if (!config) return;
 
     // 1. Header & Brand
@@ -48,7 +39,7 @@ function applyDynamicLandingContent() {
 
         const heroBtnPrimary = document.getElementById('heroCtaBtn');
         if (heroBtnPrimary && config.hero.btn_primary) {
-            heroBtnPrimary.innerHTML = `${config.hero.btn_primary} <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+            heroBtnPrimary.innerHTML = `${safeTextHTML(config.hero.btn_primary)} <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
         }
 
         const heroMetrics = document.querySelectorAll('.hero-metrics .metric-item');
@@ -260,7 +251,7 @@ function applyDynamicLandingContent() {
 
             const btn = document.getElementById('submitFormBtn');
             if (btn && config.contacto.btn_text) {
-                btn.innerHTML = `${config.contacto.btn_text} <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
+                btn.innerHTML = `${safeTextHTML(config.contacto.btn_text)} <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
             }
 
             const successText = document.querySelector('.feedback-text');
@@ -278,14 +269,14 @@ function applyDynamicLandingContent() {
 
         const statusEl = document.querySelector('.system-status');
         if (statusEl && config.footer.status) {
-            statusEl.innerHTML = `<span class="status-indicator"></span> ${config.footer.status}`;
+            statusEl.innerHTML = `<span class="status-indicator"></span> ${safeTextHTML(config.footer.status)}`;
         }
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // 0. Aplicar contenido dinámico desde el panel de administrador
-    applyDynamicLandingContent();
+    AnaleConnection.request('/config').then(published=>applyDynamicLandingContent(published.config)).catch(()=>console.warn('Se muestra el contenido institucional original; configuración no disponible.'));
 
     // 1. Menú móvil
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -294,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mobileMenuBtn && mainNav) {
         mobileMenuBtn.addEventListener('click', () => {
             mainNav.classList.toggle('active');
+            mobileMenuBtn.setAttribute('aria-expanded',String(mainNav.classList.contains('active')));
         });
 
         // Cerrar menú al hacer clic en un enlace
@@ -301,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 mainNav.classList.remove('active');
+                mobileMenuBtn.setAttribute('aria-expanded','false');
             });
         });
     }
@@ -310,7 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const successBox = document.getElementById('formSuccessMessage');
 
     if (leadForm) {
-        leadForm.addEventListener('submit', (e) => {
+        let pendingRequestId=null;
+        leadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             let isValid = true;
@@ -341,33 +335,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.textContent = 'Procesando Diagnóstico...';
                 }
 
-                // Guardar lead en el CRM local de Analemática
+                const errorBox=document.getElementById('formErrorMessage');
+                if(errorBox)errorBox.hidden=true;
+                if(successBox)successBox.classList.add('hidden');
+                pendingRequestId=pendingRequestId||crypto.randomUUID();
                 try {
-                    const leadData = {
-                        fecha: new Date().toLocaleString(),
-                        nombre: document.getElementById('nombreCompleto').value.trim(),
-                        entidad: document.getElementById('entidadOrganizacion').value.trim(),
-                        correo: document.getElementById('correoInstitucional').value.trim(),
-                        telefono: document.getElementById('telefonoContacto').value.trim()
-                    };
-                    const existingLeads = JSON.parse(localStorage.getItem(LEADS_KEY) || '[]');
-                    existingLeads.unshift(leadData);
-                    localStorage.setItem(LEADS_KEY, JSON.stringify(existingLeads));
-                } catch (err) {
-                    console.error("Error guardando lead en CRM:", err);
-                }
+                    await AnaleConnection.request('/inquiries',{method:'POST',body:JSON.stringify({request_id:pendingRequestId,nombre:document.getElementById('nombreCompleto').value.trim(),entidad:document.getElementById('entidadOrganizacion').value.trim(),correo:document.getElementById('correoInstitucional').value.trim(),telefono:document.getElementById('telefonoContacto').value.trim(),consent:document.getElementById('contactConsent').checked,website:document.getElementById('contactWebsite').value})});
+                    if(successBox){successBox.classList.remove('hidden');successBox.scrollIntoView({behavior:'smooth',block:'nearest'});}
+                    leadForm.reset();pendingRequestId=null;
+                } catch(error) {
+                    if(errorBox){errorBox.hidden=false;errorBox.textContent=error.message;}
+                } finally {if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Enviar Solicitud de Diagnóstico';}}
 
-                setTimeout(() => {
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Enviar Solicitud de Diagnóstico';
-                    }
-                    if (successBox) {
-                        successBox.classList.remove('hidden');
-                        successBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
-                    leadForm.reset();
-                }, 600);
             }
         });
 

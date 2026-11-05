@@ -39,6 +39,10 @@ class WorkspaceTests(unittest.TestCase):
     user=Usuario(inquilino_id=tenant.id,nombre_usuario=name+'-'+role,password_hash='not-used',rol=RolesEnum(role),activo=True,correo=name+'-'+role+'@example.org',nombre_completo=name+' '+role)
     user.roles=[self.db.query(Role).filter_by(nombre=role).one()];self.db.add(user);self.db.flush();self.users[name+'-'+role]=user.id
   self.db.commit()
+  # This regression fixture models explicit administrative restrictions, not default inheritance.
+  member=self.users['full-jefe_area']
+  for permission in ws.PERMISSIONS:self.db.add(WorkspaceGrant(tenant_id=self.db.get(Usuario,member).inquilino_id,user_id=member,permission=permission,enabled=False,granted_by=self.users['full-admin_empresa']))
+  self.db.commit()
   app=FastAPI();app.include_router(workspace.router,prefix='/api/v1/workspace');app.include_router(tenancy.router,prefix='/api/v1/tenancy')
   def database():
    with self.factory() as db:yield db
