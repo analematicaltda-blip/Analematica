@@ -56,7 +56,7 @@ Los puertos `8000` (Backend API Gateway) y `3000`/`3001` (Frontends) junto con `
 ### 3.1. Verificación en el Sistema de Turismo (`Turismo/`)
 
 #### 3.1.1. Inspección de Configuración del Cliente Web
-Revisar el archivo de variables de entorno del frontend (`Turismo/SGA-TUR-FRONTEND/.env.local` o `Turismo/SGA-TUR-FRONTEND/.env.web.example`):
+Revisar el archivo de variables de entorno del frontend (`SGA-TUR-FRONTEND/.env.local` o `SGA-TUR-FRONTEND/.env.web.example`):
 
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
@@ -81,7 +81,7 @@ curl -I http://localhost:8000/api/v1/marketplace/
 Código de estado HTTP `200 OK` y encabezados `Content-Type: application/json`.
 
 #### 3.1.3. Verificación de CORS y Seguridad Perimetral
-Validar que `CORS_ALLOWED_ORIGINS` en `Turismo/SGA-TUR-BAKEND/puerto_gaitan_turismo/settings.py` autorice explícitamente el origen del frontend público:
+Validar que `CORS_ALLOWED_ORIGINS` en `SGA-TUR-BAKEND/puerto_gaitan_turismo/settings.py` autorice explícitamente el origen del frontend público:
 
 ```python
 CORS_ALLOWED_ORIGINS = [
@@ -108,9 +108,9 @@ curl -I http://localhost:8000/api/v1/payroll/
 curl -I http://localhost:8000/api/v1/finance/indicators/
 ```
 
-#### 3.2.2. Validación de la Interfaz React (`GATuristica/SGA-ERP-TUR-FRONTEND`)
-- **Ingesta de Reservas:** Verificar en `GATuristica/SGA-ERP-TUR-FRONTEND/reservas/page.tsx` el enlace reactivo hacia `/api/v1/turismo/tourism-reservations/` para la ingesta en tiempo real.
-- **Catálogo de Servicios:** Verificar en `GATuristica/SGA-ERP-TUR-FRONTEND/servicios/page.tsx` el enlace hacia `/api/v1/turismo/tourism-services/` para la publicación de servicios turísticos y comerciales.
+#### 3.2.2. Validación de la Interfaz React (`SGA-ERP-TUR-FRONTEND`)
+- **Ingesta de Reservas:** Verificar en `SGA-ERP-TUR-FRONTEND/reservas/page.tsx` el enlace reactivo hacia `/api/v1/turismo/tourism-reservations/` para la ingesta en tiempo real.
+- **Catálogo de Servicios:** Verificar en `SGA-ERP-TUR-FRONTEND/servicios/page.tsx` el enlace hacia `/api/v1/turismo/tourism-services/` para la publicación de servicios turísticos y comerciales.
 
 #### 3.2.3. Desacoplamiento Fiscal y Multi-inquilino Preservado
 - Los datos contables, nómina y facturación DIAN transitan bajo el canal protegido `/api/v1/mi-negocio/` con aislamiento multi-tenant por inquilino (`tenant_id`).
@@ -124,13 +124,13 @@ Si los servicios no están corriendo en el entorno, la directriz establece los s
 
 ### Paso 1: Iniciar el Backend API Gateway (Turismo + ERP montado)
 ```bash
-cd /app/Turismo/SGA-TUR-BAKEND
+cd /app/SGA-TUR-BAKEND
 python3 manage.py runserver 0.0.0.0:8000 > /tmp/turismo_backend.log 2>&1 &
 ```
 
 ### Paso 2: Iniciar el Frontend de Turismo
 ```bash
-cd /app/Turismo/SGA-TUR-FRONTEND
+cd /app/SGA-TUR-FRONTEND
 npm run dev -- -p 3000 > /tmp/turismo_frontend.log 2>&1 &
 ```
 
@@ -142,7 +142,7 @@ python3 integrated_server.py 8080 > /tmp/analematica_server.log 2>&1 &
 
 *(Opcional - Panel ERP GATurística en caso de ejecución desacoplada):*
 ```bash
-cd /app/GATuristica/SGA-ERP-TUR-FRONTEND
+cd /app/SGA-ERP-TUR-FRONTEND
 npm run dev -- -p 3001 > /tmp/gaturistica_frontend.log 2>&1 &
 ```
 

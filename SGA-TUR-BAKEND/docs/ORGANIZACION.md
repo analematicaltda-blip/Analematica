@@ -4,7 +4,7 @@
 - `SGA-TUR-FRONTEND/`: anterior carpeta `Frontend`.
 
 Se conserva el nombre BAKEND solicitado. La referencia al backend ERP apunta a
-`GATuristica/SGA-ERP-TUR-BAKEND`. Los modelos, bases y nombres internos de módulos
+`SGA-ERP-TUR-BAKEND`. Los modelos, bases y nombres internos de módulos
 se conservan. Las claves privadas locales siguen excluidas de Git.
 
 Se revisaron 1937 archivos Python entre Turismo y GATuristica sin introducir
