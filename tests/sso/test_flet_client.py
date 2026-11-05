@@ -13,7 +13,7 @@ class Session:
  def remove(self,key):self.values.pop(key,None)
 class FletClientTests(unittest.TestCase):
  def test_each_client_receives_central_session_without_local_database(self):
-  for folder in ['SGA-CD-APP.git','SGA-CD-APK.git']:
+  for folder in ['DESKTOP/SGA-CD-APP.git','MOVILES/SGA-CD-APK.git']:
    spec=importlib.util.spec_from_file_location('client',root/folder/'utils/sso_client.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
    page=SimpleNamespace(session=Session(),go=Mock(),launch_url=Mock(),update=Mock())
    tasks=[];page.run_task=tasks.append;message=SimpleNamespace(value='')

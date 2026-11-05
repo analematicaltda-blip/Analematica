@@ -2,12 +2,16 @@ name: Flet node setup
 on:
   push:
     paths:
+      - 'MOVILES/**'
+      - 'DESKTOP/**'
       - 'scripts/*flet*'
       - 'scripts/flet_preview/**'
       - 'tests/flet/**'
       - '.github/workflows/flet-nodes.yml'
   pull_request:
     paths:
+      - 'MOVILES/**'
+      - 'DESKTOP/**'
       - 'scripts/*flet*'
       - 'scripts/flet_preview/**'
       - 'tests/flet/**'

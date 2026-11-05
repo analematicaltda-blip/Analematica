@@ -14,8 +14,8 @@ La primera preparación guarda un respaldo de compose.json.
 
 | Nodo | Fuente montada en lectura | Puerto privado |
 | --- | --- | --- |
-| Escritorio | SGA-CD-APP.git | 8501 |
-| Móvil | SGA-CD-APK.git | 8502 |
+| Escritorio | DESKTOP/SGA-CD-APP.git | 8501 |
+| Móvil | MOVILES/SGA-CD-APK.git | 8502 |
 
 En Codespaces, abre **Puertos**, agrega 8501 y 8502 si no aparecen y conserva
 la visibilidad **Private**. Abre la dirección reenviada de cada fila. El comando

@@ -19,8 +19,8 @@ jobs:
           echo "Checking mandatory SGA-CD component directory boundaries..."
           test -d "SGA-CD-FASTAPI-BACKEND" || { echo "Missing SGA-CD-FASTAPI-BACKEND"; exit 1; }
           test -d "SGA-CD-WEB.git" || { echo "Missing SGA-CD-WEB.git"; exit 1; }
-          test -d "SGA-CD-APP.git" || { echo "Missing SGA-CD-APP.git"; exit 1; }
-          test -d "SGA-CD-APK.git" || { echo "Missing SGA-CD-APK.git"; exit 1; }
+          test -d "DESKTOP/SGA-CD-APP.git" || { echo "Missing DESKTOP/SGA-CD-APP.git"; exit 1; }
+          test -d "MOVILES/SGA-CD-APK.git" || { echo "Missing MOVILES/SGA-CD-APK.git"; exit 1; }
           test -d "DB/SGA-CD-DB.git" || { echo "Missing DB/SGA-CD-DB.git"; exit 1; }
           echo "All SGA-CD component boundaries verified successfully."
 
@@ -83,6 +83,6 @@ jobs:
 
       - name: Verify Flet Desktop & Mobile Imports
         run: |
-          python -c "import json; json.load(open('SGA-CD-APP.git/assets/design_tokens.json'))"
-          python -c "import json; json.load(open('SGA-CD-APK.git/assets/design_tokens.json'))"
+          python -c "import json; json.load(open('DESKTOP/SGA-CD-APP.git/assets/design_tokens.json'))"
+          python -c "import json; json.load(open('MOVILES/SGA-CD-APK.git/assets/design_tokens.json'))"
           echo "Flet native app design token manifests valid."

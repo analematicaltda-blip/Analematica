@@ -8,7 +8,7 @@ Esta guía explica cómo ejecutar la aplicación de escritorio SGA-CD conectada 
 
 - **Sistema Operativo:** Windows 10 / 11 (64-bit) o Ubuntu / Debian Linux.
 - **Servidor LLM:** Ollama (versión v0.40.11 o superior) instalado desde [https://ollama.com](https://ollama.com).
-- **Entorno Python:** Python 3.10+ con dependencias de `SGA-CD-APP.git/requirements.txt` (incluyendo `flet`, `langchain-ollama`).
+- **Entorno Python:** Python 3.10+ con dependencias de `DESKTOP/SGA-CD-APP.git/requirements.txt` (incluyendo `flet`, `langchain-ollama`).
 - **RAM Recomendada:** Mínimo 8 GB RAM (3.4 GB requeridos para pesos de `gemma3:4b`).
 
 ---
@@ -47,7 +47,7 @@ La aplicación SGA-CD Desktop permite configurar la conexión a Ollama mediante 
 ## 4. Métodos de Inicio
 
 ### Método 1: Script Automatizado para Windows (Recomendado)
-En la carpeta `SGA-CD-APP.git/`, ejecute:
+En la carpeta `DESKTOP/SGA-CD-APP.git/`, ejecute:
 
 ```cmd
 start_desktop_ollama.bat
@@ -101,7 +101,7 @@ Invoke-RestMethod -Uri "http://localhost:11434/api/chat" -Method Post -ContentTy
 
 ## 7. Ejecución de Pruebas Automatizadas
 
-Navegue a `SGA-CD-APP.git/` y ejecute:
+Navegue a `DESKTOP/SGA-CD-APP.git/` y ejecute:
 
 ```bash
 PYTHONPATH=.:../SGA-CD-FASTAPI-BACKEND python3 test_gemma3_ollama_integration.py
