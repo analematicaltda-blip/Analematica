@@ -12,11 +12,11 @@ def prepare(demo,port,repo):
     if previous and previous.get('labels',{}).get('io.sgacd.managed')!='analematica':raise ValueError('Existe un servicio Analemática personalizado. No se sobrescribió.')
     stamp=datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S-%f');release=demo/'analematica'/'releases'/stamp;site=release/'site';site.mkdir(parents=True)
     for name in PUBLIC:
-        source=repo/'Analematica-SGA-CD'/name
+        source=repo/'Analematica/Frontend'/name
         if source.is_symlink() or not source.is_file():raise ValueError('Archivo público ausente o no permitido: '+name)
         target=site/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target);target.chmod(0o644)
     for directory in [site,*[p for p in site.rglob('*') if p.is_dir()]]:directory.chmod(0o755)
-    nginx=release/'nginx.conf';shutil.copy2(repo/'Analematica-SGA-CD/deployment/nginx.conf',nginx)
+    nginx=release/'nginx.conf';shutil.copy2(repo/'Analematica/backend/deployment/nginx.conf',nginx)
     backup=release/'compose.before.json';shutil.copy2(path,backup);backup.chmod(0o600)
     config['services']['analematica']={'image':config['services']['web'].get('image','nginx:alpine'),'restart':'unless-stopped','labels':{'io.sgacd.managed':'analematica'},'ports':[f'127.0.0.1:{port}:80'],'volumes':[str(site)+':/usr/share/nginx/html:ro',str(nginx)+':/etc/nginx/conf.d/default.conf:ro'],'depends_on':{'web':{'condition':'service_started'}},'healthcheck':{'test':['CMD-SHELL','wget -Y off -q -O /dev/null http://127.0.0.1/healthz && wget -Y off -q -O /dev/null http://127.0.0.1/ || exit 1'],'interval':'10s','timeout':'3s','retries':6}}
     web_networks=config['services']['web'].get('networks')
@@ -25,7 +25,7 @@ def prepare(demo,port,repo):
     return release
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--demo-dir',type=Path,default=Path.home()/'sgacd-demo');parser.add_argument('--port',type=int,default=8090);parser.add_argument('--prepare-only',action='store_true');args=parser.parse_args();repo=Path(__file__).resolve().parents[2]
+    parser=argparse.ArgumentParser();parser.add_argument('--demo-dir',type=Path,default=Path.home()/'sgacd-demo');parser.add_argument('--port',type=int,default=8090);parser.add_argument('--prepare-only',action='store_true');args=parser.parse_args();repo=Path(__file__).resolve().parents[3]
     if not (args.demo_dir/'compose.json').is_file():raise SystemExit('No existe la demo SGA-CD. No se modificó ningún servicio.')
     if not args.prepare_only:
         subprocess.run([sys.executable,str(repo/'BAKEND/SGA-CD-BACKEND/scripts/update_panels.py'),'--demo-dir',str(args.demo_dir),'--start'],check=True)

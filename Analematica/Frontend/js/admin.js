@@ -388,6 +388,7 @@ async function processAgentCommand(orderText) {
     const target=document.getElementById('console-target')?.value||'sga';
     if(!pendingCommand||pendingCommand.command!==command||pendingCommand.target!==target)pendingCommand={command,target,request_id:crypto.randomUUID()};
     activeCommand=true;const executeButton=document.getElementById('btnExecuteCommand');if(executeButton)executeButton.disabled=true;
+    const voiceButton=document.getElementById('btnVoiceMic'),voiceWasDisabled=voiceButton?.disabled;if(voiceButton)voiceButton.disabled=true;
     const message=document.getElementById('command-message'),details=document.getElementById('command-data'),undo=document.getElementById('command-undo');
     if(message)message.textContent='Procesando la orden en el servidor…';if(details)details.textContent='';
     appendTacticalLog('ORDEN',command);
@@ -405,7 +406,7 @@ async function processAgentCommand(orderText) {
 
         // Activación y mecanografía local en las 5 divisiones ERP
         const coronel = getCoronelAnalematica();
-        if (coronel && typeof coronel.recibirOrden === 'function') {
+        if (coronel && result.target === 'analematica' && ['FINANCIERO','OPERATIVO','COMERCIAL','ARCHIVO','CONTABLE'].includes(result.target_division) && typeof coronel.recibirOrden === 'function') {
             await coronel.recibirOrden(command);
         }
 
@@ -469,7 +470,7 @@ async function processAgentCommand(orderText) {
             }
         }
     }catch(error){if(message)message.textContent=error.message;appendTacticalLog('NO CONFIRMADO',error.message);}
-    finally{activeCommand=false;if(executeButton)executeButton.disabled=false;}
+    finally{activeCommand=false;if(executeButton)executeButton.disabled=false;if(voiceButton)voiceButton.disabled=voiceWasDisabled;}
 }
 
 // Reconocimiento de Voz
@@ -636,4 +637,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Refresh only: never delete public inquiries or CRM history from this page.
     const btnRefresh=document.getElementById('btnClearLeads');
     if(btnRefresh){btnRefresh.textContent='Actualizar prospectos';btnRefresh.addEventListener('click',renderLeads);}
+    window.dispatchEvent(new CustomEvent('analematica:ready'));
 });

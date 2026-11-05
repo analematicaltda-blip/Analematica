@@ -5,7 +5,7 @@ from langchain_core.tools import tool
 @tool
 def tool_render_reel_ffmpeg(titulo: str, duracion_segundos: int = 5, color_fondo: str = "0x0D1424") -> str:
     """Renderiza un Reel vertical 9:16 (1080x1920) en alta definicion usando el motor FFmpeg del Nodo 6."""
-    output_dir = "SGA-CD-WEB.git/assets/generated"
+    output_dir = "FRONTEND/SGA-CD-WEB.git/assets/generated"
     os.makedirs(output_dir, exist_ok=True)
     filename = f"reel_{abs(hash(titulo)) % 100000}.mp4"
     output_path = os.path.join(output_dir, filename)

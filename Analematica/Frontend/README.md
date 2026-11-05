@@ -8,7 +8,7 @@ Después de incorporar la rama `codex/analematica-node`:
 
 ```bash
 cd /workspaces/SGA-CD
-python3 Analematica/deployment/start.py
+python3 Analematica/backend/deployment/start.py
 ```
 
 El comando actualiza la integración existente de backend y arranca `analematica`. Conserva bases de datos, volúmenes, credenciales, nodos Flet y campañas. Se produce un reinicio breve del backend y de los servicios administrados por su actualizador; no se eliminan datos. Si hay modificaciones incompatibles, se detiene sin sobrescribirlas. Requiere la demo ya instalada en `~/sgacd-demo/compose.json`.
@@ -26,7 +26,7 @@ Cada puerto es un origen web distinto: la sesión abierta en 8080 no se copia a 
 Para otro entorno:
 
 ```bash
-python3 Analematica/deployment/start.py --demo-dir /ruta/demo --port 8090
+python3 Analematica/backend/deployment/start.py --demo-dir /ruta/demo --port 8090
 ```
 
 `--prepare-only` prepara la configuración sin actualizar ni arrancar servicios. El puerto escucha únicamente en loopback. Para producción se necesita un dominio, HTTPS y la configuración operativa del alojamiento; Codespaces proporciona una demostración privada, no disponibilidad permanente.
@@ -62,7 +62,7 @@ Verificación local del 4 de noviembre de 2026: 4 pruebas de API corporativa, 2 
 
 El actualizador inicia ahora `web` explícitamente antes de comprobar y recargar Nginx. La secuencia anterior suponía que ya estaba en ejecución y podía terminar con `service "web" is not running`, interrumpiendo el alta del nodo corporativo aunque backend y nodo 6 estuvieran saludables. Arranca únicamente ese servicio, sin eliminar volúmenes ni forzar su recreación. Si el arranque falla por otra causa, se detiene e indica cómo consultar los registros; no intenta recargar una configuración que no superó `nginx -t`.
 
-Después de actualizar la rama, vuelve a ejecutar `python3 Analematica/deployment/start.py`. Las pruebas de recuperación están en `BAKEND/SGA-CD-BACKEND/tests/test_web_startup.py`.
+Después de actualizar la rama, vuelve a ejecutar `python3 Analematica/backend/deployment/start.py`. Las pruebas de recuperación están en `BAKEND/SGA-CD-BACKEND/tests/test_web_startup.py`.
 
 La recuperación se verificó deteniendo `web` en el entorno de validación y reproduciendo el error original antes de ejecutar el actualizador corregido. SGA-CD y Analemática respondieron HTTP 200 después; el contenido publicado, el contenedor PostgreSQL, sus volúmenes y los contenedores Flet se conservaron. Pasaron 3 pruebas de arranque, 3 regresiones del instalador y 2 pruebas de despliegue corporativo.
 

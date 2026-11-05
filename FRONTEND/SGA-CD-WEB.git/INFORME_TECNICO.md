@@ -3,13 +3,13 @@
 **Para:** admin_general
 **De:** Jules, Ingeniero de Software
 **Fecha:** 26/08/2025
-**Asunto:** Informe final sobre el estado de la aplicación `SGA-CD-WEB.git`, incluyendo verificación de roles, implementación de módulos y análisis de dependencias.
+**Asunto:** Informe final sobre el estado de la aplicación `FRONTEND/SGA-CD-WEB.git`, incluyendo verificación de roles, implementación de módulos y análisis de dependencias.
 
 ---
 
 ## 1. Resumen Ejecutivo
 
-Se ha completado el ciclo de desarrollo y análisis del frontend `SGA-CD-WEB.git`. La aplicación ha sido estructurada como una Single-Page Application (SPA) robusta, que se conecta a un backend (`SGA-CD-FASTAPI-BACKEND`) para la lógica de negocio y persistencia de datos.
+Se ha completado el ciclo de desarrollo y análisis del frontend `FRONTEND/SGA-CD-WEB.git`. La aplicación ha sido estructurada como una Single-Page Application (SPA) robusta, que se conecta a un backend (`BAKEND/SGA-CD-BACKEND`) para la lógica de negocio y persistencia de datos.
 
 Este informe detalla el estado actual de la implementación, cubriendo los tres pilares solicitados: la configuración de roles, la implementación de módulos avanzados y las reglas de trabajo. Se ha verificado que la aplicación cumple con la arquitectura solicitada y está lista para la conexión con el backend definitivo.
 
@@ -56,7 +56,7 @@ A continuación se detalla el estado de cada módulo solicitado.
 ## 4. Tarea 3: Reglas de Trabajo
 
 Se han seguido todas las reglas de trabajo estipuladas:
-- ✅ El trabajo se ha realizado **exclusivamente** dentro de la carpeta `SGA-CD-WEB.git`.
+- ✅ El trabajo se ha realizado **exclusivamente** dentro de la carpeta `FRONTEND/SGA-CD-WEB.git`.
 - ✅ No se ha modificado ningún otro repositorio.
 - ✅ La comunicación con el backend se realiza **únicamente a través del consumo de la API**.
 
@@ -64,7 +64,7 @@ Se han seguido todas las reglas de trabajo estipuladas:
 
 ## 5. Dependencias del Backend (API Endpoints)
 
-Para su correcto funcionamiento, el frontend `SGA-CD-WEB.git` espera que el backend `SGA-CD-FASTAPI-BACKEND` exponga los siguientes endpoints:
+Para su correcto funcionamiento, el frontend `FRONTEND/SGA-CD-WEB.git` espera que el backend `BAKEND/SGA-CD-BACKEND` exponga los siguientes endpoints:
 
 **Autenticación y Registro:**
 - `POST /api/token`

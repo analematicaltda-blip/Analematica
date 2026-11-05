@@ -66,7 +66,7 @@ def diagnose_all_imports():
 
 if __name__ == "__main__":
     # We need to run this with the correct PYTHONPATH
-    # Example: cd SGA-CD-FASTAPI-BACKEND && PYTHONPATH=. python diagnose_imports.py
+    # Example: cd BAKEND/SGA-CD-BACKEND && PYTHONPATH=. python diagnose_imports.py
     is_successful = diagnose_all_imports()
     if is_successful:
         print("\nSuggestion: The application seems to be importable. Try starting the server now.")

@@ -1,0 +1,156 @@
+{
+  "source_console": "Analematica-SGA-CD",
+  "primary_component": "Analematica",
+  "frontend": "Analematica/Frontend",
+  "backend": "Analematica/backend",
+  "files": [
+    {
+      "source": "Analematica-SGA-CD/AGENTS_ARMY_ANALYSIS.md",
+      "destination": "Analematica/Frontend/AGENTS_ARMY_ANALYSIS.md"
+    },
+    {
+      "source": "Analematica-SGA-CD/README.md",
+      "destination": "Analematica/Frontend/docs/SGA-CD-CONSOLA.md"
+    },
+    {
+      "source": "Analematica-SGA-CD/admin.html",
+      "destination": "Analematica/Frontend/admin.html"
+    },
+    {
+      "source": "Analematica-SGA-CD/agents/analematica_army.js",
+      "destination": "Analematica/Frontend/agents/compat/analematica_sga_cd_army.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/assets/analema-logo.svg",
+      "destination": "Analematica/Frontend/assets/analema-logo.svg"
+    },
+    {
+      "source": "Analematica-SGA-CD/config/meta-public.json",
+      "destination": "Analematica/Frontend/config/meta-public.json"
+    },
+    {
+      "source": "Analematica-SGA-CD/css/admin.css",
+      "destination": "Analematica/Frontend/css/admin.css"
+    },
+    {
+      "source": "Analematica-SGA-CD/css/console.css",
+      "destination": "Analematica/Frontend/css/console.css"
+    },
+    {
+      "source": "Analematica-SGA-CD/css/meta-ads.css",
+      "destination": "Analematica/Frontend/css/meta-ads.css"
+    },
+    {
+      "source": "Analematica-SGA-CD/css/style.css",
+      "destination": "Analematica/Frontend/css/style.css"
+    },
+    {
+      "source": "Analematica-SGA-CD/deployment/nginx.conf",
+      "destination": "Analematica/backend/deployment/nginx.conf"
+    },
+    {
+      "source": "Analematica-SGA-CD/deployment/prepare_meta.py",
+      "destination": "Analematica/backend/deployment/prepare_meta.py"
+    },
+    {
+      "source": "Analematica-SGA-CD/deployment/start.py",
+      "destination": "Analematica/backend/deployment/start.py"
+    },
+    {
+      "source": "Analematica-SGA-CD/docs/APP-IMPORT.json",
+      "destination": "Analematica/Frontend/docs/APP-IMPORT.json"
+    },
+    {
+      "source": "Analematica-SGA-CD/docs/APP-IMPORT.md",
+      "destination": "Analematica/Frontend/docs/APP-IMPORT.md"
+    },
+    {
+      "source": "Analematica-SGA-CD/docs/META-SETUP.md",
+      "destination": "Analematica/Frontend/docs/META-SETUP.md"
+    },
+    {
+      "source": "Analematica-SGA-CD/index.html",
+      "destination": "Analematica/Frontend/index.html"
+    },
+    {
+      "source": "Analematica-SGA-CD/js/admin.js",
+      "destination": "Analematica/Frontend/js/admin.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/js/connection.js",
+      "destination": "Analematica/Frontend/js/connection.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/js/instagram.js",
+      "destination": "Analematica/Frontend/js/instagram.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/js/login.js",
+      "destination": "Analematica/Frontend/js/login.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/js/main.js",
+      "destination": "Analematica/Frontend/js/main.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/js/meta-ads.js",
+      "destination": "Analematica/Frontend/js/meta-ads.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/js/meta-setup.js",
+      "destination": "Analematica/Frontend/js/meta-setup.js"
+    },
+    {
+      "source": "Analematica-SGA-CD/login.html",
+      "destination": "Analematica/Frontend/login.html"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/artifacts/consola-1440.png",
+      "destination": "Analematica/Frontend/tests/artifacts/sga-cd/consola-1440.png"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/artifacts/consola-390.png",
+      "destination": "Analematica/Frontend/tests/artifacts/sga-cd/consola-390.png"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/artifacts/landing-1440.png",
+      "destination": "Analematica/Frontend/tests/artifacts/landing-1440.png"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/artifacts/landing-390.png",
+      "destination": "Analematica/Frontend/tests/artifacts/landing-390.png"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/deployment.py",
+      "destination": "Analematica/Frontend/tests/deployment.py"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/instagram.cjs",
+      "destination": "Analematica/Frontend/tests/instagram.cjs"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/meta-setup.cjs",
+      "destination": "Analematica/Frontend/tests/meta-setup.cjs"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/meta_setup.py",
+      "destination": "Analematica/Frontend/tests/meta_setup.py"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/node.cjs",
+      "destination": "Analematica/Frontend/tests/node.cjs"
+    },
+    {
+      "source": "Analematica-SGA-CD/tests/owner-console.cjs",
+      "destination": "Analematica/Frontend/tests/owner-console.cjs"
+    }
+  ],
+  "preserved": [
+    "ERP navigation and DIAN/audit/accounting panels",
+    "Current agent controller and archived previous controller",
+    "Landing/login/styles and corporate database/configuration",
+    "Meta Ads/Instagram configuration, tests and deployment"
+  ],
+  "retired": "SGA-CD-FASTAPI-BACKEND was a compatibility symlink; active API remains BAKEND/SGA-CD-BACKEND",
+  "validation_scope": "Local gateway and first-party regressions. Original standalone ERP services preserved; production readiness not certified."
+}

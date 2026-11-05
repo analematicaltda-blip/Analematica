@@ -387,7 +387,7 @@ def generate_predis_media(
         title=title,
         copy=copy,
         poster_url=poster,
-        video_path="SGA-CD-WEB.git/assets/video/sga_cd_institutional_5min.mp4",
+        video_path="FRONTEND/SGA-CD-WEB.git/assets/video/sga_cd_institutional_5min.mp4",
         dimensions=dimensions,
         target_platforms=payload.target_platforms or ["instagram", "tiktok", "youtube_shorts", "facebook"],
         scheduled_time=payload.scheduled_time or "Inmediato (Automático Simultáneo)"

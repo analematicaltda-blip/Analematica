@@ -18,7 +18,7 @@ from app.services.gpu_lifecycle_service import gpu_lifecycle_service
 logger = logging.getLogger(__name__)
 
 class SkyReelsV2Service:
-    def __init__(self, endpoint_url: str = "http://localhost:8090", storage_dir: str = "SGA-CD-WEB.git/assets/generated"):
+    def __init__(self, endpoint_url: str = "http://localhost:8090", storage_dir: str = "FRONTEND/SGA-CD-WEB.git/assets/generated"):
         self.endpoint_url = endpoint_url.rstrip('/')
         self.storage_dir = storage_dir
         self._jobs: Dict[str, Dict[str, Any]] = {}

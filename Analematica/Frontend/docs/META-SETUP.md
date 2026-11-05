@@ -11,7 +11,7 @@ El instalador `deployment/start.py` incluye los nuevos recursos públicos.
 Para obtener los datos del despliegue desde el Codespace que sirve el nodo:
 
 ```bash
-python3 Analematica-SGA-CD/deployment/prepare_meta.py
+python3 Analematica/backend/deployment/prepare_meta.py
 ```
 
 Detecta CODESPACE_NAME y el puerto 8090. Para otro despliegue se puede declarar
@@ -47,10 +47,10 @@ ese servidor remoto ni se ha probado autorización real.
 ## Validación
 
 ```bash
-python3 Analematica-SGA-CD/tests/meta_setup.py
-python3 Analematica-SGA-CD/tests/deployment.py
-node Analematica-SGA-CD/tests/meta-setup.cjs
-node --check Analematica-SGA-CD/js/meta-ads.js
+python3 Analematica/Frontend/tests/meta_setup.py
+python3 Analematica/Frontend/tests/deployment.py
+node Analematica/Frontend/tests/meta-setup.cjs
+node --check Analematica/Frontend/js/meta-ads.js
 python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_instagram_login.py
 python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_meta_webhooks.py
 ```
@@ -61,8 +61,8 @@ python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_meta_webhooks
 cd /workspaces/SGA-CD
 git fetch origin codex/analematica-node
 git merge --ff-only FETCH_HEAD
-python3 Analematica-SGA-CD/deployment/start.py
-python3 Analematica-SGA-CD/deployment/prepare_meta.py
+python3 Analematica/backend/deployment/start.py
+python3 Analematica/backend/deployment/prepare_meta.py
 ```
 
 Si Git detecta divergencia, detener la actualización y resolver preservando los

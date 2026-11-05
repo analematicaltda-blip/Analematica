@@ -27,7 +27,7 @@
   - Falta bloqueo estricto e inmutabilidad del período contable (`FiscalPeriod.is_closed = True`) con trazabilidad de hash encadenado.
 
 ### 4. Integración Reactiva Bidireccional entre Reservas/Servicios y Devengo Contable
-- **Hallazgo:** En `SGA-ERP-TUR-FRONTEND/reservas/page.tsx` y `servicios/page.tsx`, los contratos con `/api/v1/turismo/tourism-reservations/` y `/api/v1/turismo/tourism-services/` están declarados en la interfaz pero desconectados del ciclo de causación contable.
+- **Hallazgo:** En `FRONTEND/SGA-ERP-TUR-FRONTEND/reservas/page.tsx` y `servicios/page.tsx`, los contratos con `/api/v1/turismo/tourism-reservations/` y `/api/v1/turismo/tourism-services/` están declarados en la interfaz pero desconectados del ciclo de causación contable.
 - **Solución:** Cada reserva confirmada en la plataforma turística debe emitir un evento que dispare el asiento de devengo (Débito a Cuentas por Cobrar 1305, Crédito a Ingresos por Servicios Turísticos 4140) bajo estricto aislamiento multi-inquilino.
 
 ---

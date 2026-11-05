@@ -1,5 +1,5 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
-const source=process.env.SGA_SW_FILE || 'SGA-CD-WEB.git/service-worker.js';
+const source=process.env.SGA_SW_FILE || 'FRONTEND/SGA-CD-WEB.git/service-worker.js';
 (async()=>{
  const listeners={},entries=new Map();let skipped=false,claimed=false,offline=false;
  const key=r=>typeof r==='string'?r:r.url;
