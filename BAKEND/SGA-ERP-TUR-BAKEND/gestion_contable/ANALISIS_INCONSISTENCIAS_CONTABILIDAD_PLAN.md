@@ -7,7 +7,7 @@
 ## I. DIAGNÓSTICO DE INCONSISTENCIAS Y BRECHAS IDENTIFICADAS
 
 ### 1. Ausencia de Endpoints Expuestos para Asientos Contables (`JournalEntry`) y Períodos
-- **Hallazgo:** En `SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/urls.py`, el `DefaultRouter` únicamente registra `PlanCuentaViewSet` (`/cuentas`).
+- **Hallazgo:** En `BAKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/urls.py`, el `DefaultRouter` únicamente registra `PlanCuentaViewSet` (`/cuentas`).
 - **Inconsistencia:** No existen rutas registradas para `/asientos/` ni `/periodos/`, a pesar de que los modelos proxy `AsientoContable`, `Transaccion` y `PeriodoContable` ya están definidos en `models.py`. La ruta documentada en la directriz (`/api/v1/mi-negocio/contable/asientos/`) requiere su router oficial activo.
 - **Impacto:** Las vistas frontend de `asientos/nuevo` y los agentes autónomos de contabilización no pueden consultar ni persistir partidas dobles de forma estándar vía API REST.
 
@@ -20,7 +20,7 @@
 - **Impacto:** La conciliación en `tesoreria/conciliacion-wallet` requiere intervención manual y no previene duplicados.
 
 ### 3. Pipeline Integral de Cierre Mensual y Checklist Fiscal (`month-end-close` & `tax-prep`)
-- **Hallazgo:** `SGA-ERP-TUR-BAKEND/gestion_contable/cierres/services.py` solo efectúa una verificación básica de balance (`sum(debits) == sum(credits)`).
+- **Hallazgo:** `BAKEND/SGA-ERP-TUR-BAKEND/gestion_contable/cierres/services.py` solo efectúa una verificación básica de balance (`sum(debits) == sum(credits)`).
 - **Brechas según las Skills:**
   - Falta cálculo y asiento automático de depreciación acumulada mensual de activos fijos (`depreciation-schedule`).
   - Falta provisión y liquidación periódica de impuestos directos e indirectos (IVA generado vs descontable, Retención en la Fuente, ICA municipal) como estipula `Conta-Skills/calcular_iva.py` y `calcular_irpf.py`.
@@ -37,7 +37,7 @@
 ### Fase 1: Exposición y Endpoints del Core Contable (Backend)
 1. **Serializers:** Crear `AsientoContableSerializer`, `TransaccionSerializer` y `PeriodoContableSerializer` con validación estricta de partida doble (`sum(debit) == sum(credit)`).
 2. **ViewSets:** Registrar `AsientoContableViewSet` y `PeriodoContableViewSet` en `contabilidad/views.py`.
-3. **Enrutamiento:** Conectar en `SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/urls.py`:
+3. **Enrutamiento:** Conectar en `BAKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/urls.py`:
    - `router.register(r'asientos', AsientoContableViewSet, basename='asiento-contable')`
    - `router.register(r'periodos', PeriodoContableViewSet, basename='periodo-contable')`
 

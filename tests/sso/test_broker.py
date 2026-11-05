@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives import serialization
 from jose import jwt, jwk
 
 root=Path(__file__).resolve().parents[2]
-spec=importlib.util.spec_from_file_location('broker',root/'SGA-CD-BACKEND/app/services/sso_service.py')
+spec=importlib.util.spec_from_file_location('broker',root/'BAKEND/SGA-CD-BACKEND/app/services/sso_service.py')
 sso=importlib.util.module_from_spec(spec);spec.loader.exec_module(sso)
 
 class BrokerTests(unittest.TestCase):

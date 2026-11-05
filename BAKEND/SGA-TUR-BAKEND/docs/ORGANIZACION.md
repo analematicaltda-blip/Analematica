@@ -1,6 +1,6 @@
 # Turismo
 
-- `SGA-TUR-BAKEND/`: anterior carpeta `Backend`.
+- `BAKEND/SGA-TUR-BAKEND/`: anterior carpeta `Backend`.
 - `SGA-TUR-FRONTEND/`: anterior carpeta `Frontend`.
 
 Se conserva el nombre BAKEND solicitado. La referencia al backend ERP apunta a

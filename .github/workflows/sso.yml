@@ -2,14 +2,14 @@ name: SSO broker tests
 on:
   push:
     paths:
-      - 'SGA-CD-BACKEND/app/services/sso_service.py'
-      - 'SGA-CD-BACKEND/app/api/v1/endpoints/sso.py'
+      - 'BAKEND/SGA-CD-BACKEND/app/services/sso_service.py'
+      - 'BAKEND/SGA-CD-BACKEND/app/api/v1/endpoints/sso.py'
       - 'tests/sso/**'
       - '.github/workflows/sso.yml'
   pull_request:
     paths:
-      - 'SGA-CD-BACKEND/app/services/sso_service.py'
-      - 'SGA-CD-BACKEND/app/api/v1/endpoints/sso.py'
+      - 'BAKEND/SGA-CD-BACKEND/app/services/sso_service.py'
+      - 'BAKEND/SGA-CD-BACKEND/app/api/v1/endpoints/sso.py'
       - 'tests/sso/**'
 permissions:
   contents: read

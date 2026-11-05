@@ -15,7 +15,7 @@ with tempfile.TemporaryDirectory() as directory:
     assert added['services']['postgres']==initial['services']['postgres']
     assert added['volumes']['db']=={}
     assert added['volumes']['flet-desktop_state']=={'external':True}
-    for service,folder,port in [('flet-desktop','SGA-CD-APP.git',8501),('flet-mobile','SGA-CD-APK.git',8502)]:
+    for service,folder,port in [('flet-desktop','DESKTOP/SGA-CD-APP.git',8501),('flet-mobile','MOVILES/SGA-CD-APK.git',8502)]:
         node=added['services'][service]
         assert node['ports']==[f'127.0.0.1:{port}:{port}']
         assert str(repo/folder)+':/client:ro' in node['volumes']
@@ -23,6 +23,16 @@ with tempfile.TemporaryDirectory() as directory:
     subprocess.run(command,check=True,capture_output=True)
     assert compose.read_bytes()==before
     assert len(list(demo.glob('compose.before-flet-*.json')))==1
+    # An existing deployment may still reference the former root-level source folders.
+    legacy=json.loads(compose.read_text())
+    sentinel=demo/'offline-sentinel.sqlite';sentinel.write_bytes(b'offline-state-preserved')
+    for service,folder in [('flet-desktop','DESKTOP/SGA-CD-APP.git'),('flet-mobile','MOVILES/SGA-CD-APK.git')]:
+        legacy['services'][service]['volumes']=[str(repo/Path(folder).name)+':/client:ro' if mount==str(repo/folder)+':/client:ro' else mount for mount in legacy['services'][service]['volumes']]
+    compose.write_text(json.dumps(legacy))
+    subprocess.run(command,check=True,capture_output=True)
+    assert json.loads(compose.read_text())==added
+    assert sentinel.read_bytes()==b'offline-state-preserved'
+    assert len(list(demo.glob('compose.before-flet-*.json')))==2
     added['services']['flet-mobile']['ports']=['127.0.0.1:9999:8502']
     compose.write_text(json.dumps(added)); before=compose.read_bytes()
     dockerfile=demo/'flet-image/Dockerfile'; dockerfile.write_text('# local edit')

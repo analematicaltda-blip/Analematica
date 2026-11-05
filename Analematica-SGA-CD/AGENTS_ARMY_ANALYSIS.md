@@ -7,7 +7,7 @@
 ---
 
 ## 1. RESUMEN EJECUTIVO DEL ANÁLISIS MILITAR
-Se ha ejecutado una auditoría de código fuente exhaustiva sobre la jerarquía militar de agentes en `SGA-CD-BACKEND`, su interacción con el Administrador General y su capacidad para operar y diligenciar órdenes escritas o verbales tanto para el sistema general como para el panel de administración de la landing page de **Analemática**.
+Se ha ejecutado una auditoría de código fuente exhaustiva sobre la jerarquía militar de agentes en `BAKEND/SGA-CD-BACKEND`, su interacción con el Administrador General y su capacidad para operar y diligenciar órdenes escritas o verbales tanto para el sistema general como para el panel de administración de la landing page de **Analemática**.
 
 ### Censo Cuantitativo de Fuerzas Desplegadas:
 - **Estado Mayor Supremo:** 2 componentes centrales: Gateway Perimetral `N.E.K.O.` + Orquestador General `JARVI`.

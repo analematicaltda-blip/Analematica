@@ -24,4 +24,4 @@ DUTIES={
 def contract(role,plan):
     if role not in NAMES:raise ValueError('Rol no reconocido')
     group='administrativo' if role in MANAGEMENT else 'operativo' if role in OPERATIONS else 'clientes'
-    return {'role':role,'name':NAMES[role],'group':group,'organization_plan':plan,'commercial_eligible':role in MANAGEMENT and plan=='full','analytics':role in MANAGEMENT,'scope':'empresa' if role=='admin_empresa' else 'area' if role in ADMIN_TEAM else 'propio','creates':CREATE.get(role,[]),'duties':DUTIES[role],'sources':['SGA-CD-BACKEND/ROLES_Y_PERMISOS.md','SGA-CD-BACKEND/app/api/v1/endpoints/admin.py','Instrucciones del propietario 2026-11-04']}
+    return {'role':role,'name':NAMES[role],'group':group,'organization_plan':plan,'commercial_eligible':role in MANAGEMENT and plan=='full','analytics':role in MANAGEMENT,'scope':'empresa' if role=='admin_empresa' else 'area' if role in ADMIN_TEAM else 'propio','creates':CREATE.get(role,[]),'duties':DUTIES[role],'sources':['BAKEND/SGA-CD-BACKEND/ROLES_Y_PERMISOS.md','BAKEND/SGA-CD-BACKEND/app/api/v1/endpoints/admin.py','Instrucciones del propietario 2026-11-04']}

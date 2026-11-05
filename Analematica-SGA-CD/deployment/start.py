@@ -28,7 +28,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--demo-dir',type=Path,default=Path.home()/'sgacd-demo');parser.add_argument('--port',type=int,default=8090);parser.add_argument('--prepare-only',action='store_true');args=parser.parse_args();repo=Path(__file__).resolve().parents[2]
     if not (args.demo_dir/'compose.json').is_file():raise SystemExit('No existe la demo SGA-CD. No se modificó ningún servicio.')
     if not args.prepare_only:
-        subprocess.run([sys.executable,str(repo/'SGA-CD-BACKEND/scripts/update_panels.py'),'--demo-dir',str(args.demo_dir),'--start'],check=True)
+        subprocess.run([sys.executable,str(repo/'BAKEND/SGA-CD-BACKEND/scripts/update_panels.py'),'--demo-dir',str(args.demo_dir),'--start'],check=True)
     release=prepare(args.demo_dir,args.port,repo);compose=['docker','compose','-f',str(args.demo_dir.resolve()/'compose.json')]
     subprocess.run(compose+['config','--quiet'],check=True)
     if args.prepare_only:print('Nodo preparado; no se iniciaron servicios.');return

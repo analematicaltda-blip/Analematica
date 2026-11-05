@@ -12,11 +12,11 @@ parser.add_argument('--demo-dir', type=Path, default=Path.home() / 'sgacd-demo')
 args = parser.parse_args()
 demo = args.demo_dir.resolve()
 config_file = demo / 'compose.json'
-if not config_file.exists() or not (repo/'SGA-CD-APP.git/main.py').exists():
+if not config_file.exists() or not (repo/'DESKTOP/SGA-CD-APP.git/main.py').exists():
     raise SystemExit('Ejecuta desde /workspaces/SGA-CD con la demo ya configurada.')
 config = json.loads(config_file.read_text())
 original = json.loads(json.dumps(config))
-for name, folder, port in [('flet-desktop','SGA-CD-APP.git',8501),('flet-mobile','SGA-CD-APK.git',8502)]:
+for name, folder, port in [('flet-desktop','DESKTOP/SGA-CD-APP.git',8501),('flet-mobile','MOVILES/SGA-CD-APK.git',8502)]:
     service = {
         'image': 'sgacd-flet-preview:0.25.2',
         'init': True,
@@ -41,7 +41,15 @@ for name, folder, port in [('flet-desktop','SGA-CD-APP.git',8501),('flet-mobile'
     if existing_api:
         service['environment']['SGACD_API_BASE_URL'] = existing_api
     if name in config['services'] and config['services'][name] != service:
-        raise SystemExit(f'{name} tiene otra configuración. Se conservó sin cambios.')
+        # Accept only the known source-directory relocation; preserve all other settings.
+        candidate = json.loads(json.dumps(config['services'][name]))
+        legacy_mount = f'{repo / Path(folder).name}:/client:ro'
+        current_mount = f'{repo / folder}:/client:ro'
+        mounts = candidate.get('volumes', [])
+        if isinstance(mounts, list):
+            candidate['volumes'] = [current_mount if mount == legacy_mount else mount for mount in mounts]
+        if candidate != service:
+            raise SystemExit(f'{name} tiene otra configuración. Se conservó sin cambios.')
     config['services'][name]=service
     config.setdefault('volumes',{}).setdefault(f'{name}_state',{})
 context = demo / 'flet-image'

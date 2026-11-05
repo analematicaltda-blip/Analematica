@@ -2,7 +2,7 @@
 
 **Fecha de Ejecución:** 27 de Octubre de 2026
 **Fase:** DESKTOP-LLM-02 — Validaciones Funcionales y Cierre Documental
-**Componente:** `SGA-CD-APP.git` (Aplicación Desktop Flet)
+**Componente:** `DESKTOP/SGA-CD-APP.git` (Aplicación Desktop Flet)
 **Modelo Target:** `gemma3:4b` (3.4 GB, Google DeepMind Gemma 3)
 **Endpoint Local:** `http://localhost:11434`
 **Dictamen Final:** `VALIDACIÓN FUNCIONAL COMPLETADA`
@@ -15,10 +15,10 @@
 | :--- | :--- | :--- | :--- |
 | **Prueba A** | Disponibilidad de Ollama y Modelo | **APROBADO** | Ollama v0.40.11 activo en `http://localhost:11434`. Modelo `gemma3:4b` reconocido (Digest: `68ceab7e468a`, 3.4 GB). |
 | **Prueba B** | Inferencia Real via API REST `/api/chat` | **APROBADO** | Petición completada en 0.98s (warm load 2.49ms). Respuesta exact/matches: `"Modelo local operativo."`. |
-| **Prueba C** | Integración de `llm_service.py` & Test Suite | **APROBADO** | `SGA-CD-APP.git/test_gemma3_ollama_integration.py` ejecutado (4/4 tests pasados 100%). Soportados overrides `OLLAMA_BASE_URL` y `OLLAMA_MODEL`. |
+| **Prueba C** | Integración de `llm_service.py` & Test Suite | **APROBADO** | `DESKTOP/SGA-CD-APP.git/test_gemma3_ollama_integration.py` ejecutado (4/4 tests pasados 100%). Soportados overrides `OLLAMA_BASE_URL` y `OLLAMA_MODEL`. |
 | **Prueba D** | Funcionamiento en la Aplicación Flet Desktop | **APROBADO** | Invocación desde Flet Desktop inicializa correctamente y devuelve: `"¡Hola! Soy Gemma 3 4B y estoy aquí para ayudarte en Flet Desktop."`. |
 | **Prueba E** | Script de Inicio (`start_desktop_ollama.bat`) | **APROBADO** | Validada lógica de detección de puerto 11434, verificación de `gemma3:4b` sin redescargar, exportación de env vars y lanzamiento de `main.py`. |
-| **Prueba F** | Regresión y Perímetro Protegido | **APROBADO** | 10/10 pruebas pasadas en `SGA-CD-APP.git` (`test_database.py`, `test_sync.py`, `test_gemma3_ollama_integration.py`). Checksums MD5 de los 5 archivos protegidos 100% idénticos. |
+| **Prueba F** | Regresión y Perímetro Protegido | **APROBADO** | 10/10 pruebas pasadas en `DESKTOP/SGA-CD-APP.git` (`test_database.py`, `test_sync.py`, `test_gemma3_ollama_integration.py`). Checksums MD5 de los 5 archivos protegidos 100% idénticos. |
 
 ---
 

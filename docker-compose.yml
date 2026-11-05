@@ -21,7 +21,7 @@ services:
   # 2. Backend RESTful FastAPI
   fastapi-backend:
     build:
-      context: ./SGA-CD-BACKEND
+      context: ./BAKEND/SGA-CD-BACKEND
       dockerfile: Dockerfile
     container_name: sgacd_backend
     init: true
@@ -63,7 +63,7 @@ services:
   # 4. Cliente Escritorio Flet
   flet-desktop-client:
     build:
-      context: ./SGA-CD-APP.git
+      context: ./DESKTOP/SGA-CD-APP.git
       dockerfile: Dockerfile
     container_name: sgacd_flet_desktop
     restart: "no"
@@ -76,7 +76,7 @@ services:
   # 5. Cliente Movil Flet
   flet-mobile-client:
     build:
-      context: ./SGA-CD-APK.git
+      context: ./MOVILES/SGA-CD-APK.git
       dockerfile: Dockerfile
     container_name: sgacd_flet_mobile
     restart: "no"
