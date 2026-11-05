@@ -1,7 +1,7 @@
 import unittest
 from decimal import Decimal
 import uuid
-from GATuristica.Backend.gestion_contable.services.multimodule_bridge import MultiModuleAccountingBridge
+from apps.prestadores.mi_negocio.gestion_contable.services.multimodule_bridge import MultiModuleAccountingBridge
 
 try:
     from rest_framework.test import APITestCase

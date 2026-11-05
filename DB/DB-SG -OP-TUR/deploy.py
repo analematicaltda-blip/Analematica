@@ -3,6 +3,9 @@ import sys
 import glob
 import subprocess
 import datetime
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
 
 def deploy():
     # Strict Institutional Order of Execution
@@ -33,18 +36,18 @@ def deploy():
     ]
 
     db_name = os.getenv('DB_NAME', 'sarita_db')
-    log_file = 'sarita_db/80_testing/deploy_real_execution.log'
+    log_file = str(BASE_DIR / '80_testing' / 'deploy_real_execution.log')
 
     print(f"🚀 SARITA DB: INICIANDO DESPLIEGUE DETERMINISTA FINAL - {datetime.datetime.now()}")
 
-    os.makedirs('sarita_db/80_testing', exist_ok=True)
+    os.makedirs(BASE_DIR / '80_testing', exist_ok=True)
 
     with open(log_file, 'w') as log:
         log.write(f"SARITA DEPLOY LOG - {datetime.datetime.now()}\n")
         log.write("-" * 50 + "\n")
 
         for phase in phases:
-            path = os.path.join('sarita_db', phase)
+            path = os.path.join(BASE_DIR, phase)
             if not os.path.exists(path):
                 msg = f"⚠️ Fase {phase}: No encontrada, saltando..."
                 print(msg)

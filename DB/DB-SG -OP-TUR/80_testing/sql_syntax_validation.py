@@ -1,10 +1,13 @@
 import os
 import subprocess
 import glob
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[1]
 
 def validate():
-    files = sorted(glob.glob('sarita_db/**/*.sql', recursive=True))
-    log_path = 'sarita_db/80_testing/sql_syntax_validation.log'
+    files = sorted(glob.glob(str(BASE_DIR / '**' / '*.sql'), recursive=True))
+    log_path = str(BASE_DIR / '80_testing' / 'sql_syntax_validation.log')
     with open(log_path, 'w') as log:
         for f in files:
             print(f"Validating: {f}")

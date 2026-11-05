@@ -7,7 +7,7 @@
 ## I. DIAGNÓSTICO DE INCONSISTENCIAS Y BRECHAS IDENTIFICADAS
 
 ### 1. Ausencia de Endpoints Expuestos para Asientos Contables (`JournalEntry`) y Períodos
-- **Hallazgo:** En `GATuristica/Backend/gestion_contable/contabilidad/urls.py`, el `DefaultRouter` únicamente registra `PlanCuentaViewSet` (`/cuentas`).
+- **Hallazgo:** En `SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/urls.py`, el `DefaultRouter` únicamente registra `PlanCuentaViewSet` (`/cuentas`).
 - **Inconsistencia:** No existen rutas registradas para `/asientos/` ni `/periodos/`, a pesar de que los modelos proxy `AsientoContable`, `Transaccion` y `PeriodoContable` ya están definidos en `models.py`. La ruta documentada en la directriz (`/api/v1/mi-negocio/contable/asientos/`) requiere su router oficial activo.
 - **Impacto:** Las vistas frontend de `asientos/nuevo` y los agentes autónomos de contabilización no pueden consultar ni persistir partidas dobles de forma estándar vía API REST.
 
@@ -20,14 +20,14 @@
 - **Impacto:** La conciliación en `tesoreria/conciliacion-wallet` requiere intervención manual y no previene duplicados.
 
 ### 3. Pipeline Integral de Cierre Mensual y Checklist Fiscal (`month-end-close` & `tax-prep`)
-- **Hallazgo:** `GATuristica/Backend/gestion_contable/cierres/services.py` solo efectúa una verificación básica de balance (`sum(debits) == sum(credits)`).
+- **Hallazgo:** `SGA-ERP-TUR-BAKEND/gestion_contable/cierres/services.py` solo efectúa una verificación básica de balance (`sum(debits) == sum(credits)`).
 - **Brechas según las Skills:**
   - Falta cálculo y asiento automático de depreciación acumulada mensual de activos fijos (`depreciation-schedule`).
   - Falta provisión y liquidación periódica de impuestos directos e indirectos (IVA generado vs descontable, Retención en la Fuente, ICA municipal) como estipula `Conta-Skills/calcular_iva.py` y `calcular_irpf.py`.
   - Falta bloqueo estricto e inmutabilidad del período contable (`FiscalPeriod.is_closed = True`) con trazabilidad de hash encadenado.
 
 ### 4. Integración Reactiva Bidireccional entre Reservas/Servicios y Devengo Contable
-- **Hallazgo:** En `GATuristica/Frontend/reservas/page.tsx` y `servicios/page.tsx`, los contratos con `/api/v1/turismo/tourism-reservations/` y `/api/v1/turismo/tourism-services/` están declarados en la interfaz pero desconectados del ciclo de causación contable.
+- **Hallazgo:** En `SGA-ERP-TUR-FRONTEND/reservas/page.tsx` y `servicios/page.tsx`, los contratos con `/api/v1/turismo/tourism-reservations/` y `/api/v1/turismo/tourism-services/` están declarados en la interfaz pero desconectados del ciclo de causación contable.
 - **Solución:** Cada reserva confirmada en la plataforma turística debe emitir un evento que dispare el asiento de devengo (Débito a Cuentas por Cobrar 1305, Crédito a Ingresos por Servicios Turísticos 4140) bajo estricto aislamiento multi-inquilino.
 
 ---
@@ -37,7 +37,7 @@
 ### Fase 1: Exposición y Endpoints del Core Contable (Backend)
 1. **Serializers:** Crear `AsientoContableSerializer`, `TransaccionSerializer` y `PeriodoContableSerializer` con validación estricta de partida doble (`sum(debit) == sum(credit)`).
 2. **ViewSets:** Registrar `AsientoContableViewSet` y `PeriodoContableViewSet` en `contabilidad/views.py`.
-3. **Enrutamiento:** Conectar en `GATuristica/Backend/gestion_contable/contabilidad/urls.py`:
+3. **Enrutamiento:** Conectar en `SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/urls.py`:
    - `router.register(r'asientos', AsientoContableViewSet, basename='asiento-contable')`
    - `router.register(r'periodos', PeriodoContableViewSet, basename='periodo-contable')`
 
