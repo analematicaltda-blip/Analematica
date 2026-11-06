@@ -2,7 +2,7 @@ import os
 import sys
 import py_compile
 
-BACKEND_DIR = r"C:\Users\admin\Desktop\SGA.git\BAKEND/SGA-CD-BACKEND"
+BACKEND_DIR = r"C:\Users\admin\Desktop\SGA.git\BACKEND/SGA-CD-BACKEND"
 TOOLS_DIR = os.path.join(BACKEND_DIR, "app", "tools")
 SQUADS_DIR = os.path.join(BACKEND_DIR, "app", "agents", "corps", "units", "platoons", "squads")
 PLATOONS_DIR = os.path.join(BACKEND_DIR, "app", "agents", "corps", "units", "platoons")

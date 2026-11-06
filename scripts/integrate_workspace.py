@@ -1,7 +1,7 @@
-"""Compatibility launcher; active backend deployment lives in BAKEND/SGA-CD-BACKEND/scripts."""
+"""Compatibility launcher; active backend deployment lives in BACKEND/SGA-CD-BACKEND/scripts."""
 from pathlib import Path
 import importlib.util
-spec=importlib.util.spec_from_file_location('sgacd_panel_installer',Path(__file__).resolve().parents[1]/'BAKEND/SGA-CD-BACKEND/scripts/update_panels.py')
+spec=importlib.util.spec_from_file_location('sgacd_panel_installer',Path(__file__).resolve().parents[1]/'BACKEND/SGA-CD-BACKEND/scripts/update_panels.py')
 _impl=importlib.util.module_from_spec(spec);spec.loader.exec_module(_impl)
 install=_impl.install
 subprocess=_impl.subprocess
