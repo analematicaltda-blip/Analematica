@@ -1,0 +1,20 @@
+name: Local desktop integration
+on:
+  push:
+    paths: ['DESKTOP/agent-desktop/**', 'DESKTOP/agent-desktop-sgacd/**', '.vscode/mcp.json', '.github/workflows/agent-desktop.yml']
+  pull_request:
+    paths: ['DESKTOP/agent-desktop/**', 'DESKTOP/agent-desktop-sgacd/**', '.vscode/mcp.json', '.github/workflows/agent-desktop.yml']
+permissions:
+  contents: read
+jobs:
+  source-and-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node DESKTOP/agent-desktop-sgacd/verify-source.mjs
+      - run: node --test DESKTOP/agent-desktop-sgacd/tests/runtime.test.mjs
+      - run: node --test tests/npm/*.test.js tests/release/*.test.js
+        working-directory: DESKTOP/agent-desktop

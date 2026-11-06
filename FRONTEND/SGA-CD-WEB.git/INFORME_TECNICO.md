@@ -9,7 +9,7 @@
 
 ## 1. Resumen Ejecutivo
 
-Se ha completado el ciclo de desarrollo y análisis del frontend `FRONTEND/SGA-CD-WEB.git`. La aplicación ha sido estructurada como una Single-Page Application (SPA) robusta, que se conecta a un backend (`BAKEND/SGA-CD-BACKEND`) para la lógica de negocio y persistencia de datos.
+Se ha completado el ciclo de desarrollo y análisis del frontend `FRONTEND/SGA-CD-WEB.git`. La aplicación ha sido estructurada como una Single-Page Application (SPA) robusta, que se conecta a un backend (`BACKEND/SGA-CD-BACKEND`) para la lógica de negocio y persistencia de datos.
 
 Este informe detalla el estado actual de la implementación, cubriendo los tres pilares solicitados: la configuración de roles, la implementación de módulos avanzados y las reglas de trabajo. Se ha verificado que la aplicación cumple con la arquitectura solicitada y está lista para la conexión con el backend definitivo.
 
@@ -64,7 +64,7 @@ Se han seguido todas las reglas de trabajo estipuladas:
 
 ## 5. Dependencias del Backend (API Endpoints)
 
-Para su correcto funcionamiento, el frontend `FRONTEND/SGA-CD-WEB.git` espera que el backend `BAKEND/SGA-CD-BACKEND` exponga los siguientes endpoints:
+Para su correcto funcionamiento, el frontend `FRONTEND/SGA-CD-WEB.git` espera que el backend `BACKEND/SGA-CD-BACKEND` exponga los siguientes endpoints:
 
 **Autenticación y Registro:**
 - `POST /api/token`

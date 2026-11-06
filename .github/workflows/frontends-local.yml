@@ -1,0 +1,25 @@
+name: Local web review security
+on:
+  push:
+    paths: ['FRONTEND/deployment/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', '.github/workflows/frontends-local.yml']
+  pull_request:
+    paths: ['FRONTEND/deployment/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', '.github/workflows/frontends-local.yml']
+permissions:
+  contents: read
+jobs:
+  private-local-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python -m pip install -r FRONTEND/deployment/requirements-tools.txt
+      - run: python -m unittest discover -s FRONTEND/deployment/tests -v
+      - run: python FRONTEND/ANALEMATICA-FRONTEND/tests/deployment.py
+      - run: python FRONTEND/ANALEMATICA-FRONTEND/tests/meta_setup.py
+      - run: npm ci --prefix FRONTEND/deployment --ignore-scripts
+      - run: npm audit --prefix FRONTEND/deployment --omit=dev --audit-level=high

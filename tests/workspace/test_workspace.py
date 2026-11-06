@@ -4,7 +4,7 @@ os.environ['SECRET_KEY']='workspace-tests-only-not-a-real-secret'
 os.environ['DATABASE_URL']='sqlite://'
 import sys
 from pathlib import Path
-sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'BAKEND/SGA-CD-BACKEND'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'BACKEND/SGA-CD-BACKEND'))
 from datetime import datetime,timedelta,timezone
 import tempfile
 import unittest

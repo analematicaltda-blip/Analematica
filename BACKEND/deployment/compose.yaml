@@ -1,0 +1,298 @@
+{
+  "name": "sgacd-backends",
+  "services": {
+    "sgacd-db": {
+      "image": "postgres:16-alpine",
+      "restart": "unless-stopped",
+      "env_file": [
+        "./.runtime/sgacd-db.env"
+      ],
+      "volumes": [
+        "sgacd-postgres:/var/lib/postgresql/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 12
+      }
+    },
+    "erp-tur-db": {
+      "image": "postgres:16-alpine",
+      "restart": "unless-stopped",
+      "env_file": [
+        "./.runtime/erp-tur-db.env"
+      ],
+      "volumes": [
+        "erp-tur-postgres:/var/lib/postgresql/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 12
+      }
+    },
+    "turismo-db": {
+      "image": "postgres:16-alpine",
+      "restart": "unless-stopped",
+      "env_file": [
+        "./.runtime/turismo-db.env"
+      ],
+      "volumes": [
+        "turismo-postgres:/var/lib/postgresql/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 12
+      }
+    },
+    "redis": {
+      "image": "redis:7-alpine",
+      "restart": "unless-stopped",
+      "command": [
+        "redis-server",
+        "--appendonly",
+        "yes"
+      ],
+      "volumes": [
+        "redis-data:/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 12
+      }
+    },
+    "sgacd": {
+      "build": {
+        "context": "../..",
+        "dockerfile": "BACKEND/deployment/Dockerfile",
+        "target": "sgacd"
+      },
+      "image": "sgacd-sgacd:local",
+      "init": true,
+      "restart": "on-failure:3",
+      "env_file": [
+        "./.runtime/sgacd.env"
+      ],
+      "ports": [
+        "${BACKEND_BIND_IP:-127.0.0.1}:${SGACD_PORT:-8000}:8000"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz',timeout=3).read()"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "start_period": "30s",
+        "retries": 6
+      },
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "depends_on": {
+        "sgacd-db": {
+          "condition": "service_healthy"
+        }
+      },
+      "volumes": [
+        "sgacd-state:/state"
+      ]
+    },
+    "analematica": {
+      "build": {
+        "context": "../..",
+        "dockerfile": "BACKEND/deployment/Dockerfile",
+        "target": "analematica"
+      },
+      "image": "sgacd-analematica:local",
+      "init": true,
+      "restart": "on-failure:3",
+      "env_file": [
+        "./.runtime/analematica.env"
+      ],
+      "ports": [
+        "${BACKEND_BIND_IP:-127.0.0.1}:${ANALEMATICA_PORT:-8001}:8000"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz',timeout=3).read()"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "start_period": "30s",
+        "retries": 6
+      },
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "depends_on": {
+        "sgacd": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "erp-tur": {
+      "build": {
+        "context": "../..",
+        "dockerfile": "BACKEND/deployment/Dockerfile",
+        "target": "tourism"
+      },
+      "image": "sgacd-tourism:local",
+      "init": true,
+      "restart": "on-failure:3",
+      "env_file": [
+        "./.runtime/erp-tur.env"
+      ],
+      "ports": [
+        "${BACKEND_BIND_IP:-127.0.0.1}:${ERP_TUR_PORT:-8002}:8000"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz',timeout=3).read()"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "start_period": "30s",
+        "retries": 6
+      },
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "depends_on": {
+        "erp-tur-db": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "volumes": [
+        "erp-tur-state:/state"
+      ],
+      "environment": {
+        "BACKEND_SERVICE": "erp-tur"
+      }
+    },
+    "turismo": {
+      "build": {
+        "context": "../..",
+        "dockerfile": "BACKEND/deployment/Dockerfile",
+        "target": "tourism"
+      },
+      "image": "sgacd-tourism:local",
+      "init": true,
+      "restart": "on-failure:3",
+      "env_file": [
+        "./.runtime/turismo.env"
+      ],
+      "ports": [
+        "${BACKEND_BIND_IP:-127.0.0.1}:${TURISMO_PORT:-8003}:8000"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "cap_drop": [
+        "ALL"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz',timeout=3).read()"
+        ],
+        "interval": "10s",
+        "timeout": "5s",
+        "start_period": "30s",
+        "retries": 6
+      },
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "depends_on": {
+        "turismo-db": {
+          "condition": "service_healthy"
+        },
+        "redis": {
+          "condition": "service_healthy"
+        }
+      },
+      "volumes": [
+        "turismo-state:/state"
+      ],
+      "environment": {
+        "BACKEND_SERVICE": "turismo"
+      }
+    }
+  },
+  "volumes": {
+    "sgacd-postgres": {},
+    "erp-tur-postgres": {},
+    "turismo-postgres": {},
+    "redis-data": {},
+    "sgacd-state": {},
+    "erp-tur-state": {},
+    "turismo-state": {}
+  }
+}

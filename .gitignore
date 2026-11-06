@@ -9,6 +9,6 @@ tunnel.log
 
 **/hyperframes-main/**/output/*
 
-/BAKEND/SGA-ERP-TUR-BAKEND/keys/jwt-private.pem
+/BACKEND/SGA-ERP-TUR-BAKEND/keys/jwt-private.pem
 
-/BAKEND/SGA-TUR-BAKEND/keys/jwt-private.pem
+/BACKEND/SGA-TUR-BAKEND/keys/jwt-private.pem

@@ -1,0 +1,22 @@
+**
+!BACKEND/
+!BACKEND/**
+!DB/
+!DB/SGA-CD-DB.git/
+!DB/SGA-CD-DB.git/**
+**/__pycache__/
+**/.git/
+**/.env
+**/.env.*
+**/keys/
+**/*.pem
+**/*.sqlite3
+**/*.db
+**/node_modules/
+**/staticfiles/
+BACKEND/SGA-CD-BACKEND/app/agents/Soup/
+BACKEND/SGA-CD-BACKEND/app/agents/Skill de videos/
+BACKEND/SGA-CD-BACKEND/app/agents/claude-email/
+BACKEND/SGA-CD-BACKEND/SGA-CD-WEB.git/
+BACKEND/ANALEMATICA-BACKEND/data/corporate_*.json
+BACKEND/deployment/.runtime/
