@@ -46,6 +46,22 @@ for name, entry in manifest.items():
         raise SystemExit('Conflicto en ' + str(target) + '. No se modificó ningún archivo.')
     changes.append((payload, target, name))
 
+# Publish the single canonical assistance interface on this site's own JWT origin.
+for name in ['assistance.html', 'js/assistance.js', 'css/assistance.css', 'control.html', 'js/control.js']:
+    source = repo / 'FRONTEND/ANALEMATICA-FRONTEND' / name
+    target = published / name
+    if source.is_symlink() or not source.is_file() or not target.resolve().is_relative_to(published):
+        raise SystemExit('Recurso de asistencia no permitido: ' + name)
+    payload = source.read_bytes()
+    desired = hashlib.sha256(payload).hexdigest()
+    new_state[name] = desired
+    actual = digest(target)
+    if actual == desired:
+        continue
+    if actual is not None and actual != state.get(name):
+        raise SystemExit('Archivo de asistencia personalizado; no se sobrescribió: ' + name)
+    changes.append((payload, target, name))
+
 if args.check:
     print('Verificación web correcta; archivos previstos:', len(changes))
     raise SystemExit(0)

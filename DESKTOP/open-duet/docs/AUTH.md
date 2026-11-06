@@ -1,0 +1,324 @@
+# Authentication: owner, sessions and paired devices
+
+Open Duet runs agents with access to your machine, so the server must know who
+is asking. This document is the design and the operating guide for a
+self-hosted, single-owner install. The desktop app requires an app account as
+well as its local launch-token boundary (see Desktop app below).
+
+## Principals
+
+Every request acts as exactly one of these, decided by the auth middleware
+(`backend/app/auth/middleware.py`) before any route runs:
+
+| Principal | How it is proven | Scopes |
+|---|---|---|
+| `desktop` | The desktop launcher's per-launch token (`X-Open-Dots-Token`), checked by `LaunchAuthMiddleware` | admin + chat |
+| `browser` | The owner signed in with the passphrase, or a browser paired with a code; an `HttpOnly` session cookie | admin + chat, or chat |
+| `device` | A paired device (phone, script, another computer); `Authorization: Bearer ods_…` | admin + chat, or chat |
+| `loopback` | Only when `LOOPBACK_TRUST` allows it: a request from this machine directly to this server | admin + chat |
+
+A browser session is accepted only as its cookie and a device token only as a
+bearer header, so a token copied out of one cannot be replayed as the other.
+
+### Scopes
+
+- `admin`: everything, including settings, approval rules, computers, engines,
+  devices and pairing.
+- `chat`: conversations (create, send, stop, read events, answer approvals) and
+  the reads the chat page needs. The list is in `backend/app/auth/policy.py`
+  and is an allowlist: a route added later is admin-only until it is listed.
+- `files`: opt-in, chosen when the pairing code is made (**Chat and files**; `--scope files`
+  on the CLI). It is chat plus reading a conversation's workspace files: list, preview,
+  image and download, not the folder zip. `admin` includes it. A chat-only device never
+  gains it; the phone must be paired again with a code that has it.
+- `manage`: opt-in, chosen when the pairing code is made (**Chat, files and agents**; `--scope manage`
+  on the CLI). It is chat and files plus creating, editing, duplicating and archiving agents
+  (`POST /agents`, `PATCH /agents/{id}`, `POST /agents/{id}/duplicate`), and creating, editing and deleting
+  rooms (`POST /rooms`, `PATCH` and `DELETE /rooms/{id}`) and holding or resuming a room member
+  (`PATCH /rooms/{id}/members/{agent_id}`). It does not delete agents.
+  The server also refuses, for any device without `admin`,
+  an agent's workspace folder, the "Accept edits" approval mode (a device may choose "Ask first" or
+  "Plan only", or move an agent to either), connected apps and the team lead role, with `403
+  field_requires_admin`. A duplicate made by such a device gets its own folder and "Ask first" in place
+  of "Accept edits". Import, export, notes, skills, computers and team routes stay admin-only.
+
+## The owner
+
+A self-hosted install has one owner and one secret: a passphrase of at least
+10 characters. It is stored as a scrypt hash (Python standard library; N=2^16,
+r=8, p=1, 16-byte salt), never in clear and never in `.env`.
+
+Setting it:
+
+- **First run, on the server itself.** The web UI shows "Set the owner
+  passphrase" when none is set and the browser is on the same machine
+  (loopback socket, loopback `Host`, no proxy headers). This is refused from
+  anywhere else, because whoever reached a fresh remote server first would
+  otherwise own it.
+- **From the server's shell**, at any time (this also replaces a forgotten
+  passphrase and signs every browser out; paired devices keep working):
+
+  ```sh
+  cd backend
+  uv run python -m app.auth.cli set-passphrase          # prompts twice
+  echo 'my long passphrase' | uv run python -m app.auth.cli set-passphrase --stdin
+  ```
+
+The same CLI opens pairing codes (`pairing-code [--scope chat]`), lists devices
+(`devices`) and revokes one (`revoke ID`). A shell on the server is the
+authority, as it already is for `backend/.env`.
+
+## Sessions
+
+Signing in creates a session row (`auth_session`): kind, label (from the
+User-Agent, or the name given when pairing), scopes, created, last seen,
+expiry, revoked. Only the SHA-256 digest of the 256-bit token is stored.
+
+- Lifetime 30 days, extended on use while less than 15 days remain, never
+  beyond 180 days after it was created. "Last seen" is written at most once a
+  minute.
+- The cookie is `od_session`, `HttpOnly`, `SameSite=Lax`, `Path=/`, and
+  `Secure` when the request is HTTPS (directly, or `X-Forwarded-Proto: https`
+  from a proxy the server believes: loopback, or an address in `TRUSTED_PROXIES`).
+- Signing in again in the same browser revokes that browser's previous
+  session. Signing out revokes the current one.
+
+### CSRF
+
+A cookie is sent automatically, so every cookie-authenticated request that is
+not `GET`/`HEAD`/`OPTIONS` must carry `X-CSRF-Token`. Its value is derived
+from the session token (`SHA-256("csrf" || token)`), so nothing extra is
+stored; the page learns it only from `GET /api/v1/auth/session` (or the
+sign-in response), which a page on another origin cannot read because of CORS.
+The custom header also forces a CORS preflight, which only `FRONTEND_ORIGINS`
+pass. Bearer requests need no token: nothing ambient carries a bearer header.
+
+The routes that run before a session exists (setup, login, pairing exchange)
+accept only `application/json`, which a cross-site HTML form cannot send
+without a preflight. That closes login CSRF.
+
+## Pairing a device
+
+1. The owner, signed in with `admin`, opens **Settings → Devices** and chooses
+   **Create pairing code** (or runs the CLI). The server returns an 8-character
+   code from a 31-symbol alphabet without look-alikes (about 2^39.6), shown as
+   `ABCD-EFGH`, with a QR code of `<web UI>/pair#code=ABCD-EFGH`. The code is
+   carried in the URL fragment, so it never reaches a server log. For a
+   chat-only, chat-and-files or chat, files and agents code the screen shows a second QR code and link for the
+   [phone app](MOBILE.md), `suparagent://pair?server=<API address>#code=ABCD-EFGH`. The address is the web UI's when the
+   backend serves the UI, and the API's own address when the UI is a separate dev server.
+2. On the device, scan the QR or open `/pair` and type the code. A browser
+   exchanges it for its own session cookie; any other client
+   (`POST /api/v1/auth/pair` without `"cookie": true`) receives a bearer token
+   **once**, to keep in its own secret storage. The phone app takes the token
+   path. It accepts a chat-only or chat-and-files session: for one with `admin` it calls
+   `POST /api/v1/auth/logout` with the new token, which revokes it, and refuses.
+3. The code is single use (consumed atomically: of two simultaneous
+   redemptions only one wins), expires after 5 minutes, and is stored only as
+   a SHA-256 digest. At most 5 codes are open at a time.
+
+Guessing is bounded three ways: 10 wrong codes from one address lock that
+address out for 10 minutes; 10 wrong codes in total, from anyone, while codes
+are open kill every open code; and all auth endpoints are limited to 30
+requests a minute per address.
+
+### Revoking
+
+**Settings → Devices** lists every signed-in browser and paired device with
+its scope, created and last-seen times, and marks the current one. **Revoke**
+takes effect on the next request: the token is refused with `401
+session_invalid`, and a revoked credential never falls back to loopback trust.
+Revoking the current browser signs it out.
+
+## Host, Origin and DNS rebinding
+
+- `TRUSTED_HOSTS` (default `localhost,127.0.0.1,[::1]`) lists the host names
+  the server answers to. A request whose `Host` header is missing, repeated or
+  not listed gets `421 untrusted_host`, before anything else, on every path.
+  That defeats DNS rebinding: a hostile page can point its own name at
+  127.0.0.1, but its requests then carry its own name. A `*.example.com` entry
+  matches subdomains. Add your public name when self-hosting.
+- An `Origin` header, when present, must be one of `FRONTEND_ORIGINS` or the
+  server's own origin, and its host must also be trusted; otherwise `403
+  untrusted_origin`.
+
+## Loopback trust
+
+`LOOPBACK_TRUST` decides whether a request made on this machine needs a sign-in:
+
+| Value | A request with no credential from this machine |
+|---|---|
+| `off` (default) | must sign in, like any other |
+| `programs` | is the owner if it is not from a browser (no `Sec-Fetch-Site`, `Sec-Fetch-Dest` or `Origin`); browsers still sign in |
+| `all` | is the owner, browsers included (development only) |
+
+"From this machine" means all of: the socket peer is a loopback address, the
+`Host` is a loopback name, the request has none of `Forwarded`,
+`X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto` or `X-Real-IP`, and
+any `Origin` is a loopback origin. A reverse proxy or tunnel on the same
+machine connects from loopback, so its forwarding headers are exactly what
+cancels the trust; a proxy that strips them must not be used with
+`programs`/`all`.
+
+The tradeoff: with `programs`, `curl` and scripts on the machine need no
+token, but so does every agent running there with shell tools, which could
+then change settings or answer its own approvals as the owner. With `all`, any
+web page you open could do the same through your browser, limited only by the
+Host/Origin checks. `off` costs one sign-in per browser and a paired token for
+scripts, and is the default.
+
+## Desktop app
+
+The launcher still attaches a per-launch token to every request. The token
+keeps the local API private to that app window; it does not identify an email
+account. `DesktopAccountMiddleware` separately requires a verified app account
+before allowing workspace API requests. Account status and email-code routes
+remain reachable inside the token-protected app window so the user can sign in.
+
+The local proxy contacts the account service over HTTPS, keeps its device token
+encrypted using the profile key, and returns account status without the token.
+A profile is bound to its first verified account after explicit confirmation;
+a different account cannot open that profile's agents and conversations.
+Returning to the same account preserves those local files. "Reset this profile" and "Delete my account" (typed confirmation, refused while a task runs) are the only paths that erase them: local data first, then the account binding; deletion first deletes the cloud account via `DELETE /accounts/desktop/account` and fails closed. Engine CLI credentials outside the profile are not touched. Sign-out clears the
+local session and attempts remote revocation; existing agents and engine
+credentials are retained. Active turns must be stopped before sign-out. Scheduled
+local work and memory upkeep are paused while signed out or unable to validate
+the account. Session validation is cached for at most 60 seconds and never beyond
+expiry; after that, an unavailable account service fails closed.
+
+**Hosted workspace in the desktop app.** The desktop window can show a paid
+account's cloud workspace (`https://suparagent.ai/app`) next to the local one:
+Settings → Account → "Open hosted workspace", or Workspace → Hosted workspace
+(Cmd/Ctrl+2; Cmd/Ctrl+1 returns to local). It is a separate sandboxed view with
+no preload, Node access, launch token or IPC, and its own persistent session
+partition, so hosted cookies never mix with the local app. The desktop account
+token is never sent to it: you sign in to the hosted workspace separately with
+your hosted account email and password, and the hosted service keeps deciding
+plan, usage limits, sleep and wake. Hosted sign-out (Workspace menu) clears only
+that partition. It does not sign out the desktop account or touch local data,
+and signing out of the desktop account or resetting the profile does not touch
+the hosted workspace or account. Nothing is copied between local and hosted.
+While the hosted view is shown, the app reads the hosted status endpoint about
+once a minute (read-only; it never wakes the sandbox). The feature is on by
+default; set `OPEN_DOTS_HOSTED_WORKSPACE=0` to turn it off. Single sign-on from
+the desktop account is not built. See the
+[plan](https://github.com/Anil-matcha/open-dots-cloud/blob/main/docs/specs/hosted/desktop-hosted-workspace-plan.md).
+
+**Exporting history.** Settings has "Export my history", which downloads a ZIP
+from `GET /api/v1/history/export` (agents, conversations as per-thread event
+files, attachment names and hashes, and a manifest with a format version). It
+is owner scoped, needs a signed-in account like every other `/api/v1/` route,
+is limited to 256 MB of JSON and 120 seconds, and runs one at a time. It leaves
+out engine credentials, the desktop device token, provider session state,
+approval records and attachment file contents. Tool output inside conversations
+is included as stored, so treat the file as private. There is no import yet.
+
+This requires the matching account-service endpoints to be deployed. The account
+service is separate from the standalone self-hosted passphrase flow, which
+retains its existing policy. See [first-run setup](specs/onboarding/first-run.md)
+for the user flow and deployment/qualification limits.
+
+## Web identity (Telegram and guest ids)
+
+The web UI used to keep its identity (a Telegram user id, or a `web_…` guest
+id) in the browser's `localStorage` and send it with each request; the server
+believed it. Now the identity is stored on the owner row and returned by
+`GET /api/v1/auth/session` as `user_id`:
+
+- **Telegram:** the link-code flow is unchanged (the bot claims the code), but
+  the page then calls `PUT /api/v1/auth/identity {"link_code": …}` and the
+  server copies the user id from the link record it saw claimed (within an
+  hour). The browser no longer supplies the id.
+- **Continue without Telegram:** `PUT /api/v1/auth/identity {"guest": true}`;
+  the server makes the `web_…` id.
+- **Start over:** `DELETE /api/v1/auth/identity`.
+
+### Migrating an existing browser
+
+After the first sign-in, if the browser still has the old `vadoo_user_id` key
+and the server has no identity yet, the page sends it once as
+`{"legacy_user_id": …}` (accepted only in the old formats, and only while
+unset) and deletes the key. Tasks, schedules and sandboxes made under that id
+are therefore still yours. If the server already has an identity (another
+browser migrated first), the server's wins and the local key is simply
+removed. Only the signed-in owner can do this; in a single-owner install every
+id on the server is the owner's anyway.
+
+## Endpoints
+
+All under `/api/v1`.
+
+| Method and path | Who | Purpose |
+|---|---|---|
+| `GET /health` | public | liveness |
+| `GET /auth/status` | public | owner configured, setup allowed here, desktop, signed in |
+| `POST /auth/setup` | public, this machine only, first run | set the passphrase, sign in |
+| `POST /auth/login` | public | passphrase → session cookie |
+| `POST /auth/logout` | public | revoke the presented cookie or bearer |
+| `GET /auth/session` | chat | who am I, scopes, `user_id`, `csrf_token` |
+| `POST /auth/pairing-codes` | admin | open a one-time code |
+| `POST /auth/pair` | public | code → cookie session or bearer token |
+| `GET /auth/devices` | admin | list sessions and devices |
+| `DELETE /auth/devices/{id}` | admin | revoke |
+| `PUT`/`DELETE /auth/identity` | admin | set or clear the web identity |
+| `GET`, `PUT`, `DELETE /integrations/composio…` | admin | the owner's Composio key, and connecting, listing and disconnecting apps |
+
+Also public, with their own credential: `POST /permissions/check/…` (Boat's
+`HOOK_TOKEN`) and `POST /hooks/{id}` (a routine's webhook secret). Everything
+else, including `/docs`, needs a session.
+
+Errors are `{"detail": {"error_code": …, "message": …}}`. The codes a client
+acts on: `auth_required`, `session_invalid` (sign in or pair again),
+`csrf_failed` (reload), `scope_denied`, `untrusted_host`, `untrusted_origin`,
+`locked_out` and `rate_limited` (with `Retry-After`).
+
+## Self-hosting checklist
+
+For one server that serves its own pages (`python -m app.server`), follow [SELF-HOSTING.md](SELF-HOSTING.md): set
+`OPEN_DOTS_PUBLIC_URL=https://dots.example.com` and that name is trusted, with no `FRONTEND_ORIGINS` needed because the
+pages and the API share one origin. Forwarded headers (`X-Forwarded-For`, `X-Forwarded-Proto`) are believed only from the
+addresses in `TRUSTED_PROXIES`, which is loopback unless you name more (see "Who is believed to be the proxy" there). The list below is for the older layout where the web UI and the API are
+served separately.
+
+1. Put a TLS proxy in front (Caddy, nginx, a tunnel) so the cookie is
+   `Secure`; over plain HTTP on a LAN it travels in clear.
+2. `TRUSTED_HOSTS=localhost,127.0.0.1,[::1],dots.example.com`
+3. `FRONTEND_ORIGINS=https://dots.example.com` (where the web UI is served),
+   and build the web UI with `NEXT_PUBLIC_API_BASE_URL` pointing at the API.
+   Serve both from the same site (same host, or subdomains of one domain) so
+   the `SameSite=Lax` cookie is sent.
+4. Set the passphrase with the CLI on the server, sign in, then pair your
+   phone from **Settings → Devices**.
+5. Leave `LOOPBACK_TRUST=off` unless you understand the tradeoff above.
+
+## Limits
+
+- One owner. No multiple accounts, no per-user data separation; every
+  principal acts as the owner (within its scope). The `user_id` that older
+  routes take as a parameter is not cross-checked against the session.
+- Lockout and rate-limit counters are in memory, per process: a restart
+  forgets them, and several worker processes each count separately. Run one
+  backend process, or put a rate limit in the proxy too.
+- No email sign-in, no passkeys, no second factor.
+- A paired `admin` device is as powerful as the owner. Pair phones with `chat`
+  unless they need settings, and revoke a lost device at once.
+
+
+## Connecting Claude from Settings
+
+An owner can start Claude sign-in under Settings → Engines when its CLI is
+installed. The server runs the CLI's own `auth login` command; only an HTTPS
+sign-in URL on an explicitly allowed provider host is shown. Paste the code
+from that page into Settings. The code is handed to the same child process
+once, never saved or returned in status/error responses. Success requires the
+CLI's JSON `auth status` to confirm a signed-in account. An existing signed-in
+account is preserved.
+
+Start, status, code submission and cancellation are bound to the initiating
+owner session. Browser writes require CSRF protection; chat-scoped paired
+devices cannot access these routes. Each account folder allows one app-managed
+login at a time. Flows expire after five minutes and are stopped during backend
+shutdown. Flow state lives in one backend worker; refreshing Settings loses
+the handle, and multiple workers require session affinity. Signing out and
+switching accounts remain terminal operations. Real-account, Windows and
+installed-app verification have not been run for this flow.

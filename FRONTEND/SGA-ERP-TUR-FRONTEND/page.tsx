@@ -1,5 +1,6 @@
 'use client';
 
+import AuthorizedControlLink from './components/AuthorizedControlLink';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -91,6 +92,7 @@ export default function MiNegocioDashboard() {
     <div className="space-y-10 p-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
+          <AuthorizedControlLink />
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">Mi Negocio</h1>
           <p className="text-slate-500 mt-2 text-lg">Panel empresarial unificado del ecosistema SARITA.</p>
         </div>

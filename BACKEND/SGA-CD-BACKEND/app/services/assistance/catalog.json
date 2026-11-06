@@ -1,0 +1,3134 @@
+{
+  "version": "2026.11.06.1",
+  "mode": "guidance_only",
+  "notice": "Guías iniciales de asistencia. Los nombres y funciones pueden variar según región, permisos y cambios de cada plataforma. No cubren todas las pantallas posibles ni ejecutan acciones externas.",
+  "platforms": {
+    "meta": {
+      "name": "Meta Ads",
+      "home": "https://business.facebook.com/adsmanager/",
+      "help": "https://www.facebook.com/business/help"
+    },
+    "tiktok": {
+      "name": "TikTok Ads",
+      "home": "https://ads.tiktok.com/",
+      "help": "https://ads.tiktok.com/help/"
+    },
+    "gmail": {
+      "name": "Gmail",
+      "home": "https://mail.google.com/",
+      "help": "https://support.google.com/mail/"
+    },
+    "youtube": {
+      "name": "YouTube",
+      "home": "https://studio.youtube.com/",
+      "help": "https://support.google.com/youtube/"
+    }
+  },
+  "workflows": [
+    {
+      "id": "meta.business",
+      "platform": "meta",
+      "title": "Preparar empresa y activos",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Configuración del negocio y comprueba el portafolio empresarial correcto.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Relaciona la página, la cuenta de Instagram y la cuenta publicitaria autorizadas.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa las personas, los activos asignados y los permisos de cada uno.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar la asignación de activos y permisos",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.security",
+      "platform": "meta",
+      "title": "Seguridad y acceso",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre el centro de seguridad de tu portafolio y revisa la autenticación de dos factores.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Comprueba qué personas tienen control total y qué tareas necesita cada integrante.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Verifica un método de recuperación propio sin compartir códigos ni contraseñas.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Confirmar cambios de acceso",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.campaign",
+      "platform": "meta",
+      "title": "Crear campaña",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "En Campañas elige Crear y selecciona el objetivo según el resultado de negocio.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Define nombre, ubicación de conversión, categoría especial si corresponde, moneda y presupuesto máximo.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Prepara el conjunto y el anuncio: público, ubicación, calendario, creatividad y destino.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Publicar la campaña y aceptar el presupuesto revisado",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.adset",
+      "platform": "meta",
+      "title": "Configurar público y conjunto",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona la campaña y crea o edita su conjunto de anuncios.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Define ubicación, edad y demás criterios permitidos; revisa exclusiones y tamaño estimado.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Ajusta ubicaciones, evento de optimización, atribución y fechas sin ampliar gastos por accidente.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar o publicar el conjunto de anuncios",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.creative",
+      "platform": "meta",
+      "title": "Preparar anuncio y creatividad",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona la identidad de página/Instagram que corresponde a la marca.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Carga el material propio y completa texto, título, llamada a la acción y URL de destino.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa vista previa por ubicación, enlaces, derechos de uso y políticas publicitarias.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Publicar el anuncio",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.tracking",
+      "platform": "meta",
+      "title": "Configurar píxel y eventos",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre el Administrador de eventos y elige la fuente de datos de la cuenta correcta.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa dominio, conjunto de datos y método de instalación autorizado: píxel o API de conversiones.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Valida eventos de prueba, consentimiento y deduplicación; las credenciales se configuran fuera del chat.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar la configuración de medición",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.catalog",
+      "platform": "meta",
+      "title": "Catálogo y ventas",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "En Commerce Manager revisa el catálogo y su propietario.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Prepara productos, disponibilidad, precios y enlaces verificables, sin datos personales innecesarios.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Vincula la fuente de eventos y revisa errores del feed y políticas de comercio.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Activar el catálogo o anuncio de catálogo",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.billing",
+      "platform": "meta",
+      "title": "Facturación y límites",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Facturación y pagos de la cuenta publicitaria seleccionada.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Comprueba país, moneda, datos fiscales y método de pago dentro de Meta; no los escribas aquí.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa saldo, umbral de facturación y límite de gasto de la cuenta.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Confirmar el cambio de pago o límite de gasto",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.reporting",
+      "platform": "meta",
+      "title": "Consultar resultados",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona la cuenta, el periodo y las campañas que quieres analizar.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Elige métricas acordes al objetivo: resultados, importe gastado, CPM, CTR, CPA y conversiones.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba atribución y diferencias entre eventos observados y ventas reales antes de sacar conclusiones.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Consultar el informe y sus filtros",
+          "instruction": "Consulta la información en la plataforma. Este paso no acredita resultados ni cambia datos por sí mismo.",
+          "checklist": [
+            "Comprobé la información en la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.permissions",
+      "platform": "meta",
+      "title": "Asignar colaboradores",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Personas o Socios en Configuración del negocio y selecciona el activo.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Selecciona la persona real y concede solo las tareas que necesita.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa que no se esté dando control total cuando bastan permisos parciales.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Enviar la invitación o cambiar permisos",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "meta.pause",
+      "platform": "meta",
+      "title": "Editar o pausar campañas",
+      "entry_url": "https://business.facebook.com/adsmanager/",
+      "references": [
+        "https://www.facebook.com/business/help"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Identifica campaña, conjunto o anuncio y confirma su estado actual.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa qué se modificará: presupuesto, calendario, creatividad o activación.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba el alcance del cambio y si afectará al aprendizaje o al gasto.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Aplicar el cambio o pausa seleccionados",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.business",
+      "platform": "tiktok",
+      "title": "Preparar Business Center",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre TikTok Business Center con una cuenta autorizada.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa empresa, país, usuarios, cuenta publicitaria y activos disponibles.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Vincula la identidad TikTok y asigna las tareas mínimas necesarias.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar la asignación empresarial",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.campaign",
+      "platform": "tiktok",
+      "title": "Crear campaña",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "En Ads Manager elige el objetivo correspondiente a tráfico, clientes potenciales o ventas.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Define nombre, tipo de campaña y presupuesto máximo permitido.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Configura grupo de anuncios, calendario, público, optimización y creatividad; revisa el resumen completo.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Enviar la campaña a publicación con el presupuesto revisado",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.audience",
+      "platform": "tiktok",
+      "title": "Segmentación y grupo de anuncios",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona el grupo de anuncios dentro de la campaña correcta.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Configura ubicaciones, zona, idiomas y criterios de público permitidos.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa evento de optimización, puja, presupuesto y fechas frente al objetivo elegido.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar o publicar el grupo de anuncios",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.creative",
+      "platform": "tiktok",
+      "title": "Creatividad y Spark Ads",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona anuncio normal o Spark Ads según los permisos del material.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Usa vídeo con derechos y completa identidad, texto, destino y llamada a la acción.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa las zonas seguras, la vista previa y la autorización del creador cuando se requiera.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Publicar el anuncio",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.tracking",
+      "platform": "tiktok",
+      "title": "Píxel y Events API",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Events Manager y elige la fuente de eventos autorizada.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Configura el método de medición correspondiente; no compartas claves o tokens en el asistente.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba consentimiento, eventos de prueba, parámetros y deduplicación.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar la integración de medición",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.catalog",
+      "platform": "tiktok",
+      "title": "Catálogo de productos",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona el catálogo autorizado en Business Center o Ads Manager.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Comprueba identificadores, precios, disponibilidad e imágenes del feed.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa la fuente de eventos y los errores de elegibilidad antes de usarlo en anuncios.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Activar o actualizar el catálogo",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.billing",
+      "platform": "tiktok",
+      "title": "Pagos y presupuesto",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre la facturación de la cuenta publicitaria correcta.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa modalidad de pago, moneda, impuestos y datos de facturación dentro de TikTok.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Confirma límites, recargas y presupuesto; diferencia saldo de gasto efectivo.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Confirmar pago, recarga o cambio de límite",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.reporting",
+      "platform": "tiktok",
+      "title": "Resultados e informes",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona el periodo y la campaña que quieres consultar.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Compara gasto, impresiones, visualizaciones, CTR, conversiones y coste por resultado.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba la ventana de atribución y separa datos de prueba de resultados reales.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Consultar el informe con sus filtros",
+          "instruction": "Consulta la información en la plataforma. Este paso no acredita resultados ni cambia datos por sí mismo.",
+          "checklist": [
+            "Comprobé la información en la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "tiktok.pause",
+      "platform": "tiktok",
+      "title": "Editar o pausar anuncios",
+      "entry_url": "https://ads.tiktok.com/",
+      "references": [
+        "https://ads.tiktok.com/help/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Localiza la campaña, grupo o anuncio y verifica la cuenta.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Identifica exactamente qué elemento se editará o pausará.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa cómo cambiarán el calendario y el presupuesto restante.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Aplicar el cambio de estado o presupuesto",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.security",
+      "platform": "gmail",
+      "title": "Conectar cuenta y revisar acceso",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Gmail y comprueba el perfil y la dirección de la cuenta elegida.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa seguridad y aplicaciones conectadas desde la cuenta de Google.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Si una integración solicita OAuth, revisa sus permisos; contraseñas y códigos se introducen solo en Google.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Autorizar o revocar una conexión seleccionada",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.search",
+      "platform": "gmail",
+      "title": "Buscar mensajes",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Elige la cuenta y el buzón donde necesitas buscar.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Usa remitente, destinatario, palabras, fechas y filtros de búsqueda; revisa antes de abrir adjuntos.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba si estás en Recibidos, Todos, Spam o Papelera para interpretar los resultados.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Revisar los mensajes encontrados",
+          "instruction": "Consulta la información en la plataforma. Este paso no acredita resultados ni cambia datos por sí mismo.",
+          "checklist": [
+            "Comprobé la información en la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.organize",
+      "platform": "gmail",
+      "title": "Organizar bandeja y etiquetas",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona únicamente los mensajes que quieres organizar.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Decide si usarás etiquetas, marcar leído/no leído o archivar; archivar no elimina el correo.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa el número de mensajes y evita seleccionar toda una conversación por error.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Aplicar el cambio de organización",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.draft",
+      "platform": "gmail",
+      "title": "Redactar un borrador",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Redactar en la cuenta de envío correcta.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Completa destinatarios, asunto y texto; no incluyas claves ni datos innecesarios.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa tono, enlaces, destinatarios y adjuntos sin pulsar Enviar.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar el borrador seleccionado",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.attachments",
+      "platform": "gmail",
+      "title": "Adjuntar y revisar archivos",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre el borrador al que corresponde el archivo.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Comprueba nombre, versión, contenido y permisos de cada adjunto o enlace de Drive.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Verifica tamaño, destinatarios autorizados y que el archivo no incluya información no destinada a ellos.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Adjuntar el archivo o enlace revisado",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.send",
+      "platform": "gmail",
+      "title": "Enviar, responder o reenviar",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Elige el borrador o conversación y verifica si es un envío nuevo, respuesta o reenvío.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa todos los destinatarios y los campos CC/CCO; comprueba que no estás respondiendo a todos por error.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Relee cuerpo, historial citado, adjuntos y enlaces. La revisión debe mostrar el contenido exacto que saldrá.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Enviar el correo revisado personalmente",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "send"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.filters",
+      "platform": "gmail",
+      "title": "Crear filtros y etiquetas",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre la búsqueda avanzada y define criterios concretos.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Comprueba con una búsqueda de prueba qué mensajes coinciden.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Elige las acciones del filtro y revisa si se aplicarán también a conversaciones existentes.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Crear o modificar el filtro revisado",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.signature",
+      "platform": "gmail",
+      "title": "Configurar firma",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Configuración y selecciona la firma o identidad de envío correcta.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Edita los datos de contacto y usa enlaces verificables.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa firmas predeterminadas para mensajes nuevos y respuestas.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar los cambios de firma",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.schedule",
+      "platform": "gmail",
+      "title": "Programar un correo",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Prepara y revisa el borrador completo como un envío normal.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Selecciona Programar envío y comprueba fecha, hora y zona horaria.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa el contenido y cuándo podrá cancelarse desde Programados.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Confirmar la programación de envío",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "send"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.delete",
+      "platform": "gmail",
+      "title": "Eliminar o recuperar mensajes",
+      "entry_url": "https://mail.google.com/",
+      "references": [
+        "https://support.google.com/mail/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Identifica mensaje, conversación y carpeta correctos.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Comprueba si quieres mover a Papelera o recuperar; eliminar definitivamente es distinto.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa selección y consecuencias. No uses eliminación definitiva si aún necesitas conservar el contenido.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Confirmar la eliminación o recuperación seleccionada",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "delete"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.channel",
+      "platform": "youtube",
+      "title": "Preparar canal",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre YouTube Studio con el canal y la cuenta de marca correctos.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa nombre, descripción, enlaces y requisitos de verificación del canal.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba funciones disponibles, autenticación y permisos; no compartas códigos de verificación.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar los cambios del canal",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.permissions",
+      "platform": "youtube",
+      "title": "Permisos del canal",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Configuración y Permisos en el canal correcto.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Identifica la persona y el rol mínimo necesario para su tarea.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa consecuencias de invitar, cambiar rol o eliminar acceso.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Confirmar invitación o cambio de permisos",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "permissions"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.upload",
+      "platform": "youtube",
+      "title": "Subir un vídeo como borrador",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "En Studio selecciona Crear y Subir vídeos desde el archivo autorizado.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa título, descripción, listas, audiencia y declaración de contenido o promoción cuando corresponda.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba derechos, comprobaciones y visibilidad; conserva privado o borrador hasta la revisión final.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar la carga como privada o borrador",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.metadata",
+      "platform": "youtube",
+      "title": "Título, descripción y miniatura",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Selecciona el vídeo correcto en Contenido.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Prepara título y descripción fieles al vídeo, enlaces seguros y miniatura con derechos de uso.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa vista previa, audiencia y que la información no sea engañosa.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Guardar los cambios de presentación",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.captions",
+      "platform": "youtube",
+      "title": "Subtítulos e idioma",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Subtítulos del vídeo elegido y selecciona el idioma.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Carga o corrige los subtítulos y comprueba la sincronización con el audio.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa nombres, cifras y fragmentos con datos personales antes de hacerlos visibles.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Publicar los subtítulos revisados",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.publish",
+      "platform": "youtube",
+      "title": "Publicar o programar un vídeo",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre la visibilidad del vídeo que ya revisaste.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa restricciones, derechos, audiencia y si se publicará ahora o se programará.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Confirma fecha, zona horaria, visibilidad y contenido exacto.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Publicar o programar el vídeo personalmente",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.analytics",
+      "platform": "youtube",
+      "title": "Consultar analíticas",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Analytics y selecciona canal/vídeo y periodo.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Compara alcance, CTR de impresiones, retención, tiempo de visualización y suscripciones.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Interpreta fuentes de tráfico y diferencias entre periodos; no confundas estimaciones con ingresos liquidados.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Consultar los resultados con sus filtros",
+          "instruction": "Consulta la información en la plataforma. Este paso no acredita resultados ni cambia datos por sí mismo.",
+          "checklist": [
+            "Comprobé la información en la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.comments",
+      "platform": "youtube",
+      "title": "Moderar comentarios",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Comentarios del canal o vídeo correcto.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Distingue responder, ocultar, aprobar, denunciar o eliminar.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa el texto de respuesta o el comentario seleccionado y sus consecuencias.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Confirmar la respuesta o moderación seleccionada",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.live",
+      "platform": "youtube",
+      "title": "Preparar transmisión en directo",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Comprueba la habilitación de emisiones y abre la sala de control del canal correcto.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Configura título, audiencia, visibilidad, horario, latencia y método de emisión.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Haz pruebas sin revelar la clave de transmisión; revisa audio, imagen, moderación y derechos.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Iniciar o programar la emisión revisada",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "publish"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.monetization",
+      "platform": "youtube",
+      "title": "Revisar monetización",
+      "entry_url": "https://studio.youtube.com/",
+      "references": [
+        "https://support.google.com/youtube/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Ingresos y comprueba qué funciones están disponibles para tu canal.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Revisa requisitos, políticas y estado de las comprobaciones de contenido.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Comprueba los vínculos de pago y datos fiscales solo dentro de Google; la elegibilidad no garantiza ingresos.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Enviar la solicitud o cambio de monetización seleccionado",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "external_write"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "youtube.ads",
+      "platform": "youtube",
+      "title": "Crear publicidad de vídeo con Google Ads",
+      "entry_url": "https://ads.google.com/",
+      "references": [
+        "https://support.google.com/youtube/",
+        "https://support.google.com/google-ads/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Google Ads y selecciona la cuenta publicitaria autorizada; los anuncios de YouTube se gestionan allí.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Comprueba la vinculación del canal, objetivo de campaña, conversión y vídeo que usarás.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa público, ubicaciones, puja, presupuesto, fechas y URL final antes de publicar.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Publicar la campaña de vídeo con el presupuesto revisado",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    },
+    {
+      "id": "gmail.ads",
+      "platform": "gmail",
+      "title": "Crear anuncios de Gmail con Google Ads",
+      "entry_url": "https://ads.google.com/",
+      "references": [
+        "https://support.google.com/google-ads/"
+      ],
+      "steps": [
+        {
+          "id": "account",
+          "title": "Confirma cuenta y objetivo",
+          "instruction": "Entra por el sitio oficial y comprueba qué cuenta, empresa o canal vas a usar. Define el resultado que buscas.",
+          "checklist": [
+            "Tengo autorización para esa cuenta.",
+            "La cuenta y el objetivo son correctos."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "locate",
+          "title": "Abre la sección indicada",
+          "instruction": "Abre Google Ads y confirma la cuenta publicitaria autorizada. La publicidad que aparece en Gmail no se configura desde Redactar ni desde una campaña de correo.",
+          "checklist": [
+            "Estoy en la sección correcta de la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "prepare",
+          "title": "Prepara los datos",
+          "instruction": "Elige un objetivo y un tipo de campaña con inventario de Gmail, como Demand Gen cuando esté disponible para tu cuenta. Revisa canales y formatos elegibles en la interfaz actual.",
+          "checklist": [
+            "Los datos corresponden al objetivo y a la cuenta seleccionada."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "review",
+          "title": "Revisa el resumen",
+          "instruction": "Revisa públicos, ubicaciones, creatividades, destino, puja, presupuesto máximo y fechas. Confirma la selección de Gmail si se ofrece control de canales; no supongas que está incluida.",
+          "checklist": [
+            "Revisé los datos y los efectos de la selección.",
+            "No he compartido claves, tokens ni códigos de verificación."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        },
+        {
+          "id": "manual_action",
+          "title": "Publicar la campaña con el inventario y presupuesto revisados",
+          "instruction": "Este asistente no ejecuta el cambio. Si todo coincide con lo revisado, realiza tú la acción en la plataforma. Detente si cambió la cuenta, el contenido o el importe.",
+          "checklist": [
+            "Revisé la cuenta, el contenido y los destinatarios o el presupuesto, según corresponda.",
+            "Entiendo el efecto y realizo personalmente la acción."
+          ],
+          "requires_confirmation": true,
+          "risk": "spend"
+        },
+        {
+          "id": "verify",
+          "title": "Comprueba lo ocurrido",
+          "instruction": "Revisa el estado y la confirmación de la plataforma. Marca el paso solo si comprobaste el resultado; lo registrado aquí será tu declaración, no una verificación automática.",
+          "checklist": [
+            "Comprobé el resultado o el estado mostrado por la plataforma."
+          ],
+          "requires_confirmation": false,
+          "risk": "read"
+        }
+      ]
+    }
+  ]
+}

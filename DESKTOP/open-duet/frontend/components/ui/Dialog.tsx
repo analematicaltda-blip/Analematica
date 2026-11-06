@@ -1,0 +1,82 @@
+"use client";
+
+import * as RadixDialog from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { useRef, type ComponentProps, type ReactNode } from "react";
+import { cn } from "@/lib/cn";
+import { useT } from "@/lib/use-i18n";
+
+type Size = "sm" | "md" | "wide" | "lg" | "xl" | "room" | "workspace";
+type EscapeKeyHandler = ComponentProps<typeof RadixDialog.Content>["onEscapeKeyDown"];
+
+const WIDTHS: Record<Exclude<Size, "room" | "workspace">, string> = { sm: "sm:max-w-md", md: "sm:max-w-xl", wide: "sm:max-w-2xl", lg: "sm:max-w-4xl", xl: "sm:max-w-7xl" };
+
+// A modal. Standard sizes become a phone sheet and a centered desktop card. Workspace sizes
+// fill the viewport; smaller panels belong in the inspector instead.
+export function Dialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  size = "md",
+  flush = false,
+  children,
+  footer,
+  onEscapeKeyDown,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description?: string;
+  size?: Size;
+  // No padding around the body, for content that lays itself out (a file browser).
+  flush?: boolean;
+  children: ReactNode;
+  footer?: ReactNode;
+  onEscapeKeyDown?: EscapeKeyHandler;
+}) {
+  const t = useT();
+  const fullWorkspace = size === "room" || size === "workspace";
+  // The dialog is controlled and has no Radix trigger, so Radix has nothing to hand focus
+  // back to. Remember what had focus when it opened and restore it on close.
+  const opener = useRef<HTMLElement | null>(null);
+  return (
+    <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
+      <RadixDialog.Portal>
+        <RadixDialog.Overlay className="fixed inset-0 z-40 animate-fade-in bg-scrim" />
+        <RadixDialog.Content
+          onOpenAutoFocus={() => { opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
+          onCloseAutoFocus={(event) => { event.preventDefault(); opener.current?.focus(); }}
+          onEscapeKeyDown={onEscapeKeyDown}
+          // Without a description there is nothing to point at; an explicit undefined silences
+          // Radix's warning. With one, Radix wires the description itself.
+          {...(description ? {} : { "aria-describedby": undefined })}
+          className={cn(
+            "fixed z-50 flex w-full flex-col border border-line bg-raised text-ink shadow-xl",
+            fullWorkspace
+              ? "inset-0 h-[100dvh] max-h-[100dvh] border-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] shadow-none"
+              : "max-h-[92dvh] inset-x-0 bottom-0 animate-sheet-in rounded-t-card pb-[env(safe-area-inset-bottom)] sm:inset-auto sm:left-1/2 sm:top-1/2 sm:max-h-[85dvh] sm:w-[calc(100vw-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:animate-pop-in sm:rounded-card sm:pb-0",
+            !fullWorkspace ? WIDTHS[size] : undefined,
+          )}
+        >
+          <header className="flex items-start gap-3 border-b border-line px-5 py-4">
+            <div className="min-w-0 flex-1">
+              <RadixDialog.Title className="truncate text-base font-semibold">{title}</RadixDialog.Title>
+              {description ? (
+                <RadixDialog.Description className="mt-0.5 text-sm text-muted">{description}</RadixDialog.Description>
+              ) : null}
+            </div>
+            <RadixDialog.Close
+              aria-label={t("common.close")}
+              className="-mr-2 -mt-1 inline-flex size-9 cursor-pointer items-center justify-center rounded-field text-muted hover:bg-hover hover:text-ink touch:size-11"
+            >
+              <X size={18} aria-hidden="true" />
+            </RadixDialog.Close>
+          </header>
+          <div className={cn("min-h-0 flex-1", flush ? "flex flex-col" : "overflow-y-auto px-5 py-4")}>{children}</div>
+          {footer ? <footer className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3">{footer}</footer> : null}
+        </RadixDialog.Content>
+      </RadixDialog.Portal>
+    </RadixDialog.Root>
+  );
+}

@@ -83,6 +83,12 @@ def public_assets():
         target = site / 'analematica' / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
+    # One canonical assistance UI is served under each site's own authenticated origin.
+    for name in ['assistance.html','js/assistance.js','css/assistance.css','control.html','js/control.js']:
+        path = ROOT / 'FRONTEND/ANALEMATICA-FRONTEND' / name
+        target = site / 'sgacd' / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
 
 def next_projects():
     source = ROOT / 'FRONTEND/SGA-TUR-FRONTEND'
