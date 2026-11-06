@@ -1,4 +1,5 @@
 import flet as ft
+from utils.authorized_control import open_control
 from views.components.chat_assistant import ChatAssistant
 
 def admin_principal(page: ft.Page, tenant_id: int, user_id: int):
@@ -28,6 +29,7 @@ def admin_principal(page: ft.Page, tenant_id: int, user_id: int):
                     ft.Text("Bienvenido al panel de administración", size=20, weight="bold"),
                     ft.Text("Seleccione una opción para continuar.", size=16),
                     ft.Divider(),
+                    ft.ListTile(title=ft.Text("Control autorizado de equipos"), subtitle=ft.Text("Inicio de sesión central y dos autorizaciones por acción"), on_click=lambda _: open_control(page)),
                     ft.ListTile(
                         title=ft.Text("📊 Reporte Demográfico"),
                         on_click=lambda _: page.go("/admin/reporte_demografico")

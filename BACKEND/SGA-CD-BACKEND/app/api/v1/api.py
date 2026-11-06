@@ -70,3 +70,7 @@ from app.api.v1.endpoints import command
 api_router.include_router(command.router, prefix='/agent', tags=['Estado Mayor y Agentes'])
 
 api_router.include_router(payments.router, prefix='/payments', tags=['payments'])
+
+# SGACD_ASSISTANCE_ROUTER: guidance only; external actions stay with the user.
+from app.api.v1.endpoints import assistance
+api_router.include_router(assistance.router, prefix="/assistance", tags=["User assistance"])

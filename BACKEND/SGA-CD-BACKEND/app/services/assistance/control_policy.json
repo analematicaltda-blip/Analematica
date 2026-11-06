@@ -1,0 +1,147 @@
+{
+  "version": "sgacd-control-v1",
+  "platform_hosts": {
+    "meta": [
+      "adsmanager.facebook.com",
+      "business.facebook.com",
+      "facebook.com",
+      "www.facebook.com"
+    ],
+    "tiktok": [
+      "ads.tiktok.com",
+      "business.tiktok.com",
+      "www.tiktok.com"
+    ],
+    "gmail": [
+      "ads.google.com",
+      "mail.google.com"
+    ],
+    "youtube": [
+      "ads.google.com",
+      "studio.youtube.com",
+      "www.youtube.com",
+      "youtube.com"
+    ]
+  },
+  "operations": {
+    "browser_open": 2,
+    "browser_snapshot": 2,
+    "browser_click": 3,
+    "browser_fill": 3,
+    "browser_press": 3,
+    "browser_upload": 3,
+    "files_list": 2,
+    "desktop_status": 2,
+    "mobile_launch": 2,
+    "mobile_snapshot": 2,
+    "mobile_tap": 3,
+    "mobile_type": 3,
+    "mobile_swipe": 3,
+    "mobile_open_url": 2
+  },
+  "manual_auth_hosts": [
+    "accounts.google.com"
+  ],
+  "max_grant_seconds": 30,
+  "native_apps": {
+    "android": {
+      "meta": [
+        "com.facebook.katana",
+        "com.facebook.adsmanager"
+      ],
+      "tiktok": [
+        "com.zhiliaoapp.musically",
+        "com.ss.android.ugc.trill"
+      ],
+      "gmail": [
+        "com.google.android.gm",
+        "com.google.android.apps.adwords"
+      ],
+      "youtube": [
+        "com.google.android.youtube",
+        "com.google.android.apps.youtube.creator",
+        "com.google.android.apps.adwords"
+      ]
+    },
+    "ios": {
+      "meta": [
+        "com.facebook.Facebook",
+        "com.facebook.AdsManager"
+      ],
+      "tiktok": [
+        "com.zhiliaoapp.musically"
+      ],
+      "gmail": [
+        "com.google.Gmail",
+        "com.google.AdWords"
+      ],
+      "youtube": [
+        "com.google.ios.youtube",
+        "com.google.ios.ytcreator",
+        "com.google.AdWords"
+      ]
+    }
+  },
+  "mobile_browsers": {
+    "android": [
+      "com.android.chrome"
+    ],
+    "ios": [
+      "com.apple.mobilesafari"
+    ]
+  },
+  "operation_arguments": {
+    "browser_open": [
+      "url"
+    ],
+    "browser_snapshot": [],
+    "browser_click": [
+      "ref",
+      "observation_id"
+    ],
+    "browser_fill": [
+      "ref",
+      "observation_id",
+      "text"
+    ],
+    "browser_press": [
+      "ref",
+      "observation_id",
+      "key"
+    ],
+    "browser_upload": [
+      "ref",
+      "observation_id",
+      "file",
+      "sha256"
+    ],
+    "files_list": [],
+    "desktop_status": [],
+    "mobile_launch": [
+      "app_id"
+    ],
+    "mobile_snapshot": [
+      "app_id"
+    ],
+    "mobile_tap": [
+      "app_id",
+      "ref",
+      "observation_id"
+    ],
+    "mobile_type": [
+      "app_id",
+      "ref",
+      "observation_id",
+      "text"
+    ],
+    "mobile_swipe": [
+      "app_id",
+      "observation_id",
+      "direction"
+    ],
+    "mobile_open_url": [
+      "app_id",
+      "url"
+    ]
+  }
+}

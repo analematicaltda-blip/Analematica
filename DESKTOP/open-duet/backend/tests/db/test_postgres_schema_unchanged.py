@@ -1,0 +1,143 @@
+"""PostgreSQL must keep getting the schema it always had.
+
+`postgres_schema.sql` was generated from the models before the dialect-aware
+types were introduced: the original tables must still compile to exactly that
+DDL. The tables added later (threads, F04) have their own snapshot,
+`postgres_schema_f04.sql`, so that a change to them is a deliberate, reviewed
+edit. This is a compile-level check; it needs no PostgreSQL server."""
+
+import re
+from pathlib import Path
+
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.schema import CreateIndex, CreateTable
+
+from app.db import models  # noqa: F401
+from app.db.base import Base
+
+HERE = Path(__file__).parent
+ORIGINAL_SNAPSHOT = HERE / "postgres_schema.sql"
+F04_SNAPSHOT = HERE / "postgres_schema_f04.sql"
+F04_TABLES = {"thread", "turn", "event", "approval"}
+SETTINGS_TABLES = {"app_setting", "setting_audit"}
+AGENT_TABLES = {"agent"}
+COMPUTER_TABLES = {"computer"}
+AUTH_TABLES = {"auth_owner", "auth_session", "auth_pairing_code"}
+TEAM_TABLES = {"team", "team_event", "agent_job", "agent_job_event", "agent_job_inbox", "team_setup_request"}
+ROOM_TABLES = {"room", "room_member", "room_dispatch"}
+ROUTINE_TABLES = {"routine", "routine_run", "routine_app_action", "notification", "routine_webhook_receipt"}
+NEEDS_YOU_TABLES = {"needs_you_state"}
+NOTICE_TABLES = {"team_notice"}
+PLANNER_TABLES = {"work_board", "work_column", "work_item"}
+WORK_EXECUTION_TABLES = {"work_item_run", "work_item_event"}
+COMMUNITY_MCP_TABLES = {"community_mcp_connection", "community_mcp_tool_grant"}
+WORKFLOW_TABLES = {"workflow", "workflow_run"}
+
+
+def postgres_ddl(table_names: set[str]) -> str:
+    dialect = postgresql.dialect()
+    statements = []
+    for table in Base.metadata.sorted_tables:
+        if table.name not in table_names:
+            continue
+        statements.append(str(CreateTable(table).compile(dialect=dialect)).strip() + ";")
+        for index in sorted(table.indexes, key=lambda i: i.name):
+            statements.append(str(CreateIndex(index).compile(dialect=dialect)).strip() + ";")
+    return normalize_sql("\n\n".join(statements) + "\n")
+
+
+def normalize_sql(value: str) -> str:
+    # Generated DDL may carry trailing spaces; preserve every SQL token.
+    return re.sub(r"[ \t]+$", "", value.replace("\r\n", "\n"), flags=re.MULTILINE)
+
+
+def snapshot_text(path: Path) -> str:
+    return normalize_sql(path.read_text(encoding="utf-8"))
+
+
+def original_tables() -> set[str]:
+    return set(re.findall(r"^CREATE TABLE (\w+) \(", snapshot_text(ORIGINAL_SNAPSHOT), re.MULTILINE))
+
+
+def test_models_still_compile_to_the_original_postgres_schema():
+    assert postgres_ddl(original_tables()) == snapshot_text(ORIGINAL_SNAPSHOT)
+
+
+def test_thread_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(F04_TABLES) == snapshot_text(F04_SNAPSHOT)
+
+
+def test_every_table_is_covered_by_one_of_the_snapshots():
+    covered_tables = (
+        original_tables()
+        | F04_TABLES
+        | SETTINGS_TABLES
+        | AGENT_TABLES
+        | COMPUTER_TABLES
+        | AUTH_TABLES
+        | ROUTINE_TABLES
+        | TEAM_TABLES
+        | ROOM_TABLES
+        | NEEDS_YOU_TABLES
+        | NOTICE_TABLES
+        | PLANNER_TABLES
+        | WORK_EXECUTION_TABLES
+        | COMMUNITY_MCP_TABLES
+        | WORKFLOW_TABLES
+    )
+    assert covered_tables == set(Base.metadata.tables)
+    assert not original_tables() & F04_TABLES
+
+
+def test_settings_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(SETTINGS_TABLES) == snapshot_text(HERE / "postgres_schema_settings.sql")
+
+
+def test_agent_table_compiles_to_its_reviewed_postgres_schema():
+    assert postgres_ddl(AGENT_TABLES) == snapshot_text(HERE / "postgres_schema_agents.sql")
+
+
+def test_community_mcp_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(COMMUNITY_MCP_TABLES) == snapshot_text(HERE / "postgres_schema_community_mcp.sql")
+
+
+def test_computer_table_compiles_to_its_reviewed_postgres_schema():
+    assert postgres_ddl(COMPUTER_TABLES) == snapshot_text(HERE / "postgres_schema_computers.sql")
+
+
+def test_auth_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(AUTH_TABLES) == snapshot_text(HERE / "postgres_schema_auth.sql")
+
+
+def test_routine_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(ROUTINE_TABLES) == snapshot_text(HERE / "postgres_schema_routines.sql")
+
+
+def test_team_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(TEAM_TABLES) == snapshot_text(HERE / "postgres_schema_team.sql")
+
+
+def test_room_tables_compile_to_their_reviewed_postgres_schema():
+    normalized = "\n".join(line.rstrip() for line in postgres_ddl(ROOM_TABLES).splitlines()) + "\n"
+    assert normalized == snapshot_text(HERE / "postgres_schema_rooms.sql")
+
+
+def test_needs_you_table_compiles_to_its_reviewed_postgres_schema():
+    assert postgres_ddl(NEEDS_YOU_TABLES) == snapshot_text(HERE / "postgres_schema_needs_you.sql")
+
+
+def test_team_notice_table_compiles_to_its_reviewed_postgres_schema():
+    assert postgres_ddl(NOTICE_TABLES) == snapshot_text(HERE / "postgres_schema_team_notice.sql")
+
+
+def test_planner_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(PLANNER_TABLES) == snapshot_text(HERE / "postgres_schema_planner.sql")
+
+
+def test_work_execution_tables_compile_to_their_reviewed_postgres_schema():
+    normalized = "\n".join(line.rstrip() for line in postgres_ddl(WORK_EXECUTION_TABLES).splitlines()) + "\n"
+    assert normalized == snapshot_text(HERE / "postgres_schema_work_execution.sql")
+
+
+def test_workflow_tables_compile_to_their_reviewed_postgres_schema():
+    assert postgres_ddl(WORKFLOW_TABLES) == snapshot_text(HERE / "postgres_schema_workflows.sql")

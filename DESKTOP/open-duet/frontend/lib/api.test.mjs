@@ -1,0 +1,219 @@
+import assert from 'node:assert/strict';
+import { afterEach, test } from 'node:test';
+import { api, ApiError, setCsrfToken } from './api.ts';
+
+const originalFetch = globalThis.fetch;
+afterEach(() => { globalThis.fetch = originalFetch; });
+
+test('engine sign-out uses the explicit authenticated logout endpoints', async () => {
+  const requests = [];
+  setCsrfToken('test-token');
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), init });
+    return new Response(null, { status: 204 });
+  };
+  try {
+    await api.logoutClaudeEngine();
+    await api.logoutCodexEngine();
+    assert.deepEqual(requests.map(({ url }) => new URL(url).pathname), [
+      '/api/v1/engines/claude/logout', '/api/v1/engines/codex/logout',
+    ]);
+    for (const { init } of requests) {
+      assert.equal(init.method, 'POST');
+      assert.equal(init.credentials, 'include');
+      assert.equal(init.headers['X-CSRF-Token'], 'test-token');
+    }
+  } finally {
+    setCsrfToken(null);
+  }
+});
+
+function rejectWith(body, status = 422, statusText = 'Unprocessable Entity') {
+  globalThis.fetch = async () => new Response(JSON.stringify(body), {
+    status, statusText, headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+test('shows FastAPI field-validation messages rather than object coercion', async () => {
+  rejectWith({ detail: [
+    { loc: ['body', 'prompt_text'], msg: 'Field required', type: 'missing' },
+    { loc: ['body', 'fields', 0], msg: 'Invalid field', type: 'value_error' },
+  ] });
+  await assert.rejects(api.submitTask('user', 'box', ''), error => {
+    assert.ok(error instanceof ApiError);
+    assert.equal(error.status, 422);
+    assert.equal(error.message, 'body.prompt_text: Field required; body.fields.0: Invalid field');
+    return true;
+  });
+});
+
+test('preserves existing string details', async () => {
+  rejectWith({ detail: 'Task not found' }, 404, 'Not Found');
+  await assert.rejects(api.getTask(1), { message: 'Task not found' });
+});
+
+test('falls back for empty or unusable validation details', async () => {
+  for (const detail of [[], [null, {}], null]) {
+    rejectWith({ detail });
+    await assert.rejects(api.getTask(1), { message: 'Unprocessable Entity' });
+  }
+});
+
+test('answerLocalApproval posts the decision to that one approval and nothing else', async () => {
+  let request = null;
+  globalThis.fetch = async (url, init) => {
+    request = { url: String(url), init };
+    return new Response(JSON.stringify({ status: 'recorded', decision: 'deny' }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+  await api.answerLocalApproval(7, 'abc/../def', 'deny');
+  assert.ok(request.url.endsWith('/local/tasks/7/approvals/abc%2F..%2Fdef'));
+  assert.equal(request.init.method, 'POST');
+  assert.deepEqual(JSON.parse(request.init.body), { decision: 'deny' });
+});
+
+test('routine create and update preserve the per-routine uninterrupted-access choice', async () => {
+  const requests = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), init });
+    return new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } });
+  };
+  const input = {
+    agent_id: 4, name: 'Daily browser check', prompt: 'Check the site',
+    schedule_kind: 'manual', schedule_spec: {}, timezone: 'UTC', run_limit_minutes: 30,
+    approval_mode: 'ask', approval_timeout_minutes: 30, catch_up_minutes: 60,
+    retry_limit: 0, retry_delay_minutes: 5, connected_app_grants: [],
+    uninterrupted_access: false,
+  };
+  await api.createRoutine(input);
+  await api.updateRoutine(17, { agent_id: 4, uninterrupted_access: true });
+  assert.deepEqual(requests.map(({ url }) => new URL(url).pathname), ['/api/v1/routines', '/api/v1/routines/17']);
+  assert.equal(JSON.parse(requests[0].init.body).uninterrupted_access, false);
+  assert.deepEqual(JSON.parse(requests[1].init.body), { agent_id: 4, uninterrupted_access: true });
+});
+
+test('a question that is no longer waiting surfaces as a 404 ApiError', async () => {
+  rejectWith({ detail: 'That request is no longer waiting for an answer' }, 404, 'Not Found');
+  await assert.rejects(api.answerLocalApproval(1, 'x', 'allow'), error => {
+    assert.ok(error instanceof ApiError);
+    assert.equal(error.status, 404);
+    return true;
+  });
+});
+
+test('listLocalApprovals reads the pending questions for one run', async () => {
+  let requested = '';
+  globalThis.fetch = async (url) => {
+    requested = String(url);
+    return new Response(JSON.stringify([{ id: 'a', task_id: 3, tool: 'Bash', summary: 'ls', input: { command: 'ls' }, created_at: 'now' }]), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+  const approvals = await api.listLocalApprovals(3);
+  assert.ok(requested.endsWith('/local/tasks/3/approvals'));
+  assert.equal(approvals[0].tool, 'Bash');
+});
+
+test('getProviders reads /providers and returns the boat status', async () => {
+  let requested = '';
+  globalThis.fetch = async (url) => {
+    requested = String(url);
+    return new Response(JSON.stringify({ boat: { enabled: false, reason: 'BOAT_API_KEY is not set in backend/.env' } }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+  const providers = await api.getProviders();
+  assert.ok(requested.endsWith('/providers'));
+  assert.equal(providers.boat.enabled, false);
+  assert.match(providers.boat.reason, /BOAT_API_KEY/);
+});
+
+test('the app catalog is asked for with only the filters that are set, encoded', async () => {
+  const urls = [];
+  globalThis.fetch = async (url) => {
+    urls.push(new URL(String(url)));
+    return new Response(JSON.stringify({ source: 'starter', apps: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  };
+  await api.getComposioCatalog();
+  await api.getComposioCatalog({ search: 'sales & crm', category: 'Developer Tools', cursor: 'o48', limit: 24 });
+  await api.getComposioCatalog({ search: '', category: null, cursor: null });
+  assert.deepEqual(urls.map((u) => u.pathname), Array(3).fill('/api/v1/integrations/composio/catalog'));
+  assert.equal(urls[0].search, '');
+  assert.deepEqual(Object.fromEntries(urls[1].searchParams), { search: 'sales & crm', category: 'Developer Tools', cursor: 'o48', limit: '24' });
+  assert.equal(urls[2].search, '');
+});
+
+test('routine app actions use the selected routine and run endpoint', async () => {
+  let requested = '';
+  globalThis.fetch = async (url) => {
+    requested = String(url);
+    return new Response(JSON.stringify([{ id: 4, tool: 'gmail_send_email', account_id: 'acct-1', status: 'completed', code: null, result: { message_id: 'm-1' }, created_at: 'now' }]), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+  const actions = await api.listRoutineRunAppActions(12, 34);
+  assert.ok(requested.endsWith('/routines/12/runs/34/app-actions'));
+  assert.equal(actions[0].tool, 'gmail_send_email');
+  assert.equal(actions[0].account_id, 'acct-1');
+});
+
+test('getVersionInfo fetches /version with optional refresh query param', async () => {
+  const requests = [];
+  globalThis.fetch = async (url) => {
+    requests.push(String(url));
+    return new Response(JSON.stringify({
+      current_version: '0.8.1',
+      commit: 'efb8ac3',
+      latest_version: '0.8.2',
+      update_available: true,
+      install_kind: 'git',
+      update_command: 'git pull && uv sync && (cd frontend && npm run build)',
+      release_notes_url: 'https://github.com/Anil-matcha/open-duet/releases/tag/v0.8.2',
+    }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+
+  const info1 = await api.getVersionInfo();
+  assert.equal(info1.current_version, '0.8.1');
+  assert.equal(info1.update_available, true);
+  assert.ok(requests[0].endsWith('/api/v1/version'));
+
+  const info2 = await api.getVersionInfo(true);
+  assert.equal(info2.latest_version, '0.8.2');
+  assert.ok(requests[1].endsWith('/api/v1/version?refresh=true'));
+});
+
+test('getNotificationPreferences and updateNotificationPreferences call the right routes', async () => {
+  const requests = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), init });
+    return new Response(JSON.stringify({
+      desktop_enabled: true,
+      notify_needs_you: true,
+      notify_failures: true,
+      notify_task_due: true,
+      sound_enabled: false,
+    }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  };
+
+  const prefs = await api.getNotificationPreferences();
+  assert.equal(prefs.desktop_enabled, true);
+  assert.ok(requests[0].url.endsWith('/api/v1/notifications/preferences'));
+
+  await api.updateNotificationPreferences({
+    desktop_enabled: false,
+    notify_needs_you: false,
+    notify_failures: false,
+    notify_task_due: false,
+    sound_enabled: true,
+  });
+  assert.equal(requests[1].init.method, 'PUT');
+  assert.ok(requests[1].url.endsWith('/api/v1/notifications/preferences'));
+  const body = JSON.parse(requests[1].init.body);
+  assert.equal(body.desktop_enabled, false);
+  assert.equal(body.sound_enabled, true);
+});

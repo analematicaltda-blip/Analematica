@@ -2,3 +2,4 @@ ollama-aarch64-apple-darwin !text !filter !merge !diff
 
 # Keep the vendored source byte-identical on Windows as well as Unix.
 /DESKTOP/agent-desktop/** -text
+/DESKTOP/open-duet/** -text

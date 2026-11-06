@@ -1,0 +1,64 @@
+# Contributing
+
+Issues and pull requests are welcome.
+
+## Workflow
+
+1. Check [ROADMAP.md](ROADMAP.md) and pick one feature or fix; keep PRs small and focused.
+2. Branch from `main`; use Conventional Commit prefixes (`feat:`, `fix:`, `test:`, `docs:`, `chore:`).
+3. Add focused tests for service or API changes; run backend tests and the frontend lint/build.
+4. Keep the README and `docs/` aligned with behavior; note limitations honestly.
+5. Do not merge with failing checks.
+
+## Tests and CI
+
+Run before opening a PR (the same checks as `.github/workflows/ci.yml`):
+
+```bash
+cd backend && DATABASE_BACKEND=sqlite uv run pytest   # SQLite, temporary file
+cd backend && uv run alembic upgrade head && uv run pytest   # PostgreSQL (docker compose up -d first)
+cd frontend && npm run lint && npm run build
+cd desktop && npm test
+cd mobile && npm run lint && npm run typecheck && npm test && npm run check:bundle
+```
+
+`mobile/` is the phone app ([MOBILE.md](MOBILE.md)); its CI job runs only when `mobile/` or the workflow changes, and `mobile/AGENTS.md` holds its rules (Expo versions change often, so read it before editing).
+
+Changing the server, the Docker files or [SELF-HOSTING.md](SELF-HOSTING.md): `scripts/smoke-server.py`, `scripts/smoke-server-chat.py`, `scripts/smoke-docker.py` and `scripts/smoke-proxy.py` run the real thing (the last two need Docker), and `python scripts/verify-guide.py` runs every marked command in the guide in a clean container. Keep the guide's "What has been checked" table true.
+
+CI runs those on pushes to `main` and on pull requests; docs-only changes skip the heavy jobs. The `ci-gate` job is the single check to require in branch protection. Pushing a `v*` tag runs `.github/workflows/release.yml`; it builds the Windows installer and a signed/notarized macOS installer, then attaches both to a GitHub release when the package jobs succeed. The [v0.3.0 release run](https://github.com/Anil-matcha/open-duet/actions/runs/40064918580) succeeded on Windows but failed during the macOS build; the [Windows fallback run](https://github.com/Anil-matcha/open-duet/actions/runs/40065552341) published the Windows installer. The prerelease therefore has no macOS asset.
+
+### macOS release signing
+
+Before pushing a release tag, configure these repository Actions secrets:
+
+- `MAC_CSC_LINK`: base64-encoded `.p12` containing a **Developer ID Application** certificate.
+- `MAC_CSC_KEY_PASSWORD`: password used when exporting that `.p12`.
+- `MAC_APPLE_API_KEY`: base64-encoded contents of an App Store Connect `.p8` API key.
+- `MAC_APPLE_API_KEY_ID` and `MAC_APPLE_API_ISSUER`: the key ID and issuer ID for that API key.
+
+The macOS packaging step requires signing and notarization; missing credentials
+or a failed Apple notarization stops the release before publication. Keep the
+certificate and API key out of the repository. Local `npm run package` builds
+remain unsigned and do not need these credentials.
+
+## Database rules (PostgreSQL and SQLite)
+
+The backend runs on PostgreSQL and, experimentally, on SQLite, and tests run on both (`DATABASE_BACKEND=sqlite uv run pytest` uses a temporary file). Code that touches the database must work on both:
+
+- A transaction that does a read and then waits on something slow (a sandbox or CLI call, a sleep, a Telegram message) must end first: call `release_snapshot(db)` from `app/db/transactions.py` after the read. SQLite keeps the snapshot of a transaction's first read, so a later read would not see other writers' commits and a later write would fail with `database is locked`.
+- A read followed by a write that must not interleave with another request (check-then-insert, claim-then-update) starts with `begin_write(db)`, or uses one conditional `UPDATE ... WHERE status = ...` and checks the row count. Do not rely on `SELECT ... FOR UPDATE`: SQLite ignores it.
+- Use the types in `app/db/types.py` for identity keys and datetimes, and add SQLite-safe migrations (`op.batch_alter_table` for anything that alters constraints). The PostgreSQL schema must not change as a side effect; `tests/db/test_postgres_schema_unchanged.py` checks it.
+- Thread data (`thread`, `turn`, `event`, `approval`) changes only through `app/services/thread_store.py`. Each state change there is one conditional `UPDATE` (a heartbeat, finishing or interrupting a turn, an approval answer), so racing requests and processes cannot both win; an ad-hoc query that skips them can quietly break that.
+- A table added after the original schema has its own reviewed PostgreSQL snapshot (for example `tests/db/postgres_schema_f04.sql`); changing the table means deliberately editing that file.
+
+## Security expectations
+
+- Authenticate and validate every route that mutates state or runs code.
+- Never commit secrets, tokens, raw provider transcripts or unsanitized captures.
+- Do not silently weaken sandboxing or bypass approvals.
+- Features exposing host execution, subprocesses or files need a security review in the PR.
+
+## Frontend note
+
+The frontend uses a recent Next.js with breaking changes; read the guides in `frontend/node_modules/next/dist/docs/` before editing it.

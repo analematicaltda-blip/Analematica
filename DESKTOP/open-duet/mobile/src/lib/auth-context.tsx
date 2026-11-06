@@ -1,0 +1,108 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+
+import { clearCredentials, loadCredentials, saveCredentials } from './credentials';
+import { deviceLabel } from './device-label';
+import { pairDevice, readSession, signOutOnServer } from './pairing-api';
+import { normalizeServerUrl } from './server-url';
+
+export type AuthState =
+  | { status: 'loading' }
+  | { status: 'unpaired' }
+  | { status: 'paired'; server: string; token: string; label: string; scopes: string[] };
+
+type AuthValue = {
+  state: AuthState;
+  /** Shown on the pairing screen after the server ended this phone's session. */
+  notice: string | null;
+  /** True from a successful pairing until the person dismisses the note that says what this phone can do. */
+  welcome: boolean;
+  dismissWelcome: () => void;
+  pair: (args: { server: string; code: string }) => Promise<void>;
+  signOut: () => Promise<void>;
+  /** The server said this phone's token is no longer valid: forget it and go back to pairing. */
+  revoked: () => void;
+};
+
+const REVOKED_NOTICE = 'Your server signed this phone out. Pair it again to continue.';
+
+const UNSAFE_NOTICE = 'This phone was paired with a server address the app no longer accepts. Pair it again with an https:// address.';
+
+const AuthContext = createContext<AuthValue | null>(null);
+
+export function useAuth(): AuthValue {
+  const value = useContext(AuthContext);
+  if (!value) throw new Error('useAuth must be used inside AuthProvider');
+  return value;
+}
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<AuthState>({ status: 'loading' });
+  const [notice, setNotice] = useState<string | null>(null);
+  const [welcome, setWelcome] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const saved = await loadCredentials();
+      if (cancelled) return;
+      if (!saved) {
+        setState({ status: 'unpaired' });
+        return;
+      }
+      // A saved address must pass today's rule (https, or http on this network only); one that does not is forgotten.
+      if (!normalizeServerUrl(saved.server).ok) {
+        await clearCredentials();
+        setNotice(UNSAFE_NOTICE);
+        setState({ status: 'unpaired' });
+        return;
+      }
+      setState({ status: 'paired', ...saved });
+      // Open straight into the app, then find out in the background whether the server revoked this phone.
+      const read = await readSession(saved.server, saved.token);
+      if (cancelled) return;
+      if (read.status === 'revoked') {
+        await clearCredentials();
+        setNotice(REVOKED_NOTICE);
+        setState({ status: 'unpaired' });
+      } else if (read.status === 'valid' && read.scopes && read.scopes.join(' ') !== saved.scopes.join(' ')) {
+        // The server's word on what this phone may do wins over what was kept at pairing.
+        const next = { ...saved, scopes: read.scopes };
+        await saveCredentials(next);
+        if (!cancelled) setState({ status: 'paired', ...next });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const pair = useCallback(async ({ server, code }: { server: string; code: string }) => {
+    const label = deviceLabel();
+    const session = await pairDevice({ server, code, label, });
+    const credentials = { server: session.server, token: session.token, label: session.label ?? label, scopes: session.scopes };
+    await saveCredentials(credentials);
+    setNotice(null);
+    setWelcome(true);
+    setState({ status: 'paired', ...credentials });
+  }, []);
+
+  const signOut = useCallback(async () => {
+    if (state.status === 'paired') await signOutOnServer(state.server, state.token);
+    await clearCredentials();
+    setNotice(null);
+    setWelcome(false);
+    setState({ status: 'unpaired' });
+  }, [state]);
+
+  const revoked = useCallback(() => {
+    void clearCredentials();
+    setNotice(REVOKED_NOTICE);
+    setWelcome(false);
+    setState({ status: 'unpaired' });
+  }, []);
+
+  const dismissWelcome = useCallback(() => setWelcome(false), []);
+
+  const value = useMemo(() => ({ state, notice, welcome, dismissWelcome, pair, signOut, revoked }), [state, notice, welcome, dismissWelcome, pair, signOut, revoked]);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}

@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import sys
 
-BACKEND_FILES=['api/v1/endpoints/meta_webhooks.py','services/instagram_service.py','api/v1/endpoints/instagram.py','models/advertising.py','services/advertising_schema.py','services/meta_ads_graph.py','services/meta_ads_service.py','api/v1/endpoints/meta_ads.py','api/v1/endpoints/meta.py','services/corporate_policy.py','services/corporate_commands.py','models/corporate.py','api/v1/endpoints/corporate.py','models/workspace.py','services/workspace_service.py','services/workspace_guard.py','services/workspace_schema.py','api/v1/endpoints/workspace.py','services/plan_capability_service.py','crud/tenancy.py','schemas/tenancy.py','models/campaigns.py','services/campaign_service.py','services/campaign_schema.py','services/campaign_worker.py','api/v1/endpoints/campaigns.py','api/v1/endpoints/admin.py','models/institutional.py','services/role_contracts.py','services/institutional_service.py','services/institutional_schema.py','api/v1/endpoints/institutional.py']
+BACKEND_FILES=['api/v1/endpoints/assistance_control.py','services/assistance/control.py','services/assistance/control_crypto.py','services/assistance/control_policy.json','models/assistance.py','api/v1/endpoints/assistance.py','services/assistance/__init__.py','services/assistance/engine.py','services/assistance/duet.py','services/assistance/schema.py','services/assistance/catalog.json','services/assistance/policy.txt','api/v1/endpoints/meta_webhooks.py','services/instagram_service.py','api/v1/endpoints/instagram.py','models/advertising.py','services/advertising_schema.py','services/meta_ads_graph.py','services/meta_ads_service.py','api/v1/endpoints/meta_ads.py','api/v1/endpoints/meta.py','services/corporate_policy.py','services/corporate_commands.py','models/corporate.py','api/v1/endpoints/corporate.py','models/workspace.py','services/workspace_service.py','services/workspace_guard.py','services/workspace_schema.py','api/v1/endpoints/workspace.py','services/plan_capability_service.py','crud/tenancy.py','schemas/tenancy.py','models/campaigns.py','services/campaign_service.py','services/campaign_schema.py','services/campaign_worker.py','api/v1/endpoints/campaigns.py','api/v1/endpoints/admin.py','models/institutional.py','services/role_contracts.py','services/institutional_service.py','services/institutional_schema.py','api/v1/endpoints/institutional.py']
 
 def run(argv,**kw):return subprocess.run(argv,check=True,**kw)
 def ensure_web_running(compose):
@@ -45,6 +45,8 @@ def install(args):
   source=saved.read_text()
   if relative=='api/v1/api.py' and 'SGACD_WORKSPACE_ROUTER' not in source and 'prefix="/workspace"' not in source and "prefix='/workspace'" not in source:
    source+='\n# SGACD_WORKSPACE_ROUTER\nfrom app.api.v1.endpoints import workspace as integrated_workspace\napi_router.include_router(integrated_workspace.router, prefix="/workspace", tags=["Role workspaces"])\n'
+  if relative=='api/v1/api.py' and 'SGACD_ASSISTANCE_ROUTER' not in source and 'prefix="/assistance"' not in source:
+   source+='\n# SGACD_ASSISTANCE_ROUTER\nfrom app.api.v1.endpoints import assistance as platform_assistance\napi_router.include_router(platform_assistance.router, prefix="/assistance", tags=["User assistance"])\n'
   if relative=='main.py' and 'WorkspaceLegacyGuard' not in source:
    source+='\n# SGACD_WORKSPACE_GUARD\nfrom app.services.workspace_guard import WorkspaceLegacyGuard\napp.add_middleware(WorkspaceLegacyGuard)\n'
   target=overlay/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(source)
@@ -116,6 +118,8 @@ def install(args):
  run(compose+['exec','-T','backend','python','-m','app.services.workspace_schema'])
  run(compose+['exec','-T','backend','python','-m','app.services.campaign_schema'])
  run(compose+['exec','-T','backend','python','-m','app.services.institutional_schema'])
+ run(compose+['exec','-T','backend','python','-m','app.services.assistance.schema'])
+ run(compose+['exec','-T','backend','python','-m','app.services.assistance.control_crypto'])
  run(compose+['up','-d','--no-deps','--force-recreate','--wait','--wait-timeout','180','campaign-scheduler'])
  run([sys.executable,str(repo/'FRONTEND/SGA-CD-WEB.git/scripts/publish.py'),'--demo-dir',str(demo)])
  ensure_web_running(compose)

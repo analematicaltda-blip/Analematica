@@ -1,5 +1,6 @@
 from __future__ import annotations
 import flet as ft
+from utils.authorized_control import open_control, STAFF
 import sqlite3
 import json
 
@@ -31,6 +32,7 @@ class DashboardView(ft.View):
             title=ft.Text("Mi Panel"),
             bgcolor=ft.colors.SURFACE_VARIANT,
             actions=[
+                *([ft.IconButton(icon=ft.icons.SECURITY, tooltip="Control autorizado de equipos", on_click=lambda _: open_control(page))] if user_role in STAFF else []),
                 ft.IconButton(
                     icon=ft.icons.SYNC,
                     tooltip="Sincronizar con el servidor",
