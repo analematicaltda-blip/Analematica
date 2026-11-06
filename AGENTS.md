@@ -15,3 +15,12 @@ Para hacer que la aplicación funcione en este entorno, las sentencias de import
 Esta no es una solución ideal y se considera deuda técnica. Si el entorno de ejecución se corrige en el futuro para que `PYTHONPATH` funcione correctamente, estas importaciones deberían revertirse a su forma más simple y estándar (ej. `from models import ...` en todo el proyecto, asumiendo que `SGA-CD-DB.git` está en `PYTHONPATH`).
 
 No reviertas estas importaciones a menos que hayas confirmado que el entorno de `PYTHONPATH` ha sido reparado.
+
+## Herramientas de escritorio locales
+
+La copia de agent-desktop está en `DESKTOP/agent-desktop`; el conector y su
+procedencia están en `DESKTOP/agent-desktop-sgacd`. El runner local es
+`node DESKTOP/agent-desktop-sgacd/run.mjs`. Antes de usar acciones, consulta
+`skills get desktop`, `skills get platform` y `status` del runtime instalado.
+El proceso opera su propio host: Codespaces no proporciona acceso al portátil.
+La configuración MCP del proyecto no conecta automáticamente esta sesión de chat.

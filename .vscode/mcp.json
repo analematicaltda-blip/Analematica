@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "sgacd-desktop": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/DESKTOP/agent-desktop-sgacd/run.mjs",
+        "mcp"
+      ]
+    }
+  }
+}
