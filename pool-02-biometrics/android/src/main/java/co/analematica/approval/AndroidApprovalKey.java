@@ -1,6 +1,7 @@
 package co.analematica.approval;
 
 import android.app.Activity;
+import co.analematica.integrity.AndroidIntegrityGuard;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.hardware.biometrics.BiometricManager;
@@ -38,14 +39,16 @@ public final class AndroidApprovalKey {
     private final long actor;
     private final String alias;
     private final boolean requireStrongBox;
-    public AndroidApprovalKey(UUID audience,long actor,UUID credential,boolean requireStrongBox) throws Exception {
-        if(audience==null || credential==null || actor<1)throw new IllegalArgumentException("INVALID_IDENTITY");
-        this.audience=audience;this.actor=actor;this.credential=credential;this.requireStrongBox=requireStrongBox;
+    private final AndroidIntegrityGuard integrity;
+    public AndroidApprovalKey(UUID audience,long actor,UUID credential,boolean requireStrongBox,AndroidIntegrityGuard integrity) throws Exception {
+        if(audience==null || credential==null || actor<1 || integrity==null)throw new IllegalArgumentException("INVALID_IDENTITY");
+        this.integrity=integrity;this.audience=audience;this.actor=actor;this.credential=credential;this.requireStrongBox=requireStrongBox;
         byte[] digest=MessageDigest.getInstance("SHA-256").digest((audience+"/"+actor+"/"+credential).getBytes(StandardCharsets.US_ASCII));
         StringBuilder id=new StringBuilder("sgacd.approval.");for(byte b:digest)id.append(String.format(java.util.Locale.ROOT,"%02x",b&255));alias=id.toString();
         store=KeyStore.getInstance("AndroidKeyStore");store.load(null);
     }
     public void createKey(Context context,byte[] enrollmentNonce) throws Exception {
+        integrity.requireSensitiveOperation(context);
         if(enrollmentNonce==null || enrollmentNonce.length!=32)throw new GeneralSecurityException("INVALID_ENROLLMENT_CHALLENGE");
         synchronized(AndroidApprovalKey.class) {
             try(FileOutputStream file=new FileOutputStream(new File(context.getNoBackupFilesDir(),alias+".lock"),true);FileLock lock=file.getChannel().tryLock()) {
@@ -91,6 +94,7 @@ public final class AndroidApprovalKey {
     }
     public void approve(Activity activity,byte[] payload,CancellationSignal cancellation,Executor executor,Result result) {
         try {
+            integrity.requireSensitiveOperation(activity);
             ApprovalMessage message=ApprovalMessage.parse(payload,audience,actor,credential,System.currentTimeMillis()/1000);
             Signature signature=Signature.getInstance("SHA256withECDSA");signature.initSign(existingKey());
             AtomicBoolean completed=new AtomicBoolean(false);
@@ -100,7 +104,8 @@ public final class AndroidApprovalKey {
                     byte[] proof;
                     try {
                         if(authentication.getCryptoObject()==null || authentication.getCryptoObject().getSignature()!=signature)throw new GeneralSecurityException();
-                        // Recheck expiry after the user has completed the prompt.
+                        // Recheck risk and expiry after the user has completed the prompt.
+                        integrity.requireSensitiveOperation(activity);
                         ApprovalMessage.parse(message.bytes(),audience,actor,credential,System.currentTimeMillis()/1000);
                         signature.update(message.bytes());proof=signature.sign();
                     } catch(GeneralSecurityException|RuntimeException exception) { result.failed("APPROVAL_SIGNATURE_FAILED");return; }

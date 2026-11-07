@@ -136,3 +136,10 @@ Pendientes: verificador real de atestación y raíces aprobadas, confianza iOS,
 recuperación de cuenta/dispositivo, puente y pantallas de las dos aprobaciones,
 teléfonos físicos y pruebas de carga/concurrencia en PostgreSQL. No se activa
 producción ni se declara un detector de cámara inyectada o prueba de vida propia.
+
+## Dependencia de Pool 03
+
+Las llaves nativas ahora exigen un guard de integridad explícito al construirlas;
+consulte `../pool-03-integrity/README.md` para configurar paquete/bundle, versión y
+certificados Android reales. Se bloquea alta local de llave y firma ante riesgo o
+inspección incompleta. Esto no completa la atestación remota ni habilita dispositivos.

@@ -34,3 +34,8 @@ tunnel.log
 /pool-02-biometrics/android/build/
 /pool-02-biometrics/ios/.build/
 /pool-02-biometrics/ios/.swiftpm/
+
+# Pool03 native build artifacts
+pool-03-integrity/.gradle/
+pool-03-integrity/android/build/
+pool-03-integrity/ios/.build/

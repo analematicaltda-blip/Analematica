@@ -1,4 +1,5 @@
 import Foundation
+import SGAIntegrity
 import CryptoKit
 import Security
 import LocalAuthentication
@@ -13,15 +14,17 @@ public final class AppleApprovalKey {
     private let actor: Int64
     private let credential: UUID
     private let tag: Data
-    public init(audience: UUID, actor: Int64, credential: UUID) throws {
+    private let integrity: AppleIntegrityGuard
+    public init(audience: UUID, actor: Int64, credential: UUID, integrity: AppleIntegrityGuard) throws {
         guard actor > 0 else { throw ApprovalError.scopeMismatch }
-        self.audience = audience; self.actor = actor; self.credential = credential
+        self.integrity = integrity; self.audience = audience; self.actor = actor; self.credential = credential
         let scope = "\(audience.uuidString.lowercased())/\(actor)/\(credential.uuidString.lowercased())"
         let digest = SHA256.hash(data: Data(scope.utf8)).map { String(format: "%02x", $0) }.joined()
         tag = Data(("sgacd.approval." + digest).utf8)
     }
     private var query: [String: Any] { [kSecClass as String: kSecClassKey, kSecAttrApplicationTag as String: tag, kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom] }
     public func createKey() throws {
+        try integrity.requireSensitiveOperation()
         guard Self.enrollmentLock.try() else { throw ApprovalError.keyUnavailable }; defer { Self.enrollmentLock.unlock() }
         guard SecureEnclave.isAvailable else { throw ApprovalError.hardwareUnavailable }
         var probe = query; probe[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
@@ -56,12 +59,14 @@ public final class AppleApprovalKey {
         return bytes // Public point only; no private-key export method exists.
     }
     public func approve(_ payload: Data) throws -> Data {
+        try integrity.requireSensitiveOperation()
         let message = try ApprovalMessage.parse(payload, audience: audience, actor: actor, credential: credential)
         let key = try existing(reason: message.summary); defer { finish() }
         var error: Unmanaged<CFError>?
         guard SecKeyIsAlgorithmSupported(key, .sign, .ecdsaSignatureMessageX962SHA256),
               let signature = SecKeyCreateSignature(key, .ecdsaSignatureMessageX962SHA256, message.bytes as CFData, &error) else { throw ApprovalError.signatureFailed }
         _ = try ApprovalMessage.parse(message.bytes, audience: audience, actor: actor, credential: credential)
+        try integrity.requireSensitiveOperation()
         return signature as Data
     }
 }

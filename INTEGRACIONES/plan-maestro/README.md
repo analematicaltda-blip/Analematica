@@ -54,3 +54,5 @@ La validación desde un clon limpio detectó que el gateway API corporativo refe
 El tablero y las evidencias por corte distinguen código comprobado de pendientes. Las bases nuevas no requieren reparar la historia antigua para seguir desarrollando. Su correcta instalación no cierra reservas, contabilidad, conectores oficiales ni cualificación productiva.
 
 - `BIOMETRIA_09.md`: primera implementación de firmas por dispositivo para ambas autorizaciones; atestación real y pruebas físicas pendientes.
+
+- `INTEGRIDAD_10.md`: inicio del Pool03, controles locales y bloqueo de firmas ante riesgo; builds firmadas y dispositivos pendientes.
