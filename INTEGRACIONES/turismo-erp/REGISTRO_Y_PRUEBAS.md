@@ -37,3 +37,7 @@ Se detectó y versionó el gateway `deployment/api.py` que el Dockerfile ya exig
 La verificación de snapshots se ajusta al checkout declarado por AiSOC: sus tres scripts PowerShell se guardan como blobs LF y se extraen como CRLF por sus `.gitattributes`. Solo se normaliza esa conversión explícita para comparar el mismo SHA/blob; cualquier cambio de contenido sigue fallando. No se modifican los archivos upstream.
 
 El nuevo centro pasó una prueba Chromium a 1440/390/320 px con un contrato API sintético y sin login vivo: navegación interna, mensajes de sesión y ausencia de desbordamiento/errores JS. El backend administrativo se prueba por separado con TestClient y SQLite. El motor Node pasó 11 pruebas, con una prueba opcional nativa omitida. Las copias upstream pasan el verificador con la conversión de checkout declarada.
+
+## Tercer corte
+
+Consultar `OPTIMIZACION_03.md`: aislamiento empresarial y límites de RNT/pagos, 44 pruebas correctas (12 nuevas y 32 de regresión), sin migraciones ni cobros.

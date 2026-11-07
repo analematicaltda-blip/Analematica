@@ -8,35 +8,39 @@ from ..serializers.provider_serializers import (
     TourismServiceSerializer, ReservationSerializer
 )
 from ..services.financial_service import TourismFinancialService
+from ..serializers.provider_serializers import administrator
+from rest_framework.exceptions import PermissionDenied
 
 class TourismProviderViewSet(viewsets.ModelViewSet):
+    http_method_names=['get','post','put','patch','head','options']
     queryset = TourismProvider.objects.all()
     serializer_class = TourismProviderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         # Cada dueño solo ve sus propios prestadores
-        if self.request.user.is_staff:
+        if administrator(self.request.user):
             return TourismProvider.objects.all()
         return TourismProvider.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
-        provider = serializer.save(owner=self.request.user)
-        # Sincronización automática con RNT si se proveyó número
-        if provider.rnt_number:
-            from ..services.rnt_integration import RNTIntegrationService
-            RNTIntegrationService.sync_provider(provider.id)
+        if not administrator(self.request.user) and self.request.user.role not in {'PRESTADOR','BUSINESS_OWNER','BUSINESS_ADMIN','ARTESANO'}:
+            raise PermissionDenied('El alta empresarial requiere un rol empresarial autorizado.')
+        # A locally declared RNT is an identifier, not evidence of official verification.
+        serializer.save(owner=self.request.user,rnt_validated=False,rnt_last_sync=None)
+
+    def perform_update(self,serializer):
+        changed='rnt_number' in serializer.validated_data and serializer.validated_data['rnt_number']!=serializer.instance.rnt_number
+        serializer.save(**({'rnt_validated':False,'rnt_last_sync':None} if changed else {}))
 
     @action(detail=True, methods=['post'])
     def sync_rnt(self, request, pk=None):
         """
         Fuerza la sincronización manual con el Registro Nacional de Turismo.
         """
+        provider=self.get_object()
         from ..services.rnt_integration import RNTIntegrationService
-        success = RNTIntegrationService.sync_provider(pk)
-        if success:
-            return Response({"status": "success", "message": "Datos sincronizados con éxito."})
-        return Response({"status": "error", "message": "No se pudo validar el RNT."}, status=status.HTTP_400_BAD_REQUEST)
+        return RNTIntegrationService.sync_provider(provider.pk)
 
     @action(detail=False, methods=['get'])
     def me(self, request):
@@ -46,46 +50,44 @@ class TourismProviderViewSet(viewsets.ModelViewSet):
         provider = TourismProvider.objects.filter(owner=request.user).first()
         if not provider:
              return Response({"error": "No provider profile found"}, status=404)
-        return Response(TourismProviderSerializer(provider).data)
+        return Response(self.get_serializer(provider).data)
 
     @action(detail=False, methods=['post'], url_path='login-rnt', permission_classes=[permissions.AllowAny])
     def login_rnt(self, request):
         """
         Inicia sesión utilizando credenciales validadas del Registro Nacional de Turismo.
         """
-        rnt_number = request.data.get('rnt_number')
-        # password_token = request.data.get('rnt_token') # En producción
-
         from ..services.rnt_integration import RNTIntegrationService
-        user = RNTIntegrationService.login_via_rnt(rnt_number, None)
-
-        if user:
-            # Aquí se retornaría un JWT real
-            return Response({
-                "status": "success",
-                "message": f"Acceso concedido para RNT {rnt_number}",
-                "user": user.username
-            })
-        return Response({"error": "Credenciales RNT inválidas o prestador no registrado."}, status=status.HTTP_401_UNAUTHORIZED)
+        return RNTIntegrationService.login_via_rnt(request.data.get('rnt_number'),None)
 
 class BusinessProfileViewSet(viewsets.ModelViewSet):
+    http_method_names=['get','post','put','patch','head','options']
     queryset = BusinessProfile.objects.all()
     serializer_class = BusinessProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        if administrator(self.request.user):return self.queryset.all()
+        return self.queryset.filter(provider__owner=self.request.user)
+
 class TourismServiceViewSet(viewsets.ModelViewSet):
+    http_method_names=['get','post','put','patch','head','options']
     queryset = TourismService.objects.all()
     serializer_class = TourismServiceSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class ReservationViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        if administrator(self.request.user):return self.queryset.all()
+        return self.queryset.filter(provider__owner=self.request.user)
+
+class ReservationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff:
+        if administrator(user):
             return Reservation.objects.all()
         # Turista ve sus reservas, Dueño ve las reservas de sus prestadores
         return Reservation.objects.filter(
@@ -97,8 +99,6 @@ class ReservationViewSet(viewsets.ModelViewSet):
         """
         Inicia el flujo de pago de la reserva.
         """
-        try:
-            result = TourismFinancialService.process_reservation_payment(pk)
-            return Response(result)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        reservation=self.get_object()
+        # Scoped lookup first; the service boundary refuses financial execution too.
+        return TourismFinancialService.process_reservation_payment(reservation.pk)
