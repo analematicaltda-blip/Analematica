@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
+from .integration_status import PendingModuleView
+
 app_name = 'mi_negocio'
 
 from .gestion_operativa.views import (
@@ -34,9 +36,12 @@ urlpatterns = [
     path('contable/nomina/', include('apps.prestadores.mi_negocio.gestion_contable.nomina.urls')),
     path('contable/compras/', include('apps.prestadores.mi_negocio.gestion_contable.compras.urls')),
     path('contable/inventario/', include('apps.prestadores.mi_negocio.gestion_contable.inventario.urls')),
-    path('contable/proyectos/', include('apps.prestadores.mi_negocio.gestion_contable.proyectos.urls')),
-    path('contable/presupuesto/', include('apps.prestadores.mi_negocio.gestion_contable.presupuesto.urls')),
-    path('contable/reportes/', include('apps.prestadores.mi_negocio.gestion_contable.reportes.urls')),
+    path('contable/proyectos/', PendingModuleView.as_view(module='erp.proyectos',blocker='Referencia al modelo FacturaVenta ausente; requiere conciliación y migración.')),
+    path('contable/proyectos/<path:remaining>', PendingModuleView.as_view(module='erp.proyectos',blocker='Referencia al modelo FacturaVenta ausente; requiere conciliación y migración.')),
+    path('contable/presupuesto/', PendingModuleView.as_view(module='erp.presupuesto',blocker='Modelos presupuestales comentados en la fuente; implementación pendiente.')),
+    path('contable/presupuesto/<path:remaining>', PendingModuleView.as_view(module='erp.presupuesto',blocker='Modelos presupuestales comentados en la fuente; implementación pendiente.')),
+    path('contable/reportes/', PendingModuleView.as_view(module='erp.reportes',blocker='Referencia al modelo Transaction ausente; esquema contable pendiente de conciliación.')),
+    path('contable/reportes/<path:remaining>', PendingModuleView.as_view(module='erp.reportes',blocker='Referencia al modelo Transaction ausente; esquema contable pendiente de conciliación.')),
 
     # Gestión Archivística
     path('archivistica/', include('apps.prestadores.mi_negocio.gestion_archivistica.urls')),

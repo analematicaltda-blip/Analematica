@@ -5,8 +5,6 @@ import os
 from typing import Tuple, Dict, Optional
 from django.conf import settings
 from .models import Intent, SemanticDomain
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +15,13 @@ class SemanticEngine:
     """
 
     def __init__(self, model_name: str = "gpt-4o"):
+        self.llm = None
         self.api_key = os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
              logger.warning("OPENAI_API_KEY no configurada. El motor semántico operará en modo degradado/mock.")
              self.llm = None
         else:
+            from langchain_openai import ChatOpenAI
             self.llm = ChatOpenAI(
                 model=model_name,
                 openai_api_key=self.api_key,
@@ -83,6 +83,7 @@ class SemanticEngine:
         """
 
         try:
+            from langchain_core.messages import SystemMessage, HumanMessage
             messages = [
                 SystemMessage(content=system_prompt),
                 HumanMessage(content=text)

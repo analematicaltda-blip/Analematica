@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import uuid
 
 ROOT = Path(__file__).resolve().parent
 
@@ -32,6 +33,7 @@ def initialize(directory=ROOT / '.runtime'):
             private = key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption())
             public = key.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
             config = {'DJANGO_JWT_PRIVATE_KEY_B64': base64.b64encode(private).decode(), 'DJANGO_JWT_PUBLIC_KEY_B64': base64.b64encode(public).decode(), 'DATABASE_URL': url, 'DJANGO_SECRET_KEY': secrets.token_hex(48), 'DJANGO_FIELD_ENCRYPTION_KEY': base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(), 'DJANGO_ALLOWED_HOSTS': 'localhost,127.0.0.1', 'REDIS_URL': 'redis://redis:6379/' + ('1' if name == 'erp-tur' else '2'), 'DJANGO_MIGRATE': '0'}
+        if name != 'sgacd':config['WALLET_APPROVAL_AUDIENCE']=str(uuid.uuid4())
         pending[servicefile] = config
     pending[directory / 'analematica.env'] = {'SGACD_API_URL': 'http://sgacd:8000'}
     for path, config in pending.items():

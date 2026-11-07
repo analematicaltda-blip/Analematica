@@ -27,3 +27,7 @@ python-dateutil>=2.9
 psutil>=6,<8
 boto3>=1.35,<2
 PyYAML>=6,<7
+
+# Required by currently registered decision/voice URL modules (no provider activation).
+langchain-core>=1,<2
+langchain-openai>=1,<2

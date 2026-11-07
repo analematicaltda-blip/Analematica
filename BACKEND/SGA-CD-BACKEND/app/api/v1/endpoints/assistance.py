@@ -136,3 +136,6 @@ async def answer(identifier: UUID, question_id: UUID, db: Session=Depends(deps.g
 
 from app.api.v1.endpoints import assistance_control
 router.include_router(assistance_control.router,prefix='/control',tags=['Authorized desktop control'])
+
+from app.api.v1.endpoints import resources
+router.include_router(resources.router,prefix="/resources",tags=["Administrative security and AI resources"])

@@ -1,0 +1,50 @@
+name: Shared foundation and tourism audit
+on:
+  push:
+    paths: ['BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+  pull_request:
+    paths: ['BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+permissions:
+  contents: read
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: 'sqlite://'
+      SECRET_KEY: 'isolated-ci-test-not-a-deployed-secret'
+      PYTHONPATH: BACKEND/SGA-CD-BACKEND
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r BACKEND/deployment/requirements-tourism.txt requests fastapi httpx sqlalchemy pydantic-settings 'python-jose[cryptography]' 'passlib[bcrypt]' email-validator python-multipart
+      - run: python BACKEND/deployment/tests/domain_security_check.py -v
+      - run: python BACKEND/deployment/tests/provider_security_check.py -v
+      - run: CHECK_SERVICE=erp-tur python BACKEND/deployment/tests/schema_readiness_check.py -v
+      - run: CHECK_SERVICE=turismo python BACKEND/deployment/tests/schema_readiness_check.py -v
+      - run: python BACKEND/deployment/tests/erp_customer_check.py -v
+      - run: python BACKEND/deployment/tests/wallet_security_check.py -v
+      - run: python BACKEND/deployment/tests/attestation_security_check.py -v
+      - run: python BACKEND/deployment/tests/device_approval_check.py -v
+      - run: python BACKEND/deployment/fresh_local.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur
+      - run: python BACKEND/deployment/tests/fresh_database_check.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur -v
+      - run: python BACKEND/deployment/fresh_local.py --directory "$RUNNER_TEMP/sgacd-fresh-tourism" --service turismo
+      - run: python BACKEND/deployment/tests/fresh_database_check.py --directory "$RUNNER_TEMP/sgacd-fresh-tourism" --service turismo -v
+      - run: CHECK_SERVICE=erp-tur python BACKEND/deployment/tests/tourism_runtime_check.py -v
+      - run: CHECK_SERVICE=turismo python BACKEND/deployment/tests/tourism_runtime_check.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_platform.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p 'test_assistance*.py' -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_resources.py -v
+      - run: python INTEGRACIONES/turismo-erp/inventory.py --output /tmp/inventario.json
+      - run: python -m unittest discover -s BACKEND/deployment/tests -v
+      - run: python INTEGRACIONES/seguridad-ia/verify_vendor.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --prefix DESKTOP/asistencia-sgacd --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+        working-directory: DESKTOP/asistencia-sgacd
+      - run: PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" node FRONTEND/ANALEMATICA-FRONTEND/tests/platform.cjs
+      - run: node --test DESKTOP/asistencia-sgacd/tests/*.test.mjs

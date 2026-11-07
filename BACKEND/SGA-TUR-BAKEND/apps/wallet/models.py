@@ -1,5 +1,6 @@
 import uuid
 import hashlib
+import json
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -28,6 +29,8 @@ class Wallet(models.Model):
 
     owner_type = models.CharField(max_length=20, choices=OwnerType.choices)
     owner_id = models.CharField(max_length=255, help_text="ID del perfil de negocio o usuario")
+    # Blank deliberately preserves the unknown currency of historical balances.
+    currency = models.CharField(max_length=3, blank=True, default='')
 
     saldo_disponible = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
     saldo_bloqueado = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
@@ -102,11 +105,18 @@ class WalletMovimiento(models.Model):
 
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def integrity_digest(self):
+        payload={'wallet':str(self.wallet_id),'transaction':str(self.transaccion_id),'amount':format(self.monto,'.2f'),
+                 'type':self.tipo,'model':self.referencia_modelo,'reference':self.referencia_id,'timestamp':self.timestamp.isoformat()}
+        return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+
     def save(self, *args, **kwargs):
-        if not self.hash_integridad:
-            payload = f"{self.wallet_id}{self.transaccion_id}{self.monto}{self.tipo}{self.timestamp}"
-            self.hash_integridad = hashlib.sha256(payload.encode()).hexdigest()
+        from django.core.exceptions import ValidationError
+        if not self._state.adding:
+            raise ValidationError('Los movimientos financieros no se editan; requieren un asiento compensatorio autorizado.')
         super().save(*args, **kwargs)
+        self.hash_integridad=self.integrity_digest()
+        type(self).objects.filter(pk=self.pk).update(hash_integridad=self.hash_integridad)
 
 class WalletBloqueo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -171,3 +181,60 @@ class WalletAlertaRiesgo(models.Model):
 # Retrocompatibilidad (Temporal para no romper servicios existentes inmediatamente)
 WalletAccount = Wallet
 WalletTransaction = WalletTransaccion
+
+
+class WalletTransferIntent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    requested_by_id = models.PositiveBigIntegerField()
+    idempotency_key = models.UUIDField()
+    source = models.ForeignKey(Wallet, on_delete=models.PROTECT, related_name='outgoing_intents')
+    destination = models.ForeignKey(Wallet, on_delete=models.PROTECT, related_name='incoming_intents')
+    amount = models.DecimalField(max_digits=18, decimal_places=2)
+    currency = models.CharField(max_length=3)
+    digest = models.CharField(max_length=64)
+    state = models.CharField(max_length=12, default='PENDING', choices=[('PENDING','Pending'),('REVIEWED','Reviewed'),('EXECUTED','Executed')])
+    confirmation_hash = models.CharField(max_length=64, blank=True)
+    expires_at = models.DateTimeField()
+    reviewed_at = models.DateTimeField(null=True)
+    executed_at = models.DateTimeField(null=True)
+    transaction = models.OneToOneField(WalletTransaccion, null=True, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['requested_by_id','idempotency_key'], name='wallet_transfer_actor_key_unique'),
+                       models.CheckConstraint(condition=models.Q(amount__gt=0), name='wallet_transfer_amount_positive')]
+
+    review_device = models.ForeignKey('WalletDeviceCredential', null=True, on_delete=models.PROTECT)
+
+
+class WalletDeviceCredential(models.Model):
+    attestation_platform = models.CharField(max_length=32, blank=True)
+    attestation_policy_digest = models.CharField(max_length=64, blank=True)
+    attestation_serials = models.JSONField(default=list)
+    enrollment_authorization_digest = models.CharField(max_length=64, blank=True)
+    enrollment_method = models.CharField(max_length=32, blank=True)
+    replaces = models.ForeignKey('self',null=True,on_delete=models.PROTECT)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.PositiveBigIntegerField()
+    audience = models.UUIDField()
+    public_key = models.CharField(max_length=128, blank=True)
+    status = models.CharField(max_length=10, default='PENDING', choices=[('PENDING','Pending'),('VERIFIED','Verified'),('REVOKED','Revoked')])
+    enrollment_nonce_hash = models.CharField(max_length=64)
+    enrollment_expires_at = models.DateTimeField()
+    attestation_digest = models.CharField(max_length=64, blank=True)
+    verified_at = models.DateTimeField(null=True)
+    valid_until = models.DateTimeField(null=True)
+    revoked_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class WalletDeviceChallenge(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    credential = models.ForeignKey(WalletDeviceCredential, on_delete=models.PROTECT)
+    intent = models.ForeignKey(WalletTransferIntent, on_delete=models.PROTECT)
+    phase = models.CharField(max_length=7, choices=[('REVIEW','Review'),('EXECUTE','Execute')])
+    nonce = models.CharField(max_length=64)
+    expires_at = models.DateTimeField()
+    consumed_at = models.DateTimeField(null=True)
+    invalidated_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)

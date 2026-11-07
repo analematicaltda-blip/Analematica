@@ -11,7 +11,7 @@ class SoldadoAuditor(SoldierTemplate):
 
     def perform_action(self, params: dict):
         logger.info(f"SOLDADO AUDITOR #{self.soldier_id}: Verificando integridad de Ledger.")
-        return {"status": "SUCCESS", "soldier": self.soldier_id, "task": "LEDGER_VERIFICATION"}
+        return {"status": "NOT_IMPLEMENTED", "soldier": self.soldier_id, "task": "LEDGER_VERIFICATION"}
 
 class SoldadoAnalista(SoldierTemplate):
     """ NIVEL 6 — SOLDADO ANALISTA ANTIFRAUDE """
@@ -21,7 +21,7 @@ class SoldadoAnalista(SoldierTemplate):
 
     def perform_action(self, params: dict):
         logger.info(f"SOLDADO ANALISTA #{self.soldier_id}: Analizando patrones de geolocalización de transacciones.")
-        return {"status": "SUCCESS", "soldier": self.soldier_id, "task": "GEO_ANALYSIS"}
+        return {"status": "NOT_IMPLEMENTED", "soldier": self.soldier_id, "task": "GEO_ANALYSIS"}
 
 class SoldadoVigilante(SoldierTemplate):
     """ NIVEL 6 — SOLDADO VIGILANTE FINANCIERO """
@@ -31,4 +31,4 @@ class SoldadoVigilante(SoldierTemplate):
 
     def perform_action(self, params: dict):
         logger.info(f"SOLDADO VIGILANTE #{self.soldier_id}: Monitoreando picos de retiros inusuales.")
-        return {"status": "SUCCESS", "soldier": self.soldier_id, "task": "WITHDRAW_MONITORING"}
+        return {"status": "NOT_IMPLEMENTED", "soldier": self.soldier_id, "task": "WITHDRAW_MONITORING"}

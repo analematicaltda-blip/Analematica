@@ -71,32 +71,42 @@ de toda la API. No se incluyen claves de proveedor en código o imágenes.
 
 ## Estado real de los servicios turísticos
 
-**ERP y Turismo todavía no completan el arranque.** Se corrigieron sus bindings de
-paquetes, el registro del namespace de prestadores, las claves JWT por entorno y la
-lista de dependencias. La comprobación de modelos Django ya pasa, pero el chequeo
-completo falla en `gestion_contable/compras/urls.py`: importa `ProveedorViewSet`,
-`FacturaCompraViewSet` y `GenerarPagoMasivoProveedoresView`, cuyo código está comentado
-en `views.py`. No se activaron operaciones financieras incompletas para ocultar el error.
-Puede haber otros bloqueos tras resolver este primero; los archivos heredados también
-conservan las incidencias sintácticas inventariadas en la importación APP.
+### Instalación nueva cuando no hay respaldo histórico
 
-Para reproducir el bloqueo sin arrancar ni migrar bases:
+Existe un perfil alternativo **solo local y SQLite**: `fresh-local-v1`. Crea una
+base nueva con migraciones versionadas de los modelos actuales, sin modificar la
+historia antigua. Cada servicio usa directorio y claves propios. No importa ni
+reconstruye información histórica. El directorio indicado debe ser nuevo:
 
 ```bash
-docker compose -f BACKEND/deployment/compose.yaml run --rm --no-deps erp-tur
-docker compose -f BACKEND/deployment/compose.yaml run --rm --no-deps turismo
+python BACKEND/deployment/fresh_local.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur
+python BACKEND/deployment/fresh_local.py --directory BACKEND/deployment/.runtime/local-turismo --service turismo
+python BACKEND/deployment/tests/fresh_database_check.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur -v
+python BACKEND/deployment/tests/fresh_database_check.py --directory BACKEND/deployment/.runtime/local-turismo --service turismo -v
 ```
 
-Una vez corregidas las vistas, revisados los checks y preparadas las migraciones de
-bases nuevas, el arranque conjunto es:
+Conservar íntegros los directorios privados `.runtime`, incluidas sus claves, fuera
+de Git. Una copia de SQLite sin las claves no recupera por sí sola campos cifrados.
+No borrar una instalación para volver a ejecutar el inicializador. Para administrar
+una instalación ya creada:
 
 ```bash
-docker compose -f BACKEND/deployment/compose.yaml up -d --wait
+python BACKEND/deployment/fresh_manage.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur createsuperuser
+python BACKEND/deployment/fresh_manage.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur runserver 127.0.0.1:8002 --noreload
+python BACKEND/deployment/fresh_manage.py --directory BACKEND/deployment/.runtime/local-turismo --service turismo runserver 127.0.0.1:8003 --noreload
 ```
 
-Ese comando **no pasa actualmente para los cuatro servicios**. El entry point falla
-ante errores de Django y el healthcheck no los declara sanos. No habilites migraciones
-ni apuntes las variables a una base real sin revisar previamente los cambios de esquema.
+No hay contraseñas predeterminadas. Solo se permite servir en loopback; no es un
+despliegue público. Este perfil no cambia Compose/PostgreSQL ni activa procesos
+financieros pendientes. Un esquema listo no demuestra que todos los módulos estén
+terminados. Para una base histórica se mantiene el bloqueo y la reconciliación
+descritos a continuación.
+
+Los checks completos de Django pasan en una configuración aislada después de corregir imports, namespaces y dependencias opcionales. Compras, proyectos, presupuesto y reportes incompletos responden **503 autenticado**, sin activar operaciones financieras de ejemplo. Esto permite comprobar el bootstrap, pero no convierte esos módulos en funciones terminadas.
+
+El grafo de migraciones sigue bloqueado por una dependencia inexistente de `prestadores.0001_full_reset`. No se han migrado ni validado bases de negocio, reservas o pagos. **No ejecutar `up` para anunciar cuatro servicios funcionales ni aplicar migraciones reales sin resolver ese grafo y probar restauración.**
+
+Las pruebas de bootstrap usan `BACKEND/deployment/tests/tourism_runtime_check.py`, SQLite en memoria y claves temporales. El inventario, los hallazgos, las restricciones de permisos y el plan de dominio están en `INTEGRACIONES/turismo-erp/`. El registro de consolidación está en `INTEGRACIONES/plan-maestro/README.md`. El estado de runtime y de producción no queda certificado por los checks.
 
 ## Comprobar y detener
 
@@ -108,6 +118,14 @@ docker compose -f BACKEND/deployment/compose.yaml stop
 
 SGA-CD y Analemática exponen `/healthz`; comprueban su base y dependencia interna,
 respectivamente. `stop` conserva los datos. Evita `down -v` si deben mantenerse.
+
+ERP y Turismo también exponen `/readyz`, separado de `/healthz`: devuelve 503 si
+hay historia de migración inválida, migraciones pendientes, tablas o columnas
+ausentes o una base inaccesible. No aplica migraciones y no publica errores SQL.
+Un 200 comprueba esos contratos de esquema, no certifica reservas, pagos ni RNT.
+El estado turístico actual esperado es 503 por la historia heredada inválida.
+`migration_preflight.py`, con el entorno Django configurado, inventaría todas las
+dependencias ausentes sin abrir una base. No usar `--fake` para cambiar ese estado.
 
 Se validaron construcción desde fuente de SGA-CD, imagen/gateway Analemática,
 PostgreSQL aislado, HTTP de salud y rechazo de sesión sin autorización en el servidor

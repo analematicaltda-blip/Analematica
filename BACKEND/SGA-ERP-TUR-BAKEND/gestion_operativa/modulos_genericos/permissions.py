@@ -1,54 +1,43 @@
 from rest_framework.permissions import BasePermission
-from threading import local
+from rest_framework.exceptions import AuthenticationFailed
+from contextvars import ContextVar
+from django.core.exceptions import ObjectDoesNotExist,ValidationError
+from django.http import JsonResponse
 
-# --- ALMACÉN DEL CONTEXTO DE LA PETICIÓN ---
-_thread_locals = local()
+_current_provider=ContextVar('sgacd_current_provider',default=None)
+def get_current_tenant():return _current_provider.get()
 
-def get_current_tenant():
-    """
-    Función global y segura para obtener el inquilino (ProviderProfile) activo
-    que fue establecido por el middleware para la petición actual.
-    """
-    return getattr(_thread_locals, 'tenant', None)
-
-# --- MIDDLEWARE MULTI-INQUILINO ---
 class TenantMiddleware:
+    """Provider selection requires authenticated ownership, not just a header.
+
+    Provider IDs are not automatically mapped to the separate core ERP Tenant ID.
     """
-    Middleware que se ejecuta en cada petición para identificar al inquilino (tenant).
-    Establece el contexto del inquilino para la petición actual.
-    """
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        from .perfil.models import ProviderProfile # Lazy import
-
-        _thread_locals.tenant = None
-        tenant = None
-
-        # Prioridad 1: Header X-Tenant-ID (Standard Fase 3)
-        tenant_id = request.headers.get('X-Tenant-ID') or request.headers.get('X-Company-ID')
-        if tenant_id:
-            try:
-                tenant = ProviderProfile.objects.get(id=tenant_id)
-            except (ProviderProfile.DoesNotExist, ValueError):
-                pass
-
-        # Prioridad 2: Usuario autenticado (Fallback)
-        if not tenant and request.user and request.user.is_authenticated:
-            try:
-                tenant = request.user.perfil_prestador
-            except ProviderProfile.DoesNotExist:
-                tenant = None
-
-        _thread_locals.tenant = tenant
-        request.tenant_id = str(tenant.id) if tenant else None
-        response = self.get_response(request)
-
-        if hasattr(_thread_locals, 'tenant'):
-            del _thread_locals.tenant
-
-        return response
+    def __init__(self,get_response):self.get_response=get_response
+    def __call__(self,request):
+        token=_current_provider.set(None)
+        try:
+            user=getattr(request,'user',None)
+            if (not user or not user.is_authenticated) and request.headers.get('Authorization','').startswith('Bearer '):
+                from rest_framework_simplejwt.authentication import JWTAuthentication
+                try:principal=JWTAuthentication().authenticate(request)
+                except AuthenticationFailed:return JsonResponse({'code':'invalid_domain_session'},status=401)
+                if principal:user=request.user=principal[0]
+            selected=request.headers.get('X-Tenant-ID');company=request.headers.get('X-Company-ID')
+            if selected and company and selected!=company:return JsonResponse({'code':'conflicting_provider_selection'},status=400)
+            selected=selected or company;provider=None
+            if selected:
+                if not user or not user.is_authenticated:return JsonResponse({'code':'provider_selection_requires_authentication'},status=401)
+                from .perfil.models import ProviderProfile
+                try:provider=ProviderProfile.objects.filter(pk=selected,owner_id=user.pk).first()
+                except (ValidationError,ValueError,TypeError):return JsonResponse({'code':'invalid_provider_selection'},status=400)
+                if provider is None or provider.owner_id!=user.pk:return JsonResponse({'code':'provider_access_denied'},status=403)
+            elif user and user.is_authenticated:
+                try:provider=getattr(user,'perfil_prestador',None)
+                except ObjectDoesNotExist:provider=None
+                if provider is not None and getattr(provider,'owner_id',None)!=user.pk:provider=None
+            _current_provider.set(provider);request.tenant_id=str(provider.pk) if provider else None
+            return self.get_response(request)
+        finally:_current_provider.reset(token)
 
 # --- PERMISO ORIGINAL (Referencia) ---
 class IsOwner(BasePermission):

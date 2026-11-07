@@ -6,3 +6,8 @@ class GestionComercialConfig(AppConfig):
 
     def ready(self):
         import apps.prestadores.mi_negocio.gestion_comercial.signals
+
+        # Register the existing funnel models during app discovery, not URL import order.
+        from .funnels import models as funnel_models
+        from .marketing import models as marketing_models
+        from .shared import models as shared_models

@@ -47,7 +47,7 @@ for name, entry in manifest.items():
     changes.append((payload, target, name))
 
 # Publish the single canonical assistance interface on this site's own JWT origin.
-for name in ['assistance.html', 'js/assistance.js', 'css/assistance.css', 'control.html', 'js/control.js']:
+for name in ['platform.html','js/platform.js','resources.html','js/resources.js','assistance.html', 'js/assistance.js', 'css/assistance.css', 'control.html', 'js/control.js']:
     source = repo / 'FRONTEND/ANALEMATICA-FRONTEND' / name
     target = published / name
     if source.is_symlink() or not source.is_file() or not target.resolve().is_relative_to(published):

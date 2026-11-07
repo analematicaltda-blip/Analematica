@@ -1,0 +1,7 @@
+{
+  "database_connected": false,
+  "migrations_applied": false,
+  "graph_valid": false,
+  "error_type": "NodeNotFoundError",
+  "detail": "Migration gestion_comercial.0001_full_reset dependencies reference nonexistent parent node ('prestadores', '0001_full_reset')"
+}

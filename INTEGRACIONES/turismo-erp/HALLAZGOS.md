@@ -1,0 +1,29 @@
+# Hallazgos iniciales y evidencias
+
+| ID | Prioridad / estado | Evidencia | Riesgo y acción |
+|---|---|---|---|
+| H-001 | Crítica · mitigada en atractivos/rutas/historia, alcance restante pendiente | `api/views.py`: `AtractivoTuristicoViewSet` y `RutaTuristicaViewSet` usan `ModelViewSet` con `AllowAny`. | Posible escritura anónima. Revisar rutas efectivamente expuestas; mantener lectura pública y exigir permisos/jurisdicción a cada escritura. No se ejecutaron mutaciones. |
+| H-002 | Crítica · corregida en atractivos, resto pendiente | `api/permissions.py`, `CanManageAtractivos`: devuelve autorización por ciertos roles sin comprobar territorio del objeto. | Un rol municipal/departamental podría exceder jurisdicción. Diseñar filtro de consultas más control de objeto/creación. |
+| H-003 | Crítica · corregido en límite técnico, dominio parcial | Middleware ERP aceptaba proveedor por encabezado sin pertenencia. Ahora valida principal/propiedad y limpia contexto en `finally`. | Delegación de empleados y relación proveedor/core Tenant siguen pendientes; no mapear UUID arbitrarios. |
+| H-004 | Alta · PARCIAL | Compras tenía toda la implementación comentada y cuentas bancarias de ejemplo. | Rutas explícitas 503 autenticadas; pagos y compras reales no habilitados. |
+| H-005 | Alta · DEFECTUOSA | Proyectos referencia `FacturaVenta` ausente; presupuesto tiene modelos comentados; reportes usa `Transaction` ausente. | No inventar alias ni migrar. Contratos/migraciones contables antes de implementación. Respuesta 503 explícita durante consolidación. |
+| H-006 | Alta · NO VERIFICADA | Múltiples `Tenant`, `Entity`, `ProviderProfile`, identidades y modelos de lead; ERP se importa desde el institucional. | Duplicación y ambigüedad de dominio; inventariar propietarios y correspondencias antes de SSO/interoperabilidad. |
+| H-007 | Alta · DEFECTUOSA en archivos señalados | `inventario-tecnico.json` lista errores sintácticos en módulos heredados y un fixture deliberado de pruebas. | No confundir un check Django que no carga esos archivos con validación de todos los agentes. Separar fixture intencional de fallos reales. |
+| H-008 | Alta · PARCIAL | Registro de modelos de embudo dependía de imports de URLs; SDK IA faltante bloqueaba módulos no relacionados. | Correcciones de descubrimiento/carga opcional y pruebas nuevas; ninguna inferencia viva certificada. |
+| H-009 | Alta · NO VERIFICADA | Componentes `checkout`, reservas, cartera, pagos y documentos presentes; no se comprobó un recorrido cliente completo. | No anunciar compra/reserva/pago completo. Priorizar flujo cliente con idempotencia y conciliación. |
+| H-010 | Alta · NO VERIFICADA | Modelo TourismProvider tiene RNT y booleanos de verificación, pero no hay prueba end-to-end de contraste oficial en esta auditoría. | Exigir fuente/fecha/evidencia; no equiparar pauta, inscripción y RNT. |
+| H-011 | Alta · NO VERIFICADA | Páginas y modelos de directorios presentes. | No se certificó consentimiento/contrato/vencimiento con conservación del registro. Definir estados independientes. |
+| H-012 | Media · corregido en configuración local | Namespaces duplicados y contrato allauth incongruente. | Se mantienen paths históricos, con namespaces diferenciados y checks sin silenciar. |
+| H-013 | Alta · NO VERIFICADA | Configuración y fuentes para identidad, caché, almacenamiento y colas; sin respaldo productivo ni restauración verificada. | Despliegue de pruebas aislado y restauración antes de tocar bases reales. |
+| H-014 | Alta · NO VERIFICADA | `semantic_engine.py` contiene fallback mock; `translation_service.py` devuelve el texto original; marketing de voz contiene confianza fija. | No presentar inferencia/traducción/certeza fabricada como real; revisar todos los caminos antes de activar agentes. La corrección de arranque no certifica semántica. |
+| H-015 | Crítica · DEFECTUOSA | `plan-maestro/migration-audit.json`: `gestion_comercial.0001_full_reset` depende de `prestadores.0001_full_reset`, nodo ausente. | Los checks de aplicación no prueban migraciones. No aplicar a bases reales ni usar `--fake`; reconstruir correspondencias y ensayar sobre copia restaurada. |
+
+Estos son hallazgos preliminares de código y pruebas acotadas, no una auditoría de seguridad exhaustiva ni una certificación legal. Las correcciones del dominio se planifican después de presentar esta evidencia. No se corrigieron silenciosamente H-001/H-002 ni se habilitaron operaciones comerciales.
+
+## Segunda entrega: protección institucional y cliente
+
+H-001/H-002 describen la configuración encontrada en la auditoría inicial. Ahora los atractivos exigen rol, GovernmentProfile activo, Profile coherente y permisos funcionales; sus consultas/escrituras están filtradas por entidad y territorio. Los borradores no son públicos. Rutas e historia carecen del ámbito suficiente para habilitar sus escrituras de forma segura: se conservan solo lectura publicada, con escrituras no disponibles. Esto no certifica todas las vistas institucionales.
+
+H-016: la gestión de reseñas del marketplace permitía consultar y modificar registros de otros clientes y aceptar el indicador de compra verificada desde el cliente. Se filtra ahora por autor autenticado, se reserva la verificación al servidor y se impide trasladar/duplicar la reseña a otro servicio.
+
+H-017: el carrito de `apps/cart` referencia planes de suscripción SaaS (`apps.comercial.Plan`), no una reserva turística; además conserva referencias a precio/nombre heredados. No se utilizó ni se presentó como checkout de experiencias. Sigue pendiente separar y verificar ese recorrido antes de activar reservas/pagos.

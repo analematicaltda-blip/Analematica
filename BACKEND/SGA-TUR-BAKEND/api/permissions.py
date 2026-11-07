@@ -227,72 +227,11 @@ class IsPrestadorOwner(BasePermission):
         return False
 
 
-class CanManageAtractivos(BasePermission):
-    """
-    Permiso para gestionar Atractivos Turísticos.
-    - Admins/Funcionarios: Tienen control total.
-    - Guías de Turismo: Pueden crear atractivos y solo gestionar los propios.
-    - Todos: Pueden ver la lista y los detalles.
-    """
-    def has_permission(self, request, view):
-        user = request.user
+from .institutional_access import InstitutionalAttractionPermission
 
-        # Permitir siempre métodos seguros (GET, HEAD, OPTIONS)
-        if view.action in ['list', 'retrieve']:
-            return True
-
-        # Si no es un método seguro, el usuario debe estar autenticado
-        if not user or not user.is_authenticated:
-            return False
-
-        # El permiso para crear (POST)
-        if view.action == 'create':
-            if user.role in [CustomUser.Role.ADMIN, CustomUser.Role.FUNCIONARIO_DIRECTIVO, CustomUser.Role.FUNCIONARIO_PROFESIONAL]:
-                return True
-            # La lógica de permisos basada en CategoriaPrestador ha sido comentada
-            # porque el modelo fue movido a otro dominio. Esto requerirá una
-            # refactorización futura basada en servicios.
-            # if user.role == CustomUser.Role.PRESTADOR:
-            #     try:
-            #         # Usamos el slug que es más confiable que el nombre
-            #         guia_categoria = CategoriaPrestador.objects.get(slug='guias-de-turismo')
-            #         return user.perfil_prestador.categoria == guia_categoria
-            #     except (CategoriaPrestador.DoesNotExist, AttributeError):
-            #         return False
-            return False
-
-        # Para otras acciones de escritura (update, partial_update, destroy),
-        # el permiso se basa en el objeto, así que devolvemos True aquí
-        # y dejamos que has_object_permission haga el trabajo.
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        user = request.user
-
-        # Permitir siempre métodos seguros (GET, HEAD, OPTIONS)
-        if request.method in SAFE_METHODS:
-            return True
-
-        # Si no es un método seguro, el usuario debe estar autenticado
-        if not user or not user.is_authenticated:
-            return False
-
-        # Admins y Funcionarios pueden editar/borrar cualquier atractivo.
-        if user.role in [
-            CustomUser.Role.ADMIN,
-            CustomUser.Role.ADMIN_NACIONAL,
-            CustomUser.Role.ADMIN_DEPARTAMENTAL,
-            CustomUser.Role.ADMIN_MUNICIPAL,
-            CustomUser.Role.DIRECTIVO_NACIONAL,
-            CustomUser.Role.DIRECTIVO_DEPARTAMENTAL,
-            CustomUser.Role.DIRECTIVO_MUNICIPAL,
-            CustomUser.Role.FUNCIONARIO_PROFESIONAL,
-        ]:
-            return True
-
-        # El autor del atractivo puede gestionarlo.
-        # Esto cubre al guía que lo creó.
-        return obj.autor == user
+class CanManageAtractivos(InstitutionalAttractionPermission):
+    """Compatibility name for the jurisdiction-aware permission."""
+    pass
 
 
 class IsEntityAdmin(BasePermission):

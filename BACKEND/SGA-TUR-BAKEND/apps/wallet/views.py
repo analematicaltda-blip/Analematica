@@ -1,102 +1,94 @@
-from rest_framework import viewsets, permissions, status
+from django.db import DatabaseError
+from rest_framework import viewsets,permissions,mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Wallet, WalletTransaccion
-from .serializers import WalletAccountSerializer, WalletTransactionSerializer
-from apps.admin_plataforma.services.governance_kernel import GovernanceKernel
-from django.db import models
+from .models import Wallet,WalletTransaccion,WalletTransferIntent
+from .serializers import (WalletAccountSerializer,WalletTransactionSerializer,TransferIntentSerializer,PrepareTransferSerializer,ReviewTransferSerializer,ExecuteTransferSerializer)
+from .services.wallet_service import WalletOperationUnavailable
+from .services import internal_transfer
+from .services import device_approvals
+from .serializers import DeviceChallengeSerializer,DeviceAttestationSerializer,DeviceCredentialSerializer
+from .models import WalletDeviceCredential
+import base64
 
-class WalletAccountViewSet(viewsets.ModelViewSet):
-    serializer_class = WalletAccountSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class PrivateWalletMixin:
+    permission_classes=[permissions.IsAuthenticated]
+    def finalize_response(self,request,response,*args,**kwargs):
+        response=super().finalize_response(request,response,*args,**kwargs)
+        response['Cache-Control']='no-store'
+        return response
+    def handle_exception(self,exception):
+        if isinstance(exception,DatabaseError):
+            exception=WalletOperationUnavailable('No se pudo confirmar el resultado. Consulte el estado de la intención antes de reintentar; conserve la misma clave de idempotencia.')
+        return super().handle_exception(exception)
 
+class WalletAccountViewSet(PrivateWalletMixin,viewsets.ReadOnlyModelViewSet):
+    serializer_class=WalletAccountSerializer
     def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Wallet.objects.all()
-        return Wallet.objects.filter(user_id=self.request.user.id)
+        if self.request.user.is_superuser:return Wallet.objects.all()
+        return Wallet.objects.filter(user_id=self.request.user.pk)
+    @action(detail=True,methods=['post'])
+    def deposit(self,request,pk=None):
+        self.get_object();raise WalletOperationUnavailable()
+    @action(detail=False,methods=['post'])
+    def pay(self,request):raise WalletOperationUnavailable()
+    @action(detail=True,methods=['post'])
+    def liquidate(self,request,pk=None):
+        self.get_object();raise WalletOperationUnavailable()
+    @action(detail=True,methods=['post'])
+    def freeze(self,request,pk=None):
+        self.get_object();raise WalletOperationUnavailable()
 
-    @action(detail=True, methods=['post'])
-    def deposit(self, request, pk=None):
-        # Permitimos que el turista deposite en su propia cuenta (Vía 3)
-        # El Kernel validará el rol.
-        kernel = GovernanceKernel(user=request.user)
-        try:
-            result = kernel.resolve_and_execute(
-                intention_name="WALLET_DEPOSIT",
-                parameters={
-                    "wallet_id": str(pk),
-                    "amount": request.data.get("amount"),
-                    "description": request.data.get("description", "Carga de fondos institucional")
-                }
-            )
-            return Response(result)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['post'])
-    def pay(self, request):
-        kernel = GovernanceKernel(user=request.user)
-        try:
-            result = kernel.resolve_and_execute(
-                intention_name="WALLET_PAY",
-                parameters={
-                    "to_wallet_id": request.data.get("to_wallet_id"),
-                    "amount": request.data.get("amount"),
-                    "related_service_id": request.data.get("related_service_id"),
-                    "description": request.data.get("description")
-                }
-            )
-            return Response(result)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['post'])
-    def liquidate(self, request, pk=None):
-        kernel = GovernanceKernel(user=request.user)
-        try:
-            result = kernel.resolve_and_execute(
-                intention_name="WALLET_LIQUIDATE",
-                parameters={"wallet_id": str(pk)}
-            )
-            return Response(result)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['post'])
-    def freeze(self, request, pk=None):
-        kernel = GovernanceKernel(user=request.user)
-        try:
-            result = kernel.resolve_and_execute(
-                intention_name="WALLET_FREEZE",
-                parameters={
-                    "wallet_id": str(pk),
-                    "motivo": request.data.get("motivo")
-                }
-            )
-            return Response(result)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-class WalletTransactionViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = WalletTransactionSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
+class WalletTransactionViewSet(PrivateWalletMixin,viewsets.ReadOnlyModelViewSet):
+    serializer_class=WalletTransactionSerializer
     def get_queryset(self):
-        if self.request.user.is_superuser:
-            return WalletTransaccion.objects.all()
-        # Transacciones donde el usuario es origen o destino a través de sus movimientos
-        return WalletTransaccion.objects.filter(
-            movimientos__wallet__user_id=self.request.user.id
-        ).distinct()
+        if self.request.user.is_superuser:return WalletTransaccion.objects.all()
+        return WalletTransaccion.objects.filter(movimientos__wallet__user_id=self.request.user.pk).distinct()
+    @action(detail=True,methods=['post'])
+    def refund(self,request,pk=None):
+        self.get_object();raise WalletOperationUnavailable()
 
-    @action(detail=True, methods=['post'])
-    def refund(self, request, pk=None):
-        kernel = GovernanceKernel(user=request.user)
-        try:
-            result = kernel.resolve_and_execute(
-                intention_name="WALLET_REFUND",
-                parameters={"transaction_id": str(pk)}
-            )
-            return Response(result)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+class WalletTransferViewSet(PrivateWalletMixin,mixins.CreateModelMixin,mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    serializer_class=TransferIntentSerializer
+    def get_queryset(self):return WalletTransferIntent.objects.filter(requested_by_id=self.request.user.pk).order_by('-created_at')
+    def create(self,request):
+        form=PrepareTransferSerializer(data=request.data);form.is_valid(raise_exception=True)
+        data=form.validated_data
+        intent=internal_transfer.prepare(request.user,data['source'],data['destination'],data['amount'],data['idempotency_key'])
+        return Response(self.get_serializer(intent).data,status=201)
+    @action(detail=True,methods=['post'])
+    def review(self,request,pk=None):
+        self.get_object()
+        form=ReviewTransferSerializer(data=request.data);form.is_valid(raise_exception=True)
+        intent,token=internal_transfer.review(request.user,pk,form.validated_data['digest'],form.validated_data.get('device_proof'))
+        return Response({'intent':self.get_serializer(intent).data,'confirmation':token})
+    @action(detail=True,methods=['post'])
+    def execute(self,request,pk=None):
+        self.get_object()
+        form=ExecuteTransferSerializer(data=request.data);form.is_valid(raise_exception=True)
+        intent=internal_transfer.execute(request.user,pk,form.validated_data['digest'],form.validated_data['confirmation'],form.validated_data.get('device_proof'))
+        return Response(self.get_serializer(intent).data)
+
+    @action(detail=True,methods=['post'])
+    def challenge(self,request,pk=None):
+        self.get_object()
+        form=DeviceChallengeSerializer(data=request.data);form.is_valid(raise_exception=True)
+        challenge,message=device_approvals.issue(request.user,pk,form.validated_data['credential'],form.validated_data['phase'])
+        return Response({'challenge':str(challenge.pk),'credential':str(challenge.credential_id),'payload':base64.b64encode(message).decode('ascii'),'expires_at':challenge.expires_at})
+
+class WalletDeviceViewSet(PrivateWalletMixin,mixins.CreateModelMixin,mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    serializer_class=DeviceCredentialSerializer
+    def get_queryset(self):return WalletDeviceCredential.objects.filter(user_id=self.request.user.pk).order_by('-created_at')
+    def create(self,request):
+        credential,nonce=device_approvals.begin_enrollment(request.user)
+        return Response({'device':self.get_serializer(credential).data,'enrollment_challenge':nonce},status=201)
+    @action(detail=True,methods=['post'])
+    def attest(self,request,pk=None):
+        self.get_object()
+        form=DeviceAttestationSerializer(data=request.data);form.is_valid(raise_exception=True)
+        device=device_approvals.attest(request.user,pk,form.validated_data['public_key'],form.validated_data['certificate_chain'],form.validated_data['enrollment_authorization'])
+        return Response(self.get_serializer(device).data)
+    @action(detail=True,methods=['post'])
+    def revoke(self,request,pk=None):
+        self.get_object();device=device_approvals.revoke(request.user,pk)
+        return Response(self.get_serializer(device).data)

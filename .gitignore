@@ -12,3 +12,35 @@ tunnel.log
 /BACKEND/SGA-ERP-TUR-BAKEND/keys/jwt-private.pem
 
 /BACKEND/SGA-TUR-BAKEND/keys/jwt-private.pem
+
+# Generated local databases and credentials; never commit runtime state.
+/BACKEND/deployment/.runtime/
+
+# Native document vault build artifacts; no device data or keys in Git.
+/pool-01-cryptography/.gradle/
+/pool-01-cryptography/android/build/
+/pool-01-cryptography/ios/.build/
+/pool-01-cryptography/ios/.swiftpm/
+
+/pool-01-cryptography/flet_bridge/build/
+/pool-01-cryptography/flet_bridge/dist/
+/pool-01-cryptography/flet_bridge/src/*.egg-info/
+/pool-01-cryptography/flet_bridge/**/__pycache__/
+/pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/.dart_tool/
+/pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/build/
+/pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/.gradle/
+
+/pool-02-biometrics/.gradle/
+/pool-02-biometrics/android/build/
+/pool-02-biometrics/ios/.build/
+/pool-02-biometrics/ios/.swiftpm/
+
+# Pool03 native build artifacts
+pool-03-integrity/.gradle/
+pool-03-integrity/android/build/
+pool-03-integrity/ios/SGAIntegrity/.build/
+
+# Pool04 native build artifacts
+pool-04-anti-phishing/.gradle/
+pool-04-anti-phishing/android/build/
+pool-04-anti-phishing/ios/SGAProtection/.build/

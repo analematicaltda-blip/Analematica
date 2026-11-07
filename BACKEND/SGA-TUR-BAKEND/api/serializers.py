@@ -387,6 +387,12 @@ class AtractivoTuristicoDetailSerializer(serializers.ModelSerializer):
     categoria_color_display = serializers.CharField(source='get_categoria_color_display', read_only=True)
     imagen_principal_url = serializers.ImageField(source='imagen_principal', read_only=True)
     autor_username = serializers.CharField(source='autor.username', read_only=True, default=None)
+    def get_fields(self):
+        fields=super().get_fields()
+        # Public tourism detail must not expose the officer's login identifier.
+        fields.pop('autor_username',None)
+        return fields
+
     class Meta:
         model = AtractivoTuristico
         fields = [
@@ -400,19 +406,22 @@ class AtractivoTuristicoDetailSerializer(serializers.ModelSerializer):
 class AtractivoTuristicoWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = AtractivoTuristico
-        fields = [
-            'nombre', 'slug', 'descripcion', 'como_llegar', 'ubicacion_mapa',
-            'categoria_color', 'imagen_principal', 'horario_funcionamiento',
-            'tarifas', 'recomendaciones', 'accesibilidad', 'informacion_contacto',
-            'es_publicado'
-        ]
-        extra_kwargs = {
-            'imagen_principal': {'required': False},
-            'es_publicado': {'required': False},
-        }
-    def create(self, validated_data):
-        validated_data['autor'] = self.context['request'].user
-        return super().create(validated_data)
+        fields = ['nombre','slug','descripcion','como_llegar','categoria_color','imagen_principal',
+                  'horario_funcionamiento','tarifas','recomendaciones','accesibilidad',
+                  'informacion_contacto','entity','department','municipality','latitud','longitud','es_publicado']
+        extra_kwargs = {'imagen_principal':{'required':False},'es_publicado':{'required':False}}
+    def validate_latitud(self,value):
+        import math
+        if value is not None and (not math.isfinite(value) or not -90<=value<=90):raise serializers.ValidationError('Latitud no válida.')
+        return value
+    def validate_longitud(self,value):
+        import math
+        if value is not None and (not math.isfinite(value) or not -180<=value<=180):raise serializers.ValidationError('Longitud no válida.')
+        return value
+    def validate(self,attrs):
+        from .institutional_access import validate_write
+        validate_write(self.context['request'].user,attrs,self.instance)
+        return attrs
 
 
 class PublicacionListSerializer(serializers.ModelSerializer):

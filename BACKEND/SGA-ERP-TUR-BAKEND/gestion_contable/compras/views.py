@@ -145,3 +145,12 @@
 #             ])
 #
 #         return response
+
+# Preserve disabled legacy source without activating example payments.
+from ...integration_status import PendingPurchasesViewSet,PendingModuleView
+
+class ProveedorViewSet(PendingPurchasesViewSet):pass
+class FacturaCompraViewSet(PendingPurchasesViewSet):pass
+class GenerarPagoMasivoProveedoresView(PendingModuleView):
+    module='erp.compras'
+    blocker='Pagos masivos pendientes de validación; no se realizó ninguna operación.'
