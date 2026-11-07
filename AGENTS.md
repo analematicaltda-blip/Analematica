@@ -42,3 +42,12 @@ agent-desktop mediante el conector limitado y el control de autorizaciones
 existente. No autoaprobar, exponer secretos a modelos ni crear bypasses de shell.
 El modo offline prepara borradores/apuntes, no liquida dinero; las dos revisiones
 locales no son autorizaciones financieras ni permisos de control.
+
+## Preferencia del usuario sobre entregas y Git
+
+No crear commits parciales durante el desarrollo. No hacer push, merge ni
+reescribir historia como parte de las verificaciones. El usuario ha indicado
+que los commits y la actualización del repositorio se harán únicamente al
+terminar el trabajo final y cuando lo indique. Conservar avances en la rama y
+archivos actuales; documentar diferencias frente a main sin obligar a aplicar
+parches parciales. Consultar INTEGRACIONES/plan-maestro/VERIFICACION_MAIN.md.
