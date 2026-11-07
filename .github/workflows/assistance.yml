@@ -1,0 +1,38 @@
+name: Platform assistance engine
+on:
+  push:
+    paths: ['DESKTOP/open-duet/**', 'DESKTOP/asistencia-sgacd/**', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance*.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', '.github/workflows/assistance.yml']
+  pull_request:
+    paths: ['DESKTOP/open-duet/**', 'DESKTOP/asistencia-sgacd/**', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance*.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', '.github/workflows/assistance.yml']
+permissions:
+  contents: read
+jobs:
+  local-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node DESKTOP/asistencia-sgacd/verify-source.mjs
+      - run: npm ci --ignore-scripts
+        working-directory: DESKTOP/asistencia-sgacd
+      - run: npx playwright install --with-deps chromium
+        working-directory: DESKTOP/asistencia-sgacd
+      - run: node --test DESKTOP/asistencia-sgacd/tests/*.test.mjs
+      - run: node --test test/desktop-permissions.test.js test/application-menu.test.js
+        working-directory: DESKTOP/open-duet/desktop
+  backend:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: 'sqlite://'
+      SECRET_KEY: 'isolated-ci-assistance-only-not-a-real-secret'
+      OPENAI_API_KEY: ''
+      PYTHONPATH: BACKEND/SGA-CD-BACKEND
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install requests fastapi httpx sqlalchemy pydantic-settings 'python-jose[cryptography]' 'passlib[bcrypt]' email-validator python-multipart
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p 'test_assistance*.py' -v

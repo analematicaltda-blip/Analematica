@@ -2,6 +2,7 @@
 
 import '../globals.css'; // Importación explícita de los estilos globales
 import React, { useState, useEffect } from 'react';
+import AuthorizedControlLink from '@/components/AuthorizedControlLink';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { useAuth } from '@/contexts/AuthContext';
@@ -75,6 +76,7 @@ const AuthenticatedLayout = ({ children, user }: { children: React.ReactNode, us
         )}
         <Header isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         <main className="flex-1 relative z-0 focus:outline-none p-4 sm:p-6 lg:p-8">
+          <AuthorizedControlLink />
           {children}
         </main>
 

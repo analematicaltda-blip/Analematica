@@ -1,5 +1,6 @@
 'use client';
 
+import AuthorizedControlLink from './components/AuthorizedControlLink';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -83,21 +84,15 @@ export default function MiNegocioDashboard() {
   const { getStatistics } = useMiNegocioApi();
   const [stats, setStats] = useState<any>(null);
 
-  useEffect(() => {
-    // getStatistics().then(setStats);
-    // Mock data based on real schema
-    setStats({
-      total_sales: 1250000,
-      active_reservations: 12,
-      pending_deliveries: 4,
-      wallet_balance: 450000
-    });
-  }, []);
+  // Keep data unavailable until the real statistics endpoint is implemented.
+  // Do not display example sales, reservations or balances as real activity.
+
 
   return (
     <div className="space-y-10 p-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
+          <AuthorizedControlLink />
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">Mi Negocio</h1>
           <p className="text-slate-500 mt-2 text-lg">Panel empresarial unificado del ecosistema SARITA.</p>
         </div>
@@ -106,7 +101,7 @@ export default function MiNegocioDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
          <StatCard title="Ventas del Mes" value={stats?.total_sales} icon={FiTrendingUp} isCurrency />
          <StatCard title="Reservas Activas" value={stats?.active_reservations} icon={FiCalendar} />
-         <StatCard title="Puntaje Institucional" value="85" icon={<FiAward className="text-indigo-600"/>} />
+         <StatCard title="Puntaje Institucional" value={stats?.institutional_score ?? '—'} icon={FiAward} />
          <StatCard title="Saldo Monedero" value={stats?.wallet_balance} icon={FiCreditCard} isCurrency />
       </div>
 
@@ -115,8 +110,8 @@ export default function MiNegocioDashboard() {
             <FiAlertCircle size={32} />
          </div>
          <div>
-            <h3 className="text-xl font-bold text-amber-900">Periodo de Caracterización Activo</h3>
-            <p className="text-amber-700 font-medium">Restan 24 días para completar tu caracterización técnica obligatoria. Evita sanciones y mejora tu visibilidad.</p>
+            <h3 className="text-xl font-bold text-amber-900">Caracterización del prestador</h3>
+            <p className="text-amber-700 font-medium">El plazo y el estado de caracterización estarán disponibles cuando se conecte el backend.</p>
          </div>
          <Link href="/dashboard/prestador/mi-negocio/caracterizacion" className="ml-auto">
             <Button className="bg-amber-600 hover:bg-amber-700 text-white font-black px-8">Completar Ahora</Button>
@@ -151,7 +146,7 @@ function StatCard({ title, value, icon: Icon, isCurrency = false }: any) {
           <div>
             <p className="text-sm font-medium text-slate-500">{title}</p>
             <h4 className="text-2xl font-bold text-slate-900 mt-1">
-              {isCurrency ? `$${(value || 0).toLocaleString()}` : value}
+              {value == null ? '—' : isCurrency ? `$${value.toLocaleString()}` : value}
             </h4>
           </div>
           <div className="p-3 bg-slate-100 rounded-xl">

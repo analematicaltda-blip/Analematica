@@ -1,0 +1,25 @@
+name: Security and AI resource integration
+on:
+  push:
+    paths: ['SEGURIDAD/AiSOC/**', 'llm/free-ai-apis/**', 'INTEGRACIONES/seguridad-ia/**', 'BACKEND/SGA-CD-BACKEND/app/services/resources/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/resources.py', 'BACKEND/SGA-CD-BACKEND/tests/test_resources.py', '.github/workflows/security-ai-resources.yml']
+  pull_request:
+    paths: ['SEGURIDAD/AiSOC/**', 'llm/free-ai-apis/**', 'INTEGRACIONES/seguridad-ia/**', 'BACKEND/SGA-CD-BACKEND/app/services/resources/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/resources.py', 'BACKEND/SGA-CD-BACKEND/tests/test_resources.py', '.github/workflows/security-ai-resources.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: 'sqlite://'
+      SECRET_KEY: 'isolated-ci-resources-not-a-production-secret'
+      PYTHONPATH: BACKEND/SGA-CD-BACKEND
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install requests fastapi httpx sqlalchemy pydantic-settings 'python-jose[cryptography]' 'passlib[bcrypt]' email-validator python-multipart
+      - run: python INTEGRACIONES/seguridad-ia/verify_vendor.py
+      - run: python INTEGRACIONES/seguridad-ia/sync_catalog.py --check
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_resources.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p 'test_assistance*.py' -v

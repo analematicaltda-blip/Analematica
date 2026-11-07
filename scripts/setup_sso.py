@@ -37,7 +37,7 @@ else:
     subprocess.run(['docker','tag',image_id,base],check=True)
     state.write_text(base)
 context=demo/'sso-image';context.mkdir(exist_ok=True)
-for source,name in [('BAKEND/SGA-CD-BACKEND/app/services/sso_service.py','sso_service.py'),('BAKEND/SGA-CD-BACKEND/app/api/v1/endpoints/sso.py','sso.py')]:
+for source,name in [('BACKEND/SGA-CD-BACKEND/app/services/sso_service.py','sso_service.py'),('BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/sso.py','sso.py')]:
     shutil.copy2(repo/source,context/name)
 (context/'register.py').write_text('''from pathlib import Path
 p=Path('/opt/backend/app/api/v1/api.py')

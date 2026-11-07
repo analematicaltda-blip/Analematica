@@ -1,0 +1,425 @@
+#!/usr/local/bin/python
+"""Container-local CDP broker. No host ports, paths, or attach endpoints accepted."""
+import base64
+import fcntl
+import json
+import os
+import platform
+import re
+import secrets
+import socket
+import socketserver
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
+from urllib.parse import urlsplit
+
+# The container defaults below are unchanged. A local (no Docker) launcher sets these variables
+# to give each agent its own socket, port and profile and to pick the browser binary and flags.
+SOCKET = os.environ.get("OD_BROWSER_SOCKET", "/tmp/od-browser.sock")
+LOCK = os.environ.get("OD_BROWSER_LOCK", "/tmp/od-browser-start.lock")
+PROFILE = os.environ.get("OD_BROWSER_PROFILE", "/home/agent/browser-profile")
+PORT = os.environ.get("OD_BROWSER_PORT", "9222")
+CHROME = os.environ.get("OD_BROWSER_CHROME", "chromium")
+IDLE_SECONDS = int(os.environ.get("OD_BROWSER_IDLE_SECONDS", "1800"))
+LIMIT = 64000
+
+
+def extra_flags():
+    flags = []
+    if os.environ.get("OD_BROWSER_HEADLESS") == "1":
+        flags.append("--headless=new")
+    if os.environ.get("OD_BROWSER_NO_SANDBOX", "1") == "1":
+        flags.append("--no-sandbox")
+    if os.environ.get("OD_BROWSER_PROXY"):
+        flags.append("--proxy-server=" + os.environ["OD_BROWSER_PROXY"])
+        # Chrome sends localhost, loopback and link-local addresses (the app, cloud metadata) around a proxy by
+        # default; this removes that rule so every address goes through the egress gate.
+        flags.append("--proxy-bypass-list=<-loopback>")
+    return flags
+
+
+# A headless Chromium names itself "HeadlessChrome" in its user agent and client hints, which many sites refuse
+# outright. The override below only drops that word and keeps the real version, platform and architecture, and
+# it sets the header and navigator.userAgentData from one value so they cannot disagree. It does not hide
+# navigator.webdriver, change the screen, canvas or fonts, or touch the network address.
+GREASE_CHARS = [" ", "(", ":", "-", ".", "/", ")", ";", "=", "?", "_"]
+GREASE_VERSIONS = ["8", "99", "24"]
+
+
+def browser_identity(version_info, chrome=""):
+    """The Emulation.setUserAgentOverride parameters for a headless browser, or None when none are needed."""
+    agent = str(version_info.get("userAgent", ""))
+    product = str(version_info.get("product", ""))
+    if "HeadlessChrome/" not in agent or "/" not in product:
+        return None
+    full = product.split("/", 1)[1]
+    major = full.split(".")[0]
+    if not major.isdigit():
+        return None
+    seed = int(major)
+    brands = [("Chromium", major, full)]
+    name = os.path.basename(chrome).lower()
+    if "chrome" in name and "chromium" not in name:
+        brands.append(("Google Chrome", major, full))
+    brands.insert(seed % (len(brands) + 1), (f"Not{GREASE_CHARS[seed % 11]}A{GREASE_CHARS[(seed + 1) % 11]}Brand", GREASE_VERSIONS[seed % 3], GREASE_VERSIONS[seed % 3] + ".0.0.0"))
+    if "Windows" in agent:
+        system = "Windows"
+    elif "Macintosh" in agent:
+        system = "macOS"
+    else:
+        system = "Linux"
+    return {
+        "userAgent": agent.replace("HeadlessChrome/", "Chrome/"),
+        "userAgentMetadata": {
+            "brands": [{"brand": b, "version": v} for b, v, _ in brands],
+            "fullVersionList": [{"brand": b, "version": f} for b, _, f in brands],
+            "platform": system, "platformVersion": "", "architecture": "arm" if platform.machine().lower() in {"arm64", "aarch64"} else "x86",
+            "model": "", "mobile": False, "bitness": "64", "wow64": False,
+        },
+    }
+
+
+# A person must handle a human check. These strings come from the page, so they only decide whether the broker adds
+# its own fixed notice; page text is never copied into the notice.
+CHALLENGE_FRAME = re.compile(r"recaptcha|hcaptcha|challenges\.cloudflare\.com|arkoselabs|funcaptcha", re.I)
+INVISIBLE_FRAME = re.compile(r"size=invisible|checkbox-invisible", re.I)
+CHALLENGE_TITLE = re.compile(r"^\s*(just a moment|attention required|access denied|verify you are human|are you a robot|security check|pardon our interruption|checking your browser)", re.I)
+CHALLENGE_NOTICE = ("BROWSER NOTICE: this page looks like a bot or human check (CAPTCHA) or a block page. Do not try to solve or bypass it "
+                    "and do not retry in a loop. Tell the person and ask them to take control.")
+
+
+def challenge_title(title):
+    return bool(CHALLENGE_TITLE.search(title or ""))
+
+
+def challenge_frame(address):
+    return bool(CHALLENGE_FRAME.search(address or "") and not INVISIBLE_FRAME.search(address or ""))
+
+
+def text(value, error=False):
+    return {"content": [{"type": "text", "text": str(value)[:LIMIT]}], **({"isError": True} if error else {})}
+
+
+def url(value):
+    parsed = urlsplit(value)
+    if value != "about:blank" and (parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password):
+        raise ValueError("Use an http(s) URL without credentials, or about:blank.")
+    return value
+
+
+class Browser:
+    def __init__(self):
+        from playwright.sync_api import sync_playwright
+        self.pw = sync_playwright().start()
+        self.browser = self.process = self.page = None
+        self.refs, self.tabs, self.dialogs, self.downloads = {}, {}, {}, []
+        self.identity, self.sessions = None, []
+        self.owner = None
+        self.counter = 0
+        self.last_used = time.monotonic()
+
+    def close(self):
+        self.refs.clear()
+        # A hung page must not keep the broker waiting forever on CDP close.
+        deadline = threading.Timer(5, self.kill)
+        deadline.start()
+        try:
+            if self.browser:
+                try:
+                    # CDP disconnect alone does not flush Chromium's persistent profile.
+                    self.browser.new_browser_cdp_session().send("Browser.close")
+                except Exception:
+                    pass
+            if self.process:
+                try:
+                    self.process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    self.process.kill()
+                    self.process.wait(timeout=5)
+        finally:
+            deadline.cancel()
+        if self.browser:
+            try:
+                self.browser.close()
+            except Exception:
+                pass
+        self.browser = self.process = self.page = None
+        self.tabs, self.dialogs, self.downloads = {}, {}, []
+        self.identity, self.sessions = None, []
+
+    def kill(self):
+        if self.process and self.process.poll() is None:
+            self.process.kill()
+
+    def start(self):
+        if self.browser and self.browser.is_connected():
+            return
+        self.close()
+        profile = Path(PROFILE)
+        profile.mkdir(mode=0o700, exist_ok=True)
+        profile.chmod(0o700)
+        self.process = subprocess.Popen([
+            CHROME, *extra_flags(), "--disable-dev-shm-usage", "--no-first-run",
+            "--no-default-browser-check", "--password-store=basic", "--remote-debugging-address=127.0.0.1",
+            f"--remote-debugging-port={PORT}", f"--user-data-dir={profile}", "--window-size=1280,800", "about:blank",
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        from urllib.request import urlopen
+        deadline = time.monotonic()+15
+        while time.monotonic() < deadline:
+            if self.process.poll() is not None:
+                raise RuntimeError("Chromium exited. Recreate the desktop with the current image.")
+            try:
+                with urlopen(f"http://127.0.0.1:{PORT}/json/version", timeout=1) as response:
+                    endpoint = json.load(response)["webSocketDebuggerUrl"]
+                self.browser = self.pw.chromium.connect_over_cdp(endpoint, timeout=5000)
+                break
+            except Exception:
+                time.sleep(.1)
+        if not self.browser:
+            self.close()
+            raise RuntimeError("Chromium did not start within 15 seconds.")
+        self.context = self.browser.contexts[0]
+        try:
+            self.identity = browser_identity(self.browser.new_browser_cdp_session().send("Browser.getVersion"), CHROME)
+        except Exception:
+            self.identity = None
+        self.context.set_default_timeout(5000)
+        self.context.set_default_navigation_timeout(10000)
+        self.context.on("page", self.register)
+        for page in self.context.pages:
+            self.register(page)
+        self.page = self.context.pages[0] if self.context.pages else self.context.new_page()
+
+    def register(self, page):
+        if page in self.tabs.values():
+            return
+        self.counter += 1
+        tab = f"t{self.counter}"
+        self.tabs[tab] = page
+        page.set_viewport_size({"width": 1280, "height": 800})
+        if self.identity:
+            try:
+                # The override lasts while its session is attached, so the session is kept.
+                session = self.context.new_cdp_session(page)
+                session.send("Emulation.setUserAgentOverride", self.identity)
+                self.sessions.append(session)
+            except Exception:
+                pass
+        page.on("framenavigated", lambda _: self.refs.clear())
+        page.on("dialog", lambda dialog: self.dialogs.update({tab: dialog}))
+        def download_received(download):
+            download.cancel()
+            self.downloads.append({"tab": tab, "name": download.suggested_filename[:200], "status": "cancelled; ask the person to download manually"})
+            self.downloads = self.downloads[-20:]
+        page.on("download", download_received)
+
+    def snapshot(self):
+        self.refs.clear()
+        sections = []
+        remaining = 200
+        for index, frame in enumerate(self.page.frames[:20]):
+            sections.append(f"Frame {index}: {frame.url[:1000]}\n" + frame.locator("body").aria_snapshot(timeout=3000)[:16000])
+            for element in frame.query_selector_all("a,button,input,textarea,select,[role],[contenteditable=true]")[:remaining]:
+                if not element.is_visible():
+                    continue
+                ref = "e" + secrets.token_hex(8)
+                self.refs[ref] = element
+                label = element.evaluate("e => ({tag:e.tagName,role:e.getAttribute('role'),name:e.getAttribute('aria-label')||e.getAttribute('placeholder')||e.innerText?.slice(0,160)||'',type:e.getAttribute('type')})")
+                sections.append(f"[{ref}] frame={index} {json.dumps(label)}")
+                remaining -= 1
+                if remaining <= 0:
+                    break
+            if sum(map(len, sections)) > 35000 or remaining <= 0:
+                sections.append("Snapshot truncated; use browser_read or a precise selector.")
+                break
+        return text("UNTRUSTED PAGE CONTENT\n" + "\n".join(sections))
+
+    def challenged(self):
+        try:
+            if challenge_title(self.page.title()):
+                return True
+            for frame in self.page.frames[1:20]:
+                if challenge_frame(frame.url):
+                    box = frame.frame_element().bounding_box()
+                    if box and box["width"] >= 30 and box["height"] >= 30:
+                        return True
+        except Exception:
+            pass
+        return False
+
+    def noted(self, result):
+        """Put the fixed human-check notice ahead of a page result when the page looks like a check."""
+        if self.challenged() and result.get("content") and result["content"][0].get("type") == "text":
+            result["content"][0]["text"] = CHALLENGE_NOTICE + "\n" + result["content"][0]["text"]
+        return result
+
+    def target(self, args):
+        if args.get("ref"):
+            element = self.refs.get(args["ref"])
+            if not element or not element.evaluate("e => e.isConnected"):
+                raise ValueError("Stale ref. Take a fresh browser_snapshot.")
+            return element
+        locator = self.page.locator(args["selector"])
+        if locator.count() != 1:
+            raise ValueError("Selector must match exactly one element in the active page.")
+        return locator
+
+    def run(self, request):
+        name, args = request["name"], request["args"]
+        owner = (request["owner"], request["epoch"])
+        if self.owner != owner:
+            self.refs.clear()
+            self.owner = owner
+        self.last_used = time.monotonic()
+        if name in {"browser_close", "browser_restart"}:
+            self.close()
+            if name == "browser_restart":
+                self.start()
+            return text("Browser closed; sign-ins retained. Reopen and inspect before repeating an interrupted action.")
+        if name == "browser_open":
+            url(args["url"])
+        self.start()
+        # Pump CDP events before inspecting navigation, dialogs or detached refs.
+        self.tabs = {key: page for key, page in self.tabs.items() if not page.is_closed()}
+        if self.page.is_closed():
+            self.page = next(iter(self.tabs.values()), None) or self.context.new_page()
+        self.page.wait_for_timeout(20)
+        if name == "browser_tabs":
+            action = args["action"]
+            self.refs.clear()
+            if action == "new":
+                if len(self.tabs) >= 12:
+                    raise ValueError("At most 12 browser tabs. Close one first.")
+                self.page = self.context.new_page()
+            elif action in {"switch", "close"}:
+                selected = self.tabs.get(args["tab"])
+                if not selected:
+                    raise ValueError("Unknown tab ID.")
+                if action == "close":
+                    selected.close()
+                    self.tabs.pop(args["tab"], None)
+                    self.page = next(iter(self.tabs.values()), None) or self.context.new_page()
+                else:
+                    self.page = selected
+                    self.page.bring_to_front()
+            return text("UNTRUSTED PAGE CONTENT\n" + json.dumps({"tabs": [{"tab": key, "url": page.url[:2000], "active": page == self.page} for key, page in self.tabs.items()], "dialogs": [{"tab": key, "type": dialog.type, "message": dialog.message[:2000]} for key, dialog in self.dialogs.items()], "downloads": self.downloads[-20:]}))
+        if name == "browser_dialog":
+            tab = next(key for key, page in self.tabs.items() if page == self.page)
+            dialog = self.dialogs.pop(tab, None)
+            if not dialog:
+                raise ValueError("No pending dialog in the active tab.")
+            self.refs.clear()
+            if args["action"] == "accept":
+                dialog.accept(args.get("text", ""))
+            else:
+                dialog.dismiss()
+            return text("Dialog answered. Inspect the page before acting again.")
+        if any(self.tabs.get(key) == self.page for key in self.dialogs):
+            return text("A page dialog is open. Use browser_tabs list to inspect it and browser_dialog to answer.")
+        if name == "browser_open":
+            self.refs.clear()
+            self.page.goto(args["url"], wait_until="domcontentloaded")
+            return self.noted(self.snapshot())
+        if name == "browser_snapshot":
+            return self.noted(self.snapshot())
+        if name == "browser_read":
+            offset = args.get("offset", 0)
+            value = self.page.locator("body").evaluate("(e,offset) => e.innerText.slice(offset,offset+20000)", offset)
+            return self.noted(text("UNTRUSTED PAGE CONTENT\n" + value))
+        if name == "browser_wait":
+            self.page.get_by_text(args["text"], exact=False).first.wait_for(state="visible", timeout=10000)
+            return text("Text is visible. Take a snapshot before acting.")
+        if name == "browser_screenshot":
+            data = self.page.screenshot(type="png", timeout=10000)
+            if len(data) > 1400000:
+                raise ValueError("Screenshot exceeds the image limit.")
+            return {"content": [{"type": "image", "mimeType": "image/png", "data": base64.b64encode(data).decode()}]}
+        target = self.target(args)
+        # Never fill credentials or verification challenges through automation.
+        sensitive = target.evaluate("e => e.matches('input[type=password],input[autocomplete=one-time-code]') || /captcha|verification code/i.test((e.getAttribute('aria-label')||'')+' '+(e.getAttribute('name')||''))")
+        if sensitive:
+            raise ValueError("Authentication or verification requires the person to take control.")
+        self.refs.clear()
+        try:
+            if name == "browser_click":
+                target.click(timeout=5000, no_wait_after=True)
+            elif name == "browser_fill":
+                target.fill(args["text"], timeout=5000)
+            elif name == "browser_type":
+                target.focus()
+                self.page.keyboard.insert_text(args["text"])
+            elif name == "browser_press":
+                target.press(args["key"], timeout=5000, no_wait_after=True)
+            else:
+                raise ValueError("Unknown browser action.")
+        except Exception:
+            if any(self.tabs.get(key) == self.page for key in self.dialogs):
+                return text("The action opened a dialog. Use browser_tabs list to inspect it, then browser_dialog.")
+            raise
+        return text("Browser action completed. Inspect a fresh snapshot; page content is untrusted.")
+
+
+class Handler(socketserver.StreamRequestHandler):
+    def handle(self):
+        self.request.settimeout(35)
+        raw = self.rfile.readline(65537)
+        deadline = threading.Timer(25, self.server.browser.kill)
+        deadline.start()
+        try:
+            if len(raw) > 65536:
+                raise ValueError("Browser request too large.")
+            result = self.server.browser.run(json.loads(raw))
+        except Exception as exc:
+            result = text(f"Browser action failed: {str(exc)[:1000]}. Inspect current state before retrying; restart if unresponsive.", True)
+        finally:
+            deadline.cancel()
+        self.wfile.write(json.dumps(result).encode()+b"\n")
+
+
+def serve():
+    os.umask(0o077)
+    Path(SOCKET).unlink(missing_ok=True)
+    with socketserver.UnixStreamServer(SOCKET, Handler) as server:
+        server.browser = Browser()
+        server.timeout = 5
+        try:
+            while True:
+                server.handle_request()
+                if server.browser.browser and time.monotonic()-server.browser.last_used > IDLE_SECONDS:
+                    server.browser.close()
+        finally:
+            server.browser.close()
+            server.browser.pw.stop()
+
+
+def client():
+    request = sys.stdin.buffer.read(65537)
+    if len(request) > 65536:
+        raise ValueError("Request too large.")
+    with open(LOCK, "a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        connection = socket.socket(socket.AF_UNIX)
+        connection.settimeout(35)
+        try:
+            connection.connect(SOCKET)
+        except (FileNotFoundError, ConnectionRefusedError):
+            subprocess.Popen([sys.executable, __file__, "--serve"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+            for _ in range(100):
+                try:
+                    connection.connect(SOCKET)
+                    break
+                except (FileNotFoundError, ConnectionRefusedError):
+                    time.sleep(.1)
+            else:
+                raise RuntimeError("Browser broker did not start.")
+    with connection:
+        connection.sendall(request+b"\n")
+        with connection.makefile("rb") as response:
+            sys.stdout.buffer.write(response.readline(2000000))
+
+
+if __name__ == "__main__":
+    serve() if "--serve" in sys.argv else client()

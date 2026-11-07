@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analemática — Panel de Administrador General & Mando Militar</title>
+    <meta name="description" content="Panel de administración integral 100% editable para la landing page de Analemática y consola de despacho militar de agentes DEAA-V2.1.">
+    <link rel="icon" type="image/svg+xml" href="assets/analema-logo.svg">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/console.css">
+    <link rel="stylesheet" href="css/meta-ads.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-admin-pending>
+<a href="control.html" style="position:fixed;right:20px;bottom:20px;z-index:1000;padding:12px 16px;border-radius:8px;background:#174578;color:#fff;text-decoration:none">Control autorizado de equipos</a>
+
+
+    <!-- Header Superior de Administración -->
+    <header class="admin-header">
+        <a href="index.html" class="brand-wrapper" title="Ver Landing Page Oficial">
+            <img src="assets/analema-logo.svg" alt="Logotipo Analemática" class="brand-logo-img">
+            <div>
+                <div class="brand-title">ANALEMÁTICA</div>
+                <div class="brand-subtitle">Panel de Control & Mando General</div>
+            </div>
+        </a>
+
+        <div class="admin-header-actions"><button type="button" class="btn-admin btn-admin-outline" id="console-menu-toggle" aria-controls="corporate-sidebar" aria-expanded="false">Secciones</button><button type="button" class="btn-admin btn-admin-outline" id="console-tools-toggle" aria-expanded="false">Herramientas de edición</button><span class="console-owner-status" id="console-owner-status"></span><button type="button" class="btn-admin btn-admin-outline" id="console-logout">Cerrar sesión</button>
+            <span class="rank-badge"><span class="tactical-status-indicator"></span> CONSOLA PRIVADA · DUEÑO</span>
+            <button type="button" class="btn-admin btn-admin-outline" id="btnExportData" data-console-editor title="Descargar configuración completa en JSON">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Exportar JSON
+            </button>
+            <button type="button" class="btn-admin btn-admin-outline" id="btnImportData" data-console-editor title="Restaurar o importar configuración">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Importar
+            </button>
+            <input type="file" id="importFileInput" accept=".json" style="display:none;">
+            <button type="button" class="btn-admin btn-admin-secondary" id="btnResetDefaults" data-console-editor title="Restablecer valores de fábrica">
+                Restablecer
+            </button>
+            <a href="index.html" target="_blank" data-console-editor class="btn-admin btn-admin-secondary" title="Abrir landing en nueva pestaña">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                Ver Landing
+            </a>
+            <button type="button" class="btn-admin btn-admin-primary" id="btnGlobalSave" data-console-editor title="Guardar cambios globalmente">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                Guardar Todo
+            </button>
+        </div>
+    </header>
+
+    <!-- Layout Principal -->
+    <div class="admin-layout">
+        <!-- Sidebar de Navegación -->
+        <aside class="admin-sidebar" id="corporate-sidebar">
+            <div class="sidebar-heading">Mando & Automatización</div>
+            <nav class="sidebar-nav">
+                <button type="button" class="nav-tab-btn" data-tab="tab-meta-ads">Meta Ads · Integraciones</button>
+                <button type="button" class="nav-tab-btn active" data-tab="tab-agents">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path>
+                        <polygon points="12 6 12 12 16 14"></polygon>
+                    </svg>
+                    Tropa de Agentes Militares
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-supervision-dian">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Supervisión DIAN en Vivo
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-system-audit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                    Auditoría & Servidor Global
+                </button>
+            </nav>
+
+            <div class="sidebar-heading" style="margin-top:1.25rem;">Divisiones Militares ERP</div>
+            <nav class="sidebar-nav">
+                <button type="button" class="nav-tab-btn" data-tab="tab-financiero">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    Financiero & Ratios
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-operativo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Operaciones & SG-SST
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-comercial">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    Comercial & Embudo
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-archivistica">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Archivo & TRD
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-contable">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="18" rx="2"></rect>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                    </svg>
+                    Contabilidad & PUC
+                </button>
+            </nav>
+
+            <div class="sidebar-heading" style="margin-top:1.25rem;">Gestor 100% Editable Landing</div>
+            <nav class="sidebar-nav">
+                <button type="button" class="nav-tab-btn" data-tab="tab-header">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                    Header & Navegación
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-hero">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    Sección Héroe & Métricas
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-desafio">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    El Desafío (Puntos de Dolor)
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-filosofia">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                    </svg>
+                    Filosofía, Misión & Visión
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-verticales">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                    Verticales & Módulo SGA-CD
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-adn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    ADN Tecnológico
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-impacto">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    Impacto en el Ciudadano
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-contacto">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Formulario & Prospectos
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tab-footer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="3" y1="9" x2="21" y2="9"></line>
+                        <line x1="9" y1="21" x2="9" y2="9"></line>
+                    </svg>
+                    Pie de Página & Enlaces
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Contenedor de Paneles de Edición -->
+        <main class="admin-content">
+
+            <!-- Pestaña 1: Tropa de Agentes y Consola Militar -->
+            <section id="tab-agents" class="tab-pane active">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">ESTADO MAYOR</span> Consola de Mando de Agentes Militares (DEAA-V2.1)
+                        </h2>
+                        <p class="pane-subtitle">
+                            Gestiona SGA-CD y Analemática con órdenes de texto o voz. Cada resultado indica la operación confirmada por el servidor.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Consola Táctica Interactiva -->
+                <div class="tactical-console">
+                    <div class="tactical-console-header">
+                        <div class="tactical-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                            TERMINAL SUPREMO N.E.K.O. & JARVI — DESPACHO ESTRATÉGICO
+                        </div>
+                        <div class="tactical-status-pill">
+                            <span class="tactical-status-indicator"></span> 5 DIVISIONES | 13 CAPITANES | 33 TENIENTES | 62 SARGENTOS | 331 SOLDADOS
+                        </div>
+                    </div>
+
+                    <div class="tactical-terminal-logs" id="tacticalTerminalLogs">
+                        <div class="log-entry">
+                            <span class="log-time">[SISTEMA]</span>
+                            <span class="log-tag">N.E.K.O.:</span>
+                            <span class="log-msg">Consola central de Analemática. Escribe Ayuda para consultar las operaciones conectadas.</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-time">[DOCTRINA]</span>
+                            <span class="log-tag">DEAA-V2.1:</span>
+                            <span class="log-msg">Los cambios de contenido se publican y quedan en el historial. Las órdenes no conectadas se informan sin simular ejecución.</span>
+                        </div>
+                    </div>
+
+                    <label class="console-target">Destino de la orden<select id="console-target"><option value="sga">SGA-CD</option><option value="analematica">Analemática</option></select></label>
+                    <div class="tactical-command-bar">
+                        <div class="tactical-input-wrap">
+                            <svg class="tactical-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="4 17 10 11 4 5"></polyline>
+                                <line x1="12" y1="19" x2="20" y2="19"></line>
+                            </svg>
+                            <input type="text" id="tacticalCommandInput" class="tactical-input" placeholder="Ej.: Cambia el título de SGA-CD a: Formación para todos">
+                        </div>
+                        <button type="button" class="btn-mic" id="btnVoiceMic" title="Activar reconocimiento de voz táctico">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn-admin btn-admin-primary" id="btnExecuteCommand">
+                            Ejecutar Orden
+                        </button>
+                    </div>
+                </div>
+
+                <section class="command-result" id="command-result" aria-live="polite"><p id="command-message">Escribe Ayuda o Estado del sistema.</p><pre id="command-data"></pre><button type="button" class="btn-admin btn-admin-outline" id="command-undo" hidden>Deshacer este cambio</button><p><a href="/sga/" target="_blank" rel="noopener">Ver página pública de SGA-CD</a></p></section>
+                <!-- Bento de Comandos Rápidos y Jerarquía Militar -->
+                <div class="form-grid-2">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3><span class="rank-badge">COMANDOS SUGERIDOS</span> Diligenciamiento Rápido</h3>
+                        </div>
+                        <p style="color:var(--sky-muted-300); font-size:0.85rem; margin-bottom:1rem;">Ejemplos de órdenes que se ejecutan y registran en el servidor:</p>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            <button type="button" class="btn-admin btn-admin-secondary quick-command-btn" data-cmd="Actualiza el título de Analemática a: Inteligencia modular que sincroniza la administración con el ritmo ciudadano">
+                                ⚡ "Actualiza el título de Analemática a: Inteligencia modular..."
+                            </button>
+                            <button type="button" class="btn-admin btn-admin-secondary quick-command-btn" data-cmd="Estado del sistema">
+                                ⚡ "Estado del sistema"
+                            </button>
+                            <button type="button" class="btn-admin btn-admin-secondary quick-command-btn" data-cmd="Modifica la visión de Analemática a: Convertir a Analemática en el estándar iberoamericano de gobernanza digital autónoma">
+                                ⚡ "Modifica la visión de Analemática a: Convertir a Analemática..."
+                            </button>
+                            <button type="button" class="btn-admin btn-admin-secondary quick-command-btn" data-cmd="Actualiza el contacto de Analemática a: gobernanza@analematica.com">
+                                ⚡ "Actualiza el contacto de Analemática a: gobernanza@analematica.com"
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3><span class="rank-badge">ESTRUCTURA DE TROPA</span> Cobertura de la Jerarquía</h3>
+                        </div>
+                        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem; font-size:0.85rem; color:var(--sky-pale-200);">
+                            <li><strong style="color:var(--sky-bright-300);">Coronel Ventas y CRM:</strong> 3 Capitanes, 9 Tenientes, 18 Sargentos, 90 Soldados. Ingesta, calificación y cierre.</li>
+                            <li><strong style="color:var(--sky-bright-300);">Coronel Multimedia:</strong> 3 Capitanes, 9 Tenientes, 18 Sargentos, 90 Soldados. Render FFmpeg, diseño y branding.</li>
+                            <li><strong style="color:var(--sky-bright-300);">Coronel Redes Sociales:</strong> 3 Capitanes, 9 Tenientes, 18 Sargentos, 90 Soldados. TikTok, Reels, WA y analítica.</li>
+                            <li><strong style="color:var(--sky-bright-300);">Coronel Deportes:</strong> Coordinación de escenarios, profesores y biometría atlética.</li>
+                            <li><strong style="color:var(--sky-bright-300);">Coronel Cultura:</strong> Gestión académica, escuelas de música y talleres de formación.</li>
+                        </ul>
+                        <div style="margin-top:1rem;">
+                            <a href="AGENTS_ARMY_ANALYSIS.md" target="_blank" class="btn-admin btn-admin-outline" style="font-size:0.8rem;">
+                                Ver Informe de Auditoría Militar Completo ↗
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 2: Header & Navegación -->
+            <section id="tab-header" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">Encabezado & Navegación</h2>
+                        <p class="pane-subtitle">Configura los nombres de marca, logos y enlaces del menú principal.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="brand_name">Nombre de Marca</label>
+                            <input type="text" id="brand_name" class="form-input-admin" data-key="header.brand_name">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="brand_tag">Etiqueta de Marca (Tagline)</label>
+                            <input type="text" id="brand_tag" class="form-input-admin" data-key="header.brand_tag">
+                        </div>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="brand_logo">Ruta del Logotipo (SVG / PNG)</label>
+                        <input type="text" id="brand_logo" class="form-input-admin" data-key="header.brand_logo">
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="nav_cta_text">Texto Botón CTA Superior</label>
+                            <input type="text" id="nav_cta_text" class="form-input-admin" data-key="header.nav_cta_text">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="nav_cta_href">Destino del Enlace CTA</label>
+                            <input type="text" id="nav_cta_href" class="form-input-admin" data-key="header.nav_cta_href">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 3: Sección Héroe & Métricas -->
+            <section id="tab-hero" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">Sección Héroe & Métricas</h2>
+                        <p class="pane-subtitle">Edición 100% en tiempo real del título principal, subtítulo, llamadas a la acción y contadores métricos.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="hero_badge">Texto del Badge Superior</label>
+                        <input type="text" id="hero_badge" class="form-input-admin" data-key="hero.badge">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="hero_title">Título Principal (HTML permitido para &lt;span class="highlight-cyan"&gt;)</label>
+                        <textarea id="hero_title" class="form-textarea-admin" style="height:90px;" data-key="hero.title"></textarea>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="hero_subtitle">Subtítulo Descriptivo</label>
+                        <textarea id="hero_subtitle" class="form-textarea-admin" style="height:90px;" data-key="hero.subtitle"></textarea>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="hero_btn_primary">Texto Botón Primario</label>
+                            <input type="text" id="hero_btn_primary" class="form-input-admin" data-key="hero.btn_primary">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="hero_btn_secondary">Texto Botón Secundario</label>
+                            <input type="text" id="hero_btn_secondary" class="form-input-admin" data-key="hero.btn_secondary">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3>Métricas de Alto Impacto</h3>
+                    </div>
+                    <div class="form-grid-3">
+                        <div>
+                            <div class="form-group-admin">
+                                <label for="hero_metric1_val">Métrica 1 — Valor</label>
+                                <input type="text" id="hero_metric1_val" class="form-input-admin" data-key="hero.metrics.0.value">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="hero_metric1_lbl">Métrica 1 — Etiqueta</label>
+                                <input type="text" id="hero_metric1_lbl" class="form-input-admin" data-key="hero.metrics.0.label">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group-admin">
+                                <label for="hero_metric2_val">Métrica 2 — Valor</label>
+                                <input type="text" id="hero_metric2_val" class="form-input-admin" data-key="hero.metrics.1.value">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="hero_metric2_lbl">Métrica 2 — Etiqueta</label>
+                                <input type="text" id="hero_metric2_lbl" class="form-input-admin" data-key="hero.metrics.1.label">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group-admin">
+                                <label for="hero_metric3_val">Métrica 3 — Valor</label>
+                                <input type="text" id="hero_metric3_val" class="form-input-admin" data-key="hero.metrics.2.value">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="hero_metric3_lbl">Métrica 3 — Etiqueta</label>
+                                <input type="text" id="hero_metric3_lbl" class="form-input-admin" data-key="hero.metrics.2.label">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-grid-2" style="margin-top:1rem;">
+                        <div class="form-group-admin">
+                            <label for="hero_card_badge">Micro Badge Tarjeta Visual</label>
+                            <input type="text" id="hero_card_badge" class="form-input-admin" data-key="hero.card_badge">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="hero_card_legend">Leyenda Tarjeta Visual</label>
+                            <input type="text" id="hero_card_legend" class="form-input-admin" data-key="hero.card_legend">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 4: El Desafío (Puntos de Dolor) -->
+            <section id="tab-desafio" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">El Desafío de la Gestión Ciudadana</h2>
+                        <p class="pane-subtitle">Configura los argumentos y las 3 tarjetas de problemas del sector.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="desafio_tag">Tag de Sección</label>
+                        <input type="text" id="desafio_tag" class="form-input-admin" data-key="desafio.tag">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="desafio_title">Título Principal</label>
+                        <input type="text" id="desafio_title" class="form-input-admin" data-key="desafio.title">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="desafio_desc">Descripción General</label>
+                        <textarea id="desafio_desc" class="form-textarea-admin" style="height:90px;" data-key="desafio.desc"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-grid-3">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Tarjeta 1</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="desafio_card1_title">Título</label>
+                            <input type="text" id="desafio_card1_title" class="form-input-admin" data-key="desafio.cards.0.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="desafio_card1_desc">Descripción</label>
+                            <textarea id="desafio_card1_desc" class="form-textarea-admin" data-key="desafio.cards.0.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Tarjeta 2</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="desafio_card2_title">Título</label>
+                            <input type="text" id="desafio_card2_title" class="form-input-admin" data-key="desafio.cards.1.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="desafio_card2_desc">Descripción</label>
+                            <textarea id="desafio_card2_desc" class="form-textarea-admin" data-key="desafio.cards.1.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Tarjeta 3</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="desafio_card3_title">Título</label>
+                            <input type="text" id="desafio_card3_title" class="form-input-admin" data-key="desafio.cards.2.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="desafio_card3_desc">Descripción</label>
+                            <textarea id="desafio_card3_desc" class="form-textarea-admin" data-key="desafio.cards.2.desc"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 5: Filosofía, Misión & Visión -->
+            <section id="tab-filosofia" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">Filosofía del Analema, Misión & Visión</h2>
+                        <p class="pane-subtitle">Gestiona la identidad corporativa, pilares y metas 2031.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="filo_tag">Tag de Sección</label>
+                        <input type="text" id="filo_tag" class="form-input-admin" data-key="filosofia.tag">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="filo_title">Título</label>
+                        <input type="text" id="filo_title" class="form-input-admin" data-key="filosofia.title">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="filo_desc">Descripción Lead</label>
+                        <textarea id="filo_desc" class="form-textarea-admin" style="height:90px;" data-key="filosofia.desc"></textarea>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="filo_pillar1_title">Pilar 1 — Título</label>
+                            <input type="text" id="filo_pillar1_title" class="form-input-admin" data-key="filosofia.pillars.0.title">
+                            <textarea id="filo_pillar1_desc" class="form-textarea-admin" style="margin-top:0.4rem;" data-key="filosofia.pillars.0.desc"></textarea>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="filo_pillar2_title">Pilar 2 — Título</label>
+                            <input type="text" id="filo_pillar2_title" class="form-input-admin" data-key="filosofia.pillars.1.title">
+                            <textarea id="filo_pillar2_desc" class="form-textarea-admin" style="margin-top:0.4rem;" data-key="filosofia.pillars.1.desc"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="filo_diagram_caption">Leyenda del Diagrama Solar del Analema</label>
+                        <input type="text" id="filo_diagram_caption" class="form-input-admin" data-key="filosofia.diagram_caption">
+                    </div>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Misión Institucional</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="mision_title">Título</label>
+                            <input type="text" id="mision_title" class="form-input-admin" data-key="mision.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="mision_text">Declaración de Misión</label>
+                            <textarea id="mision_text" class="form-textarea-admin" style="height:120px;" data-key="mision.text"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Visión Institucional 2031</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vision_title">Título</label>
+                            <input type="text" id="vision_title" class="form-input-admin" data-key="vision.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vision_text">Declaración de Visión 2031</label>
+                            <textarea id="vision_text" class="form-textarea-admin" style="height:120px;" data-key="vision.text"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 6: Verticales & Módulo SGA-CD -->
+            <section id="tab-verticales" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">Verticales de Solución & Redirección SGA-CD</h2>
+                        <p class="pane-subtitle">Edición del catálogo modular y redirección exclusiva a la plataforma de ventas SGA-CD.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="vert_tag">Tag del Catálogo</label>
+                        <input type="text" id="vert_tag" class="form-input-admin" data-key="verticales.tag">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="vert_title">Título</label>
+                        <input type="text" id="vert_title" class="form-input-admin" data-key="verticales.title">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="vert_desc">Descripción Introductoria</label>
+                        <textarea id="vert_desc" class="form-textarea-admin" data-key="verticales.desc"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-grid-3">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Módulo 1: ERP Turístico</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vert_card1_title">Título</label>
+                            <input type="text" id="vert_card1_title" class="form-input-admin" data-key="verticales.cards.0.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vert_card1_desc">Descripción</label>
+                            <textarea id="vert_card1_desc" class="form-textarea-admin" style="height:100px;" data-key="verticales.cards.0.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Módulo 2: Geolocalización</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vert_card2_title">Título</label>
+                            <input type="text" id="vert_card2_title" class="form-input-admin" data-key="verticales.cards.1.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vert_card2_desc">Descripción</label>
+                            <textarea id="vert_card2_desc" class="form-textarea-admin" style="height:100px;" data-key="verticales.cards.1.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card" style="border-color:var(--sky-vibrant-400);">
+                        <div class="card-title-bar">
+                            <h3><span class="rank-badge">DESTACADO</span> Módulo 3: SGA-CD</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vert_sgacd_title">Título</label>
+                            <input type="text" id="vert_sgacd_title" class="form-input-admin" data-key="verticales.sgacd.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vert_sgacd_desc">Descripción</label>
+                            <textarea id="vert_sgacd_desc" class="form-textarea-admin" style="height:80px;" data-key="verticales.sgacd.desc"></textarea>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="vert_sgacd_notice">Aviso de Redirección Exclusiva</label>
+                            <textarea id="vert_sgacd_notice" class="form-textarea-admin" style="height:60px;" data-key="verticales.sgacd.notice"></textarea>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group-admin">
+                                <label for="vert_sgacd_btn">Texto del Botón</label>
+                                <input type="text" id="vert_sgacd_btn" class="form-input-admin" data-key="verticales.sgacd.btn_text">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="vert_sgacd_url">URL Destino Redirección</label>
+                                <input type="text" id="vert_sgacd_url" class="form-input-admin" data-key="verticales.sgacd.url">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 7: ADN Tecnológico -->
+            <section id="tab-adn" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">ADN Tecnológico (Estándares de Ingeniería)</h2>
+                        <p class="pane-subtitle">Edición de pilares técnicos: Multi-Tenant, STAR y Agentes LangChain.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="adn_tag">Tag de Sección</label>
+                        <input type="text" id="adn_tag" class="form-input-admin" data-key="adn.tag">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="adn_title">Título Principal</label>
+                        <input type="text" id="adn_title" class="form-input-admin" data-key="adn.title">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="adn_desc">Descripción de Estándares</label>
+                        <textarea id="adn_desc" class="form-textarea-admin" style="height:90px;" data-key="adn.desc"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-grid-3">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>01 Multi-Inquilino</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="adn_card1_title">Título</label>
+                            <input type="text" id="adn_card1_title" class="form-input-admin" data-key="adn.cards.0.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="adn_card1_desc">Descripción</label>
+                            <textarea id="adn_card1_desc" class="form-textarea-admin" style="height:90px;" data-key="adn.cards.0.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>02 Auditoría STAR</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="adn_card2_title">Título</label>
+                            <input type="text" id="adn_card2_title" class="form-input-admin" data-key="adn.cards.1.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="adn_card2_desc">Descripción</label>
+                            <textarea id="adn_card2_desc" class="form-textarea-admin" style="height:90px;" data-key="adn.cards.1.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>03 Agentes LangChain</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="adn_card3_title">Título</label>
+                            <input type="text" id="adn_card3_title" class="form-input-admin" data-key="adn.cards.2.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="adn_card3_desc">Descripción</label>
+                            <textarea id="adn_card3_desc" class="form-textarea-admin" style="height:90px;" data-key="adn.cards.2.desc"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 8: Impacto en el Ciudadano -->
+            <section id="tab-impacto" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">Impacto en el Ciudadano</h2>
+                        <p class="pane-subtitle">Edición de las métricas de valor y propuesta humana.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="impacto_tag">Tag de Sección</label>
+                        <input type="text" id="impacto_tag" class="form-input-admin" data-key="impacto.tag">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="impacto_title">Título Principal</label>
+                        <input type="text" id="impacto_title" class="form-input-admin" data-key="impacto.title">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="impacto_desc">Descripción Lead</label>
+                        <textarea id="impacto_desc" class="form-textarea-admin" style="height:90px;" data-key="impacto.desc"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-grid-3">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Beneficio 1</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card1_pill">Pill / Badge</label>
+                            <input type="text" id="impacto_card1_pill" class="form-input-admin" data-key="impacto.cards.0.pill">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card1_title">Título</label>
+                            <input type="text" id="impacto_card1_title" class="form-input-admin" data-key="impacto.cards.0.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card1_desc">Descripción</label>
+                            <textarea id="impacto_card1_desc" class="form-textarea-admin" style="height:90px;" data-key="impacto.cards.0.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Beneficio 2</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card2_pill">Pill / Badge</label>
+                            <input type="text" id="impacto_card2_pill" class="form-input-admin" data-key="impacto.cards.1.pill">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card2_title">Título</label>
+                            <input type="text" id="impacto_card2_title" class="form-input-admin" data-key="impacto.cards.1.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card2_desc">Descripción</label>
+                            <textarea id="impacto_card2_desc" class="form-textarea-admin" style="height:90px;" data-key="impacto.cards.1.desc"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3>Beneficio 3</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card3_pill">Pill / Badge</label>
+                            <input type="text" id="impacto_card3_pill" class="form-input-admin" data-key="impacto.cards.2.pill">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card3_title">Título</label>
+                            <input type="text" id="impacto_card3_title" class="form-input-admin" data-key="impacto.cards.2.title">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="impacto_card3_desc">Descripción</label>
+                            <textarea id="impacto_card3_desc" class="form-textarea-admin" style="height:90px;" data-key="impacto.cards.2.desc"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 9: Formulario de Contacto & Prospectos -->
+            <section id="tab-contacto" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">Formulario de Contacto & Prospectos CRM</h2>
+                        <p class="pane-subtitle">Edición de textos del formulario de diagnóstico y bandeja de prospectos registrados.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="contacto_tag">Tag de Sección</label>
+                        <input type="text" id="contacto_tag" class="form-input-admin" data-key="contacto.tag">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="contacto_title">Título</label>
+                        <input type="text" id="contacto_title" class="form-input-admin" data-key="contacto.title">
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="contacto_desc">Descripción</label>
+                        <textarea id="contacto_desc" class="form-textarea-admin" style="height:90px;" data-key="contacto.desc"></textarea>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="contacto_btn_text">Texto del Botón Enviar</label>
+                            <input type="text" id="contacto_btn_text" class="form-input-admin" data-key="contacto.btn_text">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="contacto_success_msg">Mensaje de Confirmación</label>
+                            <input type="text" id="contacto_success_msg" class="form-input-admin" data-key="contacto.success_msg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bandeja de Leads Recibidos en Analemática -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">CRM LEADS</span> Bandeja de Prospectos Registrados</h3>
+                        <button type="button" class="btn-admin btn-admin-outline" id="btnClearLeads">Actualizar prospectos</button>
+                    </div>
+                    <div id="leadsTableContainer" style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.85rem; color:var(--sky-pale-200);">
+                            <thead>
+                                <tr style="border-bottom:1px solid var(--metal-border-700); text-align:left; color:var(--sky-subtle-400);">
+                                    <th style="padding:0.6rem;">Fecha</th>
+                                    <th style="padding:0.6rem;">Nombre</th>
+                                    <th style="padding:0.6rem;">Entidad</th>
+                                    <th style="padding:0.6rem;">Correo</th>
+                                    <th style="padding:0.6rem;">Teléfono</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leadsTableBody">
+                                <tr>
+                                    <td colspan="5" style="padding:1rem; text-align:center; color:var(--sky-muted-300);">No hay prospectos registrados aún.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 10: Pie de Página & Enlaces -->
+            <section id="tab-footer" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">Pie de Página, Redes & Enlaces</h2>
+                        <p class="pane-subtitle">Configura los textos corporativos, enlaces de navegación y estado operativo.</p>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="form-group-admin">
+                        <label for="footer_bio">Biografía / Descripción Pie de Página</label>
+                        <textarea id="footer_bio" class="form-textarea-admin" data-key="footer.bio"></textarea>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="footer_copyright">Texto de Derechos de Autor (Copyright)</label>
+                            <input type="text" id="footer_copyright" class="form-input-admin" data-key="footer.copyright">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="footer_status">Indicador de Estado Operativo de Sistemas</label>
+                            <input type="text" id="footer_status" class="form-input-admin" data-key="footer.status">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 11: Supervisión DIAN en Vivo -->
+            <section id="tab-supervision-dian" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">MANDO FISCAL</span> Panel de Supervisión DIAN en Tiempo Real
+                        </h2>
+                        <p class="pane-subtitle">
+                            Monitoreo centralizado de emisión de facturación electrónica F19, validación de CUFE y estado DIAN multi-inquilino.
+                        </p>
+                    </div>
+                    <button type="button" class="btn-admin btn-admin-outline" id="btnRefreshDian" title="Refrescar métricas DIAN">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        Refrescar
+                    </button>
+                </div>
+
+                <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">AUTORIZADAS</span>
+                        <div id="dianAutorizadas" style="font-size:2rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.5rem;">--</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Facturas validadas con éxito</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">PENDIENTES</span>
+                        <div id="dianPendientes" style="font-size:2rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">--</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">En cola de transmisión DIAN</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">ERRORES / RECHAZOS</span>
+                        <div id="dianErrores" style="font-size:2rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">--</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Incidentes mitigados automáticamente</p>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">PIPELINE F19</span> Últimos Comprobantes Electrónicos Transmitidos</h3>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.85rem; color:var(--sky-pale-200);">
+                            <thead>
+                                <tr style="border-bottom:1px solid var(--metal-border-700); text-align:left;">
+                                    <th style="padding:0.6rem; color:var(--sky-bright-300);">Comprobante</th>
+                                    <th style="padding:0.6rem; color:var(--sky-bright-300);">Inquilino / Operador</th>
+                                    <th style="padding:0.6rem; color:var(--sky-bright-300);">Estado DIAN</th>
+                                    <th style="padding:0.6rem; color:var(--sky-bright-300);">Total (COP)</th>
+                                    <th style="padding:0.6rem; color:var(--sky-bright-300);">CUFE Criptográfico</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dianTableBody">
+                                <tr><td colspan="5" style="padding:1rem; text-align:center; color:var(--sky-muted-300);">Consultando servidor DIAN unificado...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña 12: Auditoría y Servidor Global -->
+            <section id="tab-system-audit" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">TELEMETRÍA SOSTENIDA</span> Auditoría & Servidor Global de Plataforma
+                        </h2>
+                        <p class="pane-subtitle">
+                            Diagnóstico unificado de salud del servidor, conectividad de base de datos multi-tenant y orquestación de agentes.
+                        </p>
+                    </div>
+                    <button type="button" class="btn-admin btn-admin-outline" id="btnRefreshAudit" title="Refrescar telemetría">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        Refrescar
+                    </button>
+                </div>
+
+                <div class="form-grid-2">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3><span class="rank-badge">ESTADO DEL KERNEL</span> Diagnóstico de Infraestructura</h3>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.9rem;">
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Estado Servidor:</span>
+                                <span id="auditServerStatus" style="color:var(--sky-bright-300); font-weight:600;">CONSULTANDO</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Aislamiento RLS Multi-Tenant:</span>
+                                <span id="auditRlsStatus" style="color:var(--sky-bright-300); font-weight:600;">ACTIVO (100%)</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Libro Mayor (Ledger):</span>
+                                <span id="auditLedgerStatus" style="color:var(--sky-bright-300); font-weight:600;">CERTIFICADO INMUTABLE</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Memoria en Ejecución:</span>
+                                <span id="auditMemoryStatus" style="color:var(--sky-bright-300); font-weight:600;">-- MB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3><span class="rank-badge">EJÉRCITO DE AGENTES</span> Despliegue Jerárquico DEAA-V2.1</h3>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.9rem;">
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Divisiones Estratégicas:</span>
+                                <span id="auditDivisions" style="color:var(--sky-bright-300); font-weight:600;">5</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Capitanes de Compañía:</span>
+                                <span id="auditCaptains" style="color:var(--sky-bright-300); font-weight:600;">13</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Tenientes de Pelotón:</span>
+                                <span id="auditLieutenants" style="color:var(--sky-bright-300); font-weight:600;">33</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Soldados Atómicos:</span>
+                                <span id="auditSoldiers" style="color:var(--sky-bright-300); font-weight:600;">331</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña ERP 1: Gestión Financiera & Ratios -->
+            <section id="tab-financiero" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">DIVISIÓN FINANCIERA</span> Telemetría de Ratios, Solvencia & Liquidez
+                        </h2>
+                        <p class="pane-subtitle">
+                            Supervisión en tiempo real de ratios de liquidez, solvencia, apalancamiento y rentabilidad (ROA, ROE, EBITDA) bajo doctrina DEAA-V2.1.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Tarjetas de Telemetría de Ratios Financieros -->
+                <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">RAZÓN CORRIENTE (≥ 1.5)</span>
+                        <div id="metricRazonCorriente" style="font-size:2.2rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.5rem;">1.85</div>
+                        <div style="width:100%; height:6px; background:var(--metal-deep-950); border-radius:3px; margin:0.75rem 0; overflow:hidden;">
+                            <div id="barRazonCorriente" style="width:92%; height:100%; background:var(--sky-vibrant-400); border-radius:3px;"></div>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">Activo Corriente / Pasivo Corriente</p>
+                    </div>
+
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">PRUEBA ÁCIDA (≥ 1.0)</span>
+                        <div id="metricPruebaAcida" style="font-size:2.2rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">1.25</div>
+                        <div style="width:100%; height:6px; background:var(--metal-deep-950); border-radius:3px; margin:0.75rem 0; overflow:hidden;">
+                            <div id="barPruebaAcida" style="width:83%; height:100%; background:var(--sky-bright-300); border-radius:3px;"></div>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">(Activo Cte - Inventario) / Pasivo Cte</p>
+                    </div>
+
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">MARGEN EBITDA & NETA</span>
+                        <div id="metricMargenEbitda" style="font-size:2.2rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">28.4%</div>
+                        <div style="width:100%; height:6px; background:var(--metal-deep-950); border-radius:3px; margin:0.75rem 0; overflow:hidden;">
+                            <div id="barMargenEbitda" style="width:75%; height:100%; background:var(--sky-vibrant-400); border-radius:3px;"></div>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;" id="metricUtilidadNeta">Utilidad Neta: $145.000.000 COP</p>
+                    </div>
+                </div>
+
+                <!-- Formulario de Configuración Financiera Mecanografiable por Soldados -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">PARÁMETROS FINANCIEROS</span> Consulta y Ajuste Atómico (Cuentas 11 y 21)</h3>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="fin_saldo_disponible">Saldo Disponible en Cuentas 11 (COP)</label>
+                            <input type="text" id="fin_saldo_disponible" class="form-input-admin" data-key="financiero.saldo_disponible" placeholder="Ej.: 450000000">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="fin_obligaciones_financieras">Obligaciones Financieras Cuentas 21 (COP)</label>
+                            <input type="text" id="fin_obligaciones_financieras" class="form-input-admin" data-key="financiero.obligaciones_financieras" placeholder="Ej.: 240000000">
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="fin_margen_proyectado">Margen Operativo / EBITDA Proyectado (%)</label>
+                            <input type="text" id="fin_margen_proyectado" class="form-input-admin" data-key="financiero.margen_proyectado" placeholder="Ej.: 28.5%">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="fin_endeudamiento_max">Límite de Endeudamiento Aceptable (%)</label>
+                            <input type="text" id="fin_endeudamiento_max" class="form-input-admin" data-key="financiero.endeudamiento_max" placeholder="Ej.: 40.0%">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña ERP 2: Gestión Operativa & SG-SST -->
+            <section id="tab-operativo" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">DIVISIÓN OPERATIVA</span> Control de Turnos, SLA 99.8% & SG-SST
+                        </h2>
+                        <p class="pane-subtitle">
+                            Asignación táctica de personal técnico, cumplimiento de SLA de infraestructura y matrices de riesgo SG-SST / COPASST.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">ESTADO SLA</span>
+                        <div id="operativoSlaInsignia" style="font-size:1.6rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.75rem;">SLA 99.8% CUMPLIDO</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Monitoreo ininterrumpido 24/7</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">AFORO Y CAPACIDAD</span>
+                        <div id="operativoAforoStatus" style="font-size:2.2rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">82.5%</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Capacidad ocupada en campo</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">MATRIZ COPASST</span>
+                        <div id="operativoSstStatus" style="font-size:2.2rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">0 INCIDENTES</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Sellado de actas al día</p>
+                    </div>
+                </div>
+
+                <!-- Grilla y Formulario de Turnos Mecanografiable -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">GRILLA DE TURNOS</span> Programación Autónoma del Área Técnica</h3>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="op_cuadrante_turno">Cuadrante y Horario de Turno</label>
+                            <input type="text" id="op_cuadrante_turno" class="form-input-admin" data-key="operativo.cuadrante_turno" placeholder="Ej.: Cuadrante Alfa (06:00 - 14:00)">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="op_personal_asignado">Líder Técnico & Personal Relevo</label>
+                            <input type="text" id="op_personal_asignado" class="form-input-admin" data-key="operativo.personal_asignado" placeholder="Ej.: Escuadra Técnica Central (4 Especialistas)">
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="op_sla_objetivo">Meta SLA Operativo (%)</label>
+                            <input type="text" id="op_sla_objetivo" class="form-input-admin" data-key="operativo.sla_objetivo" placeholder="Ej.: 99.8%">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="op_acta_copasst">Número de Acta SG-SST / COPASST</label>
+                            <input type="text" id="op_acta_copasst" class="form-input-admin" data-key="operativo.acta_copasst" placeholder="Ej.: ACTA-SST-2026-088">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña ERP 3: Gestión Comercial & CRM -->
+            <section id="tab-comercial" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">DIVISIÓN COMERCIAL</span> Embudo de Ventas, CRM & Campañas Masivas
+                        </h2>
+                        <p class="pane-subtitle">
+                            Despacho multicanal de WhatsApp Cloud, Instagram y Gmail por los sargentos ejecutores con métricas CAC y LTV.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">LEADS CALIFICADOS</span>
+                        <div id="crmLeadsCount" style="font-size:2.2rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.5rem;">142</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Prospectos en etapa de propuesta</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">TASA DE APERTURA</span>
+                        <div id="crmOpenRate" style="font-size:2.2rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">94.2%</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Envíos masivos WhatsApp HSM</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">MÉTRICAS CAC & LTV</span>
+                        <div id="crmCacLtv" style="font-size:1.8rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">CAC $85K · LTV $4.2M</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Retorno de inversión institucional</p>
+                    </div>
+                </div>
+
+                <!-- Formulario de Despacho de Campaña Mecanografiable -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">ENVÍO MASIVO</span> Formulario Táctico de Campaña Omnicanal</h3>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="crm_nombre_campana">Nombre de Campaña / Asunto</label>
+                            <input type="text" id="crm_nombre_campana" class="form-input-admin" data-key="comercial.nombre_campana" placeholder="Ej.: Reactivación por WhatsApp a Prospectos Calificados">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="crm_segmento_objetivo">Segmento de Cartera / Audiencia</label>
+                            <input type="text" id="crm_segmento_objetivo" class="form-input-admin" data-key="comercial.segmento_objetivo" placeholder="Ej.: Entidades Territoriales y Operadores Turísticos">
+                        </div>
+                    </div>
+                    <div class="form-group-admin">
+                        <label for="crm_plantilla_mensaje">Plantilla del Mensaje (Typewriter Mecánico Autónomo)</label>
+                        <textarea id="crm_plantilla_mensaje" class="form-textarea-admin" style="height:100px;" data-key="comercial.plantilla_mensaje" placeholder="Mensaje redactado mecánicamente por el Sargento WhatsApp y Soldados ejecutores..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña ERP 4: Gestión Archivística & TRD -->
+            <section id="tab-archivistica" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">DIVISIÓN ARCHIVÍSTICA</span> Tablas de Retención TRD & Custodia Criptográfica
+                        </h2>
+                        <p class="pane-subtitle">
+                            Validación de series y subseries documentales reglamentarias, sellos de tiempo RFC 3161 y hashes SHA-256 de no-repudio.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-grid-2" style="margin-bottom:1.5rem;">
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3><span class="rank-badge">EXPEDIENTES CUSTODIADOS</span> Trazabilidad Criptográfica</h3>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.9rem;">
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Folios Totales Radicados:</span>
+                                <span id="archTotalFolios" style="color:var(--sky-bright-300); font-weight:600;">8,412 Folios</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Certificado de No-Repudio:</span>
+                                <span id="archCertNoRepudio" style="color:var(--sky-vibrant-400); font-weight:600;">CERT-TRD-INMUTABLE-2026</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
+                                <span style="color:var(--sky-muted-300);">Último Hash SHA-256:</span>
+                                <span id="archHashSha256" style="color:var(--sky-cyan-500); font-family:monospace; font-size:0.8rem;">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="card-title-bar">
+                            <h3><span class="rank-badge">RADICACIÓN TRD</span> Registro de Expediente</h3>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="arch_codigo_expediente">Código de Expediente / Folio</label>
+                            <input type="text" id="arch_codigo_expediente" class="form-input-admin" data-key="archivo.codigo_expediente" placeholder="Ej.: EXP-CONT-2026-1102">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="arch_serie_trd">Serie y Subserie Reglamentaria TRD</label>
+                            <input type="text" id="arch_serie_trd" class="form-input-admin" data-key="archivo.serie_trd" placeholder="Ej.: 110.02 - Comprobantes de Contabilidad y Nómina">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pestaña ERP 5: Gestión Contable & PUC -->
+            <section id="tab-contable" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h2 class="pane-title">
+                            <span class="rank-badge">DIVISIÓN CONTABLE</span> PUC, Balance de Sumas Iguales & Fiscalidad DIAN
+                        </h2>
+                        <p class="pane-subtitle">
+                            Asientos automáticos de partida doble, confirmación de balance cuadrado Débitos ≡ Créditos y cruces tributarios STAR.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">SUMAS IGUALES</span>
+                        <div id="contableSumasStatus" style="font-size:1.8rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.75rem;">CUADRADO (ΣD ≡ ΣC)</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Diferencia Cero en Partida Doble</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">PRECIERRE MENSUAL</span>
+                        <div id="contablePrecierreStatus" style="font-size:1.8rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.75rem;">CONCILIADO 100%</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Libros Oficiales Generados</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">BANDERA FISCAL STAR</span>
+                        <div id="contableStarStatus" style="font-size:1.8rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.75rem;">VERDE STAR</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">ReteFuente, ReteIVA y ReteICA OK</p>
+                    </div>
+                </div>
+
+                <!-- Bento de Habilidades Avanzadas Contables (Conta-Skills & skills-contabilidad) -->
+                <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">CONCILIACIÓN BANCARIA</span>
+                        <div id="contableConciliacionStatus" style="font-size:1.6rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.5rem;">CONCILIADO EXACTO</div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">Bancolombia & Pasarelas Sync</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">ACTIVOS FIJOS & NIC 16</span>
+                        <div id="contableDepreciacionStatus" style="font-size:1.6rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">$9.29M / MES</div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">Depreciación Lineal en Libros</p>
+                    </div>
+                    <div class="admin-card" style="text-align:center;">
+                        <span class="rank-badge">CIERRE CHECKLIST</span>
+                        <div id="contableChecklistStatus" style="font-size:1.6rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">247 TX AUDITADAS</div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">0 Anomalías Detectadas</p>
+                    </div>
+                </div>
+
+                <!-- Conexión Territorial DIVIPOLA & PUC Interactivo desde Base de Datos -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">BASE DE DATOS TRIBUTARIA</span> Selector DIVIPOLA & Catálogo PUC Colombia</h3>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="contable_select_divipola">Municipio / Jurisdicción DIVIPOLA (Cálculo ReteICA)</label>
+                            <select id="contable_select_divipola" class="form-input-admin" data-key="contable.municipio_divipola">
+                                <option value="11001" data-reteica="0.00966">11001 - Bogotá D.C. (ReteICA: 9.66‰)</option>
+                                <option value="05001" data-reteica="0.00800">05001 - Medellín, Antioquia (ReteICA: 8.00‰)</option>
+                                <option value="76001" data-reteica="0.00700">76001 - Cali, Valle del Cauca (ReteICA: 7.00‰)</option>
+                                <option value="50568" data-reteica="0.01000" selected>50568 - Puerto Gaitán, Meta (ReteICA: 10.00‰)</option>
+                                <option value="50001" data-reteica="0.00900">50001 - Villavicencio, Meta (ReteICA: 9.00‰)</option>
+                                <option value="08001" data-reteica="0.00700">08001 - Barranquilla, Atlántico (ReteICA: 7.00‰)</option>
+                                <option value="13001" data-reteica="0.00800">13001 - Cartagena, Bolívar (ReteICA: 8.00‰)</option>
+                            </select>
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="contable_select_puc">Cuenta Oficial PUC (Búsqueda Atómica en BD)</label>
+                            <select id="contable_select_puc" class="form-input-admin" data-key="contable.cuenta_puc_seleccionada">
+                                <option value="110505">110505 - Caja general (Activo Disponible)</option>
+                                <option value="111005">111005 - Moneda nacional Bancos (Activo Disponible)</option>
+                                <option value="130505">130505 - Clientes nacionales (Activo Deudores / Ventas)</option>
+                                <option value="152405">152405 - Muebles y enseres (Propiedad, Planta y Equipo)</option>
+                                <option value="220505">220505 - Proveedores nacionales (Pasivo / Compras)</option>
+                                <option value="236540">236540 - Retención en la fuente por compras 2.5% (Pasivo Fiscal)</option>
+                                <option value="236801">236801 - Impuesto de industria y comercio retenido ReteICA (Pasivo Fiscal)</option>
+                                <option value="240805">240805 - Impuesto sobre las ventas por pagar Generado 19% (Pasivo Fiscal)</option>
+                                <option value="240810">240810 - Impuesto sobre las ventas Descontable 19% (Activo Fiscal)</option>
+                                <option value="413505">413505 - Comercio al por mayor y menor (Ingresos Operacionales)</option>
+                                <option value="513505">513505 - Servicios y compras operativas (Gastos Operacionales)</option>
+                                <option value="540505">540505 - Impuesto de renta y complementarios 35% (Impuesto Ganancias)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suite Integral de Auditoría Fiscal: Ingresos, Egresos, IVA, Retención e Impuesto de Renta -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">SUITE FISCAL DIAN</span> Liquidación de Ingresos, Egresos, IVA, Retenciones & Renta (35%)</h3>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="form-group-admin">
+                            <label for="cont_suite_ingresos">Ingresos Operacionales (Ventas 4135)</label>
+                            <input type="text" id="cont_suite_ingresos" class="form-input-admin" data-key="contable.suite_ingresos" placeholder="Ej.: $ 120.000.000 COP">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_suite_egresos">Egresos Operacionales (Compras 5135)</label>
+                            <input type="text" id="cont_suite_egresos" class="form-input-admin" data-key="contable.suite_egresos" placeholder="Ej.: $ 45.000.000 COP">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_suite_utilidad">Utilidad Fiscal Antes de Impuestos</label>
+                            <input type="text" id="cont_suite_utilidad" class="form-input-admin" data-key="contable.suite_utilidad" placeholder="Ej.: $ 75.000.000 COP">
+                        </div>
+                    </div>
+                    <div class="form-grid-3" style="margin-top:1rem;">
+                        <div class="form-group-admin">
+                            <label for="cont_suite_iva_neto">IVA Neto a Pagar (Generado - Descontable)</label>
+                            <input type="text" id="cont_suite_iva_neto" class="form-input-admin" data-key="contable.suite_iva_neto" placeholder="Ej.: $ 14.250.000 COP">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_suite_retenciones">Retenciones Practicadas (ReteFuente + ReteICA)</label>
+                            <input type="text" id="cont_suite_retenciones" class="form-input-admin" data-key="contable.suite_retenciones" placeholder="Ej.: $ 1.575.000 COP">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_suite_impuesto_renta">Provisión Impuesto de Renta (35%)</label>
+                            <input type="text" id="cont_suite_impuesto_renta" class="form-input-admin" data-key="contable.suite_impuesto_renta" placeholder="Ej.: $ 26.250.000 COP">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enlaces Intermodulares: Ventas ⇄ Compras ⇄ Finanzas ⇄ Archivo TRD -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">SINCRONIZACIÓN DE MÓDULOS</span> Conexión en Vivo con Ventas, Operativo, Finanzas y Archivo</h3>
+                    </div>
+                    <div class="form-grid-2">
+                        <div style="background:var(--metal-deep-950); padding:1rem; border-radius:6px; border:1px solid var(--metal-border-700);">
+                            <div style="font-weight:600; color:var(--sky-bright-300); margin-bottom:0.5rem;">📈 Ventas (Comercial) ➔ Facturación e IVA</div>
+                            <p style="font-size:0.85rem; color:var(--sky-pale-200); margin:0;" id="linkContableVentas">Factura de venta radicada con PUC 4135, IVA generado 19% (240805) y cobro a clientes 1305.</p>
+                        </div>
+                        <div style="background:var(--metal-deep-950); padding:1rem; border-radius:6px; border:1px solid var(--metal-border-700);">
+                            <div style="font-weight:600; color:var(--sky-bright-300); margin-bottom:0.5rem;">⚙️ Compras e Insumos (Operativo) ➔ Gastos y Retenciones</div>
+                            <p style="font-size:0.85rem; color:var(--sky-pale-200); margin:0;" id="linkContableCompras">Causación de gastos PUC 5135 con retención en la fuente 2.5% y pasivo con proveedores 2205.</p>
+                        </div>
+                    </div>
+                    <div class="form-grid-2" style="margin-top:1rem;">
+                        <div style="background:var(--metal-deep-950); padding:1rem; border-radius:6px; border:1px solid var(--metal-border-700);">
+                            <div style="font-weight:600; color:var(--sky-bright-300); margin-bottom:0.5rem;">📊 Tesorería & Finanzas ➔ Conciliación Bancaria</div>
+                            <p style="font-size:0.85rem; color:var(--sky-pale-200); margin:0;" id="linkContableFinanzas">Saldos en Bancos 1110 sincronizados con pasarelas de pago y extractos bancarios.</p>
+                        </div>
+                        <div style="background:var(--metal-deep-950); padding:1rem; border-radius:6px; border:1px solid var(--metal-border-700);">
+                            <div style="font-weight:600; color:var(--sky-bright-300); margin-bottom:0.5rem;">📂 Archivo General TRD ➔ Custodia Inmutable</div>
+                            <p style="font-size:0.85rem; color:var(--sky-pale-200); margin:0;" id="linkContableArchivo">Expediente radicado con hash SHA-256 inmutable y sello temporal RFC 3161.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario y Libro de Asientos Contables Mecanografiable -->
+                <div class="admin-card">
+                    <div class="card-title-bar">
+                        <h3><span class="rank-badge">LIBRO MAYOR & BALANCES</span> Asientos y Precierre Contable</h3>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="cont_total_debitos">Total Débitos PUC (COP)</label>
+                            <input type="text" id="cont_total_debitos" class="form-input-admin" data-key="contable.total_debitos" placeholder="Ej.: 894520000.00">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_total_creditos">Total Créditos PUC (COP)</label>
+                            <input type="text" id="cont_total_creditos" class="form-input-admin" data-key="contable.total_creditos" placeholder="Ej.: 894520000.00">
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group-admin">
+                            <label for="cont_periodo_cierre">Período Fiscal de Precierre</label>
+                            <input type="text" id="cont_periodo_cierre" class="form-input-admin" data-key="contable.periodo_cierre" placeholder="Ej.: Cierre Mensual Noviembre 2026">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_cuenta_puc">Cuenta Contable Principal PUC</label>
+                            <input type="text" id="cont_cuenta_puc" class="form-input-admin" data-key="contable.cuenta_puc" placeholder="Ej.: 110505 - Caja General / 2365 - Retención">
+                        </div>
+                    </div>
+                    <div class="form-grid-3" style="margin-top:1rem;">
+                        <div class="form-group-admin">
+                            <label for="cont_conciliacion_bancos">Estado Conciliación Bancos</label>
+                            <input type="text" id="cont_conciliacion_bancos" class="form-input-admin" data-key="contable.conciliacion_bancos" placeholder="Ej.: Bancolombia Cta Cte Conciliada">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_depreciacion_mensual">Depreciación Mensual PPE (COP)</label>
+                            <input type="text" id="cont_depreciacion_mensual" class="form-input-admin" data-key="contable.depreciacion_mensual" placeholder="Ej.: 9291667.00">
+                        </div>
+                        <div class="form-group-admin">
+                            <label for="cont_anomalias_detectadas">Anomalías Detectadas en Cierre</label>
+                            <input type="text" id="cont_anomalias_detectadas" class="form-input-admin" data-key="contable.anomalias_detectadas" placeholder="Ej.: 0 anomalías (Checklist 100%)">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-meta-ads" class="tab-pane">
+                <div class="pane-header"><div><h2 class="pane-title">Meta Ads · Analemática</h2><p class="pane-subtitle">Facebook e Instagram para publicidad. X utiliza su propia integración.</p></div></div>
+                <p class="meta-mode">Modo inicial: consultas y borradores locales. No se activan anuncios, no se modifican presupuestos y no se envían mensajes.</p>
+                <section class="meta-card"><h3>Guía de conexión</h3><ol class="meta-steps"><li>Abre <a href="https://business.facebook.com/settings/" target="_blank" rel="noopener noreferrer">Configuración del negocio</a>. Crea o selecciona el portafolio de Analemática y comprueba el acceso a tu página e Instagram profesional.</li><li>En Cuentas → Cuentas publicitarias, crea o agrega una cuenta. También puedes abrir <a href="https://business.facebook.com/adsmanager" target="_blank" rel="noopener noreferrer">Administrador de anuncios</a>. El ID publicitario empieza por act_; no es el ID de tu página.</li><li>En <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer">Meta for Developers</a>, crea una aplicación con Marketing API y configura el inicio de sesión de Facebook correspondiente. Para comenzar, usa tu cuenta y recursos propios en desarrollo.</li><li>Registra la dirección de retorno que aparece abajo, exactamente igual, en la configuración OAuth de la aplicación. Guarda el ID y el secreto aquí, sin enviarlos por chat.</li><li>Autoriza en Meta, consulta las cuentas y selecciona explícitamente la de Analemática. Después comprueba los perfiles y consulta campañas y métricas.</li></ol><p>Para atender empresas externas habrá que completar los permisos, revisión y requisitos que indique Meta. Publicidad, publicación orgánica y mensajería son funciones distintas.</p></section>
+                <section class="meta-card"><h3>Configuración de Meta detectada</h3><p id="meta-setup-status" role="status">Pendiente de cargar los identificadores públicos.</p><label>URL de retorno calculada para este panel<input id="meta-callback-detected" readonly></label><button type="button" id="meta-copy-callback" class="btn-admin btn-admin-outline">Copiar URL de retorno</button><p>Instagram y acceso personal usan configuraciones distintas. Los identificadores públicos no sustituyen la autorización ni el secreto de aplicación.</p></section>
+                <section class="meta-card"><h3>Recepción de eventos de Meta</h3><p id="meta-webhook-state" role="status">Pendiente de configurar. Recibir eventos no activa respuestas automáticas.</p><label>URL pública del webhook<input id="meta-webhook-url" readonly></label><label>IDs de activos autorizados, separados por comas<input id="meta-webhook-assets" value="1414458975087720" placeholder="ID de página, Instagram y cuenta de WhatsApp Business"></label><label>Verificador generado para copiar en Meta<input id="meta-webhook-token" type="password" readonly autocomplete="off"></label><button id="meta-webhook-save" type="button" class="btn-admin btn-admin-outline">Generar y guardar verificador</button><button id="meta-webhook-copy" type="button" class="btn-admin btn-admin-outline">Copiar verificador</button><p>Usa una URL HTTPS accesible por Meta. En Codespaces, un puerto privado no permite la verificación externa. El verificador no se guarda en el navegador y al regenerarlo debes actualizarlo también en Meta.</p></section>
+                <section class="meta-card"><h3>Instagram · Autorización independiente</h3><p id="instagram-state" role="status">Pendiente de consultar.</p><label>Retorno de Instagram<input id="instagram-callback" readonly></label><label>Configuración de usuario del sistema<input id="instagram-config-id" inputmode="numeric" value="1119082880751653"></label><div class="meta-actions"><button id="instagram-save" type="button" class="btn-admin btn-admin-outline">Guardar configuración Instagram</button><button id="instagram-authorize" type="button" class="btn-admin btn-admin-primary">Conectar Instagram</button><button id="instagram-refresh" type="button" class="btn-admin btn-admin-outline">Consultar conexión</button></div><label>ID de cuenta profesional de Instagram<input id="instagram-account-id" inputmode="numeric" placeholder="Identificador de Instagram, no de la página"></label><button id="instagram-select" type="button" class="btn-admin btn-admin-outline">Comprobar y seleccionar cuenta</button><p>La publicación, las respuestas automáticas y los webhooks permanecen pendientes. Esta autorización no activa campañas.</p></section>
+                <div id="meta-profiles" class="meta-grid"></div>
+                <p id="meta-state" class="meta-mode">Abre esta sección para consultar la configuración.</p>
+                <div class="meta-actions"><button type="button" class="btn-admin btn-admin-outline" id="meta-refresh">Actualizar estado</button><button type="button" class="btn-admin btn-admin-primary" id="meta-authorize" disabled>Autorizar con Meta</button><button type="button" class="btn-admin btn-admin-outline" id="meta-profiles-verify" disabled>Comprobar Facebook e Instagram</button></div>
+                <p id="meta-feedback" role="status" aria-live="polite"></p>
+                <details class="meta-card"><summary>Configurar la aplicación de Meta · Solo dueño</summary><form id="meta-app-form"><label>ID público de la aplicación<input name="app_id" inputmode="numeric" pattern="[0-9]+" required autocomplete="off"></label><label>Secreto de la aplicación<input name="client_secret" type="password" autocomplete="new-password" placeholder="Déjalo vacío para conservar el secreto ya guardado"></label><label>Versión Graph API<input name="api_version" value="v26.0" required pattern="v[0-9]{1,2}\.[0-9]"></label><label>ID de configuración de inicio empresarial, si Meta lo proporciona<input name="login_config_id" inputmode="numeric" autocomplete="off"></label><label>Direcciones de retorno registradas, una por línea<textarea name="redirect_uris" required></textarea></label><button type="submit" class="btn-admin btn-admin-primary">Guardar aplicación</button></form></details>
+                <section class="meta-card"><h3>Cuenta publicitaria</h3><p id="meta-account-summary">No hay cuenta seleccionada.</p><div class="meta-actions"><button type="button" class="btn-admin btn-admin-outline" id="meta-accounts-load" disabled>Consultar cuentas</button></div><label>Cuenta autorizada<select id="meta-account-select"><option value="">Consulta las cuentas de Meta primero</option></select></label><button type="button" class="btn-admin btn-admin-primary" id="meta-account-save">Usar esta cuenta</button></section>
+                <section class="meta-card"><h3>Campañas en Meta</h3><button type="button" class="btn-admin btn-admin-outline" id="meta-campaigns-load" disabled>Consultar campañas</button><div id="meta-campaigns" class="meta-table"></div></section>
+                <section class="meta-card"><h3>Métricas reales de Meta</h3><label>Periodo de la cuenta<select id="meta-date-preset"><option value="last_7d">Últimos 7 días</option><option value="last_30d">Últimos 30 días</option><option value="today">Hoy</option><option value="yesterday">Ayer</option></select></label><button type="button" class="btn-admin btn-admin-outline" id="meta-insights-load" disabled>Consultar métricas</button><p>Se respeta la moneda y la zona horaria de la cuenta. No se inventan resultados cuando Meta no devuelve datos.</p><div id="meta-insights" class="meta-table"></div></section>
+                <section class="meta-card"><h3>Preparar un borrador local</h3><p>Se guarda en SGA-CD; no se envía a Meta ni genera gasto.</p><form id="meta-draft-form"><label>Nombre<input name="title" maxlength="100" required></label><label>Objetivo<select name="objective"><option value="OUTCOME_TRAFFIC">Tráfico</option><option value="OUTCOME_AWARENESS">Reconocimiento</option><option value="OUTCOME_ENGAGEMENT">Interacción</option><option value="OUTCOME_LEADS">Clientes potenciales</option><option value="OUTCOME_SALES">Ventas</option><option value="OUTCOME_APP_PROMOTION">Promoción de aplicación</option></select></label><label>Idea y contenido<textarea name="description" maxlength="2000"></textarea></label><label>Presupuesto diario previsto, opcional<input name="planned_budget" id="meta-draft-budget" type="number" min="0.01" step="0.01" disabled placeholder="Primero selecciona una cuenta"></label><label>Moneda de la cuenta<input name="currency" id="meta-draft-currency" readonly></label><button type="submit" class="btn-admin btn-admin-primary">Guardar borrador local</button></form><div id="meta-drafts" class="meta-table"></div></section>
+                <details class="meta-card"><summary>Retirar el acceso local</summary><p>Esto no pausa anuncios ni revoca permisos en Meta.</p><button type="button" class="btn-admin btn-admin-outline" id="meta-disconnect">Olvidar autorización en SGA-CD</button></details>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="adminToast" class="admin-toast">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="toastMessage">Cambios guardados con éxito</span>
+    </div>
+
+    <!-- Ejército de Agentes Tácticos de Analemática (DEAA-V2.1) -->
+    <script src="agents/analematica_army.js"></script>
+    <script src="js/connection.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/meta-ads.js"></script>
+    <script src="js/meta-setup.js"></script>
+    <script src="js/instagram.js"></script>
+</body>
+</html>

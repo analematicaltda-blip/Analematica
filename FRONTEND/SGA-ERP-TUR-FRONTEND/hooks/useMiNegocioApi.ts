@@ -139,11 +139,11 @@ export function useMiNegocioApi() {
     return makeRequest(() => financieroEndpoints.getCashTransactions().then(res => res.data));
   }, [makeRequest]);
 
-  const getEstadoResultados = useCallback(async () => {
+  const getEstadoResultadosFinanciero = useCallback(async () => {
     return makeRequest(() => financieroEndpoints.getEstadoResultados().then(res => res.data));
   }, [makeRequest]);
 
-  const getBalanceGeneral = useCallback(async () => {
+  const getBalanceGeneralFinanciero = useCallback(async () => {
     return makeRequest(() => financieroEndpoints.getBalanceGeneral().then(res => res.data));
   }, [makeRequest]);
 
@@ -347,9 +347,7 @@ export function useMiNegocioApi() {
   }, [makeRequest]);
 
   // --- API Transporte ---
-  const getVehicles = useCallback(async () => {
-    return makeRequest(() => operativoEndpoints.getVehicles().then(res => res.data));
-  }, [makeRequest]);
+
 
   const createVehicle = useCallback(async (data: any) => {
     return makeRequest(() => operativoEndpoints.createVehicle(data).then(res => res.data), "Vehículo vinculado.");
@@ -416,8 +414,8 @@ export function useMiNegocioApi() {
     deleteProducto,
     getBankAccounts,
     getCashTransactions,
-    getEstadoResultados,
-    getBalanceGeneral,
+    getEstadoResultadosFinanciero,
+    getBalanceGeneralFinanciero,
     getProyecciones,
     getRiesgos,
     getTesoreria,

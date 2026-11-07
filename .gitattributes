@@ -2,3 +2,8 @@ ollama-aarch64-apple-darwin !text !filter !merge !diff
 
 # Keep the vendored source byte-identical on Windows as well as Unix.
 /DESKTOP/agent-desktop/** -text
+/DESKTOP/open-duet/** -text
+
+# Preserve exact licensed upstream snapshots (no line-ending conversion).
+/SEGURIDAD/AiSOC/** -text
+/llm/free-ai-apis/** -text

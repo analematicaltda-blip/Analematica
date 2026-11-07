@@ -7,7 +7,7 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initMsw = async () => {
-      if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_ENABLE_MOCKS === 'true') {
         const { worker } = await import('../mocks/browser');
         await worker.start({
           onUnhandledRequest: 'bypass',

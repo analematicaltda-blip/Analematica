@@ -1,9 +1,9 @@
 name: Role workspaces
 on:
   push:
-    paths: ['Analematica/**', 'BAKEND/SGA-CD-BACKEND/tests/**', 'BAKEND/SGA-CD-BACKEND/scripts/**', 'BAKEND/SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
+    paths: ['Analematica/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/**', 'BACKEND/SGA-CD-BACKEND/tests/**', 'BACKEND/SGA-CD-BACKEND/scripts/**', 'BACKEND/SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
   pull_request:
-    paths: ['Analematica/**', 'BAKEND/SGA-CD-BACKEND/tests/**', 'BAKEND/SGA-CD-BACKEND/scripts/**', 'BAKEND/SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
+    paths: ['Analematica/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/**', 'BACKEND/SGA-CD-BACKEND/tests/**', 'BACKEND/SGA-CD-BACKEND/scripts/**', 'BACKEND/SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
 permissions:
   contents: read
 jobs:
@@ -17,16 +17,16 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install fastapi httpx sqlalchemy 'pydantic[email]' pydantic-settings 'python-jose[cryptography]' passlib bcrypt requests python-multipart
       - run: python -m unittest discover -s tests/workspace -v
-      - run: python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_institutional_panels.py -v
-      - run: python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_corporate_node.py -v
-      - run: python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_owner_console.py -v
-      - run: python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_web_startup.py -v
-      - run: python Analematica/Frontend/tests/deployment.py -v
-      - run: python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_instagram_login.py -v
-      - run: python -m unittest discover -s BAKEND/SGA-CD-BACKEND/tests -p test_meta_webhooks.py -v
-      - run: python Analematica/Frontend/tests/meta_setup.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_institutional_panels.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_corporate_node.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_owner_console.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_web_startup.py -v
+      - run: python FRONTEND/ANALEMATICA-FRONTEND/tests/deployment.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_instagram_login.py -v
+      - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_meta_webhooks.py -v
+      - run: python FRONTEND/ANALEMATICA-FRONTEND/tests/meta_setup.py -v
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node Analematica/Frontend/tests/meta-setup.cjs
-      - run: node --check Analematica/Frontend/js/instagram.js
+      - run: node FRONTEND/ANALEMATICA-FRONTEND/tests/meta-setup.cjs
+      - run: node --check FRONTEND/ANALEMATICA-FRONTEND/js/instagram.js

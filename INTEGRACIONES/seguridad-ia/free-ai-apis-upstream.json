@@ -1,0 +1,32 @@
+{
+  "source": "https://github.com/OuterSpacee/free-ai-apis",
+  "commit": "0c78ad5ccc6a2658e434e465c53fa2bea83605b7",
+  "license": "CC0-1.0",
+  "destination": "llm/free-ai-apis",
+  "files": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "git_blob": "fafff2e8d6c86b79ee1db7cde4325e11516fabfb",
+      "sha256": "2bdfdb216230559f36faf46907142b8afd478401150f810e1ddaf9a4fdcc656c"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "mode": "100644",
+      "git_blob": "9f6f65c029b03f47ce6cfe4d80e413a7ace97ccc",
+      "sha256": "0523a9268e2051a1cde1301785f15aaa9e3324ba2b78c18cc6a7b44a80e5e8a0"
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "git_blob": "c6ec9bd18ea4424b6bfacfd7294f790c4f698b1c",
+      "sha256": "7de68f5bcf28441f41cad8bf4e27ad8209c46ccfcbd53a20ec4a274a62a59260"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "git_blob": "4238c069518c95bdef8208da195d9647d4410b28",
+      "sha256": "88738453eefa3278edd1def7f2de6ecd8187e9101084292683b6e604826fa08a"
+    }
+  ]
+}
