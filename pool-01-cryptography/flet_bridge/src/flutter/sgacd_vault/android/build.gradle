@@ -1,0 +1,13 @@
+group 'co.analematica.vault.bridge'
+version '0.1.0'
+buildscript {
+    repositories { google(); mavenCentral() }
+    dependencies { classpath 'com.android.tools.build:gradle:8.9.2' }
+}
+apply plugin: 'com.android.library'
+android {
+    namespace 'co.analematica.vault.bridge'
+    compileSdk 35
+    defaultConfig { minSdk 31 }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}

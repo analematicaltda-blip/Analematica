@@ -1,0 +1,22 @@
+name: sgacd_vault
+version: 0.1.0
+publish_to: none
+description: Native-only encrypted document import for Flet, with a metadata-only Python boundary.
+environment:
+  sdk: '>=3.7.0 <4.0.0'
+  flutter: '>=3.29.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flet: '>=0.28.3 <0.29.0'
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: co.analematica.vault.bridge
+        pluginClass: SGAVaultPlugin
+      ios:
+        pluginClass: SGAVaultPlugin

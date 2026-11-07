@@ -25,3 +25,5 @@ Detalle técnico, límites, uso e integración: `pool-01-cryptography/README.md`
 Antes de activar: integrar puente Flet/Flutter con bytes en memoria, compilar hosts
 firmados, verificar dispositivos físicos y definir recuperación. El plan maestro
 sigue en ejecución; este corte no declara producción protegida ni custodia bancaria.
+
+El puente se incorpora en el corte posterior `PUENTE_MOVIL_08.md`; sus límites y pruebas se registran allí.

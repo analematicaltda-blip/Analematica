@@ -34,7 +34,7 @@
       "id": "F5",
       "frente": "Motor de control",
       "estado": "BLOQUEADO",
-      "evidencia_y_limite": "Protocolo probado; teléfonos físicos, Mac/Xcode y cuentas sandbox pendientes."
+      "evidencia_y_limite": "Motor conserva sus autorizaciones. Pool01 y puente Flet de documentos empaquetados con metadatos solamente; 10 pruebas de contrato y 232 aserciones criptográficas. Faltan compilación Flutter/iOS observada, teléfonos físicos y ámbito autenticado de la app."
     },
     {
       "id": "F6",

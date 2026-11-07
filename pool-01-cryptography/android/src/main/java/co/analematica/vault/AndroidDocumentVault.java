@@ -16,6 +16,11 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.security.MessageDigest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -47,7 +52,17 @@ public final class AndroidDocumentVault {
     public String documentContext(UUID document) { return VaultEnvelope.context(tenant,account,document); }
 
     /** Explicit enrollment only. Never called automatically while decrypting. */
-    public synchronized void createKey(Context context) throws GeneralSecurityException {
+    public void createKey(Context context) throws GeneralSecurityException {
+        synchronized (AndroidDocumentVault.class) {
+            File path=new File(context.getNoBackupFilesDir(),alias+".enrollment.lock");
+            try (FileOutputStream stream=new FileOutputStream(path,true); FileLock lock=stream.getChannel().tryLock()) {
+                if(lock==null)throw new GeneralSecurityException("ENROLLMENT_BUSY");
+                createKeyLocked(context);
+            } catch(IOException | OverlappingFileLockException exception) { throw new GeneralSecurityException("ENROLLMENT_LOCK_UNAVAILABLE"); }
+        }
+    }
+
+    private void createKeyLocked(Context context) throws GeneralSecurityException {
         if (store.containsAlias(alias)) throw new GeneralSecurityException("KEY_ALREADY_EXISTS");
         KeyguardManager lock=context.getSystemService(KeyguardManager.class);
         BiometricManager biometrics=context.getSystemService(BiometricManager.class);

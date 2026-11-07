@@ -1,7 +1,8 @@
 # Pool 01 · Criptografía local de documentos
 
-**Implementado como bibliotecas nativas propias. No está conectado todavía al
-selector/importador Flet ni desplegado en un teléfono.** No utiliza APIs externas,
+**Implementado como bibliotecas nativas y puente Flet propios. El puente está
+empaquetado y probado a nivel de contrato, pero no está activo en la aplicación
+principal ni validado en teléfonos físicos.** No utiliza APIs externas,
 no transmite documentos y no modifica las reglas financieras de la billetera.
 Los demás pools tienen alcance y criterios propios; no se anuncian como terminados.
 
@@ -86,11 +87,11 @@ situaciones en dispositivos físicos y builds firmadas antes de habilitar el poo
 
 ## Integración pendiente con los clientes
 
-La aplicación `MOVILES/SGA-CD-APK.git` es Flet/Python y no dispone de un puente
-nativo para estas APIs. No se ha sustituido su almacenamiento ni afirmado que sus
-documentos existentes estén cifrados. Se necesita una extensión Flet/Flutter que
-pase bytes en memoria al módulo, muestre las respuestas en el hilo correcto y
-entregue únicamente sobres al almacenamiento. No utilizar base64 por logs, URLs,
+La aplicación `MOVILES/SGA-CD-APK.git` es Flet/Python. El puente nativo se incorpora
+en `flet_bridge` con selector y almacenamiento dentro del cliente, sin contenido
+por el transporte Python. Ver `flet_bridge/README.md` para empaquetarlo. No se ha sustituido su almacenamiento ni afirmado que sus
+documentos existentes estén cifrados. Se necesita validar esa extensión en los hosts firmados y conectarla al ámbito
+autenticado de la aplicación principal antes de activarla. No utilizar base64 por logs, URLs,
 SharedPreferences, localStorage o una implementación Python de llaves en disco.
 
 Android: crear AndroidDocumentVault con tenant/cuenta/versión y política; en alta

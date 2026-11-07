@@ -35,3 +35,52 @@ jobs:
         working-directory: pool-01-cryptography/ios
       - run: xcodebuild -scheme SGAVault -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/sgacd-vault-derived CODE_SIGNING_ALLOWED=NO build
         working-directory: pool-01-cryptography/ios
+  python-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'flet==0.28.3' build
+      - run: python pool-01-cryptography/flet_bridge/sync_native.py
+      - run: PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s pool-01-cryptography/flet_bridge/tests -v
+      - run: python -m build --wheel pool-01-cryptography/flet_bridge --outdir /tmp/vault-wheel
+  flutter-bridge:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: apk
+          - os: macos-latest
+            target: ios
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        if: matrix.target == 'apk'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          channel: stable
+      - run: python pool-01-cryptography/flet_bridge/sync_native.py
+      - run: flutter pub get
+        working-directory: pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault
+      - run: flutter analyze --no-fatal-infos
+        working-directory: pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault
+      - run: flutter test
+        working-directory: pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault
+      - run: python pool-01-cryptography/flet_bridge/make_flutter_host.py --directory "$RUNNER_TEMP/vault-host"
+      - run: flutter build apk --debug
+        if: matrix.target == 'apk'
+        working-directory: ${{ runner.temp }}/vault-host
+      - run: flutter build ios --simulator --debug
+        if: matrix.target == 'ios'
+        working-directory: ${{ runner.temp }}/vault-host

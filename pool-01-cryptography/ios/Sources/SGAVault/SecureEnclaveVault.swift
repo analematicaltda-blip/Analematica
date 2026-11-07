@@ -6,6 +6,10 @@ import LocalAuthentication
 /// Explicit provisioning and biometric-bound private-key operations. Never deletes
 /// or regenerates an existing key after a failure, restore or biometric change.
 public final class SecureEnclaveVault {
+    private static let enrollmentLock = NSLock()
+    private let contextLock = NSLock()
+    private var activeContext: LAContext?
+    private var cancelled = false
     private let scope: DocumentScope
     private let keyID: String
     private let algorithm = SecKeyAlgorithm.eciesEncryptionCofactorX963SHA256AESGCM
@@ -14,6 +18,8 @@ public final class SecureEnclaveVault {
     private var query: [String: Any] { [kSecClass as String: kSecClassKey, kSecAttrApplicationTag as String: Data(keyID.utf8), kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom] }
 
     public func createKey() throws {
+        guard Self.enrollmentLock.try() else { throw VaultError.keyUnavailable }
+        defer { Self.enrollmentLock.unlock() }
         guard SecureEnclave.isAvailable else { throw VaultError.hardwareUnavailable }
         var lookup = query; lookup[kSecUseAuthenticationUI as String] = kSecUseAuthenticationUIFail
         let status = SecItemCopyMatching(lookup as CFDictionary, nil)
@@ -27,24 +33,39 @@ public final class SecureEnclaveVault {
         guard SecKeyCreateRandomKey(attributes as CFDictionary, &error) != nil else { throw VaultError.hardwareUnavailable }
     }
 
+    /// Cancels this instance's pending authentication without deleting a key.
+    /// Retry with a new vault instance (same scope/version), not a new key.
+    public func cancelPendingAuthentication() {
+        contextLock.lock(); cancelled = true; let context = activeContext; contextLock.unlock()
+        context?.invalidate()
+    }
+    private func endAuthentication() {
+        contextLock.lock(); let context = activeContext; activeContext = nil; contextLock.unlock()
+        context?.invalidate()
+    }
     private func existingKey() throws -> SecKey {
         guard SecureEnclave.isAvailable else { throw VaultError.hardwareUnavailable }
         let context = LAContext(); context.touchIDAuthenticationAllowableReuseDuration = 0
         context.localizedReason = "Autorizar acceso al documento cifrado"
-        var lookup = query; lookup[kSecReturnRef as String] = true
-        lookup[kSecUseAuthenticationContext as String] = context
-        var result: CFTypeRef?
-        guard SecItemCopyMatching(lookup as CFDictionary, &result) == errSecSuccess, let result else { throw VaultError.keyUnavailable }
-        // A successful key-class query returns a SecKey reference, not its bytes.
-        let key = result as! SecKey
-        guard let attributes = SecKeyCopyAttributes(key) as? [String: Any],
-              attributes[kSecAttrTokenID as String] as? String == kSecAttrTokenIDSecureEnclave as String else { throw VaultError.hardwareUnavailable }
-        return key
+        contextLock.lock()
+        guard !cancelled, activeContext == nil else { contextLock.unlock(); throw VaultError.authenticationFailed }
+        activeContext = context; contextLock.unlock()
+        do {
+            var lookup = query; lookup[kSecReturnRef as String] = true
+            lookup[kSecUseAuthenticationContext as String] = context
+            var result: CFTypeRef?
+            guard SecItemCopyMatching(lookup as CFDictionary, &result) == errSecSuccess, let result else { throw VaultError.keyUnavailable }
+            let key = result as! SecKey
+            guard let attributes = SecKeyCopyAttributes(key) as? [String: Any],
+                  attributes[kSecAttrTokenID as String] as? String == kSecAttrTokenIDSecureEnclave as String else { throw VaultError.hardwareUnavailable }
+            return key
+        } catch { endAuthentication(); throw error }
     }
 
     public func encrypt(_ document: Data, documentID: UUID) throws -> Data {
         guard document.count <= Envelope.maximum else { throw VaultError.invalidEnvelope }
         let privateKey = try existingKey()
+        defer { endAuthentication() }
         guard let publicKey = SecKeyCopyPublicKey(privateKey), SecKeyIsAlgorithmSupported(publicKey, .encrypt, algorithm) else { throw VaultError.hardwareUnavailable }
         var bytes = Data(count: 32)
         let status = bytes.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, 32, $0.baseAddress!) }
@@ -58,6 +79,7 @@ public final class SecureEnclaveVault {
     public func decrypt(_ encoded: Data, documentID: UUID) throws -> Data {
         let envelope = try Envelope.parse(encoded, platform: 2, context: scope.context(document: documentID), keyID: keyID)
         let privateKey = try existingKey()
+        defer { endAuthentication() }
         guard SecKeyIsAlgorithmSupported(privateKey, .decrypt, algorithm) else { throw VaultError.hardwareUnavailable }
         var error: Unmanaged<CFError>?
         // The actual private-key operation triggers the system's access control.

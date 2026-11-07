@@ -21,3 +21,11 @@ tunnel.log
 /pool-01-cryptography/android/build/
 /pool-01-cryptography/ios/.build/
 /pool-01-cryptography/ios/.swiftpm/
+
+/pool-01-cryptography/flet_bridge/build/
+/pool-01-cryptography/flet_bridge/dist/
+/pool-01-cryptography/flet_bridge/src/*.egg-info/
+/pool-01-cryptography/flet_bridge/**/__pycache__/
+/pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/.dart_tool/
+/pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/build/
+/pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/.gradle/
