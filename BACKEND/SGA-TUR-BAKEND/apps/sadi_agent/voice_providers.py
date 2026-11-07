@@ -2,7 +2,6 @@
 import os
 import abc
 from typing import Tuple
-from openai import OpenAI
 import logging
 from pathlib import Path
 
@@ -28,6 +27,7 @@ class WhisperProvider(SpeechToTextProvider):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("No se encontró la clave de API de OpenAI. Por favor, establezca la variable de entorno OPENAI_API_KEY.")
+        from openai import OpenAI
         self.client = OpenAI(api_key=self.api_key)
 
     def transcribe(self, audio_path: Path) -> Tuple[str, str]:
@@ -59,6 +59,7 @@ class OpenAITTSProvider(TextToSpeechProvider):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("No se encontró la clave de API de OpenAI. Por favor, establezca la variable de entorno OPENAI_API_KEY.")
+        from openai import OpenAI
         self.client = OpenAI(api_key=self.api_key)
         self.voice = voice
 

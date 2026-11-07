@@ -99,3 +99,28 @@ class CorporateGatewayTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class GatewayIsolationTests(CorporateGatewayTests):
+    def test_preview_basic_credentials_are_not_forwarded(self):
+        def responder(request):
+            self.assertNotIn('authorization',request.headers)
+            return __import__('httpx').Response(401,json={'detail':'Bearer required'})
+        self.assertEqual(self.request('/api/v1/platform/manifest',responder,headers={'Authorization':'Basic synthetic-preview-only'}).status_code,401)
+
+    def test_pool_cookies_are_not_shared_between_users(self):
+        import httpx
+        from fastapi.testclient import TestClient
+        seen=[]
+        def responder(request):
+            seen.append(request.headers.get('cookie',''))
+            return httpx.Response(200,json={'ok':True},headers={'Set-Cookie':'upstream_session=synthetic; Path=/; HttpOnly'})
+        with TestClient(self.gateway.app) as client:
+            original=self.gateway.app.state.upstream
+            mock=httpx.AsyncClient(base_url=self.gateway.UPSTREAM,transport=httpx.MockTransport(responder));self.gateway.app.state.upstream=mock
+            try:
+                self.assertEqual(client.get('/api/v1/test').status_code,200)
+                # Independent viewer, without the first browser session cookie.
+                client.cookies.clear()
+                self.assertEqual(client.get('/api/v1/test').status_code,200)
+            finally:client.portal.call(mock.aclose);self.gateway.app.state.upstream=original
+        self.assertEqual(seen,['',''])

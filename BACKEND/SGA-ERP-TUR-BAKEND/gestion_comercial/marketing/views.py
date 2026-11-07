@@ -6,11 +6,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema
 try:
-    from ..ai.services.ai_manager.ai_manager import ai_manager
+    from ..ai.services.ai_manager.ai_manager import ai_manager, AIProviderUnavailable
     from ..ai.services.sanitizers import sanitize_plain_text
 except (ImportError, ValueError):
     # Fallback to absolute import if relative fails
-    from apps.prestadores.mi_negocio.gestion_comercial.ai.services.ai_manager.ai_manager import ai_manager
+    from apps.prestadores.mi_negocio.gestion_comercial.ai.services.ai_manager.ai_manager import ai_manager, AIProviderUnavailable
     from apps.prestadores.mi_negocio.gestion_comercial.ai.services.sanitizers import sanitize_plain_text
 
 from .models import Campaign
@@ -105,6 +105,8 @@ class AIRewriteEmailView(APIView):
             raw_text, provider_name = ai_manager.execute_text_generation(prompt=prompt, model='default-text-model')
             sanitized_text = sanitize_plain_text(raw_text)
             return Response({"rewritten_text": sanitized_text}, status=status.HTTP_200_OK)
+        except AIProviderUnavailable:
+            raise
         except RuntimeError as e:
             return Response({"error": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         except Exception as e:

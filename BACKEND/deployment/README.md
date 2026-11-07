@@ -71,32 +71,11 @@ de toda la API. No se incluyen claves de proveedor en código o imágenes.
 
 ## Estado real de los servicios turísticos
 
-**ERP y Turismo todavía no completan el arranque.** Se corrigieron sus bindings de
-paquetes, el registro del namespace de prestadores, las claves JWT por entorno y la
-lista de dependencias. La comprobación de modelos Django ya pasa, pero el chequeo
-completo falla en `gestion_contable/compras/urls.py`: importa `ProveedorViewSet`,
-`FacturaCompraViewSet` y `GenerarPagoMasivoProveedoresView`, cuyo código está comentado
-en `views.py`. No se activaron operaciones financieras incompletas para ocultar el error.
-Puede haber otros bloqueos tras resolver este primero; los archivos heredados también
-conservan las incidencias sintácticas inventariadas en la importación APP.
+Los checks completos de Django pasan en una configuración aislada después de corregir imports, namespaces y dependencias opcionales. Compras, proyectos, presupuesto y reportes incompletos responden **503 autenticado**, sin activar operaciones financieras de ejemplo. Esto permite comprobar el bootstrap, pero no convierte esos módulos en funciones terminadas.
 
-Para reproducir el bloqueo sin arrancar ni migrar bases:
+El grafo de migraciones sigue bloqueado por una dependencia inexistente de `prestadores.0001_full_reset`. No se han migrado ni validado bases de negocio, reservas o pagos. **No ejecutar `up` para anunciar cuatro servicios funcionales ni aplicar migraciones reales sin resolver ese grafo y probar restauración.**
 
-```bash
-docker compose -f BACKEND/deployment/compose.yaml run --rm --no-deps erp-tur
-docker compose -f BACKEND/deployment/compose.yaml run --rm --no-deps turismo
-```
-
-Una vez corregidas las vistas, revisados los checks y preparadas las migraciones de
-bases nuevas, el arranque conjunto es:
-
-```bash
-docker compose -f BACKEND/deployment/compose.yaml up -d --wait
-```
-
-Ese comando **no pasa actualmente para los cuatro servicios**. El entry point falla
-ante errores de Django y el healthcheck no los declara sanos. No habilites migraciones
-ni apuntes las variables a una base real sin revisar previamente los cambios de esquema.
+Las pruebas de bootstrap usan `BACKEND/deployment/tests/tourism_runtime_check.py`, SQLite en memoria y claves temporales. El inventario, los hallazgos, las restricciones de permisos y el plan de dominio están en `INTEGRACIONES/turismo-erp/`. El registro de consolidación está en `INTEGRACIONES/plan-maestro/README.md`. El estado de runtime y de producción no queda certificado por los checks.
 
 ## Comprobar y detener
 

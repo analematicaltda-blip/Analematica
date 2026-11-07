@@ -24,3 +24,11 @@ STATIC_ROOT = Path('/state/static')
 MEDIA_ROOT = Path('/state/media')
 CELERY_TASK_ALWAYS_EAGER = False
 CELERY_BROKER_URL = os.environ['REDIS_URL']
+
+# Align the current allauth contract and exclude missing static directories.
+ACCOUNT_LOGIN_METHODS={'email'}
+ACCOUNT_SIGNUP_FIELDS=['email*','password1*','password2*']
+STATICFILES_DIRS=[path for path in STATICFILES_DIRS if Path(path).is_dir()]
+# Synthetic deception responses are opt-in and require their migrated storage.
+if os.environ.get('DJANGO_DECEPTION_ENABLED','0')!='1':
+    MIDDLEWARE=[m for m in MIDDLEWARE if m!='apps.defense_deception.middleware.DeceptionMiddleware']

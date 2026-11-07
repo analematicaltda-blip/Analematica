@@ -25,7 +25,7 @@ urlpatterns = [
     path("api/v1/mi-negocio/", include("apps.prestadores.mi_negocio.urls")),
 
     # Nueva API para el panel de administración de la plataforma
-    path('api/admin/plataforma/', include('apps.admin_plataforma.urls')),
+    path('api/admin/plataforma/', include('apps.admin_plataforma.urls',namespace='legacy_admin_plataforma')),
 
     # --- DOMINIOS NORMALIZADOS (api/v1/) ---
 
@@ -59,21 +59,21 @@ urlpatterns = [
     path('api/v1/governance/plataforma/', include('apps.admin_plataforma.urls')),
 
     # --- ALIAS DE COMPATIBILIDAD (DEPRECATED) ---
-    path('api/comercial/', include('apps.comercial.urls')),
+    path('api/comercial/', include('apps.comercial.urls',namespace='legacy_comercial')),
     path('api/commercial-engine/', include('apps.commercial_engine.urls')),
     path('api/web/', include('apps.web_funnel.urls')),
     path('api/cart/', include('apps.cart.urls')),
     path('api/payments/', include('apps.payments.urls')),
     path('api/wallet/', include('apps.wallet.urls')),
     path('api/delivery/', include('apps.delivery.urls')),
-    path('api/sadi/', include('apps.sadi_agent.urls')),
+    path('api/sadi/', include('apps.sadi_agent.urls',namespace='legacy_sadi_agent')),
     path('api/sarita/', include('apps.sarita_agents.urls')),
     path('api/contabilidad/', include('apps.prestadores.mi_negocio.gestion_contable.contabilidad.urls')),
     path('api/nomina/', include('apps.prestadores.mi_negocio.gestion_contable.nomina.urls')),
-    path('api/admin/control-tower/', include('apps.admin_control_tower.urls')),
-    path('api/admin/intelligence/', include('apps.decision_intelligence.urls')),
-    path('api/admin/optimization/', include('apps.ecosystem_optimization.urls')),
-    path('api/admin/finanzas/', include('apps.finanzas.urls')),
+    path('api/admin/control-tower/', include('apps.admin_control_tower.urls',namespace='legacy_admin_control_tower')),
+    path('api/admin/intelligence/', include('apps.decision_intelligence.urls',namespace='legacy_decision_intelligence')),
+    path('api/admin/optimization/', include('apps.ecosystem_optimization.urls',namespace='legacy_ecosystem_optimization')),
+    path('api/admin/finanzas/', include('apps.finanzas.urls',namespace='legacy_finanzas')),
 
     # API para Interoperabilidad Internacional (Z-TRUST-NET)
     path('api/v1/international-interop/', include('apps.international_interop.urls')),

@@ -1,0 +1,58 @@
+{
+  "schema": "sgacd-master-plan-board-v1",
+  "production_ready": false,
+  "domain_order": [
+    "institucional",
+    "erp_desde_cliente"
+  ],
+  "tasks": [
+    {
+      "id": "F1",
+      "frente": "Arquitectura e inventario",
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Inventario técnico y matriz preliminar listos; falta recorrido funcional completo."
+    },
+    {
+      "id": "F2",
+      "frente": "Backends y datos",
+      "estado": "BLOQUEADO",
+      "evidencia_y_limite": "Checks y límites técnicos verificados; grafo de migraciones inválido."
+    },
+    {
+      "id": "F3",
+      "frente": "Identidad y administración",
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Propiedad de proveedor reforzada; SSO/jurisdicción y delegaciones pendientes."
+    },
+    {
+      "id": "F4",
+      "frente": "Experiencia web",
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Centro común incorporado; auditoría responsive completa y flujos pendientes."
+    },
+    {
+      "id": "F5",
+      "frente": "Motor de control",
+      "estado": "BLOQUEADO",
+      "evidencia_y_limite": "Protocolo probado; teléfonos físicos, Mac/Xcode y cuentas sandbox pendientes."
+    },
+    {
+      "id": "F6",
+      "frente": "Seguridad y observabilidad",
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Auditoría mínima disponible; H-001/H-002 críticos pendientes y SOC no cualificado."
+    },
+    {
+      "id": "F7",
+      "frente": "IA y contenido",
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Sin fallback ficticio ERP; proveedor real/calidad/coste no verificados."
+    },
+    {
+      "id": "F8",
+      "frente": "Calidad y operación",
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Pruebas/CI y documentos incorporados; restauración, carga y producción pendientes."
+    }
+  ]
+}

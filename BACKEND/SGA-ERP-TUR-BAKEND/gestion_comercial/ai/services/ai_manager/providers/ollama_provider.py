@@ -25,6 +25,7 @@ class OllamaProvider(AIBaseProvider):
             response = requests.post(
                 f"{self.endpoint}/generate",
                 json={"model": model, "prompt": prompt, "stream": False},
+                timeout=15,
             )
             response.raise_for_status()
             return response.json().get("response", "")
@@ -44,6 +45,7 @@ class OllamaProvider(AIBaseProvider):
             response = requests.post(
                 f"{self.endpoint}/generate",
                 json={"model": model, "prompt": f"Generate an image of: {prompt}", "stream": False},
+                timeout=15,
             )
             response.raise_for_status()
             images = response.json().get("images")
