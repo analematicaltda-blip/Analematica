@@ -1,9 +1,9 @@
 name: Shared foundation and tourism audit
 on:
   push:
-    paths: ['BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+    paths: ['WALLET-BACKEND/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
   pull_request:
-    paths: ['BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+    paths: ['WALLET-BACKEND/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
 permissions:
   contents: read
 jobs:

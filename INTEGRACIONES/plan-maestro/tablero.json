@@ -16,7 +16,7 @@
       "id": "F2",
       "frente": "Backends y datos",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Bases SQLite nuevas verificadas; billetera interna con moneda explícita, límites, dos autorizaciones e idempotencia. 164 migraciones y 585 tablas por base. No equivale a pagos externos ni migración histórica."
+      "evidencia_y_limite": "Bases locales nuevas verificadas en cortes previos; CRM aislado. Operaciones comerciales/POS incompatibles bloqueados con 503 sin escritura. Reservas, contabilidad y migración histórica pendientes."
     },
     {
       "id": "F3",
@@ -40,7 +40,7 @@
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Billetera organizada en cuatro carpetas; caché/borradores offline cifrados, ocho reglas locales y perfiles limitados. Registro vivo de18 pendientes. 124 pruebas Python, cuatro Node, panel Chromium y283 aserciones Java correctas. Integraciones reales y binarios/hardware pendientes; no liquidación offline."
+      "evidencia_y_limite": "Cuatro carpetas WALLET, caché cifrada, ocho reglas locales; 19 pendientes y 131 ejecuciones Python en corte14. Adaptador empresarial real, AiSOC/hardware pendientes."
     },
     {
       "id": "F7",
@@ -52,7 +52,9 @@
       "id": "F8",
       "frente": "Calidad y operación",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Corte Pool02: 114 ejecuciones Python y 9 aserciones Java correctas; interoperabilidad P-256 comprobada. Compilación Swift, hardware y concurrencia PostgreSQL pendientes."
+      "evidencia_y_limite": "CI y comprobación local reproducible; workflow incluye rutas WALLET-BACKEND. Evidencia histórica en cada corte; validación central actual y releases productivas no certificadas."
     }
-  ]
+  ],
+  "latest_review": "2026-11-07",
+  "latest_report": "AVANCE_15.md"
 }
