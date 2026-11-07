@@ -86,7 +86,7 @@ class WalletDeviceViewSet(PrivateWalletMixin,mixins.CreateModelMixin,mixins.List
     def attest(self,request,pk=None):
         self.get_object()
         form=DeviceAttestationSerializer(data=request.data);form.is_valid(raise_exception=True)
-        device=device_approvals.attest(request.user,pk,form.validated_data['public_key'],form.validated_data['certificate_chain'])
+        device=device_approvals.attest(request.user,pk,form.validated_data['public_key'],form.validated_data['certificate_chain'],form.validated_data['enrollment_authorization'])
         return Response(self.get_serializer(device).data)
     @action(detail=True,methods=['post'])
     def revoke(self,request,pk=None):

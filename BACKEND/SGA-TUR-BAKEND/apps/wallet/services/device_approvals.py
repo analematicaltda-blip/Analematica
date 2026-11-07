@@ -7,7 +7,9 @@ import base64
 import hashlib
 import hmac
 import secrets
+import re
 from dataclasses import dataclass
+from functools import lru_cache
 from datetime import datetime,timedelta
 from uuid import UUID
 from cryptography.exceptions import InvalidSignature
@@ -31,6 +33,24 @@ class VerifiedAttestation:
     nonce_hash: str
     valid_until: datetime
     hardware_biometric: bool
+    platform: str = ""
+    policy_digest: str = ""
+    certificate_serials: tuple = ()
+
+
+@lru_cache(maxsize=4)
+def _load_configured_verifier(path):
+    from .attestation_config import load_android_verifier
+    return load_android_verifier(path)
+
+
+def configured_verifier():
+    explicit=getattr(settings,'WALLET_ATTESTATION_VERIFIER',None)
+    if explicit is not None:return explicit
+    path=getattr(settings,'WALLET_ANDROID_ATTESTATION_POLICY_FILE','')
+    if not path:return None
+    try:return _load_configured_verifier(path)
+    except Exception:raise WalletOperationUnavailable('La política de atestación no está disponible o no es válida.')
 
 
 def audience():
@@ -65,13 +85,13 @@ def begin_enrollment(user):
 
 
 @transaction.atomic
-def attest(user,credential_id,public_key,chain):
+def attest(user,credential_id,public_key,chain,enrollment_authorization=None):
     actor(user)
     if not getattr(settings,'WALLET_DEVICE_ENROLLMENT_ENABLED',False):raise WalletOperationUnavailable('El alta de dispositivos no está habilitada.')
     credential=get_object_or_404(WalletDeviceCredential.objects.select_for_update(),id=credential_id,user_id=user.pk)
     now=timezone.now()
     if credential.status!='PENDING' or credential.enrollment_expires_at<=now or credential.audience!=audience():raise PermissionDenied('Alta inválida o vencida.')
-    verifier=getattr(settings,'WALLET_ATTESTATION_VERIFIER',None)
+    verifier=configured_verifier()
     if not callable(verifier):raise WalletOperationUnavailable('Falta un verificador de atestación de hardware validado. El dispositivo continúa pendiente.')
     raw,_=raw_public_key(public_key)
     try:
@@ -79,21 +99,41 @@ def attest(user,credential_id,public_key,chain):
         certificates=tuple(base64.b64decode(cert,validate=True) for cert in chain)
         if any(not cert or len(cert)>16384 for cert in certificates):raise ValueError()
     except (ValueError,TypeError):raise ValidationError('Cadena de atestación inválida.')
+    from .enrollment_authorization import verify_authorization
+    authorization=verify_authorization(user,credential,raw,enrollment_authorization)
     # Configuration-only adapter: must validate vendor roots, nonce, verified boot,
     # package/signing identity, key and biometric policy before returning evidence.
-    evidence=verifier(credential,raw,certificates)
+    from .android_attestation import AttestationRejected
+    try:evidence=verifier(credential,raw,certificates)
+    except AttestationRejected:raise PermissionDenied('La atestación no cumple la política de seguridad.')
+    except Exception:raise WalletOperationUnavailable('No se pudo verificar la atestación. El dispositivo continúa pendiente.')
     if type(evidence) is not VerifiedAttestation or evidence.hardware_biometric is not True or evidence.credential_id!=credential.pk or evidence.user_id!=user.pk or evidence.audience!=credential.audience or evidence.public_key!=raw or not isinstance(evidence.nonce_hash,str) or not hmac.compare_digest(evidence.nonce_hash,credential.enrollment_nonce_hash):
         raise PermissionDenied('La evidencia no acredita este dispositivo y solicitante.')
     if not isinstance(evidence.valid_until,datetime) or not timezone.is_aware(evidence.valid_until) or not now<evidence.valid_until<=now+timedelta(days=7):raise PermissionDenied('Vigencia de atestación inválida.')
+    if evidence.platform!='ANDROID_KEY_ATTESTATION' or not isinstance(evidence.policy_digest,str) or re.fullmatch('[0-9a-f]{64}',evidence.policy_digest) is None or not isinstance(evidence.certificate_serials,tuple) or not 2<=len(evidence.certificate_serials)<=8 or any(not isinstance(serial,str) or re.fullmatch('[1-9a-f][0-9a-f]{0,39}',serial) is None for serial in evidence.certificate_serials):raise PermissionDenied('Evidencia de confianza incompleta.')
+    credential.attestation_platform=evidence.platform;credential.attestation_policy_digest=evidence.policy_digest;credential.attestation_serials=list(evidence.certificate_serials)
+    credential.enrollment_authorization_digest=hashlib.sha256(enrollment_authorization.encode()).hexdigest();credential.enrollment_method=authorization['method']
+    if authorization['replaces']:
+        old=get_object_or_404(WalletDeviceCredential.objects.select_for_update(),id=authorization['replaces'],user_id=user.pk,audience=credential.audience)
+        if old.pk==credential.pk:raise PermissionDenied('Reemplazo inválido.')
+        old.status='REVOKED';old.revoked_at=now;old.save(update_fields=['status','revoked_at'])
+        WalletDeviceChallenge.objects.filter(credential=old,consumed_at__isnull=True,invalidated_at__isnull=True).update(invalidated_at=now)
+        credential.replaces=old
     credential.public_key=public_key;credential.status='VERIFIED';credential.verified_at=now;credential.valid_until=evidence.valid_until
     credential.attestation_digest=hashlib.sha256(b''.join(len(cert).to_bytes(4,'big')+cert for cert in certificates)).hexdigest()
-    credential.save(update_fields=['public_key','status','verified_at','valid_until','attestation_digest'])
+    credential.save(update_fields=['public_key','status','verified_at','valid_until','attestation_digest','attestation_platform','attestation_policy_digest','attestation_serials','enrollment_authorization_digest','enrollment_method','replaces'])
     return credential
 
 
 def active_device(user,credential_id):
     device=get_object_or_404(WalletDeviceCredential.objects.select_for_update(),id=credential_id,user_id=user.pk)
     if device.status!='VERIFIED' or device.audience!=audience() or device.valid_until is None or device.valid_until<=timezone.now():raise PermissionDenied('Dispositivo no verificado, vencido o revocado.')
+    verifier=configured_verifier()
+    if not callable(getattr(verifier,'check_registered',None)):raise WalletOperationUnavailable('Falta la revisión vigente de confianza del dispositivo.')
+    from .android_attestation import AttestationRejected
+    try:verifier.check_registered(device)
+    except AttestationRejected:raise PermissionDenied('Dispositivo sin confianza vigente o certificado revocado.')
+    except Exception:raise WalletOperationUnavailable('No se pudo revisar la confianza vigente del dispositivo.')
     return device
 
 

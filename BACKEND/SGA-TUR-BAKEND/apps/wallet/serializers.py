@@ -56,6 +56,7 @@ class DeviceChallengeSerializer(serializers.Serializer):
     phase=serializers.ChoiceField(choices=['REVIEW','EXECUTE'])
 
 class DeviceAttestationSerializer(serializers.Serializer):
+    enrollment_authorization=serializers.CharField(max_length=4096,trim_whitespace=False,write_only=True)
     public_key=serializers.CharField(max_length=128,trim_whitespace=False)
     certificate_chain=serializers.ListField(child=serializers.CharField(max_length=24000,trim_whitespace=False),min_length=1,max_length=8)
 

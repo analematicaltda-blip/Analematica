@@ -40,7 +40,7 @@
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Pool04: pantallas conectadas en fuentes, HTTPS con pinning/origen exacto, 26 aserciones nuevas y cinco escenarios TLS reales en loopback. Wheel0.3.0 construido. Dominios/pines reales, sesión nativa final y dispositivos/Apple pendientes; producción no habilitada."
+      "evidencia_y_limite": "Atestación Android de cadena/políticas y revocación viva; alta/recuperación exige identidad independiente sin endpoint de autoaprobación. 138 ejecuciones de pruebas correctas. Raíces/feed reales, identidad independiente e iOS/hardware pendientes; producción cerrada."
     },
     {
       "id": "F7",

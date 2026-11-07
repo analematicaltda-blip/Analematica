@@ -135,8 +135,10 @@ class FreshDatabaseChecks(unittest.TestCase):
         from apps.wallet.services import device_approvals,internal_transfer
         from cryptography.hazmat.primitives import hashes,serialization
         from cryptography.hazmat.primitives.asymmetric import ec
+        class ProtocolFixtureVerifier:
+            def check_registered(self,credential):pass  # Isolated fixture, not attestation.
         audience=uuid.uuid4()
-        with transaction.atomic(),override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True,WALLET_DEVICE_APPROVALS_REQUIRED=True,WALLET_APPROVAL_AUDIENCE=str(audience)):
+        with transaction.atomic(),override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True,WALLET_DEVICE_APPROVALS_REQUIRED=True,WALLET_APPROVAL_AUDIENCE=str(audience),WALLET_ATTESTATION_VERIFIER=ProtocolFixtureVerifier()):
             try:
                 owner=CustomUser(username='device-rollback-'+uuid.uuid4().hex,role='BUSINESS_OWNER')
                 recipient=CustomUser(username='device-recipient-'+uuid.uuid4().hex,role='BUSINESS_OWNER')

@@ -208,6 +208,12 @@ class WalletTransferIntent(models.Model):
 
 
 class WalletDeviceCredential(models.Model):
+    attestation_platform = models.CharField(max_length=32, blank=True)
+    attestation_policy_digest = models.CharField(max_length=64, blank=True)
+    attestation_serials = models.JSONField(default=list)
+    enrollment_authorization_digest = models.CharField(max_length=64, blank=True)
+    enrollment_method = models.CharField(max_length=32, blank=True)
+    replaces = models.ForeignKey('self',null=True,on_delete=models.PROTECT)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user_id = models.PositiveBigIntegerField()
     audience = models.UUIDField()

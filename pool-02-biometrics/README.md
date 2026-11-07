@@ -1,8 +1,8 @@
 # Pool 02 · Autorizaciones vinculadas a dispositivo
 
 Estado: **primera implementación del protocolo, no activación productiva**.
-Incluye servidor Django y bibliotecas Android/iOS para firmar cada paso. No hay
-verificador de atestación de fabricante validado ni pruebas de teléfonos reales;
+Incluye servidor Django y bibliotecas Android/iOS para firmar cada paso. Hay un verificador Android estricto de cadena/política, todavía sin raíces reales
+configuradas ni pruebas de teléfonos genuinos;
 por tanto, el alta real permanece cerrada y no se certifica biometría remota.
 
 ## Dos autorizaciones del mismo solicitante y dispositivo
@@ -36,7 +36,8 @@ reemplaza una llave existente. Android incluye el nonce en Key Attestation y exp
 solo el punto público y certificados, jamás la privada.
 
 `POST devices/{id}/attest/` necesita `public_key` (punto X9.62 no comprimido de 65
-bytes, base64) y `certificate_chain` (hasta ocho certificados DER/base64). Un adaptador
+bytes, base64) y `certificate_chain` (hasta ocho certificados DER/base64), además de
+`enrollment_authorization` emitida por un flujo independiente del servidor. Un adaptador
 **de configuración de servidor** `WALLET_ATTESTATION_VERIFIER` debe verificar de verdad
 raíces y vigencia del fabricante, revocación, nonce de alta, llave, verified boot,
 bloqueo de dispositivo, paquete/firma de release y política biométrica por operación.
@@ -44,12 +45,14 @@ Solo entonces puede producir el `VerifiedAttestation` tipado y ligado al usuario
 audiencia, credencial, llave y hash de nonce. Su vigencia máxima es siete días.
 Un diccionario del cliente o un certificado autofirmado no activan una credencial.
 
-**No se entrega aquí un adaptador que simule esa validación.** Sin adaptador, el
+**Se entrega un verificador Android de certificados y política, sin simular hardware.**
+Ver `DEVICE_BOUND_FINTECH.md` para raíces, revocación y autorización independiente. Sin configuración aprobada, el
 servidor responde 503 y conserva PENDING. Debe verificarse con evidencias y raíces
 reales antes de producción; no marcar registros VERIFIED manualmente. La biometría
 local de iOS por sí sola no produce una atestación remota verificable de Secure
 Enclave: ese método de confianza sigue pendiente y no se suplanta con una bandera.
 No se incorpora App Attest ni otra API externa para aparentar un alta local completa.
+El alta y recuperación exigen un verificador de identidad independiente; no existe endpoint para autoaprobarse.
 El propio SO Android puede necesitar aprovisionamiento de su fabricante para obtener
 certificados de atestación; la biblioteca no realiza llamadas HTTP de terceros.
 
@@ -60,7 +63,7 @@ centrales; respuestas privadas `no-store`.
 
 - `GET devices/` y `GET devices/{id}/`: solo dispositivos del solicitante.
 - `POST devices/`: nonce de alta válido cinco minutos, sin crear confianza.
-- `POST devices/{id}/attest/`: verificación configurada; 503 si falta.
+- `POST devices/{id}/attest/`: atestación y autorización independiente; falla cerrado si faltan.
 - `POST devices/{id}/revoke/`: revoca e invalida desafíos pendientes, sin borrar
   llaves del teléfono ni movimientos históricos; no permite reactivar la credencial.
 - `POST transfers/{id}/challenge/`: `credential` UUID y `phase` REVIEW/EXECUTE;
@@ -143,3 +146,9 @@ Las llaves nativas ahora exigen un guard de integridad explícito al construirla
 consulte `../pool-03-integrity/README.md` para configurar paquete/bundle, versión y
 certificados Android reales. Se bloquea alta local de llave y firma ante riesgo o
 inspección incompleta. Esto no completa la atestación remota ni habilita dispositivos.
+
+## Evolución de confianza financiera
+
+`DEVICE_BOUND_FINTECH.md` describe el verificador Android implementado, permisos de
+alta ligados a llave/cuenta, revisión viva de revocaciones y reemplazo atómico sin
+borrado. Sus pruebas son sintéticas y no habilitan dispositivos de producción.

@@ -26,6 +26,7 @@ jobs:
       - run: CHECK_SERVICE=turismo python BACKEND/deployment/tests/schema_readiness_check.py -v
       - run: python BACKEND/deployment/tests/erp_customer_check.py -v
       - run: python BACKEND/deployment/tests/wallet_security_check.py -v
+      - run: python BACKEND/deployment/tests/attestation_security_check.py -v
       - run: python BACKEND/deployment/tests/device_approval_check.py -v
       - run: python BACKEND/deployment/fresh_local.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur
       - run: python BACKEND/deployment/tests/fresh_database_check.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur -v

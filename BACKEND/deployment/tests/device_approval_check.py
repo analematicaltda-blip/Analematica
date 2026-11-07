@@ -18,9 +18,13 @@ from apps.wallet.services import internal_transfer as transfers,device_approvals
 for model in [CustomUser,WalletDeviceChallenge,WalletLimiteOperativo,WalletMovimiento]:fixture['create'](model)
 AUDIENCE='00000000-0000-0000-0000-000000000123'
 
+class ProtocolFixtureVerifier:
+ def check_registered(self,credential):pass  # Synthetic fixture, never a production adapter.
+ def __call__(self,*args):raise AssertionError('Protocol fixtures cannot attest devices')
+
 class DeviceChecks(unittest.TestCase):
  def setUp(self):
-  setting=override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True,WALLET_DEVICE_APPROVALS_REQUIRED=True,WALLET_DEVICE_ENROLLMENT_ENABLED=True,WALLET_APPROVAL_AUDIENCE=AUDIENCE,WALLET_ATTESTATION_VERIFIER=None)
+  setting=override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True,WALLET_DEVICE_APPROVALS_REQUIRED=True,WALLET_DEVICE_ENROLLMENT_ENABLED=True,WALLET_APPROVAL_AUDIENCE=AUDIENCE,WALLET_ATTESTATION_VERIFIER=ProtocolFixtureVerifier())
   setting.enable();self.addCleanup(setting.disable)
   self.owner=CustomUser(username='device-owner-'+uuid.uuid4().hex,role='BUSINESS_OWNER')
   self.other=CustomUser(username='device-other-'+uuid.uuid4().hex,role='BUSINESS_OWNER')
@@ -94,7 +98,7 @@ class DeviceChecks(unittest.TestCase):
  def test_enrollment_stays_pending_without_attestation_verifier(self):
   credential,nonce=devices.begin_enrollment(self.owner)
   self.assertEqual(hashlib.sha256(base64.b64decode(nonce)).hexdigest(),credential.enrollment_nonce_hash)
-  with self.assertRaises(APIException):devices.attest(self.owner,credential.pk,self.public,[base64.b64encode(b'not a certificate').decode()])
+  with override_settings(WALLET_ATTESTATION_VERIFIER=None),self.assertRaises(APIException):devices.attest(self.owner,credential.pk,self.public,[base64.b64encode(b'not a certificate').decode()])
   credential.refresh_from_db();self.assertEqual(credential.status,'PENDING');self.assertFalse(credential.public_key)
   with self.assertRaises(APIException):devices.issue(self.owner,self.intent.pk,credential.pk,'REVIEW')
  def test_client_supplied_trust_dictionary_is_not_server_evidence(self):
