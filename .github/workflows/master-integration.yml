@@ -25,6 +25,10 @@ jobs:
       - run: CHECK_SERVICE=erp-tur python BACKEND/deployment/tests/schema_readiness_check.py -v
       - run: CHECK_SERVICE=turismo python BACKEND/deployment/tests/schema_readiness_check.py -v
       - run: python BACKEND/deployment/tests/erp_customer_check.py -v
+      - run: python BACKEND/deployment/fresh_local.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur
+      - run: python BACKEND/deployment/tests/fresh_database_check.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur -v
+      - run: python BACKEND/deployment/fresh_local.py --directory "$RUNNER_TEMP/sgacd-fresh-tourism" --service turismo
+      - run: python BACKEND/deployment/tests/fresh_database_check.py --directory "$RUNNER_TEMP/sgacd-fresh-tourism" --service turismo -v
       - run: CHECK_SERVICE=erp-tur python BACKEND/deployment/tests/tourism_runtime_check.py -v
       - run: CHECK_SERVICE=turismo python BACKEND/deployment/tests/tourism_runtime_check.py -v
       - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_platform.py -v

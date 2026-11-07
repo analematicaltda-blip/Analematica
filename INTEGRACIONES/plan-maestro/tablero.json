@@ -15,8 +15,8 @@
     {
       "id": "F2",
       "frente": "Backends y datos",
-      "estado": "BLOQUEADO",
-      "evidencia_y_limite": "CRM de clientes reparado y probado; readiness separado de salud. Auditoría sin SQL: 140 migraciones, 17 dependencias ausentes y 17 apps con modelos sin migraciones. Falta reconciliar historia sobre copia restaurada."
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Perfil nuevo local SQLite habilitado: dos bases separadas, 163 migraciones y 584 tablas por base, preparación 200 y restauración comprobada. Historia antigua/PostgreSQL y procesos completos pendientes; no se recuperaron datos institucionales ausentes."
     },
     {
       "id": "F3",
@@ -52,7 +52,7 @@
       "id": "F8",
       "frente": "Calidad y operación",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "64 ejecuciones de pruebas turísticas/ERP correctas en este corte, incluidas readiness en ambos servicios y CRM. Restauración, carga, móviles y cualificación productiva pendientes."
+      "evidencia_y_limite": "80 ejecuciones correctas del corte, incluidas bases migradas, CRM HTTP y respaldo/restauración; instalación limpia final repetida. Producción, carga y móviles físicos pendientes."
     }
   ]
 }

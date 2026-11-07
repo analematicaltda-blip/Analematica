@@ -9,3 +9,5 @@ class GestionComercialConfig(AppConfig):
 
         # Register the existing funnel models during app discovery, not URL import order.
         from .funnels import models as funnel_models
+        from .marketing import models as marketing_models
+        from .shared import models as shared_models

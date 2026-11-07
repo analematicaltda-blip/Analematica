@@ -12,3 +12,6 @@ tunnel.log
 /BACKEND/SGA-ERP-TUR-BAKEND/keys/jwt-private.pem
 
 /BACKEND/SGA-TUR-BAKEND/keys/jwt-private.pem
+
+# Generated local databases and credentials; never commit runtime state.
+/BACKEND/deployment/.runtime/

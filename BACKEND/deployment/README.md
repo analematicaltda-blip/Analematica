@@ -71,6 +71,37 @@ de toda la API. No se incluyen claves de proveedor en código o imágenes.
 
 ## Estado real de los servicios turísticos
 
+### Instalación nueva cuando no hay respaldo histórico
+
+Existe un perfil alternativo **solo local y SQLite**: `fresh-local-v1`. Crea una
+base nueva con migraciones versionadas de los modelos actuales, sin modificar la
+historia antigua. Cada servicio usa directorio y claves propios. No importa ni
+reconstruye información histórica. El directorio indicado debe ser nuevo:
+
+```bash
+python BACKEND/deployment/fresh_local.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur
+python BACKEND/deployment/fresh_local.py --directory BACKEND/deployment/.runtime/local-turismo --service turismo
+python BACKEND/deployment/tests/fresh_database_check.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur -v
+python BACKEND/deployment/tests/fresh_database_check.py --directory BACKEND/deployment/.runtime/local-turismo --service turismo -v
+```
+
+Conservar íntegros los directorios privados `.runtime`, incluidas sus claves, fuera
+de Git. Una copia de SQLite sin las claves no recupera por sí sola campos cifrados.
+No borrar una instalación para volver a ejecutar el inicializador. Para administrar
+una instalación ya creada:
+
+```bash
+python BACKEND/deployment/fresh_manage.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur createsuperuser
+python BACKEND/deployment/fresh_manage.py --directory BACKEND/deployment/.runtime/local-erp --service erp-tur runserver 127.0.0.1:8002 --noreload
+python BACKEND/deployment/fresh_manage.py --directory BACKEND/deployment/.runtime/local-turismo --service turismo runserver 127.0.0.1:8003 --noreload
+```
+
+No hay contraseñas predeterminadas. Solo se permite servir en loopback; no es un
+despliegue público. Este perfil no cambia Compose/PostgreSQL ni activa procesos
+financieros pendientes. Un esquema listo no demuestra que todos los módulos estén
+terminados. Para una base histórica se mantiene el bloqueo y la reconciliación
+descritos a continuación.
+
 Los checks completos de Django pasan en una configuración aislada después de corregir imports, namespaces y dependencias opcionales. Compras, proyectos, presupuesto y reportes incompletos responden **503 autenticado**, sin activar operaciones financieras de ejemplo. Esto permite comprobar el bootstrap, pero no convierte esos módulos en funciones terminadas.
 
 El grafo de migraciones sigue bloqueado por una dependencia inexistente de `prestadores.0001_full_reset`. No se han migrado ni validado bases de negocio, reservas o pagos. **No ejecutar `up` para anunciar cuatro servicios funcionales ni aplicar migraciones reales sin resolver ese grafo y probar restauración.**

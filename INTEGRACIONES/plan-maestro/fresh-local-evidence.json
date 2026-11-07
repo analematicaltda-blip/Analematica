@@ -1,0 +1,51 @@
+{
+  "profile": "fresh-local-v1",
+  "historical_data_migrated": false,
+  "production_ready": false,
+  "databases": [
+    {
+      "service": "erp-tur",
+      "tables": 584,
+      "applied_migrations": 163,
+      "foreign_key_violations": 0
+    },
+    {
+      "service": "turismo",
+      "tables": 584,
+      "applied_migrations": 163,
+      "foreign_key_violations": 0
+    }
+  ],
+  "recovered_backups": [
+    {
+      "file": "SGA-ERP-TUR-BAKEND-delivery.sqlite3",
+      "tables": 14,
+      "integrity_ok": true,
+      "restoration_verified": true
+    },
+    {
+      "file": "SGA-ERP-TUR-BAKEND-wallet.sqlite3",
+      "tables": 12,
+      "integrity_ok": true,
+      "restoration_verified": true
+    },
+    {
+      "file": "SGA-TUR-BAKEND-delivery.sqlite3",
+      "tables": 14,
+      "integrity_ok": true,
+      "restoration_verified": true
+    },
+    {
+      "file": "SGA-TUR-BAKEND-wallet.sqlite3",
+      "tables": 12,
+      "integrity_ok": true,
+      "restoration_verified": true
+    },
+    {
+      "file": "accounting-sovereign-initial.sqlite3",
+      "tables": 3,
+      "integrity_ok": true,
+      "restoration_verified": true
+    }
+  ]
+}
