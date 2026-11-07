@@ -15,3 +15,9 @@ tunnel.log
 
 # Generated local databases and credentials; never commit runtime state.
 /BACKEND/deployment/.runtime/
+
+# Native document vault build artifacts; no device data or keys in Git.
+/pool-01-cryptography/.gradle/
+/pool-01-cryptography/android/build/
+/pool-01-cryptography/ios/.build/
+/pool-01-cryptography/ios/.swiftpm/
