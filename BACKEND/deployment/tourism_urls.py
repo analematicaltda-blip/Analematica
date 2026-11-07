@@ -15,6 +15,6 @@ def readiness(request):
 
 urlpatterns = [path('healthz', health), path('readyz', readiness)]
 if os.environ['BACKEND_SERVICE'] == 'erp-tur':
-    urlpatterns += [path('api/v1/mi-negocio/', include('apps.prestadores.mi_negocio.urls'))]
+    urlpatterns += [path('api/v1/finance/wallet/', include('apps.wallet.urls')), path('api/v1/mi-negocio/', include('apps.prestadores.mi_negocio.urls'))]
 else:
     urlpatterns += [path('', include('puerto_gaitan_turismo.urls'))]

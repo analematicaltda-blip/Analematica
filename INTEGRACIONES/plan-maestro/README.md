@@ -42,3 +42,13 @@ python INTEGRACIONES/turismo-erp/inventory.py --output /tmp/inventario-tecnico.j
 Las pruebas Django generan claves temporales y usan SQLite en memoria. No deben apuntar a producción. No ejecutan migraciones, pagos, campañas ni proveedores. No se arrancaron Docker ni servidores en el portátil del usuario. Un chequeo Django exitoso no elimina los errores sintácticos de módulos que no se cargan en ese recorrido.
 
 La validación desde un clon limpio detectó que el gateway API corporativo referenciado por Docker no estaba versionado. Se agrega su implementación restringida y pruebas de credenciales/cookies para que el código requerido acompañe al despliegue. La base de migraciones turística conserva su bloqueo explícito.
+
+## Cortes posteriores de ejecución
+
+- `../turismo-erp/OPTIMIZACION_02.md`: jurisdicción de atractivos y reseñas.
+- `../turismo-erp/OPTIMIZACION_03.md`: aislamiento empresarial y bloqueo de RNT/pagos ficticios.
+- `CIERRE_TECNICO_04.md`: reparación CRM y preparación de esquema.
+- `BASES_LOCALES_05.md`: instalaciones nuevas sin respaldo histórico y copias privadas recuperadas.
+- `BILLETERA_06.md`: transferencias internas con dos solicitudes de autorización, límites e idempotencia; pagos externos pendientes.
+
+El tablero y las evidencias por corte distinguen código comprobado de pendientes. Las bases nuevas no requieren reparar la historia antigua para seguir desarrollando. Su correcta instalación no cierra reservas, contabilidad, conectores oficiales ni cualificación productiva.

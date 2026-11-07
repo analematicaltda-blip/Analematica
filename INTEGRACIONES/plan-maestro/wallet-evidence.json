@@ -1,0 +1,36 @@
+{
+  "scope": "local internal transfers only",
+  "enabled_by_default": false,
+  "external_payments_enabled": false,
+  "production_ready": false,
+  "tests": {
+    "domain": 18,
+    "providers": 12,
+    "crm": 4,
+    "bootstrap_erp": 7,
+    "bootstrap_tourism": 7,
+    "readiness_erp": 8,
+    "readiness_tourism": 8,
+    "wallet": 15,
+    "migrated_erp": 8,
+    "migrated_tourism": 8,
+    "snapshots": 2
+  },
+  "databases": [
+    {
+      "service": "erp-tur",
+      "tables": 585,
+      "migrations": 164,
+      "foreign_key_violations": 0,
+      "pre_change_snapshot_restore_verified": true
+    },
+    {
+      "service": "turismo",
+      "tables": 585,
+      "migrations": 164,
+      "foreign_key_violations": 0,
+      "pre_change_snapshot_restore_verified": true
+    }
+  ],
+  "test_executions": 97
+}

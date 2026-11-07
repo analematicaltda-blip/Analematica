@@ -23,3 +23,4 @@ CHANNEL_LAYERS={'default':{'BACKEND':'channels.layers.InMemoryChannelLayer'}}
 CACHES={'default':{'BACKEND':'django.core.cache.backends.locmem.LocMemCache','LOCATION':'fresh-local'}}
 SESSION_COOKIE_SECURE=False
 CSRF_COOKIE_SECURE=False
+WALLET_INTERNAL_TRANSFERS_ENABLED=os.environ.get('WALLET_INTERNAL_TRANSFERS_ENABLED','0')=='1'

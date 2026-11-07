@@ -89,5 +89,40 @@ class FreshDatabaseChecks(unittest.TestCase):
             finally:
                 transaction.set_rollback(True)
 
+    def test_08_wallet_two_approvals_http_and_replay(self):
+        import uuid
+        from decimal import Decimal
+        from django.db import transaction
+        from django.test import override_settings
+        from api.models import CustomUser
+        from apps.wallet.models import Wallet,WalletLimiteOperativo,WalletMovimiento
+        from rest_framework.test import APIClient
+        with transaction.atomic(),override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True):
+            try:
+                suffix=uuid.uuid4().hex
+                owner=CustomUser(username='wallet-source-'+suffix,role='BUSINESS_OWNER')
+                other=CustomUser(username='wallet-target-'+suffix,role='BUSINESS_OWNER')
+                CustomUser.objects.bulk_create([owner,other])
+                source=Wallet.objects.create(user_id=owner.pk,owner_type='CORPORATIVO',owner_id=suffix+'a',currency='COP',saldo_disponible='100')
+                destination=Wallet.objects.create(user_id=other.pk,owner_type='CORPORATIVO',owner_id=suffix+'b',currency='COP')
+                WalletLimiteOperativo.objects.create(wallet=source,monto_maximo_transaccion='20',monto_maximo_diario='40')
+                client=APIClient(HTTP_HOST='localhost');client.force_authenticate(owner)
+                route='/api/v1/finance/wallet/transfers/'
+                response=client.post(route,{'source':str(source.pk),'destination':str(destination.pk),'amount':'10.00','idempotency_key':str(uuid.uuid4())},format='json')
+                self.assertEqual(response.status_code,201,response.content)
+                intent=response.json()['data'];detail=route+intent['id']+'/'
+                first=client.post(detail+'review/',{'digest':intent['digest']},format='json')
+                self.assertEqual(first.status_code,200,first.content)
+                source.refresh_from_db();self.assertEqual(source.saldo_disponible,Decimal('100'))
+                confirmation={'digest':intent['digest'],'confirmation':first.json()['data']['confirmation']}
+                second=client.post(detail+'execute/',confirmation,format='json');self.assertEqual(second.status_code,200,second.content)
+                repeated=client.post(detail+'execute/',confirmation,format='json');self.assertEqual(repeated.status_code,200,repeated.content)
+                self.assertEqual(second.json()['data']['transaction'],repeated.json()['data']['transaction'])
+                source.refresh_from_db();destination.refresh_from_db()
+                self.assertEqual((source.saldo_disponible,destination.saldo_disponible),(Decimal('90'),Decimal('10')))
+                self.assertEqual(WalletMovimiento.objects.filter(transaccion_id=second.json()['data']['transaction']).count(),2)
+            finally:
+                transaction.set_rollback(True)
+
 
 if __name__=='__main__':unittest.main(argv=[sys.argv[0],*remaining])

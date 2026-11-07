@@ -34,11 +34,8 @@ class TenienteAutorizacionTransferencias(TenienteTemplate):
 
 class TenienteControlLimites(TenienteTemplate):
     def perform_action(self, parametros: dict):
-        # Lógica de validación de límites (simplificada)
-        amount = parametros.get("amount", 0)
-        if amount > 10000000: # 10M COP limit for example
-            raise ValueError("Monto excede los límites institucionales de transferencia.")
-        return {"limit_check": "PASSED"}
+        from apps.wallet.services.wallet_service import WalletOperationUnavailable
+        raise WalletOperationUnavailable()
 
 class TenienteEvidenciasFinancieras(TenienteTemplate):
     def perform_action(self, parametros: dict):
