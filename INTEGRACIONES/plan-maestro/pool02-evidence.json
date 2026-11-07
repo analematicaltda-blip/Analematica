@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-07",
+  "status": "IMPLEMENTED_PROTOCOL_PENDING_HARDWARE",
+  "python_test_executions_passed": 114,
+  "java_assertions_passed": 9,
+  "android_sources_compiled_api": 35,
+  "physical_device_verified": false,
+  "swift_compilation_observed": false,
+  "remote_attestation_verifier_configured": false,
+  "production_enabled": false,
+  "fresh_local_schema": {
+    "erp-tur": {
+      "migrations": 165,
+      "tables": 587
+    },
+    "turismo": {
+      "migrations": 165,
+      "tables": 587
+    }
+  }
+}

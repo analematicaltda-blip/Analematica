@@ -97,7 +97,7 @@ class FreshDatabaseChecks(unittest.TestCase):
         from api.models import CustomUser
         from apps.wallet.models import Wallet,WalletLimiteOperativo,WalletMovimiento
         from rest_framework.test import APIClient
-        with transaction.atomic(),override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True):
+        with transaction.atomic(),override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True,WALLET_DEVICE_APPROVALS_REQUIRED=False):
             try:
                 suffix=uuid.uuid4().hex
                 owner=CustomUser(username='wallet-source-'+suffix,role='BUSINESS_OWNER')
@@ -121,6 +121,42 @@ class FreshDatabaseChecks(unittest.TestCase):
                 source.refresh_from_db();destination.refresh_from_db()
                 self.assertEqual((source.saldo_disponible,destination.saldo_disponible),(Decimal('90'),Decimal('10')))
                 self.assertEqual(WalletMovimiento.objects.filter(transaccion_id=second.json()['data']['transaction']).count(),2)
+            finally:
+                transaction.set_rollback(True)
+
+    def test_09_device_signed_approvals_on_migrated_database(self):
+        import base64,uuid
+        from django.db import transaction
+        from django.test import override_settings
+        from django.utils import timezone
+        from datetime import timedelta
+        from api.models import CustomUser
+        from apps.wallet.models import Wallet,WalletDeviceCredential,WalletLimiteOperativo
+        from apps.wallet.services import device_approvals,internal_transfer
+        from cryptography.hazmat.primitives import hashes,serialization
+        from cryptography.hazmat.primitives.asymmetric import ec
+        audience=uuid.uuid4()
+        with transaction.atomic(),override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True,WALLET_DEVICE_APPROVALS_REQUIRED=True,WALLET_APPROVAL_AUDIENCE=str(audience)):
+            try:
+                owner=CustomUser(username='device-rollback-'+uuid.uuid4().hex,role='BUSINESS_OWNER')
+                recipient=CustomUser(username='device-recipient-'+uuid.uuid4().hex,role='BUSINESS_OWNER')
+                CustomUser.objects.bulk_create([owner,recipient])
+                source=Wallet.objects.create(user_id=owner.pk,owner_type='CORPORATIVO',owner_id=str(uuid.uuid4()),currency='COP',saldo_disponible='100')
+                target=Wallet.objects.create(user_id=recipient.pk,owner_type='CORPORATIVO',owner_id=str(uuid.uuid4()),currency='COP')
+                WalletLimiteOperativo.objects.create(wallet=source,monto_maximo_transaccion='20',monto_maximo_diario='40')
+                key=ec.generate_private_key(ec.SECP256R1())
+                public=base64.b64encode(key.public_key().public_bytes(serialization.Encoding.X962,serialization.PublicFormat.UncompressedPoint)).decode()
+                # Synthetic preverified record tests the protocol, not vendor attestation.
+                device=WalletDeviceCredential.objects.create(user_id=owner.pk,audience=audience,public_key=public,status='VERIFIED',enrollment_nonce_hash='0'*64,enrollment_expires_at=timezone.now()+timedelta(minutes=5),valid_until=timezone.now()+timedelta(days=1))
+                intent=internal_transfer.prepare(owner,source.pk,target.pk,'10',uuid.uuid4())
+                def signed(phase):
+                    challenge,message=device_approvals.issue(owner,intent.pk,device.pk,phase)
+                    return {'challenge':challenge.pk,'signature':base64.b64encode(key.sign(message,ec.ECDSA(hashes.SHA256()))).decode()}
+                intent,token=internal_transfer.review(owner,intent.pk,intent.digest,signed('REVIEW'))
+                result=internal_transfer.execute(owner,intent.pk,intent.digest,token,signed('EXECUTE'))
+                self.assertEqual(result.state,'EXECUTED')
+                source.refresh_from_db();target.refresh_from_db()
+                self.assertEqual((str(source.saldo_disponible),str(target.saldo_disponible)),('90.00','10.00'))
             finally:
                 transaction.set_rollback(True)
 

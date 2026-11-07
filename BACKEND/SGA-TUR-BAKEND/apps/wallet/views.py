@@ -6,6 +6,10 @@ from .models import Wallet,WalletTransaccion,WalletTransferIntent
 from .serializers import (WalletAccountSerializer,WalletTransactionSerializer,TransferIntentSerializer,PrepareTransferSerializer,ReviewTransferSerializer,ExecuteTransferSerializer)
 from .services.wallet_service import WalletOperationUnavailable
 from .services import internal_transfer
+from .services import device_approvals
+from .serializers import DeviceChallengeSerializer,DeviceAttestationSerializer,DeviceCredentialSerializer
+from .models import WalletDeviceCredential
+import base64
 
 class PrivateWalletMixin:
     permission_classes=[permissions.IsAuthenticated]
@@ -56,11 +60,35 @@ class WalletTransferViewSet(PrivateWalletMixin,mixins.CreateModelMixin,mixins.Li
     def review(self,request,pk=None):
         self.get_object()
         form=ReviewTransferSerializer(data=request.data);form.is_valid(raise_exception=True)
-        intent,token=internal_transfer.review(request.user,pk,form.validated_data['digest'])
+        intent,token=internal_transfer.review(request.user,pk,form.validated_data['digest'],form.validated_data.get('device_proof'))
         return Response({'intent':self.get_serializer(intent).data,'confirmation':token})
     @action(detail=True,methods=['post'])
     def execute(self,request,pk=None):
         self.get_object()
         form=ExecuteTransferSerializer(data=request.data);form.is_valid(raise_exception=True)
-        intent=internal_transfer.execute(request.user,pk,form.validated_data['digest'],form.validated_data['confirmation'])
+        intent=internal_transfer.execute(request.user,pk,form.validated_data['digest'],form.validated_data['confirmation'],form.validated_data.get('device_proof'))
         return Response(self.get_serializer(intent).data)
+
+    @action(detail=True,methods=['post'])
+    def challenge(self,request,pk=None):
+        self.get_object()
+        form=DeviceChallengeSerializer(data=request.data);form.is_valid(raise_exception=True)
+        challenge,message=device_approvals.issue(request.user,pk,form.validated_data['credential'],form.validated_data['phase'])
+        return Response({'challenge':str(challenge.pk),'credential':str(challenge.credential_id),'payload':base64.b64encode(message).decode('ascii'),'expires_at':challenge.expires_at})
+
+class WalletDeviceViewSet(PrivateWalletMixin,mixins.CreateModelMixin,mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    serializer_class=DeviceCredentialSerializer
+    def get_queryset(self):return WalletDeviceCredential.objects.filter(user_id=self.request.user.pk).order_by('-created_at')
+    def create(self,request):
+        credential,nonce=device_approvals.begin_enrollment(request.user)
+        return Response({'device':self.get_serializer(credential).data,'enrollment_challenge':nonce},status=201)
+    @action(detail=True,methods=['post'])
+    def attest(self,request,pk=None):
+        self.get_object()
+        form=DeviceAttestationSerializer(data=request.data);form.is_valid(raise_exception=True)
+        device=device_approvals.attest(request.user,pk,form.validated_data['public_key'],form.validated_data['certificate_chain'])
+        return Response(self.get_serializer(device).data)
+    @action(detail=True,methods=['post'])
+    def revoke(self,request,pk=None):
+        self.get_object();device=device_approvals.revoke(request.user,pk)
+        return Response(self.get_serializer(device).data)

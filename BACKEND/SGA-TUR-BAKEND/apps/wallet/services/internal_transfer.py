@@ -85,22 +85,29 @@ def owned_intent(user,intent_id,digest):
 
 
 @transaction.atomic
-def review(user,intent_id,digest):
+def review(user,intent_id,digest,device_proof=None):
     intent=owned_intent(user,intent_id,digest)
     if intent.state!='PENDING' or intent.expires_at<=timezone.now():raise TransferConflict('La primera autorización ya fue usada o venció.')
+    device=None
+    if getattr(settings,'WALLET_DEVICE_APPROVALS_REQUIRED',True):
+        from .device_approvals import consume
+        device=consume(user,intent,'REVIEW',device_proof)
     token=secrets.token_urlsafe(32)
-    changed=WalletTransferIntent.objects.filter(pk=intent.pk,state='PENDING').update(state='REVIEWED',reviewed_at=timezone.now(),confirmation_hash=hashlib.sha256(token.encode()).hexdigest())
+    changed=WalletTransferIntent.objects.filter(pk=intent.pk,state='PENDING').update(state='REVIEWED',reviewed_at=timezone.now(),confirmation_hash=hashlib.sha256(token.encode()).hexdigest(),review_device_id=device.pk if device else None)
     if changed!=1:raise TransferConflict()
     intent.refresh_from_db()
     return intent,token
 
 
 @transaction.atomic
-def execute(user,intent_id,digest,token):
+def execute(user,intent_id,digest,token,device_proof=None):
     intent=owned_intent(user,intent_id,digest)
     if not token or not hmac.compare_digest(hashlib.sha256(str(token).encode()).hexdigest(),intent.confirmation_hash):raise PermissionDenied('Segunda autorización inválida.')
     if intent.state=='EXECUTED':return intent
     if intent.state!='REVIEWED' or intent.expires_at<=timezone.now():raise TransferConflict('Se requieren dos autorizaciones vigentes y separadas.')
+    if getattr(settings,'WALLET_DEVICE_APPROVALS_REQUIRED',True):
+        from .device_approvals import consume
+        consume(user,intent,'EXECUTE',device_proof)
     wallets={wallet.pk:wallet for wallet in Wallet.objects.select_for_update().filter(pk__in=[intent.source_id,intent.destination_id]).order_by('pk')}
     source=wallets[intent.source_id];destination=wallets[intent.destination_id]
     check_wallets(user,source,destination,intent.amount)

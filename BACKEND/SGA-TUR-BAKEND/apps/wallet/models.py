@@ -203,3 +203,32 @@ class WalletTransferIntent(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields=['requested_by_id','idempotency_key'], name='wallet_transfer_actor_key_unique'),
                        models.CheckConstraint(condition=models.Q(amount__gt=0), name='wallet_transfer_amount_positive')]
+
+    review_device = models.ForeignKey('WalletDeviceCredential', null=True, on_delete=models.PROTECT)
+
+
+class WalletDeviceCredential(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_id = models.PositiveBigIntegerField()
+    audience = models.UUIDField()
+    public_key = models.CharField(max_length=128, blank=True)
+    status = models.CharField(max_length=10, default='PENDING', choices=[('PENDING','Pending'),('VERIFIED','Verified'),('REVOKED','Revoked')])
+    enrollment_nonce_hash = models.CharField(max_length=64)
+    enrollment_expires_at = models.DateTimeField()
+    attestation_digest = models.CharField(max_length=64, blank=True)
+    verified_at = models.DateTimeField(null=True)
+    valid_until = models.DateTimeField(null=True)
+    revoked_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class WalletDeviceChallenge(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    credential = models.ForeignKey(WalletDeviceCredential, on_delete=models.PROTECT)
+    intent = models.ForeignKey(WalletTransferIntent, on_delete=models.PROTECT)
+    phase = models.CharField(max_length=7, choices=[('REVIEW','Review'),('EXECUTE','Execute')])
+    nonce = models.CharField(max_length=64)
+    expires_at = models.DateTimeField()
+    consumed_at = models.DateTimeField(null=True)
+    invalidated_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)

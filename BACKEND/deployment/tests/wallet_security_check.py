@@ -22,7 +22,8 @@ for model in [WalletMovimiento,WalletTransferIntent,WalletLimiteOperativo]:fixtu
 
 class WalletChecks(unittest.TestCase):
  def setUp(self):
-  override=override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True);override.enable();self.addCleanup(override.disable)
+  # Exercise legacy balance invariants separately; device enforcement has its own suite.
+  override=override_settings(WALLET_INTERNAL_TRANSFERS_ENABLED=True,WALLET_DEVICE_APPROVALS_REQUIRED=False);override.enable();self.addCleanup(override.disable)
   self.source=Wallet.objects.create(user_id=F.owner.pk,owner_type='CORPORATIVO',owner_id=str(uuid.uuid4()),currency='COP',saldo_disponible='100.00')
   self.target=Wallet.objects.create(user_id=F.other.pk,owner_type='CORPORATIVO',owner_id=str(uuid.uuid4()),currency='COP')
   WalletLimiteOperativo.objects.create(wallet=self.source,monto_maximo_transaccion='40',monto_maximo_diario='60')

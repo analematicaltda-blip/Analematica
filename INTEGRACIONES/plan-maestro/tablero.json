@@ -40,7 +40,7 @@
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Billeteras y movimientos de solo lectura, transferencias propias con dos autorizaciones, plantillas de auditoría sin éxitos ficticios. SOC vivo, auditoría financiera histórica y pruebas productivas pendientes."
+      "evidencia_y_limite": "Pool02: retos firmados por dispositivo, dos etapas del mismo solicitante, caducidad y revocación. Alta bloqueada sin atestación real; integración móvil y pruebas físicas pendientes."
     },
     {
       "id": "F7",
@@ -52,7 +52,7 @@
       "id": "F8",
       "frente": "Calidad y operación",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "97 ejecuciones de pruebas correctas del corte de billetera, incluidas HTTP en bases migradas, reintentos y reversión atómica por fallo. Carga concurrente PostgreSQL, conectores y dispositivos físicos pendientes."
+      "evidencia_y_limite": "Corte Pool02: 114 ejecuciones Python y 9 aserciones Java correctas; interoperabilidad P-256 comprobada. Compilación Swift, hardware y concurrencia PostgreSQL pendientes."
     }
   ]
 }

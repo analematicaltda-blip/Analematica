@@ -2,13 +2,27 @@ from django.contrib import admin
 from .models import (
     Wallet, WalletTransaccion, WalletMovimiento, WalletBloqueo,
     WalletLiquidacion, WalletComision, WalletReversion, WalletAuditoria,
-    WalletLimiteOperativo, WalletAlertaRiesgo
+    WalletLimiteOperativo, WalletAlertaRiesgo, WalletDeviceCredential, WalletDeviceChallenge
 )
 
 class ReadOnlyWalletAdmin(admin.ModelAdmin):
     def has_add_permission(self,request):return False
     def has_change_permission(self,request,obj=None):return False
     def has_delete_permission(self,request,obj=None):return False
+
+@admin.register(WalletDeviceCredential)
+class WalletDeviceCredentialAdmin(ReadOnlyWalletAdmin):
+    list_display=('id','user_id','status','valid_until','revoked_at')
+    def get_queryset(self,request):
+        query=super().get_queryset(request)
+        return query if request.user.is_superuser else query.filter(user_id=request.user.pk)
+
+@admin.register(WalletDeviceChallenge)
+class WalletDeviceChallengeAdmin(ReadOnlyWalletAdmin):
+    list_display=('id','intent','phase','expires_at','consumed_at','invalidated_at')
+    def get_queryset(self,request):
+        query=super().get_queryset(request)
+        return query if request.user.is_superuser else query.filter(credential__user_id=request.user.pk)
 
 @admin.register(Wallet)
 class WalletAdmin(ReadOnlyWalletAdmin):

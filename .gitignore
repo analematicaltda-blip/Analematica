@@ -29,3 +29,8 @@ tunnel.log
 /pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/.dart_tool/
 /pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/build/
 /pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/.gradle/
+
+/pool-02-biometrics/.gradle/
+/pool-02-biometrics/android/build/
+/pool-02-biometrics/ios/.build/
+/pool-02-biometrics/ios/.swiftpm/
