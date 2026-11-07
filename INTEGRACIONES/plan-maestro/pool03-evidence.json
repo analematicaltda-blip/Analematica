@@ -1,6 +1,6 @@
 {
   "date": "2026-11-07",
-  "status": "LOCAL_POLICY_IMPLEMENTED_PENDING_DEVICE_VALIDATION",
+  "status": "CODE_INTEGRATED_PENDING_REAL_RELEASE_AND_DEVICE_QUALIFICATION",
   "java_integrity_assertions_passed": 16,
   "java_approval_assertions_passed": 9,
   "backend_tests_passed": 13,
@@ -9,5 +9,15 @@
   "physical_devices_tested": false,
   "release_signers_configured": false,
   "production_enabled": false,
-  "wallet_keys_deleted": false
+  "wallet_keys_deleted": false,
+  "python_tests_passed": 38,
+  "java_assertions_total": 257,
+  "release_policy_tests_passed": 14,
+  "flet_contract_tests_passed": 11,
+  "canonical_resources_verified": 12,
+  "wheel_version": "0.2.0",
+  "wallet_document_core_guarded": true,
+  "flet_native_bridge_guarded": true,
+  "real_signed_release_verified": false,
+  "flutter_compilation_observed": false
 }

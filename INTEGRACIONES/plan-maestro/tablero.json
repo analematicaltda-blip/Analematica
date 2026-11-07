@@ -40,7 +40,7 @@
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Pool03 incorpora guards locales Android/iOS en las llaves del Pool02; 16 aserciones de política y compilación Android API35. Firmas de distribución, atestación remota, integración final y dispositivos físicos pendientes; no borra llaves."
+      "evidencia_y_limite": "Pool03 integrado en núcleos Pool01/02 y puente Flet; herramienta de verificación de distribución. 38 pruebas Python y 257 aserciones Java; wheel0.2.0 construido. Certificados, builds Apple/Flutter y validación física pendientes; producción deshabilitada."
     },
     {
       "id": "F7",

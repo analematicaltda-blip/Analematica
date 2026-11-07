@@ -20,6 +20,18 @@ public final class AndroidIntegrityGuard {
         if(policy==null)throw new IllegalArgumentException("INTEGRITY_CONFIGURATION_REQUIRED");
         this.policy=policy;
     }
+    /** Host-owned manifest resources only; never configured through Flutter/Python arguments. */
+    public static AndroidIntegrityGuard fromApplication(Context context) throws GeneralSecurityException {
+        try {
+            android.os.Bundle config=context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA).metaData;
+            if(config==null)throw new IllegalArgumentException();
+            String name=config.getString("co.analematica.integrity.package");
+            String pins=config.getString("co.analematica.integrity.signers");
+            String version=config.getString("co.analematica.integrity.minimumVersion");
+            if(pins==null || version==null || !version.matches("[1-9][0-9]{0,17}"))throw new IllegalArgumentException();
+            return new AndroidIntegrityGuard(new IntegrityPolicy(name,new HashSet<>(java.util.Arrays.asList(pins.split(",",-1))),Long.parseLong(version)));
+        } catch(Exception error) { throw new GeneralSecurityException("INTEGRITY_CONFIGURATION_REQUIRED"); }
+    }
     public Set<IntegrityPolicy.Finding> inspect(Context context) {
         try {
             String name=context.getPackageName();

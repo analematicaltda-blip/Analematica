@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'sgacd_vault'
-  s.version = '0.1.0'
+  s.version = '0.2.0'
   s.summary = 'Metadata-only native encrypted document vault for Flet.'
   s.homepage = 'https://github.com/analematicaltda-blip/SGA-CD'
   s.author = 'Analematica'

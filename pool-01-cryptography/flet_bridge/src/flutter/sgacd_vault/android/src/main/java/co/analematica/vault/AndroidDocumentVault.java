@@ -1,6 +1,7 @@
 package co.analematica.vault;
 
 import android.app.Activity;
+import co.analematica.integrity.AndroidIntegrityGuard;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.hardware.biometrics.BiometricManager;
@@ -35,17 +36,18 @@ public final class AndroidDocumentVault {
         void success(byte[] value);
         void failure(String code); // Stable codes only: never log keys or document bytes.
     }
+    private final AndroidIntegrityGuard integrity;
     private final String alias;
     private final HardwarePolicy policy;
     private final UUID tenant, account;
     private final KeyStore store;
 
-    public AndroidDocumentVault(UUID tenant, UUID account, int keyVersion, HardwarePolicy policy) throws Exception {
-        if (tenant == null || account == null || keyVersion < 1 || policy == null) throw new IllegalArgumentException("Invalid key scope");
+    public AndroidDocumentVault(UUID tenant, UUID account, int keyVersion, HardwarePolicy policy, AndroidIntegrityGuard integrity) throws Exception {
+        if (tenant == null || account == null || keyVersion < 1 || policy == null || integrity == null) throw new IllegalArgumentException("Invalid key scope");
         byte[] digest=MessageDigest.getInstance("SHA-256").digest((tenant+"/"+account+"/"+keyVersion).getBytes(StandardCharsets.UTF_8));
         StringBuilder name=new StringBuilder("sgacd.vault.");
         for (byte b:digest) name.append(String.format(java.util.Locale.ROOT,"%02x",b & 255));
-        this.alias=name.toString(); this.policy=policy; this.tenant=tenant; this.account=account;
+        this.integrity=integrity; this.alias=name.toString(); this.policy=policy; this.tenant=tenant; this.account=account;
         store=KeyStore.getInstance("AndroidKeyStore"); store.load(null);
     }
     public String keyId() { return alias; }
@@ -53,6 +55,7 @@ public final class AndroidDocumentVault {
 
     /** Explicit enrollment only. Never called automatically while decrypting. */
     public void createKey(Context context) throws GeneralSecurityException {
+        integrity.requireSensitiveOperation(context);
         synchronized (AndroidDocumentVault.class) {
             File path=new File(context.getNoBackupFilesDir(),alias+".enrollment.lock");
             try (FileOutputStream stream=new FileOutputStream(path,true); FileLock lock=stream.getChannel().tryLock()) {
@@ -97,6 +100,7 @@ public final class AndroidDocumentVault {
         if (document==null || document.length>VaultEnvelope.MAX_DOCUMENT) { result.failure("DOCUMENT_SIZE"); return; }
         byte[] privateCopy=document.clone();
         try {
+            integrity.requireSensitiveOperation(activity);
             Cipher cipher=Cipher.getInstance("AES/GCM/NoPadding"); cipher.init(Cipher.ENCRYPT_MODE,existingKey());
             byte[] header=VaultEnvelope.header(VaultEnvelope.ANDROID,documentContext(documentId),alias,new byte[0],cipher.getIV(),privateCopy.length+16);
             authenticate(activity,cipher,cancellation,executor,result,privateCopy,header,true);
@@ -105,6 +109,7 @@ public final class AndroidDocumentVault {
 
     public void decrypt(Activity activity, UUID documentId, byte[] encrypted, CancellationSignal cancellation, Executor executor, Result result) {
         try {
+            integrity.requireSensitiveOperation(activity);
             VaultEnvelope.Parsed envelope=VaultEnvelope.parse(encrypted,VaultEnvelope.ANDROID,documentContext(documentId),alias);
             Cipher cipher=Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE,existingKey(),new GCMParameterSpec(128,envelope.nonce()));
@@ -121,9 +126,11 @@ public final class AndroidDocumentVault {
                 try {
                     // The exact cipher initialized above must be the hardware-authorized operation.
                     if (authentication.getCryptoObject()==null || authentication.getCryptoObject().getCipher()!=cipher) throw new GeneralSecurityException("AUTH_OPERATION_MISMATCH");
+                    integrity.requireSensitiveOperation(activity);
                     cipher.updateAAD(header);
                     value=cipher.doFinal(input); // AEAD tag is verified before any plaintext is returned.
-                } catch (GeneralSecurityException | RuntimeException exception) { result.failure("AUTHENTICATION_OR_INTEGRITY_FAILED"); }
+                    integrity.requireSensitiveOperation(activity);
+                } catch (GeneralSecurityException | RuntimeException exception) { if(value!=null)Arrays.fill(value,(byte)0);value=null;result.failure("AUTHENTICATION_OR_INTEGRITY_FAILED"); }
                 finally { Arrays.fill(input,(byte)0); }
                 if (value!=null) result.success(encrypting?VaultEnvelope.join(header,value):value);
             }

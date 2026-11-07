@@ -6,6 +6,13 @@ import Darwin
 public final class AppleIntegrityGuard {
     private let policy: IntegrityPolicy
     public init(policy: IntegrityPolicy) { self.policy=policy }
+    /// Host Info.plist only, not a method-channel setting or client trust assertion.
+    public static func fromApplication() throws -> AppleIntegrityGuard {
+        guard let config=Bundle.main.object(forInfoDictionaryKey: "SGACDIntegrity") as? [String: String],
+              let expected=config["ExpectedBundle"], let raw=config["MinimumVersion"],
+              let version=Int64(raw), String(version) == raw else { throw IntegrityError.configurationRequired }
+        return AppleIntegrityGuard(policy: try IntegrityPolicy(expectedBundle: expected, minimumVersion: version))
+    }
     public func inspect() -> Set<IntegrityFinding> {
         #if os(iOS) && !targetEnvironment(simulator)
         let supported=true

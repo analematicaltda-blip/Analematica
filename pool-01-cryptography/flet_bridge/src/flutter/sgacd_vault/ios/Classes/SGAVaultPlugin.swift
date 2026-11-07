@@ -38,6 +38,8 @@ public final class SGAVaultPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
         return view
     }
     private func finish(_ operation: Operation, status: String, fields: [String: Any] = [:]) {
+        do { try AppleIntegrityGuard.fromApplication().requireSensitiveOperation() }
+        catch { fail(operation, code: "CLIENT_INTEGRITY_BLOCKED"); return }
         DispatchQueue.main.async {
             guard self.active?.id == operation.id else { return }
             self.active = nil; operation.lifetime.cancel()
@@ -66,13 +68,15 @@ public final class SGAVaultPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
               Set(args.keys).isSubset(of: ["tenant","account","version","hardware","request_id","document_id"]) else {
             result(FlutterError(code: "UNSUPPORTED_METHOD", message: nil, details: nil)); return
         }
+        do { try AppleIntegrityGuard.fromApplication().requireSensitiveOperation() }
+        catch { result(FlutterError(code: "CLIENT_INTEGRITY_BLOCKED", message: nil, details: nil)); return }
         let operation: Operation
         do {
             let scope = DocumentScope(tenant: try uuid(args["tenant"]), account: try uuid(args["account"]))
             guard let versionText = args["version"] as? String, let version = Int(versionText), version > 0, version <= 2147483647,
                   let hardware = args["hardware"] as? String, ["STRONGBOX_REQUIRED","TRUSTED_HARDWARE"].contains(hardware) else { throw VaultError.invalidEnvelope }
             // Both policies map to Secure Enclave on iOS; there is no software option.
-            operation = Operation(id: try uuid(args["request_id"]), vault: try SecureEnclaveVault(scope: scope, keyVersion: version), scope: scope, version: version, result: result)
+            operation = Operation(id: try uuid(args["request_id"]), vault: try SecureEnclaveVault(scope: scope, keyVersion: version, integrity: try AppleIntegrityGuard.fromApplication()), scope: scope, version: version, result: result)
         } catch { result(FlutterError(code: "INVALID_ARGUMENTS", message: nil, details: nil)); return }
         active = operation
         switch call.method {

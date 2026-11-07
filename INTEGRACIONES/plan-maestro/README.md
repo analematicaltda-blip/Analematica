@@ -56,3 +56,5 @@ El tablero y las evidencias por corte distinguen código comprobado de pendiente
 - `BIOMETRIA_09.md`: primera implementación de firmas por dispositivo para ambas autorizaciones; atestación real y pruebas físicas pendientes.
 
 - `INTEGRIDAD_10.md`: inicio del Pool03, controles locales y bloqueo de firmas ante riesgo; builds firmadas y dispositivos pendientes.
+
+- `CIERRE_POOL03_11.md`: integridad extendida al núcleo documental/puente y comprobación de distribución; cualificación con releases/dispositivos reales pendiente.

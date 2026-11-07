@@ -23,6 +23,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r BACKEND/deployment/requirements-tourism.txt
+      - run: python -m unittest discover -s pool-03-integrity/tests -p test_release.py -v
       - run: python BACKEND/deployment/tests/device_approval_check.py -v
       - run: python pool-03-integrity/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
       - run: python pool-02-biometrics/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
@@ -35,6 +36,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s pool-03-integrity/tests -p test_release.py -v
       - run: swift test --package-path pool-03-integrity/ios
       - run: swift test
         working-directory: pool-02-biometrics/ios

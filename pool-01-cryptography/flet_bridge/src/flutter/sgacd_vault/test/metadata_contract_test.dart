@@ -11,11 +11,13 @@ void main() {
     expect(validRequest('verify_document', {...request(),'document_id':id}), isTrue);
     expect(validRequest('import_document', {...request(),'account':'file:///private/document'}), isFalse);
     expect(validRequest('export_key', request()), isFalse);
+    expect(validRequest('import_document', {...request(),'skip_integrity':'true'}), isFalse);
     expect(validRequest('provision', {...request(),'hardware':'SOFTWARE'}), isFalse);
   });
   test('sensitive or malformed native replies never reach Python', () {
     expect(publicError('PRIVATEUPPERCASECONTENTS'), 'NATIVE_UNAVAILABLE');
     expect(publicError('CANCELLED'), 'CANCELLED');
+    expect(publicError('CLIENT_INTEGRITY_BLOCKED'), 'CLIENT_INTEGRITY_BLOCKED');
     final good = {'ok':true,'protocol':1,'status':'stored','document_id':id};
     expect(publicReply('import_document', good), good);
     expect(publicReply('import_document', {...good,'bytes':'sensitive'}), isNull);

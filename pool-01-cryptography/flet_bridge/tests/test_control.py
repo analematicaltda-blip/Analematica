@@ -59,6 +59,12 @@ class BridgeChecks(unittest.IsolatedAsyncioTestCase):
         for kwargs in [{'version':True},{'version':0},{'hardware':'SOFTWARE'}]:
             with self.assertRaises(ValueError):DocumentScope(self.scope.tenant,self.scope.account,**kwargs)
         with self.assertRaises(ValueError):DocumentScope('1-1-1-1-1',self.scope.account)
+    async def test_integrity_block_is_visible_and_cannot_be_disabled_by_caller(self):
+        self.invoke.return_value=json.dumps({'ok':False,'code':'CLIENT_INTEGRITY_BLOCKED'})
+        with self.assertRaisesRegex(VaultError,'^CLIENT_INTEGRITY_BLOCKED$'):await self.vault.import_document()
+        self.invoke.reset_mock()
+        with self.assertRaises(TypeError):await self.vault.import_document(skip_integrity=True)
+        self.invoke.assert_not_called()
     async def test_no_export_or_financial_method(self):
         for method in ['export_key','deposit','execute','decrypt']:
             with self.assertRaisesRegex(VaultError,'UNSUPPORTED_METHOD'):await self.vault._request(method)

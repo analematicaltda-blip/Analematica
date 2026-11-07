@@ -44,7 +44,7 @@ del control con el mismo ámbito/versión, no una llave nueva.
 `src/flutter/sgacd_vault` se distribuye en el wheel mediante el namespace `flutter`,
 según el contrato de extensiones Flet. Incluye el núcleo propio de Pool 01 como
 recursos de compilación; no depende de rutas externas al paquete ni de un enlace.
-Las ocho copias del núcleo se verifican byte a byte:
+Las doce copias del núcleo y guards de integridad se verifican byte a byte:
 
 ```sh
 python pool-01-cryptography/flet_bridge/sync_native.py
@@ -116,3 +116,13 @@ de archivo, biometría rechazada, cambio de huella y recuperación. No activar c
 documentos irremplazables sin un procedimiento de recuperación aprobado. La
 billetera conserva sus dos solicitudes de autorización; `stored` o `verified` no
 son prueba de identidad, atestación remota ni permiso para transferir fondos.
+
+## Integridad obligatoria (versión 0.2.0)
+
+El host debe configurar los recursos nativos descritos en
+`../../pool-03-integrity/release/README.md`. El puente no acepta esa configuración
+por Python o por el canal de métodos. Si falta, las operaciones devuelven
+`CLIENT_INTEGRITY_BLOCKED`. Compilar el ejemplo debug no autoriza acceso a documentos.
+Se distribuyen también los guards canónicos del Pool03 dentro del wheel y se
+comprueba su igualdad mediante `sync_native.py`. La aplicación principal sigue sin
+activar el puente hasta contar con sesión financiera autenticada y validación física.

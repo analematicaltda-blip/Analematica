@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(SGAIntegrity)
+import SGAIntegrity
+#endif
 import CryptoKit
 import Security
 import LocalAuthentication
@@ -10,14 +13,16 @@ public final class SecureEnclaveVault {
     private let contextLock = NSLock()
     private var activeContext: LAContext?
     private var cancelled = false
+    private let integrity: AppleIntegrityGuard
     private let scope: DocumentScope
     private let keyID: String
     private let algorithm = SecKeyAlgorithm.eciesEncryptionCofactorX963SHA256AESGCM
-    public init(scope: DocumentScope, keyVersion: Int) throws { self.scope = scope; self.keyID = try scope.keyID(version: keyVersion) }
+    public init(scope: DocumentScope, keyVersion: Int, integrity: AppleIntegrityGuard) throws { self.integrity = integrity; self.scope = scope; self.keyID = try scope.keyID(version: keyVersion) }
 
     private var query: [String: Any] { [kSecClass as String: kSecClassKey, kSecAttrApplicationTag as String: Data(keyID.utf8), kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom] }
 
     public func createKey() throws {
+        try integrity.requireSensitiveOperation()
         guard Self.enrollmentLock.try() else { throw VaultError.keyUnavailable }
         defer { Self.enrollmentLock.unlock() }
         guard SecureEnclave.isAvailable else { throw VaultError.hardwareUnavailable }
@@ -44,6 +49,7 @@ public final class SecureEnclaveVault {
         context?.invalidate()
     }
     private func existingKey() throws -> SecKey {
+        try integrity.requireSensitiveOperation()
         guard SecureEnclave.isAvailable else { throw VaultError.hardwareUnavailable }
         let context = LAContext(); context.touchIDAuthenticationAllowableReuseDuration = 0
         context.localizedReason = "Autorizar acceso al documento cifrado"
@@ -73,6 +79,7 @@ public final class SecureEnclaveVault {
         defer { bytes.resetBytes(in: 0..<bytes.count) } // Best effort; Swift/CryptoKit may retain internal copies.
         var error: Unmanaged<CFError>?
         guard let wrapped = SecKeyCreateEncryptedData(publicKey, algorithm, bytes as CFData, &error) else { throw VaultError.cryptoFailed }
+        try integrity.requireSensitiveOperation()
         return try DocumentAEAD.seal(document, key: SymmetricKey(data: bytes), context: scope.context(document: documentID), keyID: keyID, wrapped: wrapped as Data)
     }
 
@@ -87,11 +94,13 @@ public final class SecureEnclaveVault {
         var bytes = unwrapped as Data
         defer { bytes.resetBytes(in: 0..<bytes.count) }
         guard bytes.count == 32 else { throw VaultError.cryptoFailed }
-        do { return try DocumentAEAD.open(envelope, key: SymmetricKey(data: bytes)) }
-        catch { throw VaultError.cryptoFailed } // No partial plaintext or error payload returned.
+        var plaintext = try DocumentAEAD.open(envelope, key: SymmetricKey(data: bytes))
+        do { try integrity.requireSensitiveOperation(); return plaintext }
+        catch { plaintext.resetBytes(in: 0..<plaintext.count); throw error } // No partial plaintext or error payload returned.
     }
 
     public func readEncrypted(documentID: UUID) throws -> Data {
+        try integrity.requireSensitiveOperation()
         let support = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false).standardizedFileURL
         let folder = support.appendingPathComponent("SGAVault", isDirectory: true).appendingPathComponent(keyID, isDirectory: true)
         let target = folder.appendingPathComponent(documentID.uuidString.lowercased() + ".vault")
@@ -105,6 +114,7 @@ public final class SecureEnclaveVault {
     }
 
     public func storeEncrypted(_ encoded: Data, documentID: UUID) throws {
+        try integrity.requireSensitiveOperation()
         _ = try Envelope.parse(encoded, platform: 2, context: scope.context(document: documentID), keyID: keyID)
         // Directory must be app-private Application Support, never Documents/iCloud.
         let support = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true).standardizedFileURL

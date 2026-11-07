@@ -11,6 +11,10 @@ for source in (ROOT/'android/src/main/java/co/analematica/vault').glob('*.java')
     pairs.append((source,DEST/'android/src/main/java/co/analematica/vault'/source.name))
 for source in (ROOT/'ios/Sources/SGAVault').glob('*.swift'):
     pairs.append((source,DEST/'ios/Classes/Core'/source.name))
+for source in (ROOT.parent/'pool-03-integrity/android/src/main/java/co/analematica/integrity').glob('*.java'):
+    pairs.append((source,DEST/'android/src/main/java/co/analematica/integrity'/source.name))
+for source in (ROOT.parent/'pool-03-integrity/ios/Sources/SGAIntegrity').glob('*.swift'):
+    pairs.append((source,DEST/'ios/Classes/Integrity'/source.name))
 pairs.append((ROOT/'android/src/main/AndroidManifest.xml',DEST/'android/src/main/AndroidManifest.xml'))
 for source,target in pairs:
     if args.sync:

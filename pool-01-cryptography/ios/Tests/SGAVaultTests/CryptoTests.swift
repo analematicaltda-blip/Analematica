@@ -1,4 +1,5 @@
 import XCTest
+import SGAIntegrity
 import CryptoKit
 @testable import SGAVault
 
@@ -34,7 +35,7 @@ final class CryptoTests: XCTestCase {
     }
     func testNoSilentHardwareFallback() throws {
         guard !SecureEnclave.isAvailable else { throw XCTSkip("Unavailable-hardware contract requires a host without Secure Enclave; physical biometric tests are separate") }
-        XCTAssertThrowsError(try SecureEnclaveVault(scope: scope, keyVersion: 1).createKey())
+        XCTAssertThrowsError(try SecureEnclaveVault(scope: scope, keyVersion: 1, integrity: AppleIntegrityGuard(policy: try IntegrityPolicy(expectedBundle: "co.analematica.vault", minimumVersion: 1))).createKey())
         // Physical biometric approval/cancellation must be tested on a real device.
     }
 }

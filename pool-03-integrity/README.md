@@ -1,6 +1,6 @@
 # Pool 03 · Integridad del cliente
 
-Estado: **primera implementación local integrada con las llaves de autorización del Pool 02**. No activada en la aplicación final ni certificada en dispositivos físicos. El alta del servidor sigue cerrada sin atestación real del Pool 02.
+Estado: **integración de código ampliada a los Pools 01 y 02, puente móvil y comprobación de distribución**. No activada en la aplicación final ni certificada en dispositivos físicos. El alta del servidor sigue cerrada sin atestación real del Pool 02.
 
 ## Controles implementados
 
@@ -33,7 +33,7 @@ La configuración se fija en la aplicación de distribución, nunca en un encabe
 - El certificado consultado por una aplicación comprometida tampoco constituye atestación remota. No hay hash maestro embebido que prometa resolverlo. La firma de instalación y las actualizaciones dependen del SO y del canal de distribución.
 - No se captura ni escanea memoria de otros procesos, se ejecutan shells, se inyecta código, se evade instrumentación o se hacen cambios en el teléfono.
 - No se garantiza borrado de buffers administrados de Java/Swift. No se incorporan nuevas llaves o secretos en memoria como parte de la inspección.
-- El guard cubre las llaves de autorización del Pool 02. No se afirma que cubra toda la aplicación, el puente documental del Pool 01, la web o el motor de control remoto.
+- El guard cubre las llaves de autorización del Pool 02 y el núcleo documental/puente móvil del Pool 01. No se afirma que cubra toda la aplicación, la web o el motor de control remoto.
 - Una política de versión mínima local puede ser modificada junto a una app comprometida; control de versiones y revocación deben validarse también en la raíz de confianza remota pendiente.
 
 ## Verificación reproducible
@@ -55,6 +55,14 @@ Verificado localmente: 16 aserciones Java de política (identidad, versiones, fi
 2. Validar rechazo de APK reempaquetada, firma ajena, debug, dispositivo rooteado/jailbreak y fallos de inspección en teléfonos de pruebas autorizados. Medir falsos positivos y accesibilidad.
 3. Comprobar cancelación, cambio de entorno durante el prompt y que el bloqueo no destruya llaves ni fondos.
 4. Completar atestación remota y UI del Pool 02. Ni el guard ni un booleano enviado por móvil pueden activar la confianza del servidor.
-5. Integrar la política en el resto de superficies nativas que manejen información sensible y revisar recuperación sin bypass.
+5. Validar los recorridos del puente/núcleo documental ahora integrado y la recuperación sin bypass en dispositivos físicos.
 
-Esto inicia el Pool 03; no declara terminados los Pools 01/02 ni seguridad absoluta, bloqueo de ingeniería inversa o protección mediante blockchain.
+## Ampliación del cierre técnico
+
+El núcleo AES/documentos ahora requiere el mismo guard: creación de llave, cifrado, descifrado y almacenamiento iOS; el puente móvil también verifica antes de una operación y de comunicar éxito. No existe un constructor antiguo del núcleo que omita el guard. Las copias nativas del wheel se verifican byte a byte; el paquete pasa a 0.2.0 porque exige configuración del host y cambia los constructores nativos.
+
+`release/verify_release.py` verifica firmas e identidad de un APK o `.app` mediante herramientas oficiales. No acepta firmas ad hoc ni se limita a comparar metadatos en iOS: exige raíz Apple. Consulta `release/README.md` para políticas de distribución, configuración del host y respuesta a bloqueos.
+
+Evidencia de esta ampliación: 14 tests de la política de distribución, 11 del contrato Flet y 13 del servidor; 232 aserciones Java de cifrado, 16 de integridad y 9 de autorizaciones. Guards Android de ambos pools compilados contra API35. Wheel 0.2.0 construido con las 12 fuentes/manifest canónicos. Las respuestas de herramientas de distribución en los tests son fixtures, no releases certificados.
+
+La integración de código de este corte está entregada; la cualificación de producción permanece pendiente de certificados, builds y teléfonos reales. No declara terminados los Pools 01/02 ni seguridad absoluta, bloqueo de ingeniería inversa o protección mediante blockchain.

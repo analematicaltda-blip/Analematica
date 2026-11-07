@@ -1,6 +1,7 @@
 package co.analematica.vault.bridge;
 
 import android.app.Activity;
+import co.analematica.integrity.AndroidIntegrityGuard;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -74,6 +75,8 @@ public final class SGAVaultPlugin implements FlutterPlugin,ActivityAware,MethodC
         main.post(()-> { if(active.compareAndSet(operation,null))operation.result.error(code,null,null); });
     }
     private void success(Operation operation,String status,Map<String,Object> fields) {
+        try { AndroidIntegrityGuard.fromApplication(context).requireSensitiveOperation(context); }
+        catch(Exception exception) { fail(operation,"CLIENT_INTEGRITY_BLOCKED");return; }
         Map<String,Object> reply=new HashMap<>(fields);reply.put("ok",true);reply.put("protocol",1);reply.put("status",status);
         main.post(()-> { if(active.compareAndSet(operation,null))operation.result.success(reply); });
     }
@@ -87,6 +90,8 @@ public final class SGAVaultPlugin implements FlutterPlugin,ActivityAware,MethodC
             return;
         }
         if(!Arrays.asList("provision","import_document","verify_document","list_documents").contains(call.method)) { result.notImplemented();return; }
+        try { AndroidIntegrityGuard.fromApplication(context).requireSensitiveOperation(context); }
+        catch(Exception exception) { result.error("CLIENT_INTEGRITY_BLOCKED",null,null);return; }
         Operation operation;
         try {
             if(!(call.arguments instanceof Map))throw new IllegalArgumentException();
@@ -94,7 +99,7 @@ public final class SGAVaultPlugin implements FlutterPlugin,ActivityAware,MethodC
             UUID tenant=uuid(call.argument("tenant")),account=uuid(call.argument("account")),request=uuid(call.argument("request_id"));
             int version=Integer.parseInt(call.argument("version"));
             AndroidDocumentVault.HardwarePolicy hardware=AndroidDocumentVault.HardwarePolicy.valueOf(call.argument("hardware"));
-            operation=new Operation(request,result,new AndroidDocumentVault(tenant,account,version,hardware));
+            operation=new Operation(request,result,new AndroidDocumentVault(tenant,account,version,hardware,AndroidIntegrityGuard.fromApplication(context)));
         } catch(Exception exception) { result.error("INVALID_ARGUMENTS_OR_UNAVAILABLE",null,null);return; }
         if(activity==null || activity.isFinishing() || activity.isDestroyed()) { result.error("ACTIVITY_UNAVAILABLE",null,null);return; }
         if(!active.compareAndSet(null,operation)) { result.error("BUSY",null,null);return; }

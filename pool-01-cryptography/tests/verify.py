@@ -17,6 +17,7 @@ source=ROOT/'android/src/main/java/co/analematica/vault'
 with tempfile.TemporaryDirectory(prefix='sgacd-vault-check-') as directory:
     output=Path(directory)
     files=list(source.glob('*.java')) if args.android_jar else [source/'VaultEnvelope.java',source/'PasswordKdf.java']
+    if args.android_jar: files+=list((ROOT.parent/'pool-03-integrity/android/src/main/java/co/analematica/integrity').glob('*.java'))
     flags=['-cp',str(args.android_jar)] if args.android_jar else []
     subprocess.run([*compiler,'-source','17','-target','17','-Xlint:all,-options',*flags,'-d',str(output),*map(str,files),str(ROOT/'tests/java/co/analematica/vault/VaultCryptoCheck.java')],check=True,timeout=60)
     subprocess.run(['java','-cp',str(output),'co.analematica.vault.VaultCryptoCheck',str(output/'envelope.bin'),str(output/'derived.bin')],check=True,timeout=60)
