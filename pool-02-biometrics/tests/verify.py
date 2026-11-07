@@ -22,6 +22,7 @@ with tempfile.TemporaryDirectory(prefix='sgacd-approval-check-') as temp:
     directory=Path(temp);message=payload(challenge,intent);(directory/'message').write_bytes(message)
     files=list(source.glob('*.java')) if args.android_jar else [source/'ApprovalMessage.java']
     if args.android_jar: files+=list((ROOT/'pool-03-integrity/android/src/main/java/co/analematica/integrity').glob('*.java'))
+    if args.android_jar: files+=list((ROOT/'pool-04-anti-phishing/android/src/main/java/co/analematica/protection').glob('*.java'))
     flags=['-cp',str(args.android_jar)] if args.android_jar else []
     subprocess.run([*compiler,'-source','17','-target','17','-Xlint:all,-options',*flags,'-d',str(directory),*map(str,files),str(ROOT/'pool-02-biometrics/tests/java/co/analematica/approval/ApprovalCheck.java')],check=True,timeout=60)
     subprocess.run(['java','-cp',str(directory),'co.analematica.approval.ApprovalCheck',str(directory/'message'),str(directory/'public'),str(directory/'signature')],check=True,timeout=60)

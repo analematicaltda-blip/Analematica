@@ -40,7 +40,7 @@
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Pool03 integrado en núcleos Pool01/02 y puente Flet; herramienta de verificación de distribución. 38 pruebas Python y 257 aserciones Java; wheel0.2.0 construido. Certificados, builds Apple/Flutter y validación física pendientes; producción deshabilitada."
+      "evidencia_y_limite": "Pool04: pantallas conectadas en fuentes, HTTPS con pinning/origen exacto, 26 aserciones nuevas y cinco escenarios TLS reales en loopback. Wheel0.3.0 construido. Dominios/pines reales, sesión nativa final y dispositivos/Apple pendientes; producción no habilitada."
     },
     {
       "id": "F7",

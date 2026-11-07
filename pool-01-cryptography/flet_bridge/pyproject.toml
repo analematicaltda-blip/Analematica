@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "sgacd-vault"
-version = "0.2.0"
+version = "0.3.0"
 description = "Metadata-only Flet bridge to the SGACD native encrypted document vault"
 requires-python = ">=3.10"
 dependencies = ["flet>=0.28.3,<0.29"]

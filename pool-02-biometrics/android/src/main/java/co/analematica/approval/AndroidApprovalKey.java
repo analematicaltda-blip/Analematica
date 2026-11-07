@@ -1,6 +1,7 @@
 package co.analematica.approval;
 
 import android.app.Activity;
+import co.analematica.protection.AndroidSensitiveScreen;
 import co.analematica.integrity.AndroidIntegrityGuard;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -94,6 +95,7 @@ public final class AndroidApprovalKey {
     }
     public void approve(Activity activity,byte[] payload,CancellationSignal cancellation,Executor executor,Result result) {
         try {
+            AndroidSensitiveScreen.protect(activity);
             integrity.requireSensitiveOperation(activity);
             ApprovalMessage message=ApprovalMessage.parse(payload,audience,actor,credential,System.currentTimeMillis()/1000);
             Signature signature=Signature.getInstance("SHA256withECDSA");signature.initSign(existingKey());

@@ -1,6 +1,7 @@
 package co.analematica.vault.bridge;
 
 import android.app.Activity;
+import co.analematica.protection.AndroidSensitiveScreen;
 import co.analematica.integrity.AndroidIntegrityGuard;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -90,7 +91,7 @@ public final class SGAVaultPlugin implements FlutterPlugin,ActivityAware,MethodC
             return;
         }
         if(!Arrays.asList("provision","import_document","verify_document","list_documents").contains(call.method)) { result.notImplemented();return; }
-        try { AndroidIntegrityGuard.fromApplication(context).requireSensitiveOperation(context); }
+        try { AndroidSensitiveScreen.protect(activity); AndroidIntegrityGuard.fromApplication(context).requireSensitiveOperation(context); }
         catch(Exception exception) { result.error("CLIENT_INTEGRITY_BLOCKED",null,null);return; }
         Operation operation;
         try {

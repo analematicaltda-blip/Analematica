@@ -38,4 +38,9 @@ tunnel.log
 # Pool03 native build artifacts
 pool-03-integrity/.gradle/
 pool-03-integrity/android/build/
-pool-03-integrity/ios/.build/
+pool-03-integrity/ios/SGAIntegrity/.build/
+
+# Pool04 native build artifacts
+pool-04-anti-phishing/.gradle/
+pool-04-anti-phishing/android/build/
+pool-04-anti-phishing/ios/SGAProtection/.build/

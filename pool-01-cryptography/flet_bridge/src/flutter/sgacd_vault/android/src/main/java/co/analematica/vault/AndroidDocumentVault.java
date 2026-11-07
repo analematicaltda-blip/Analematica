@@ -1,6 +1,7 @@
 package co.analematica.vault;
 
 import android.app.Activity;
+import co.analematica.protection.AndroidSensitiveScreen;
 import co.analematica.integrity.AndroidIntegrityGuard;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -100,6 +101,7 @@ public final class AndroidDocumentVault {
         if (document==null || document.length>VaultEnvelope.MAX_DOCUMENT) { result.failure("DOCUMENT_SIZE"); return; }
         byte[] privateCopy=document.clone();
         try {
+            AndroidSensitiveScreen.protect(activity);
             integrity.requireSensitiveOperation(activity);
             Cipher cipher=Cipher.getInstance("AES/GCM/NoPadding"); cipher.init(Cipher.ENCRYPT_MODE,existingKey());
             byte[] header=VaultEnvelope.header(VaultEnvelope.ANDROID,documentContext(documentId),alias,new byte[0],cipher.getIV(),privateCopy.length+16);
@@ -109,6 +111,7 @@ public final class AndroidDocumentVault {
 
     public void decrypt(Activity activity, UUID documentId, byte[] encrypted, CancellationSignal cancellation, Executor executor, Result result) {
         try {
+            AndroidSensitiveScreen.protect(activity);
             integrity.requireSensitiveOperation(activity);
             VaultEnvelope.Parsed envelope=VaultEnvelope.parse(encrypted,VaultEnvelope.ANDROID,documentContext(documentId),alias);
             Cipher cipher=Cipher.getInstance("AES/GCM/NoPadding");

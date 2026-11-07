@@ -38,7 +38,7 @@ public final class SGAVaultPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
         return view
     }
     private func finish(_ operation: Operation, status: String, fields: [String: Any] = [:]) {
-        do { try AppleIntegrityGuard.fromApplication().requireSensitiveOperation() }
+        do { try AppleSensitiveScreen.requireSensitiveDisplay(); try AppleIntegrityGuard.fromApplication().requireSensitiveOperation() }
         catch { fail(operation, code: "CLIENT_INTEGRITY_BLOCKED"); return }
         DispatchQueue.main.async {
             guard self.active?.id == operation.id else { return }
@@ -68,7 +68,7 @@ public final class SGAVaultPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
               Set(args.keys).isSubset(of: ["tenant","account","version","hardware","request_id","document_id"]) else {
             result(FlutterError(code: "UNSUPPORTED_METHOD", message: nil, details: nil)); return
         }
-        do { try AppleIntegrityGuard.fromApplication().requireSensitiveOperation() }
+        do { try AppleSensitiveScreen.requireSensitiveDisplay(); try AppleIntegrityGuard.fromApplication().requireSensitiveOperation() }
         catch { result(FlutterError(code: "CLIENT_INTEGRITY_BLOCKED", message: nil, details: nil)); return }
         let operation: Operation
         do {

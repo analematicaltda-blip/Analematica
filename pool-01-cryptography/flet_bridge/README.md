@@ -44,7 +44,7 @@ del control con el mismo ámbito/versión, no una llave nueva.
 `src/flutter/sgacd_vault` se distribuye en el wheel mediante el namespace `flutter`,
 según el contrato de extensiones Flet. Incluye el núcleo propio de Pool 01 como
 recursos de compilación; no depende de rutas externas al paquete ni de un enlace.
-Las doce copias del núcleo y guards de integridad se verifican byte a byte:
+Los 19 recursos del núcleo y guards de integridad/protección se verifican byte a byte:
 
 ```sh
 python pool-01-cryptography/flet_bridge/sync_native.py
@@ -126,3 +126,12 @@ por Python o por el canal de métodos. Si falta, las operaciones devuelven
 Se distribuyen también los guards canónicos del Pool03 dentro del wheel y se
 comprueba su igualdad mediante `sync_native.py`. La aplicación principal sigue sin
 activar el puente hasta contar con sesión financiera autenticada y validación física.
+
+## Protección de pantalla (0.3.0)
+
+El puente aplica las protecciones nativas del Pool04 antes de operaciones sensibles.
+Android exige Activity y hilo principal y mantiene FLAG_SECURE; iOS oculta por
+inactividad/captura detectada y requiere ventana activa. No se afirma bloqueo total
+de capturas iOS ni validación física. Los clientes HTTPS incluidos no crean nuevas
+conexiones del puente ni sustituyen automáticamente la red de Flet. Ver
+`../../pool-04-anti-phishing/README.md` para configuración y límites.

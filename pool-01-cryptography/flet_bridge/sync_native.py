@@ -13,8 +13,12 @@ for source in (ROOT/'ios/Sources/SGAVault').glob('*.swift'):
     pairs.append((source,DEST/'ios/Classes/Core'/source.name))
 for source in (ROOT.parent/'pool-03-integrity/android/src/main/java/co/analematica/integrity').glob('*.java'):
     pairs.append((source,DEST/'android/src/main/java/co/analematica/integrity'/source.name))
-for source in (ROOT.parent/'pool-03-integrity/ios/Sources/SGAIntegrity').glob('*.swift'):
+for source in (ROOT.parent/'pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity').glob('*.swift'):
     pairs.append((source,DEST/'ios/Classes/Integrity'/source.name))
+for source in (ROOT.parent/'pool-04-anti-phishing/android/src/main/java/co/analematica/protection').glob('*.java'):
+    pairs.append((source,DEST/'android/src/main/java/co/analematica/protection'/source.name))
+for source in (ROOT.parent/'pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection').glob('*.swift'):
+    pairs.append((source,DEST/'ios/Classes/Protection'/source.name))
 pairs.append((ROOT/'android/src/main/AndroidManifest.xml',DEST/'android/src/main/AndroidManifest.xml'))
 for source,target in pairs:
     if args.sync:

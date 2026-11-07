@@ -5,3 +5,6 @@ include(":android")
 
 include(":integrity")
 project(":integrity").projectDir = file("../pool-03-integrity/android")
+
+include(":protection")
+project(":protection").projectDir = file("../pool-04-anti-phishing/android")

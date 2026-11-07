@@ -7,3 +7,5 @@ android {
 }
 
 dependencies { api(project(":integrity")) }
+
+dependencies { api(project(":protection")) }

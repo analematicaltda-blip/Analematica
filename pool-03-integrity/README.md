@@ -43,7 +43,7 @@ python pool-03-integrity/tests/verify.py --android-jar "$ANDROID_HOME/platforms/
 python pool-02-biometrics/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
 python BACKEND/deployment/tests/device_approval_check.py -v
 # Mac con Xcode:
-swift test --package-path pool-03-integrity/ios
+swift test --package-path pool-03-integrity/ios/SGAIntegrity
 swift test --package-path pool-02-biometrics/ios
 ```
 

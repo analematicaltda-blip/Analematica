@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(SGAProtection)
+import SGAProtection
+#endif
 #if canImport(SGAIntegrity)
 import SGAIntegrity
 #endif
@@ -49,6 +52,7 @@ public final class SecureEnclaveVault {
         context?.invalidate()
     }
     private func existingKey() throws -> SecKey {
+        try AppleSensitiveScreen.requireSensitiveDisplay()
         try integrity.requireSensitiveOperation()
         guard SecureEnclave.isAvailable else { throw VaultError.hardwareUnavailable }
         let context = LAContext(); context.touchIDAuthenticationAllowableReuseDuration = 0
@@ -95,7 +99,7 @@ public final class SecureEnclaveVault {
         defer { bytes.resetBytes(in: 0..<bytes.count) }
         guard bytes.count == 32 else { throw VaultError.cryptoFailed }
         var plaintext = try DocumentAEAD.open(envelope, key: SymmetricKey(data: bytes))
-        do { try integrity.requireSensitiveOperation(); return plaintext }
+        do { try integrity.requireSensitiveOperation(); try AppleSensitiveScreen.requireSensitiveDisplay(); return plaintext }
         catch { plaintext.resetBytes(in: 0..<plaintext.count); throw error } // No partial plaintext or error payload returned.
     }
 

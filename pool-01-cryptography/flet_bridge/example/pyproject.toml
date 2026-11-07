@@ -1,8 +1,8 @@
 [project]
 name = "sgacd-vault-example"
-version = "0.2.0"
+version = "0.3.0"
 requires-python = ">=3.10"
-dependencies = ["flet==0.28.3", "sgacd-vault==0.2.0"]
+dependencies = ["flet==0.28.3", "sgacd-vault==0.3.0"]
 [tool.flet]
 org = "co.analematica.vaultverify"
 [tool.flet.dev_packages]

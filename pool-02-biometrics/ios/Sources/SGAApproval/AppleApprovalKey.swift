@@ -1,4 +1,5 @@
 import Foundation
+import SGAProtection
 import SGAIntegrity
 import CryptoKit
 import Security
@@ -59,6 +60,7 @@ public final class AppleApprovalKey {
         return bytes // Public point only; no private-key export method exists.
     }
     public func approve(_ payload: Data) throws -> Data {
+        try AppleSensitiveScreen.requireSensitiveDisplay()
         try integrity.requireSensitiveOperation()
         let message = try ApprovalMessage.parse(payload, audience: audience, actor: actor, credential: credential)
         let key = try existing(reason: message.summary); defer { finish() }
@@ -67,6 +69,7 @@ public final class AppleApprovalKey {
               let signature = SecKeyCreateSignature(key, .ecdsaSignatureMessageX962SHA256, message.bytes as CFData, &error) else { throw ApprovalError.signatureFailed }
         _ = try ApprovalMessage.parse(message.bytes, audience: audience, actor: actor, credential: credential)
         try integrity.requireSensitiveOperation()
+        try AppleSensitiveScreen.requireSensitiveDisplay()
         return signature as Data
     }
 }
