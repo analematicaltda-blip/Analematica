@@ -33,8 +33,17 @@ class TourismReviewViewSet(viewsets.ModelViewSet):
     serializer_class = TourismReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        # Private management of the requesting customer's own reviews.
+        return super().get_queryset().filter(customer=self.request.user)
+
     def perform_create(self, serializer):
-        serializer.save(customer=self.request.user)
+        from django.db import IntegrityError,transaction
+        from rest_framework.exceptions import ValidationError
+        try:
+            with transaction.atomic():serializer.save(customer=self.request.user,is_verified_purchase=False)
+        except IntegrityError:
+            raise ValidationError('No se pudo crear la reseña; comprueba si ya existe para este servicio.') from None
 
 class ProviderReputationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProviderReputation.objects.all()

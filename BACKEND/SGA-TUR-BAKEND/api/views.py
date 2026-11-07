@@ -320,16 +320,42 @@ class NotificacionViewSet(viewsets.ModelViewSet):
 
 class AtractivoTuristicoViewSet(viewsets.ModelViewSet):
     queryset = AtractivoTuristico.objects.all()
-    serializer_class = AtractivoTuristicoListSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [CanManageAtractivos]
 
-class RutaTuristicaViewSet(viewsets.ModelViewSet):
-    queryset = RutaTuristica.objects.all()
+    def get_queryset(self):
+        from .institutional_access import privileged,scope_for,scope_filter
+        from django.db.models import Q
+        user=self.request.user
+        if privileged(user):return self.queryset.all()
+        scope=scope_for(user)
+        if self.request.method not in ('GET','HEAD','OPTIONS'):
+            return self.queryset.filter(scope_filter(scope)) if scope else self.queryset.none()
+        allowed=Q(es_publicado=True)
+        if scope and user.has_perm('api.view_atractivoturistico'):allowed |= scope_filter(scope)
+        return self.queryset.filter(allowed)
+
+    def get_serializer_class(self):
+        if self.action in ('create','update','partial_update'):return AtractivoTuristicoWriteSerializer
+        if self.action=='retrieve':return AtractivoTuristicoDetailSerializer
+        return AtractivoTuristicoListSerializer
+
+    def perform_create(self,serializer):
+        from .institutional_access import validate_write
+        fields=validate_write(self.request.user,serializer.validated_data)
+        serializer.save(autor=self.request.user,**fields)
+
+    def perform_update(self,serializer):
+        from .institutional_access import validate_write
+        fields=validate_write(self.request.user,serializer.validated_data,serializer.instance)
+        serializer.save(**fields)
+
+class RutaTuristicaViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = RutaTuristica.objects.filter(es_publicado=True)
     serializer_class = RutaTuristicaListSerializer
     permission_classes = [AllowAny]
 
-class HechoHistoricoViewSet(viewsets.ModelViewSet):
-    queryset = HechoHistorico.objects.all()
+class HechoHistoricoViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = HechoHistorico.objects.filter(es_publicado=True)
     serializer_class = HechoHistoricoSerializer
     permission_classes = [AllowAny]
 

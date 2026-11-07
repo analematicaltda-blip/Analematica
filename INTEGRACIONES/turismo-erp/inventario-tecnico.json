@@ -21066,7 +21066,7 @@
     },
     {
       "platform": "institucional",
-      "route_fragment": "v1/atractivos/<uuid:pk>/",
+      "route_fragment": "v1/atractivos/<int:pk>/",
       "path": "BACKEND/SGA-TUR-BAKEND/api/urls.py",
       "line": 128,
       "resolved": false
@@ -25943,7 +25943,7 @@
     }
   ],
   "python_counts": {
-    "institucional": 1419,
+    "institucional": 1420,
     "erp": 521,
     "corporativo": 3,
     "central": 186

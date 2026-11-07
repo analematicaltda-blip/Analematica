@@ -125,7 +125,7 @@ path(
 
     # --- v1 compatibility aliases for public tourism flows (Web/Mobile/Desktop parity) ---
     path('v1/atractivos/', views.AtractivoTuristicoViewSet.as_view({'get': 'list', 'post': 'create'}), name='v1-atractivos-list'),
-    path('v1/atractivos/<uuid:pk>/', views.AtractivoTuristicoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='v1-atractivos-detail'),
+    path('v1/atractivos/<int:pk>/', views.AtractivoTuristicoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='v1-atractivos-detail'),
     path('v1/publicaciones/', views.PublicacionListView.as_view(), name='v1-publicaciones-list'),
     path('v1/publicaciones/<slug:slug>/', views.PublicacionDetailView.as_view(), name='v1-publicaciones-detail'),
 

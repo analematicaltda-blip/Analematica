@@ -313,13 +313,13 @@
     "modulo": "Atractivos",
     "funcionalidad": "Escrituras autorizadas por jurisdicción",
     "ruta_o_componente": "BACKEND/SGA-TUR-BAKEND/api/views.py",
-    "estado": "DEFECTUOSA",
-    "evidencia": "AtractivoTuristicoViewSet configura AllowAny y ModelViewSet; CanManageAtractivos además concede por rol sin comprobar jurisdicción. No se ejecutaron escrituras.",
+    "estado": "PARCIAL",
+    "evidencia": "Permiso funcional, asignación institucional activa y territorio comprobados en atractivos sobre SQLite temporal. No equivale a jurisdicción validada en todos los módulos o en producción.",
     "riesgo": "Permisos, integridad o publicación incorrectos si se confunde presencia de código con funcionamiento.",
     "prioridad": "CRITICA",
     "accion": "Auditar dependencias y ejecutar caso de aceptación antes de desarrollar.",
     "criterio_aceptacion": "Municipio A no crea ni modifica datos de B; departamento consolida lo permitido; cada excepción requiere autorización explícita.",
-    "prueba_ejecutada": false
+    "prueba_ejecutada": true
   },
   {
     "id": "INS-024",
@@ -1013,13 +1013,13 @@
     "modulo": "Portal del cliente",
     "funcionalidad": "Calificaciones y reseñas",
     "ruta_o_componente": "FRONTEND/SGA-TUR-FRONTEND/src/app",
-    "estado": "NO VERIFICADA",
-    "evidencia": "Hay fuentes o componentes candidatos; no hay evidencia end-to-end suficiente para certificar la función.",
+    "estado": "PARCIAL",
+    "evidencia": "Gestión privada de reseñas ligada al cliente y verificación de compra controlada por servidor; pruebas HTTP/ORM. Moderación y prueba real de compra pendientes.",
     "riesgo": "Permisos, integridad o publicación incorrectos si se confunde presencia de código con funcionamiento.",
     "prioridad": "ALTA",
     "accion": "Auditar dependencias y ejecutar caso de aceptación antes de desarrollar.",
     "criterio_aceptacion": "Flujo completo con datos de prueba identificados, autorización positiva y negativa, integridad y evidencia reproducible; sin afectar funciones previas.",
-    "prueba_ejecutada": false
+    "prueba_ejecutada": true
   },
   {
     "id": "ERP-014",
