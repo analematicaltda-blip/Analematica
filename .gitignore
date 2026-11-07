@@ -44,3 +44,16 @@ pool-03-integrity/ios/SGAIntegrity/.build/
 pool-04-anti-phishing/.gradle/
 pool-04-anti-phishing/android/build/
 pool-04-anti-phishing/ios/SGAProtection/.build/
+
+# Wallet workspaces and generated artifacts (canonical organization)
+WALLET-*/**/__pycache__/
+WALLET-*/**/*.pyc
+WALLET-*/**/*.egg-info/
+WALLET-*/**/build/
+WALLET-*/**/dist/
+WALLET-*/**/.build/
+WALLET-*/**/.gradle/
+WALLET-*/**/.runtime/
+WALLET-*/**/*.sqlite3
+WALLET-*/**/*.db
+WALLET-DESKTOP/.runtime/

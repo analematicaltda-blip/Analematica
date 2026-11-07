@@ -32,3 +32,5 @@ WALLET_APPROVAL_AUDIENCE=os.environ.get('WALLET_APPROVAL_AUDIENCE','')
 WALLET_ATTESTATION_VERIFIER = None
 WALLET_ANDROID_ATTESTATION_POLICY_FILE = os.environ.get('WALLET_ANDROID_ATTESTATION_POLICY_FILE','')
 WALLET_ENROLLMENT_IDENTITY_VERIFIER = None  # Configure an independently verified server workflow.
+
+WALLET_COMPANY_ADMIN_VERIFIER = None  # No employee/general-admin/company-header fallback.

@@ -40,7 +40,7 @@
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Atestación Android de cadena/políticas y revocación viva; alta/recuperación exige identidad independiente sin endpoint de autoaprobación. 138 ejecuciones de pruebas correctas. Raíces/feed reales, identidad independiente e iOS/hardware pendientes; producción cerrada."
+      "evidencia_y_limite": "Billetera organizada en cuatro carpetas; caché/borradores offline cifrados, ocho reglas locales y perfiles limitados. Registro vivo de18 pendientes. 124 pruebas Python, cuatro Node, panel Chromium y283 aserciones Java correctas. Integraciones reales y binarios/hardware pendientes; no liquidación offline."
     },
     {
       "id": "F7",

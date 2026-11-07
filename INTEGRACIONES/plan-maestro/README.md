@@ -62,3 +62,5 @@ El tablero y las evidencias por corte distinguen código comprobado de pendiente
 - `PROTECCION_12.md`: Pool04 de red y pantallas integrado en fuentes, TLS local real probado y configuración productiva pendiente.
 
 - `LLAVES_DISPOSITIVO_13.md`: atestación Android verificable y permisos independientes de alta/recuperación; integración real de confianza, identidad e iOS pendiente.
+
+- `ORGANIZACION_WALLET_14.md`: cuatro carpetas, clientes Flet/reglas offline y registro vivo de pendientes. Para rutas actuales de cortes previos, ver `WALLET-BACKEND/move-inventory.json` desde la raíz.

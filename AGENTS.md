@@ -24,3 +24,21 @@ procedencia están en `DESKTOP/agent-desktop-sgacd`. El runner local es
 `skills get desktop`, `skills get platform` y `status` del runtime instalado.
 El proceso opera su propio host: Codespaces no proporciona acceso al portátil.
 La configuración MCP del proyecto no conecta automáticamente esta sesión de chat.
+
+## Organización de la billetera
+
+Las fuentes canónicas están en WALLET-BACKEND, WALLET-FRONTEND, WALLET-MOVIL
+y WALLET-DESKTOP. Conservar los imports apps.wallet, la etiqueta Django wallet
+y las migraciones existentes mediante adaptadores de compatibilidad. No mover
+bases, secretos o llaves junto con el código.
+
+Actualizar PENDIENTES-PRODUCCION-BILLETERA.md mediante el registro canónico
+production_pending.json y WALLET-BACKEND/tools/update_pending_doc.py en cada
+entrega que cambie evidencia o deje un bloqueo nuevo. No cerrar pruebas físicas,
+identidad, proveedores o releases usando evidencia sintética.
+
+Los agentes funcionales nuevos deben apoyarse en el contrato Open Duet +
+agent-desktop mediante el conector limitado y el control de autorizaciones
+existente. No autoaprobar, exponer secretos a modelos ni crear bypasses de shell.
+El modo offline prepara borradores/apuntes, no liquida dinero; las dos revisiones
+locales no son autorizaciones financieras ni permisos de control.

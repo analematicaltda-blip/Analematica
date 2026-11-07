@@ -1,0 +1,14 @@
+[project]
+name = "sgacd-vault-example"
+version = "0.4.0"
+requires-python = ">=3.10"
+dependencies = ["flet==0.28.3", "sgacd-vault==0.4.0"]
+[tool.flet]
+org = "co.analematica.vaultverify"
+[tool.flet.dev_packages]
+sgacd-vault = ".."
+[tool.flet.android]
+min_sdk_version = 31
+target_sdk_version = 35
+[tool.flet.ios.info]
+NSFaceIDUsageDescription = "Permite comprobar documentos cifrados con la protección del dispositivo."

@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "updated": "2026-11-07",
+  "production_enabled": false,
+  "items": [
+    {
+      "id": "WAL-001",
+      "area": "Android",
+      "title": "Raíces y políticas reales de atestación",
+      "owner": "Seguridad",
+      "status": "PENDIENTE",
+      "acceptance": "Aprobar raíces oficiales, paquete, firmantes y parches; verificar cadena y rechazos en dispositivos reales.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-002",
+      "area": "Revocación",
+      "title": "Ingesta autenticada y disponible del feed",
+      "owner": "Seguridad",
+      "status": "PENDIENTE",
+      "acceptance": "Probar actualización atómica, frescura, revocación y caída del feed sin aceptar datos inventados.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-003",
+      "area": "Identidad",
+      "title": "Alta y recuperación independientes reales",
+      "owner": "Identidad",
+      "status": "PENDIENTE",
+      "acceptance": "Conectar y auditar passkey con UV o recuperación verificada; bloquear contraseña/PIN como único factor.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-004",
+      "area": "iOS",
+      "title": "Confianza remota de la llave financiera",
+      "owner": "Móvil",
+      "status": "PENDIENTE",
+      "acceptance": "Definir y verificar evidencia Apple enlazada a llave/política, sin reemplazarla por un booleano.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-005",
+      "area": "Dispositivos",
+      "title": "Biometría y cambios de enrolamiento",
+      "owner": "QA móvil",
+      "status": "PENDIENTE",
+      "acceptance": "Validar firma por operación, cancelación, pérdida del equipo y cambios biométricos en Android/iPhone reales.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-006",
+      "area": "TLS",
+      "title": "Dominios y pines de producción",
+      "owner": "Infraestructura",
+      "status": "PENDIENTE",
+      "acceptance": "Configurar pines aprobados activo/respaldo, rotación, caducidad y pruebas MitM autorizadas.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-007",
+      "area": "Pantallas",
+      "title": "Capturas, overlays, accesibilidad y multitarea",
+      "owner": "QA móvil",
+      "status": "PENDIENTE",
+      "acceptance": "Probar FLAG_SECURE y protección iOS por escena; documentar límites de capturas individuales y falsos positivos.",
+      "evidence": "Control SensitiveDisplay agregado al puente0.4.0; contrato Python probado. No validación física de pantallas."
+    },
+    {
+      "id": "WAL-008",
+      "area": "Apps Flet",
+      "title": "Compilaciones e instalación firmadas",
+      "owner": "Clientes",
+      "status": "PENDIENTE",
+      "acceptance": "Construir APK/AAB/iOS y Windows/macOS/Linux; instalar, probar arranque sin internet y conservar licencias.",
+      "evidence": "Fuentes Flet y paquetes Python creados. Binarios nativos no observados; Flet web depende de CanvasKit/fuentes externas no empaquetados. Panel estático probado offline."
+    },
+    {
+      "id": "WAL-009",
+      "area": "Escritorio",
+      "title": "Llaves y autenticación nativa financiera desktop",
+      "owner": "Seguridad desktop",
+      "status": "PENDIENTE",
+      "acceptance": "Implementar y validar almacenamiento/autenticación por SO; caché con contraseña no equivale a llave bancaria.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-010",
+      "area": "Sesión",
+      "title": "Vinculación verificada con cuenta y jurisdicción",
+      "owner": "Identidad",
+      "status": "PENDIENTE",
+      "acceptance": "Conectar sesión financiera real, ámbito y cliente HTTPS nativo; no usar UUID del espacio local como identidad bancaria.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-011",
+      "area": "Sincronización",
+      "title": "Revisión y reintentos en el servidor",
+      "owner": "Backend",
+      "status": "PENDIENTE",
+      "acceptance": "Enviar solo preparación con idempotencia, pedir dos firmas frescas, conciliar recibos y no reenviar aprobaciones locales.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-012",
+      "area": "Continuidad",
+      "title": "Renovación, copias y recuperación probadas",
+      "owner": "Operaciones",
+      "status": "PENDIENTE",
+      "acceptance": "Definir renovación de confianza, recuperar backups cifrados y medir pérdida de documentos sin exportar privadas.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-013",
+      "area": "Datos",
+      "title": "PostgreSQL y migración histórica",
+      "owner": "Backend",
+      "status": "PENDIENTE",
+      "acceptance": "Probar concurrencia, reversión y restauración PostgreSQL; resolver el grafo histórico sin alterar saldos existentes.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-014",
+      "area": "Motores",
+      "title": "Open Duet y agent-desktop en equipos reales",
+      "owner": "Automatización",
+      "status": "PENDIENTE",
+      "acceptance": "Configurar proveedor local offline, registrar perfiles limitados y probar runtimes/accesibilidad con autorizaciones; no suponer conexión por copiar código.",
+      "evidence": "Ocho trabajadores de reglas y perfiles limitados preparados; cuatro pruebas del conector. Sin proveedor local registrado ni equipo físico vinculado."
+    },
+    {
+      "id": "WAL-015",
+      "area": "Control",
+      "title": "Automatización wallet y permisos offline",
+      "owner": "Automatización",
+      "status": "PENDIENTE",
+      "acceptance": "Integrar wallet en la política de control con verificación de permisos firmados y dos autorizaciones mínimas; nunca autoaprobar ni ejecutar pagos desde el ejército.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-016",
+      "area": "Release",
+      "title": "R8, firma y actualización segura",
+      "owner": "Distribución",
+      "status": "PENDIENTE",
+      "acceptance": "Verificar releases reales, mapas privados, actualizaciones, revocación y rollback; no declarar R8 activo por incluir fuentes.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-017",
+      "area": "Finanzas",
+      "title": "Pasarelas y conciliación reales",
+      "owner": "Finanzas",
+      "status": "PENDIENTE",
+      "acceptance": "Validar proveedores/contratos, recibos, límites y conciliación; no presentar transferencias internas de pruebas como retiros o depósitos reales.",
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+    },
+    {
+      "id": "WAL-018",
+      "area": "UX y seguridad",
+      "title": "Revisión externa, aislamiento y sesión local",
+      "owner": "QA",
+      "status": "PENDIENTE",
+      "acceptance": "Auditar cifrado/caché, bloqueo por inactividad, campos secretos, navegador sin acceso al vault, accesibilidad y falsa confirmación en equipos reales.",
+      "evidence": "15 pruebas offline y diez de interfaz Python correctas; panel web probado en Chromium sin red externa. ACL Windows y UX/capturas nativas no acreditadas."
+    },
+    {
+      "id": "WAL-019",
+      "area": "Identidad y empresas",
+      "title": "Alta pública y panel exclusivo del administrador empresarial",
+      "owner": "Identidad e integración ERP/SGA-CD",
+      "status": "PENDIENTE",
+      "acceptance": "Conectar registro público e identidad real; adaptar autoridad empresarial ERP/SGA-CD con verificación de administrador titular; integrar panel web/escritorio y probar revocación. El equipo administrativo solo accede a su perfil personal si se inscribe.",
+      "evidence": "Política backend implementada; adaptador empresarial deshabilitado por defecto. Paneles productivos e identidad real pendientes."
+    }
+  ]
+}

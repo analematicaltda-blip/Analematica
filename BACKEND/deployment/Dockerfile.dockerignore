@@ -1,6 +1,8 @@
 **
 !BACKEND/
 !BACKEND/**
+!WALLET-BACKEND/
+!WALLET-BACKEND/**
 !DB/
 !DB/SGA-CD-DB.git/
 !DB/SGA-CD-DB.git/**
@@ -20,3 +22,8 @@ BACKEND/SGA-CD-BACKEND/app/agents/claude-email/
 BACKEND/SGA-CD-BACKEND/SGA-CD-WEB.git/
 BACKEND/ANALEMATICA-BACKEND/data/corporate_*.json
 BACKEND/deployment/.runtime/
+
+WALLET-BACKEND/**/build/
+WALLET-BACKEND/**/dist/
+WALLET-BACKEND/**/*.egg-info/
+WALLET-BACKEND/**/.runtime/

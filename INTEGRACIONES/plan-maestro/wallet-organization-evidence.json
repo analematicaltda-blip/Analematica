@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-07",
+  "status": "REORGANIZED_SOURCE_AND_OFFLINE_CLIENTS_PENDING_RUNTIME_QUALIFICATION",
+  "moved_tracked_files": 138,
+  "python_test_executions_passed": 131,
+  "node_connector_tests_passed": 4,
+  "static_web_browser_suite_passed": true,
+  "static_web_external_requests": 0,
+  "flet_web_browser_render_passed": false,
+  "flet_web_blocker": "CanvasKit/fonts external assets not bundled",
+  "java_assertions_passed": 283,
+  "loopback_tls_scenarios_passed": 5,
+  "python_wheels_built": [
+    "sgacd-wallet-offline0.1.0",
+    "sgacd-wallet-ui0.1.0",
+    "sgacd-vault0.4.0"
+  ],
+  "native_resources_checked": 19,
+  "offline_capabilities": [
+    "encrypted_notes",
+    "encrypted_transfer_drafts",
+    "two_local_reviews",
+    "rule_workers",
+    "production_register"
+  ],
+  "offline_settlement_supported": false,
+  "automatic_financial_sync": false,
+  "local_rule_workers": 8,
+  "open_duet_profiles_prepared": 8,
+  "open_duet_profiles_registered": false,
+  "physical_device_connection_verified": false,
+  "signed_mobile_desktop_binaries_built": false,
+  "production_enabled": false,
+  "pending_production_items": 19,
+  "access_policy_tests_passed": 7,
+  "company_authority_adapter_enabled": false
+}

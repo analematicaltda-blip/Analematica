@@ -1,0 +1,130 @@
+[
+  {
+    "id": "custodio",
+    "name": "Custodio local",
+    "task": "Revisa el ámbito del almacén cifrado",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  },
+  {
+    "id": "criptografia",
+    "name": "Guardián criptográfico",
+    "task": "Comprueba el resumen del borrador sin acceder a privadas",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  },
+  {
+    "id": "integridad",
+    "name": "Centinela de integridad",
+    "task": "Exige validación vigente del dispositivo en línea",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  },
+  {
+    "id": "antiphishing",
+    "name": "Vigilante de origen",
+    "task": "Exige TLS y origen aprobado al reconectar",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  },
+  {
+    "id": "aprobaciones",
+    "name": "Coordinador de revisiones",
+    "task": "Verifica dos revisiones locales del mismo solicitante",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  },
+  {
+    "id": "conciliacion",
+    "name": "Analista de conciliación",
+    "task": "Impide confundir borradores con movimientos confirmados",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  },
+  {
+    "id": "continuidad",
+    "name": "Soldado de continuidad",
+    "task": "Prepara trabajo local sin liquidación desconectada",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  },
+  {
+    "id": "produccion",
+    "name": "Inspector de pendientes",
+    "task": "Mantiene visibles las validaciones reales pendientes",
+    "engine_support": {
+      "planner": "Open Duet",
+      "device_engine": "agent-desktop",
+      "bridge": "DESKTOP/asistencia-sgacd",
+      "approval_policy": "existing_control_engine",
+      "minimum_human_approvals": 2,
+      "offline_money_execution": false
+    },
+    "mode": "local_rules_and_gated_planning",
+    "can_approve": false,
+    "can_execute_payments": false
+  }
+]
