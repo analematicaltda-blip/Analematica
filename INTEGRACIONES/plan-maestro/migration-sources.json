@@ -1,0 +1,346 @@
+{
+  "database_connected": false,
+  "migrations_applied": false,
+  "migration_count": 140,
+  "missing_dependencies": [
+    {
+      "migration": [
+        "activos_fijos",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "agencias_de_viajes",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "alojamientos",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "arrendadoras_vehiculos",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "cierres",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "compras",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "empresa",
+        "0001_full_reset"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "eventos",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "facturacion",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "gastronomia",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "gestion_comercial",
+        "0001_full_reset"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "gestion_financiera",
+        "0001_full_reset"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "inventario",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "nomina",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "operadores_turisticos",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "sitios_turisticos",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    },
+    {
+      "migration": [
+        "transportes",
+        "0001_initial"
+      ],
+      "missing_dependency": [
+        "prestadores",
+        "0001_full_reset"
+      ]
+    }
+  ],
+  "apps_without_migrations": [
+    {
+      "app": "prestadores",
+      "models": [
+        "prestadores.ActividadPlanSST",
+        "prestadores.AlertaSST",
+        "prestadores.CapacitacionSST",
+        "prestadores.ControlRiesgo",
+        "prestadores.HallazgoInspeccion",
+        "prestadores.IncidenteLaboral",
+        "prestadores.IndicadorSST",
+        "prestadores.InspeccionSST",
+        "prestadores.InvestigacionIncidente",
+        "prestadores.KitchenStation",
+        "prestadores.MatrizRiesgo",
+        "prestadores.MenuItemDetail",
+        "prestadores.PlanAnualSST",
+        "prestadores.Product",
+        "prestadores.RestaurantTable",
+        "prestadores.Room",
+        "prestadores.RoomType",
+        "prestadores.SaludOcupacional",
+        "prestadores.TourDetail",
+        "prestadores.Vehicle"
+      ]
+    },
+    {
+      "app": "admin_company",
+      "models": [
+        "admin_company.AdminCompany"
+      ]
+    },
+    {
+      "app": "admin_budget",
+      "models": [
+        "admin_budget.Budget",
+        "admin_budget.BudgetExecution",
+        "admin_budget.BudgetItem"
+      ]
+    },
+    {
+      "app": "admin_projects",
+      "models": [
+        "admin_projects.Project",
+        "admin_projects.ProjectCost",
+        "admin_projects.ProjectIncome"
+      ]
+    },
+    {
+      "app": "global_orchestration",
+      "models": [
+        "global_orchestration.HoldingCurrency",
+        "global_orchestration.HoldingEntity",
+        "global_orchestration.HoldingRegion",
+        "global_orchestration.TaxRule"
+      ]
+    },
+    {
+      "app": "capital_markets_layer",
+      "models": [
+        "capital_markets_layer.DebtInstrument",
+        "capital_markets_layer.EquityRound",
+        "capital_markets_layer.SPV",
+        "capital_markets_layer.ShareClass",
+        "capital_markets_layer.ShareIssuance",
+        "capital_markets_layer.Shareholder"
+      ]
+    },
+    {
+      "app": "economic_ecosystem",
+      "models": [
+        "economic_ecosystem.EconomicFlow",
+        "economic_ecosystem.EconomicNode",
+        "economic_ecosystem.EcosystemIncentive",
+        "economic_ecosystem.InternalContract"
+      ]
+    },
+    {
+      "app": "sovereign_infrastructure",
+      "models": [
+        "sovereign_infrastructure.CapitalShield",
+        "sovereign_infrastructure.CorporateConstitution",
+        "sovereign_infrastructure.DigitalInfraBackup",
+        "sovereign_infrastructure.JurisdictionalNode",
+        "sovereign_infrastructure.RegulatoryProfile"
+      ]
+    },
+    {
+      "app": "meta_economic_network",
+      "models": [
+        "meta_economic_network.EcosystemInterdependence",
+        "meta_economic_network.GlobalUtilityMetric",
+        "meta_economic_network.InteroperabilityProtocol",
+        "meta_economic_network.MetaEcosystem",
+        "meta_economic_network.MetaLiquidityPool"
+      ]
+    },
+    {
+      "app": "state_integration",
+      "models": [
+        "state_integration.InfrastructureProject",
+        "state_integration.IntegrationProtocol",
+        "state_integration.JointGovernanceCommittee",
+        "state_integration.SovereignComplianceNode",
+        "state_integration.StateEntity"
+      ]
+    },
+    {
+      "app": "transnational_governance",
+      "models": [
+        "transnational_governance.AlgorithmicAudit",
+        "transnational_governance.DisputeCase",
+        "transnational_governance.GovernanceBody",
+        "transnational_governance.GovernanceMember",
+        "transnational_governance.GovernanceStabilityMetric"
+      ]
+    },
+    {
+      "app": "global_digital_infrastructure",
+      "models": [
+        "global_digital_infrastructure.DataFabricRegion",
+        "global_digital_infrastructure.DigitalIdentity",
+        "global_digital_infrastructure.GlobalLedgerEntry",
+        "global_digital_infrastructure.RegulatorySyncNode",
+        "global_digital_infrastructure.SchemaRegistry"
+      ]
+    },
+    {
+      "app": "macroeconomic_coordination",
+      "models": [
+        "macroeconomic_coordination.CapitalCoordinationNode",
+        "macroeconomic_coordination.EconomicModelSnapshot",
+        "macroeconomic_coordination.MacroCouncil",
+        "macroeconomic_coordination.StabilizationProtocol",
+        "macroeconomic_coordination.SystemicRiskIndicator"
+      ]
+    },
+    {
+      "app": "financial_stability",
+      "models": [
+        "financial_stability.CrisisCase",
+        "financial_stability.LiquidityBuffer",
+        "financial_stability.RiskAnalyticsNode",
+        "financial_stability.ShockAbsorptionPolicy",
+        "financial_stability.StabilityCouncil"
+      ]
+    },
+    {
+      "app": "enterprise_governance",
+      "models": [
+        "enterprise_governance.MaturityDomain",
+        "enterprise_governance.MaturityMetric",
+        "enterprise_governance.MaturitySnapshot"
+      ]
+    },
+    {
+      "app": "banking_integration",
+      "models": [
+        "banking_integration.BankAccount",
+        "banking_integration.BankTransaction"
+      ]
+    },
+    {
+      "app": "tourism_map",
+      "models": [
+        "tourism_map.TourismLocation"
+      ]
+    }
+  ]
+}

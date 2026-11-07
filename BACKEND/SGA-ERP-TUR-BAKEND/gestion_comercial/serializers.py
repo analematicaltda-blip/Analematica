@@ -7,7 +7,8 @@ from apps.prestadores.mi_negocio.gestion_operativa.modulos_genericos.productos_s
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = ['id', 'nombre', 'email', 'telefono', 'tipo_cliente', 'limite_credito', 'perfil_ref_id']
+        fields = ['id', 'nombre', 'email', 'telefono']
+        read_only_fields = ['id']
 
 class ProductoSerializer(serializers.ModelSerializer):
     class Meta:

@@ -25,13 +25,12 @@ class OperacionComercialViewSet(viewsets.ModelViewSet):
         total_ventas = self.get_queryset().filter(tipo_operacion='VENTA').aggregate(total=Sum('total'))['total'] or 0
         return Response({'total_ventas': total_ventas})
 
-class ClienteViewSet(viewsets.ModelViewSet):
+from apps.prestadores.mi_negocio.gestion_operativa.modulos_genericos.clientes.views import ClienteViewSet as OwnedClienteViewSet
+
+class ClienteViewSet(OwnedClienteViewSet):
     queryset = Cliente.objects.all()
     serializer_class = ClienteSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return super().get_queryset().filter(perfil_ref_id=self.request.tenant.id)
 
 class POSView(APIView):
     def post(self, request):

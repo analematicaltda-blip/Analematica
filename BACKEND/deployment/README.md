@@ -88,6 +88,14 @@ docker compose -f BACKEND/deployment/compose.yaml stop
 SGA-CD y Analemática exponen `/healthz`; comprueban su base y dependencia interna,
 respectivamente. `stop` conserva los datos. Evita `down -v` si deben mantenerse.
 
+ERP y Turismo también exponen `/readyz`, separado de `/healthz`: devuelve 503 si
+hay historia de migración inválida, migraciones pendientes, tablas o columnas
+ausentes o una base inaccesible. No aplica migraciones y no publica errores SQL.
+Un 200 comprueba esos contratos de esquema, no certifica reservas, pagos ni RNT.
+El estado turístico actual esperado es 503 por la historia heredada inválida.
+`migration_preflight.py`, con el entorno Django configurado, inventaría todas las
+dependencias ausentes sin abrir una base. No usar `--fake` para cambiar ese estado.
+
 Se validaron construcción desde fuente de SGA-CD, imagen/gateway Analemática,
 PostgreSQL aislado, HTTP de salud y rechazo de sesión sin autorización en el servidor
 de pruebas del agente, usando puertos 28000 y 28001 para no interferir con las demos.

@@ -8,7 +8,12 @@ def health(request):
         cursor.execute('SELECT 1')
     return JsonResponse({'status': 'ok', 'service': os.environ['BACKEND_SERVICE']})
 
-urlpatterns = [path('healthz', health)]
+def readiness(request):
+    from schema_readiness import inspect_schema
+    report = inspect_schema()
+    return JsonResponse({**report, 'service': os.environ['BACKEND_SERVICE']}, status=200 if report['status']=='ready' else 503, headers={'Cache-Control':'no-store'})
+
+urlpatterns = [path('healthz', health), path('readyz', readiness)]
 if os.environ['BACKEND_SERVICE'] == 'erp-tur':
     urlpatterns += [path('api/v1/mi-negocio/', include('apps.prestadores.mi_negocio.urls'))]
 else:

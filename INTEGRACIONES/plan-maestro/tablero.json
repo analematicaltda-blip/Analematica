@@ -16,13 +16,13 @@
       "id": "F2",
       "frente": "Backends y datos",
       "estado": "BLOQUEADO",
-      "evidencia_y_limite": "Checks y límites técnicos verificados; grafo de migraciones inválido."
+      "evidencia_y_limite": "CRM de clientes reparado y probado; readiness separado de salud. Auditoría sin SQL: 140 migraciones, 17 dependencias ausentes y 17 apps con modelos sin migraciones. Falta reconciliar historia sobre copia restaurada."
     },
     {
       "id": "F3",
       "frente": "Identidad y administración",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Propiedad de proveedor reforzada; SSO/jurisdicción y delegaciones pendientes."
+      "evidencia_y_limite": "Jurisdicción de atractivos, propiedad empresarial, reservas y CRM probadas. SSO y delegaciones pendientes."
     },
     {
       "id": "F4",
@@ -40,7 +40,7 @@
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Auditoría mínima disponible; H-001/H-002 críticos pendientes y SOC no cualificado."
+      "evidencia_y_limite": "Escrituras públicas de atractivos y acceso entre empresas corregidos; RNT/pagos ficticios bloqueados. SOC real y cobertura de todos los módulos pendientes."
     },
     {
       "id": "F7",
@@ -52,7 +52,7 @@
       "id": "F8",
       "frente": "Calidad y operación",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Pruebas/CI y documentos incorporados; restauración, carga y producción pendientes."
+      "evidencia_y_limite": "64 ejecuciones de pruebas turísticas/ERP correctas en este corte, incluidas readiness en ambos servicios y CRM. Restauración, carga, móviles y cualificación productiva pendientes."
     }
   ]
 }
