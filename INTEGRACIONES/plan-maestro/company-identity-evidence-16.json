@@ -1,0 +1,38 @@
+{
+  "scope": "local isolated checks; not production or physical device certification",
+  "committed": false,
+  "published": false,
+  "production_ready": false,
+  "passed_test_executions": 111,
+  "suites": {
+    "company_identity_and_quote": 17,
+    "wallet_regression": 15,
+    "device_protocol_regression": 13,
+    "provider_regression": 12,
+    "crm_regression": 6,
+    "central_platform": 3,
+    "assistance_contracts": 27,
+    "fresh_erp": 9,
+    "fresh_tourism": 9
+  },
+  "company_adapter_enabled_by_default": false,
+  "external_identity_verified": false,
+  "quotation_is_binding": false,
+  "payments_enabled": false,
+  "fresh_databases": [
+    {
+      "service": "erp-tur",
+      "tables": 588,
+      "migrations": 167,
+      "foreign_key_violations": 0
+    },
+    {
+      "service": "turismo",
+      "tables": 588,
+      "migrations": 167,
+      "foreign_key_violations": 0
+    }
+  ],
+  "initialization_timeouts_recorded": true,
+  "sandbox_platform_timeout_resolved_by_outside_sandbox_test": true
+}

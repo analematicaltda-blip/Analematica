@@ -1,0 +1,79 @@
+{
+  "production_ready": false,
+  "python_tests": {
+    "session_suite": 53,
+    "identity_quotes": 27,
+    "gateway": 5,
+    "erp_migrated": 11
+  },
+  "postgresql": {
+    "postgresql": true,
+    "replay_cache_enforced": false,
+    "results": [
+      {
+        "scenario": "different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "issuance_different_sessions_same_totp",
+        "accepted": 1,
+        "rejected": 1,
+        "previous_codes_invalid": true
+      }
+    ]
+  },
+  "postgresql_audit_assertions": "One event per accepted recovery or issuance operation",
+  "browser": {
+    "passed": true,
+    "scope": "Real password authentication, CSRF and Django WSGI on synthetic test accounts",
+    "gateway_https": true,
+    "mfa_totp": true,
+    "enrollment": false,
+    "recovery_codes": false,
+    "issue_codes": true,
+    "checks": [
+      "password_login",
+      "reauthenticated_issuance",
+      "one_time_display",
+      "issued_code_login",
+      "private_audit_history",
+      "recovery_use_audited",
+      "password_is_first_factor_only",
+      "invalid_totp",
+      "valid_totp",
+      "challenge_replay",
+      "bad_password",
+      "login_csrf",
+      "httponly_session",
+      "no_token_storage",
+      "create",
+      "idempotent_retry",
+      "reload_persistence",
+      "withdraw",
+      "logout_failure_recovery",
+      "logout_clears_data",
+      "anonymous",
+      "mobile_width",
+      "sgacd_blue_white_theme",
+      "no_external_requests"
+    ]
+  },
+  "customer_database_modified": false,
+  "commit_created": false
+}

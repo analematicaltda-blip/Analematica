@@ -21,8 +21,8 @@ MEDIA_ROOT=directory/'media'
 EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'
 CHANNEL_LAYERS={'default':{'BACKEND':'channels.layers.InMemoryChannelLayer'}}
 CACHES={'default':{'BACKEND':'django.core.cache.backends.locmem.LocMemCache','LOCATION':'fresh-local'}}
-SESSION_COOKIE_SECURE=False
-CSRF_COOKIE_SECURE=False
+SESSION_COOKIE_SECURE=os.environ.get('SGACD_FRESH_LOCAL_HTTPS','0')=='1'
+CSRF_COOKIE_SECURE=SESSION_COOKIE_SECURE
 WALLET_INTERNAL_TRANSFERS_ENABLED=os.environ.get('WALLET_INTERNAL_TRANSFERS_ENABLED','0')=='1'
 WALLET_DEVICE_APPROVALS_REQUIRED=os.environ.get('WALLET_DEVICE_APPROVALS_REQUIRED','1')!='0'
 WALLET_DEVICE_ENROLLMENT_ENABLED=os.environ.get('WALLET_DEVICE_ENROLLMENT_ENABLED','0')=='1'

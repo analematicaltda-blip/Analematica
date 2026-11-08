@@ -1,0 +1,68 @@
+{
+  "checked_at": "2026-11-07T22:25:13.065764+00:00",
+  "scope": "isolated foundation contracts; not browser or production certification",
+  "production_ready": false,
+  "results": [
+    {
+      "suite": "corporate_gateway",
+      "status": "PASSED",
+      "tests": 12,
+      "exit_code": 0
+    },
+    {
+      "suite": "institutional_permissions",
+      "status": "PASSED",
+      "tests": 18,
+      "exit_code": 0
+    },
+    {
+      "suite": "provider_isolation",
+      "status": "PASSED",
+      "tests": 12,
+      "exit_code": 0
+    },
+    {
+      "suite": "erp_session",
+      "status": "PASSED",
+      "tests": 53,
+      "exit_code": 0
+    },
+    {
+      "suite": "company_identity",
+      "status": "PASSED",
+      "tests": 27,
+      "exit_code": 0
+    },
+    {
+      "suite": "erp_customer",
+      "status": "PASSED",
+      "tests": 6,
+      "exit_code": 0
+    },
+    {
+      "suite": "erp_startup",
+      "status": "PASSED",
+      "tests": 7,
+      "exit_code": 0
+    },
+    {
+      "suite": "tourism_startup",
+      "status": "PASSED",
+      "tests": 7,
+      "exit_code": 0
+    },
+    {
+      "suite": "wallet_access",
+      "status": "PASSED",
+      "tests": 7,
+      "exit_code": 0
+    },
+    {
+      "suite": "central_contract",
+      "status": "PASSED",
+      "tests": 3,
+      "exit_code": 0
+    }
+  ],
+  "all_passed": true
+}

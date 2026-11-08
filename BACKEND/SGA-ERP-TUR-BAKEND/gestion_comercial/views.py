@@ -39,3 +39,13 @@ class POSView(APIView):
     def post(self, request):
         # Never fabricate a completed sale or fiscal invoice from client totals.
         raise CommercialWorkflowUnavailable()
+
+class QuotationPreviewView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        from .quote_preview import preview
+        from rest_framework.response import Response
+        response=Response(preview(request.user,request.data))
+        response['Cache-Control']='no-store'
+        return response

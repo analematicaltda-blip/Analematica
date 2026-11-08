@@ -65,5 +65,22 @@ class PreviewSecurityTests(unittest.TestCase):
                     self.assertEqual(service['environment']['NEXT_PUBLIC_ENABLE_MOCKS'], 'false')
                     self.assertFalse(any('/private:' in value for value in service['volumes']))
 
+    def test_erp_gateway_is_opt_in_and_limited_to_reviewed_routes(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(preview,'RUNTIME',Path(temp)):
+            with patch.dict(os.environ,{'SGACD_ENABLE_ERP_API':'0'}):
+                preview.nginx()
+                disabled=(Path(temp)/'nginx.conf').read_text()
+                self.assertNotIn('set $api_upstream erp-tur:8000;',disabled)
+            with patch.dict(os.environ,{'SGACD_ENABLE_ERP_API':'1'}):
+                preview.nginx()
+                enabled=(Path(temp)/'nginx.conf').read_text()
+                self.assertIn('set $api_upstream erp-tur:8000;',enabled)
+                self.assertIn('location = /api/v1/erp-session/login/',enabled)
+                self.assertIn('quotation-drafts/',enabled)
+                self.assertIn('Ruta ERP pendiente de validación.',enabled)
+                self.assertIn('proxy_set_header Authorization "";',enabled)
+                self.assertIn('proxy_set_header Host $http_host;',enabled)
+                self.assertNotIn('location /api/v1/finance/',enabled)
+
 if __name__ == '__main__':
     unittest.main()

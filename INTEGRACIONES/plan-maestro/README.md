@@ -66,3 +66,49 @@ El tablero y las evidencias por corte distinguen código comprobado de pendiente
 - `ORGANIZACION_WALLET_14.md`: cuatro carpetas, clientes Flet/reglas offline y registro vivo de pendientes. Para rutas actuales de cortes previos, ver `WALLET-BACKEND/move-inventory.json` desde la raíz.
 
 - `AVANCE_15.md`: estado consolidado de los ocho frentes, bloqueo comercial explícito y siguientes paquetes con dependencias y aceptación.
+
+- `IDENTIDAD_COTIZACION_16.md`: vínculo explícito prestador/empresa, política empresarial opt-in y vista previa de precios sin cobros; cambios sin commit durante desarrollo.
+
+- `COTIZACIONES_PERSISTENTES_17.md`: persistencia idempotente, consulta/retiro y pantalla ERP con navegador; login/gateway productivos pendientes.
+
+- `SESION_ERP_18.md`: contraseña y sesión HttpOnly/CSRF, recorrido local por Nginx HTTPS y gateway limitado; MFA/SSO/build completo pendientes.
+
+- `MFA_ERP_19.md`: ingreso TOTP cifrado, desafíos vinculados y contador persistente antirreutilización; activación/recuperación y WebAuthn pendientes.
+
+- `ACTIVACION_TOTP_20.md`: primera activación desde cotizaciones con revalidación de contraseña, prueba del código y cancelación repetible; recuperación y hardware pendientes.
+
+- `LIMPIEZA_TOTP_21.md`: limpieza por lotes de claves pendientes vencidas/consumidas; simulación predeterminada, sin alterar factores activos.
+
+- `RECUPERACION_ERP_22.md`: acceso con códigos previamente emitidos, cifrados y de un uso; emisión UI y pérdida de ambos factores pendientes.
+
+- `EMISION_RECUPERACION_23.md`: emisión/rotación web con contraseña y TOTP fresco; códigos mostrados una vez, anteriores invalidados.
+
+- `CONCURRENCIA_RECUPERACION_24.md`: cinco escenarios PostgreSQL con conexiones concurrentes, caché de reutilización desactivada; consumo y emisión únicos.
+
+- `AUDITORIA_RECUPERACION_25.md`: eventos transaccionales sin secretos, historial privado y reversión si falla la auditoría; protección SQL y notificaciones pendientes.
+
+- `MULTIPROCESO_MFA_26.md`: cinco contratos con procesos Linux separados y cinco con hilos aprobados; carga y balanceador HTTP pendientes.
+
+- `HTTP_MULTITRABAJADOR_27.md`: tres carreras HTTP con dos trabajadores Django, sesiones SQL y CSRF; 13 escenarios PostgreSQL totales aprobados.
+
+- `AUDITORIA_BLOQUE01_28.md`: diagnóstico ampliado de los tres sistemas,161 requisitos y diez hallazgos;152 pruebas acotadas aprobadas. La validación funcional integral sigue abierta.
+
+- `BLOQUE02_CUPOS_29.md`: disponibilidad y retenciones privadas, caducidad, idempotencia y carreras PostgreSQL; reservas definitivas, UI, impuestos y pagos pendientes.
+
+- `BLOQUE03_AMBITO_EMPRESARIAL_30.md`: selector común de empresa, catálogo/CRM aislados y sesión ERP validada;83 pruebas aprobadas. SSO, delegaciones y cobertura integral pendientes.
+
+- `BLOQUE04_RECUPERACION_31.md`: recuperación por correo verificado con MFA conservado,81 pruebas y26 controles HTTPS; WebAuthn y correo real pendientes.
+
+- `BLOQUE05_BUILDS_WEB_32.md`: correcciones de fuentes, contratos UI y herramientas estrictas;718 fuentes sin error sintáctico. Los dos builds completos siguen fallando por módulos ausentes.
+
+- `BLOQUE06_CONTROL_AUTORIZADO_33.md`: protocolo v2 con checkpoint online, permisos vigentes y carreras SQL;34 pruebas Python,12 Node y4 carreras aprobadas. Equipos físicos y cuentas reales pendientes.
+
+- `BLOQUE07_CONTENIDO_34.md`: taller editorial privado con revisión por versión, exportación y adaptador local Ollama; pruebas API y navegador aprobadas con fixtures. Modelo real, comparativa medida y multimedia pendientes.
+
+- `BLOQUE08_OPERACION_35.md`: verificación local por perfiles, instalación nueva, restauración y reversión;20 grupos aprobados,2 con omisiones y1 fallo de builds. Evidencia íntegra con fuentes estables; producción deshabilitada.
+
+- `BLOQUE09_RESPALDOS_36.md`: respaldos locales SQLite AES-256-GCM y restauración hacia destinos nuevos;14 pruebas nuevas,16 regresiones y contratos PostgreSQL aislados aprobados. Recuperación integral y retención productiva pendientes.
+
+## Estado consolidado y pendientes
+
+Consultar [PENDIENTES-PRODUCCION-ECOSISTEMA.md](../../ANALISIS/produccion/PENDIENTES-PRODUCCION-ECOSISTEMA.md): distingue desarrollo local pendiente, validaciones con infraestructura/equipos reales y criterios de cierre. El plan sigue en curso; producción no habilitada.

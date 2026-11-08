@@ -1,0 +1,30 @@
+name: Full web build audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strict-web-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: FRONTEND/deployment/package-lock.json
+      - run: npm ci --prefix FRONTEND/deployment --include=dev --ignore-scripts --no-audit --no-fund
+      - run: node FRONTEND/deployment/check_sources.cjs --dependencies FRONTEND/deployment/node_modules --output "$RUNNER_TEMP/web-source-syntax.json"
+      - run: node FRONTEND/deployment/check_components.cjs --dependencies FRONTEND/deployment/node_modules --output "$RUNNER_TEMP/web-components.json"
+      - run: python FRONTEND/deployment/build_check.py --dependencies FRONTEND/deployment/node_modules --output "$RUNNER_TEMP/full-web-build"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strict-web-build-report
+          path: |
+            ${{ runner.temp }}/web-source-syntax.json
+            ${{ runner.temp }}/web-components.json
+            ${{ runner.temp }}/full-web-build/build-report.json

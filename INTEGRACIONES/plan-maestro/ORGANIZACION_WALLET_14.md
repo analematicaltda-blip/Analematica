@@ -16,7 +16,7 @@ El panel web de consulta funciona con archivos locales, sin CDN ni campos de con
 - Tres wheels construidos: offline0.1.0, UI0.1.0 y puente nativo0.4.0;19 recursos canónicos comprobados. No son APK/IPA/EXE.
 - Dos bases locales siguen en166 migraciones/587 tablas. No hubo migración nueva ni modificación productiva por reubicar código.
 
-Registro vivo: `PENDIENTES-PRODUCCION-BILLETERA.md`, generado del JSON canónico y mostrado también en clientes/panel.18 puntos abiertos con responsable, aceptación y evidencia. Binarios/ACL/hardware, cuenta financiera, confianza real, proveedor local y automatización autorizada siguen pendientes; no se declara producción habilitada.
+Registro vivo: `ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md`, generado del JSON canónico y mostrado también en clientes/panel.18 puntos abiertos con responsable, aceptación y evidencia. Binarios/ACL/hardware, cuenta financiera, confianza real, proveedor local y automatización autorizada siguen pendientes; no se declara producción habilitada.
 
 ## Aclaración de acceso
 

@@ -102,7 +102,7 @@ class JournalEntry(BaseJournalEntry, AccountingTenantModel):
         return hashlib.sha256(content_str.encode()).hexdigest()
 
     def save(self, *args, **kwargs):
-        if self.pk and JournalEntry.plain_objects.get(pk=self.pk).is_posted:
+        if self.pk and JournalEntry.plain_objects.filter(pk=self.pk, is_posted=True).exists():
             # Phase 3.5: Irreversibility - No editing posted entries
             raise PermissionError("Posted journal entries cannot be modified. Use reversal instead.")
 
@@ -167,12 +167,12 @@ class LedgerEntry(TenantAwareModel):
     description = models.CharField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        if self.journal_entry.is_posted:
+        if JournalEntry.plain_objects.filter(pk=self.journal_entry_id, is_posted=True).exists():
             raise PermissionError("Lines of posted journal entries cannot be modified.")
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        if self.journal_entry.is_posted:
+        if JournalEntry.plain_objects.filter(pk=self.journal_entry_id, is_posted=True).exists():
             raise PermissionError("Lines of posted journal entries cannot be deleted.")
         super().delete(*args, **kwargs)
 

@@ -1,0 +1,51 @@
+{
+  "schema": "sgacd-content-evidence-v1",
+  "cut": 34,
+  "production_ready": false,
+  "implementation": {
+    "private_encrypted_drafts": true,
+    "revision_bound_review": true,
+    "export_after_review": true,
+    "publishing_endpoint": false,
+    "local_ollama_opt_in": true,
+    "external_paid_provider_enabled": false
+  },
+  "verification": {
+    "assistance_tests_passed": 43,
+    "new_editorial_tests_passed": 9,
+    "platform_tests_passed": 3,
+    "web_preparation_tests_passed": 8,
+    "browser_widths": [
+      1440,
+      390,
+      320
+    ],
+    "browser_api": "synthetic contract fixture",
+    "ollama_http": "MockTransport simulated responses",
+    "ollama_live_generation_verified": false,
+    "benchmark_disabled_provider_exit_code": 1
+  },
+  "logs": {
+    "block7-assistance-final.log": {
+      "sha256": "c02d08cd779e9f8ca30ea02893a95bd3a30b4a5ec80e81da9c630fe2e8823298"
+    },
+    "block7-platform.log": {
+      "sha256": "5b95908ef9dbd53019c99c12fbb189c5a27d28d880cb636e508d68c3092aaeb7"
+    },
+    "block7-web-preparation-final.log": {
+      "sha256": "7b629b3a8074bb4926161beabdfe5e383c2140300f916842a900640c9892925b"
+    },
+    "block7-browser.log": {
+      "sha256": "3502d815119cad0132c0d45b698e08ab32f72753f557b5c111e61411a21927eb"
+    }
+  },
+  "limits": [
+    "No local model installed or live inference performed",
+    "No measured provider quality/cost comparison",
+    "No image/video/audio generation adapter",
+    "No real platform publication",
+    "No full cross-system SSO",
+    "No PostgreSQL concurrency test for editorial drafts",
+    "No production deployment, commit or push"
+  ]
+}

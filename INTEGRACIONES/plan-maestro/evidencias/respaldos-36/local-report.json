@@ -1,0 +1,78 @@
+{
+  "schema": "sgacd-local-quality-v1",
+  "created_at": "2026-11-08T03:12:11.448957+00:00",
+  "profiles": [
+    "backup",
+    "postgres"
+  ],
+  "local_checks_complete": true,
+  "production_ready": false,
+  "source_digest_before": "29a4f5a91afa39ff1d9a320d5591c32f8a244f48c9f90058c40989da73c12651",
+  "source_digest_after": "29a4f5a91afa39ff1d9a320d5591c32f8a244f48c9f90058c40989da73c12651",
+  "source_stable": true,
+  "source_scope": [
+    "BACKEND/deployment",
+    "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+    "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+    "BACKEND/SGA-CD-BACKEND/app/models",
+    "BACKEND/SGA-CD-BACKEND/tests",
+    "BACKEND/SGA-ERP-TUR-BAKEND",
+    "BACKEND/SGA-TUR-BAKEND",
+    "FRONTEND/deployment",
+    "FRONTEND/ANALEMATICA-FRONTEND",
+    "INTEGRACIONES/operacion",
+    "DESKTOP/asistencia-sgacd"
+  ],
+  "python": "3.12.14",
+  "packages": {
+    "Django": "5.2.19",
+    "fastapi": "0.162.0",
+    "SQLAlchemy": "2.1.8",
+    "cryptography": "50.0.2",
+    "httpx": "0.28.1",
+    "psycopg2-binary": "2.9.13"
+  },
+  "results": [
+    {
+      "id": "encrypted_backup",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 0.366,
+      "tests": 14,
+      "skipped": 0,
+      "log": "encrypted_backup.log",
+      "log_sha256": "ca2ce323378f3ff4d6908fdb9b35a679880bba4f5aa5976613870d6cd53895d8",
+      "log_truncated": false,
+      "log_write_error": false
+    },
+    {
+      "id": "editorial_restore",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 1.32,
+      "tests": null,
+      "skipped": null,
+      "log": "editorial_restore.log",
+      "log_sha256": "0379ea43b4760309b9901d345f776b72a8cc8488288854d8d4658e6ee056cc11",
+      "log_truncated": false,
+      "log_write_error": false
+    },
+    {
+      "id": "postgres_restore_concurrency",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 16.836,
+      "tests": null,
+      "skipped": null,
+      "log": "postgres_restore_concurrency.log",
+      "log_sha256": "dc1e1e4554071800bf3194c220b9db4afa69705944b5c345bb4d4124226903ab",
+      "log_truncated": false,
+      "log_write_error": false
+    }
+  ],
+  "limits": [
+    "Scoped source hashes, not a full release image attestation",
+    "No production deployment, hardware qualification or live account actions",
+    "Passing a profile does not complete unselected profiles or the master plan"
+  ]
+}

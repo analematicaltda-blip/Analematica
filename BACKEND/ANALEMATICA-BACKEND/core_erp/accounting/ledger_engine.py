@@ -45,17 +45,14 @@ class LedgerEngine:
         """
         Garantiza el principio de partida doble (Débitos = Créditos).
         """
-        lines = entry.lines.all()
-        if not lines:
-            raise UnbalancedEntryError("Journal entry has no lines.")
-
-        total_debit = sum(line.debit_amount for line in lines)
-        total_credit = sum(line.credit_amount for line in lines)
-
-        if abs(total_debit - total_credit) > Decimal('0.001'):
-            raise UnbalancedEntryError(
-                f"Asiento descuadrado {entry.id}. Débito: {total_debit}, Crédito: {total_credit}."
-            )
+        from .validation import validate_lines
+        lines = list(LedgerEntry.plain_objects.filter(journal_entry_id=entry.pk).select_related('account'))
+        if not entry.tenant_id:
+            raise TenantMismatchError('An accounting company is required.')
+        for line in lines:
+            if str(line.tenant_id) != str(entry.tenant_id) or str(line.account.tenant_id) != str(entry.tenant_id):
+                raise TenantMismatchError('A journal line or account belongs to another company.')
+        validate_lines([{'debit':line.debit_amount, 'credit':line.credit_amount} for line in lines])
         return True
 
     @staticmethod

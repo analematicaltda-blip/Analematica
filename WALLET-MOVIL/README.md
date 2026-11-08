@@ -23,4 +23,4 @@ python WALLET-MOVIL/native/pool-02-biometrics/tests/verify.py --android-jar "$AN
 python WALLET-FRONTEND/native_bridge/sync_native.py
 ```
 
-Registro único: [pendientes de producción](../PENDIENTES-PRODUCCION-BILLETERA.md).
+Registro único: [pendientes de producción](../ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md).

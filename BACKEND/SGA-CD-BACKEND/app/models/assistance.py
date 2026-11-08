@@ -89,3 +89,17 @@ class ControlApproval(Base):
     tenant_id = Column(Integer, ForeignKey('inquilinos.id'), nullable=False)
     digest = Column(String(64), nullable=False)
     created_at = Column(Integer, nullable=False)
+
+
+class ContentDraft(Base):
+    __tablename__ = 'assistance_content_drafts'
+    id = Column(String(36), primary_key=True)
+    user_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False, index=True)
+    tenant_id = Column(Integer, ForeignKey('inquilinos.id'), nullable=False, index=True)
+    content = Column(Text, nullable=False)
+    digest = Column(String(64), nullable=False)
+    source = Column(Text, nullable=False)
+    revision = Column(Integer, nullable=False, default=1)
+    status = Column(String(20), nullable=False, default='draft')
+    reviewed_at = Column(Integer)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())

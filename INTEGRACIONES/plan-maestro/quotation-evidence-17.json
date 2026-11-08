@@ -1,0 +1,44 @@
+{
+  "scope": "Persistent quotation drafts and ERP React component, not production qualification",
+  "committed": false,
+  "published": false,
+  "python_test_executions": 53,
+  "suites": {
+    "identity_and_quotation": 27,
+    "crm_regression": 6,
+    "fresh_erp": 10,
+    "fresh_tourism": 10
+  },
+  "browser_scope": "real React and Django ORM/views; synthetic authentication",
+  "typescript_strict_passed": true,
+  "full_frontend_build_verified": false,
+  "real_login_gateway_verified": false,
+  "payments_enabled": false,
+  "external_requests": 0,
+  "databases": [
+    {
+      "service": "erp-tur",
+      "migrations": 168,
+      "tables": 589,
+      "foreign_key_violations": 0
+    },
+    {
+      "service": "turismo",
+      "migrations": 168,
+      "tables": 589,
+      "foreign_key_violations": 0
+    }
+  ],
+  "browser_passed": true,
+  "browser_checks": [
+    "create",
+    "idempotent_retry",
+    "reload_persistence",
+    "withdraw",
+    "logout_clears_data",
+    "anonymous",
+    "mobile_width",
+    "no_external_requests"
+  ],
+  "screenshot": "evidencias/cotizaciones-movil.png"
+}

@@ -1,0 +1,16 @@
+{
+  "production_ready": false,
+  "tests_passed": {
+    "company_scope_and_cookie": 13,
+    "crm": 6,
+    "identity_quotes": 27,
+    "capacity": 14,
+    "institutional_jurisdiction": 18,
+    "gateway": 5
+  },
+  "domain_sso_enabled": false,
+  "employee_wallet_access_granted": false,
+  "ui_selector_implemented": false,
+  "migrations_added": false,
+  "commit_created": false
+}

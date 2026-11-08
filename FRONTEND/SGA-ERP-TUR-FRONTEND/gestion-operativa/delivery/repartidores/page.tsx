@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, ShieldCheck, MapPin, Search } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useMiNegocioApi } from '../../hooks/useMiNegocioApi';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useMiNegocioApi } from '../../../hooks/useMiNegocioApi';
 
 export default function DeliveryRepartidoresPage() {
   const { fetchData } = useMiNegocioApi('delivery/drivers');

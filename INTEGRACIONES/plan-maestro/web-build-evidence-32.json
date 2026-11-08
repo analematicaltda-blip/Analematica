@@ -1,0 +1,144 @@
+{
+  "production_ready": false,
+  "source_syntax": {
+    "scope": "Static syntax only; no source execution",
+    "production_ready": false,
+    "typescript": "5.9.3",
+    "files": {
+      "analematica": 11,
+      "erp": 240,
+      "turismo": 467
+    },
+    "errors": [],
+    "page_contract_warnings": [
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/alertas/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/antifraude/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/auditoria/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/comisiones/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/reglas/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/retenciones/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/transacciones/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      }
+    ]
+  },
+  "shared_component_types": {
+    "scope": "Shared UI primitives only",
+    "strict": true,
+    "production_ready": false,
+    "files": 3,
+    "errors": []
+  },
+  "full_builds": {
+    "checked_at": "2026-11-08T02:18:35.870534+00:00",
+    "production_ready": false,
+    "scope": "Full generated Next source projects, no deployment",
+    "results": [
+      {
+        "system": "erp",
+        "status": "FAILED",
+        "log": "erp-build.log",
+        "strict_typescript": true,
+        "source_tree_changed": false
+      },
+      {
+        "system": "turismo",
+        "status": "FAILED",
+        "log": "turismo-build.log",
+        "strict_typescript": true,
+        "source_tree_changed": false
+      }
+    ],
+    "dependencies": {
+      "next": "16.4.5"
+    }
+  },
+  "preparation_gateway_tests_passed": 8,
+  "controls_browser": {
+    "passed": true,
+    "scope": "UI component only",
+    "checks": [
+      "controlled_state",
+      "mouse",
+      "space",
+      "enter",
+      "one_callback_per_action",
+      "no_handler_disabled",
+      "explicit_disabled",
+      "white_text",
+      "metallic_blue",
+      "no_page_errors",
+      "button_mouse_keyboard",
+      "button_props_consumed",
+      "disabled_button"
+    ]
+  },
+  "quotation_https_regression": {
+    "passed": true,
+    "scope": "Real password authentication, CSRF and Django WSGI on synthetic test accounts",
+    "gateway_https": true,
+    "mfa_totp": true,
+    "enrollment": false,
+    "recovery_codes": false,
+    "issue_codes": false,
+    "password_reset": false,
+    "checks": [
+      "password_login",
+      "password_is_first_factor_only",
+      "invalid_totp",
+      "valid_totp",
+      "challenge_replay",
+      "bad_password",
+      "login_csrf",
+      "httponly_session",
+      "no_token_storage",
+      "create",
+      "idempotent_retry",
+      "reload_persistence",
+      "withdraw",
+      "logout_failure_recovery",
+      "logout_clears_data",
+      "anonymous",
+      "mobile_width",
+      "sgacd_blue_white_theme",
+      "no_external_requests"
+    ]
+  },
+  "corporate_rendering": {
+    "passed": true,
+    "widths": [
+      1440,
+      390,
+      320
+    ],
+    "api": "Synthetic contract; no live owner login tested"
+  },
+  "upstream_recovery_attempt": "GitHub read request returned Forbidden; no source recovered",
+  "commit_created": false
+}

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
-import { BankAccount } from '../hooks/useMiNegocioApi';
+import { BankAccount } from '@/app/dashboard/prestador/mi-negocio/hooks/useMiNegocioApi';
 
 const formSchema = z.object({
   banco: z.string().min(2, { message: "El nombre del banco es requerido." }),

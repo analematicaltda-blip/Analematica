@@ -32,3 +32,26 @@ STATICFILES_DIRS=[path for path in STATICFILES_DIRS if Path(path).is_dir()]
 # Synthetic deception responses are opt-in and require their migrated storage.
 if os.environ.get('DJANGO_DECEPTION_ENABLED','0')!='1':
     MIDDLEWARE=[m for m in MIDDLEWARE if m!='apps.defense_deception.middleware.DeceptionMiddleware']
+
+# Isolated, opt-in browser session and encrypted MFA storage.
+ERP_WEB_SESSION_ENABLED=os.environ.get('ERP_WEB_SESSION_ENABLED','0')=='1'
+ERP_TOTP_ENROLLMENT_ENABLED=os.environ.get('ERP_TOTP_ENROLLMENT_ENABLED','0')=='1'
+SESSION_COOKIE_NAME='sgacd_'+os.environ['BACKEND_SERVICE'].replace('-','_')+'_session'
+CSRF_COOKIE_NAME='sgacd_'+os.environ['BACKEND_SERVICE'].replace('-','_')+'_csrf'
+SESSION_COOKIE_HTTPONLY=True
+CSRF_COOKIE_HTTPONLY=True
+SESSION_COOKIE_SAMESITE='Strict'
+CSRF_COOKIE_SAMESITE='Strict'
+SESSION_COOKIE_PATH='/api/'
+CSRF_COOKIE_PATH='/api/'
+MFA_ADAPTER='apps.common.mfa_adapter.EncryptedMFAAdapter'
+
+ERP_RECOVERY_CODES_ENABLED=os.environ.get('ERP_RECOVERY_CODES_ENABLED','0')=='1'
+
+ERP_RECOVERY_ISSUANCE_ENABLED=os.environ.get('ERP_RECOVERY_ISSUANCE_ENABLED','0')=='1'
+
+ERP_CAPACITY_HOLDS_ENABLED=os.environ.get('ERP_CAPACITY_HOLDS_ENABLED','0')=='1'
+
+ERP_PASSWORD_RESET_ENABLED=os.environ.get('ERP_PASSWORD_RESET_ENABLED','0')=='1'
+ERP_PASSWORD_RESET_URL=os.environ.get('ERP_PASSWORD_RESET_URL','')
+ERP_PASSWORD_RESET_MAIL_READY=os.environ.get('ERP_PASSWORD_RESET_MAIL_READY','0')=='1'

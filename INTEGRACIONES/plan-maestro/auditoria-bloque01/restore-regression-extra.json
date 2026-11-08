@@ -1,0 +1,19 @@
+{
+  "scope": "Previous backup drill, separate from block1 acceptance",
+  "production_ready": false,
+  "restore": {
+    "restored_to_new_database": true,
+    "source_unchanged": true,
+    "table_count": 19,
+    "row_count": 79,
+    "all_table_rows_match": true,
+    "foreign_keys_validated": true,
+    "encrypted_archive_private_permissions": true,
+    "tampered_archive_rejected": true,
+    "mfa_material_decrypted_with_original_key": 21,
+    "sessions_decoded_with_original_key": 6,
+    "archive_sha256": "4d3e6fe6126bc39fa52641d50a320fab0601fd3b5569fe87e51e94991196a61f",
+    "keys_saved_in_archive": false
+  },
+  "concurrency_scenarios": 13
+}

@@ -1,0 +1,43 @@
+{
+  "production_ready": false,
+  "observed": {
+    "postgresql": true,
+    "replay_cache_enforced": false,
+    "results": [
+      {
+        "scenario": "different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "issuance_different_sessions_same_totp",
+        "accepted": 1,
+        "rejected": 1,
+        "previous_codes_invalid": true
+      }
+    ]
+  },
+  "scope": "Dedicated temporary PostgreSQL, minimal schema, independent connections in concurrent worker threads",
+  "limitations": [
+    "Not a full product migration",
+    "Not a multi-process or load test",
+    "HTTP/password/CSRF verified separately in previous cuts"
+  ],
+  "project_databases_accessed": false,
+  "commit_created": false
+}

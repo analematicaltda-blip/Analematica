@@ -168,6 +168,6 @@
     "owner": "Identidad e integración ERP/SGA-CD",
     "status": "PENDIENTE",
     "acceptance": "Conectar registro público e identidad real; adaptar autoridad empresarial ERP/SGA-CD con verificación de administrador titular; integrar panel web/escritorio y probar revocación. El equipo administrativo solo accede a su perfil personal si se inscribe.",
-    "evidence": "Política backend implementada; adaptador empresarial deshabilitado por defecto. Paneles productivos e identidad real pendientes."
+    "evidence": "Vínculo explícito prestador/empresa, revisión independiente y adaptador ERP-TUR opt-in implementados con pruebas ORM/HTTP. No habilitado por defecto. Identidad externa, recuperación/renovación, SSO SGA-CD y paneles web/escritorio productivos pendientes."
   }
 ]

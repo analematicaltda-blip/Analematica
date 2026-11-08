@@ -1,0 +1,72 @@
+{
+  "production_ready": false,
+  "python": {
+    "session": 34,
+    "identity_and_quotes": 27,
+    "erp_fresh": 11,
+    "tourism_fresh": 10,
+    "skipped": 1
+  },
+  "browser_enrollment": {
+    "passed": true,
+    "scope": "Real password authentication, CSRF and Django WSGI on synthetic test accounts",
+    "gateway_https": true,
+    "mfa_totp": false,
+    "enrollment": true,
+    "checks": [
+      "password_login",
+      "enrollment_password_recheck",
+      "masked_key",
+      "cancel_failure_retry",
+      "pending_not_active",
+      "incorrect_activation",
+      "verified_activation",
+      "enrolled_factor_login",
+      "bad_password",
+      "login_csrf",
+      "httponly_session",
+      "no_token_storage",
+      "create",
+      "idempotent_retry",
+      "reload_persistence",
+      "withdraw",
+      "logout_failure_recovery",
+      "logout_clears_data",
+      "anonymous",
+      "mobile_width",
+      "sgacd_blue_white_theme",
+      "no_external_requests"
+    ]
+  },
+  "git_commit_created": false,
+  "scope": "Synthetic accounts; temporary databases; local HTTPS; not production",
+  "browser_existing_totp": {
+    "passed": true,
+    "scope": "Real password authentication, CSRF and Django WSGI on synthetic test accounts",
+    "gateway_https": true,
+    "mfa_totp": true,
+    "enrollment": false,
+    "checks": [
+      "password_login",
+      "password_is_first_factor_only",
+      "invalid_totp",
+      "valid_totp",
+      "challenge_replay",
+      "bad_password",
+      "login_csrf",
+      "httponly_session",
+      "no_token_storage",
+      "create",
+      "idempotent_retry",
+      "reload_persistence",
+      "withdraw",
+      "logout_failure_recovery",
+      "logout_clears_data",
+      "anonymous",
+      "mobile_width",
+      "sgacd_blue_white_theme",
+      "no_external_requests"
+    ]
+  },
+  "gateway_config_tests": 5
+}

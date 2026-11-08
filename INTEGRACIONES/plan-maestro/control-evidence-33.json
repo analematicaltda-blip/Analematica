@@ -1,0 +1,75 @@
+{
+  "schema": "sgacd-control-evidence-v1",
+  "cut": 33,
+  "policy": "sgacd-control-v2",
+  "production_ready": false,
+  "python": {
+    "passed": 34
+  },
+  "node": {
+    "passed": 12,
+    "skipped": 1,
+    "failed": 0,
+    "skip": "real native desktop status"
+  },
+  "postgresql_control": {
+    "postgresql": true,
+    "scope": "Independent SQLAlchemy sessions/threads; no real executor",
+    "results": [
+      {
+        "scenario": "duplicate_approval",
+        "completed": 1,
+        "checkpoint_after_revocation_denied": false
+      },
+      {
+        "scenario": "duplicate_begin",
+        "completed": 1,
+        "checkpoint_after_revocation_denied": false
+      },
+      {
+        "scenario": "duplicate_result",
+        "completed": 1,
+        "checkpoint_after_revocation_denied": false
+      },
+      {
+        "scenario": "revoke_vs_begin",
+        "completed": 1,
+        "checkpoint_after_revocation_denied": true
+      }
+    ]
+  },
+  "postgresql_prior_scenarios": 17,
+  "restore": {
+    "restored_to_new_database": true,
+    "source_unchanged": true,
+    "table_count": 28,
+    "row_count": 108,
+    "all_table_rows_match": true,
+    "foreign_keys_validated": true,
+    "encrypted_archive_private_permissions": true,
+    "tampered_archive_rejected": true,
+    "mfa_material_decrypted_with_original_key": 22,
+    "sessions_decoded_with_original_key": 6,
+    "archive_sha256": "3983fbd211992d11bd9c2f103ba2b06b222c245cd29283f2d80ed6e6a1698ad8",
+    "keys_saved_in_archive": false
+  },
+  "logs": {
+    "block6-release-python.log": {
+      "sha256": "2df15fe282fc73887c94aa53102ed6c4958f751473e33786cdc5bfe78ac3922d"
+    },
+    "block6-companion-v2.log": {
+      "sha256": "7e5dee78807387505d050a0bccb660ce7e9f4a18934b298216cefaa97c2d4803"
+    },
+    "block6-pg-verified.log": {
+      "sha256": "9c224df025f7b3a61ed4d6f1efcf8c4819406022ec735fb024814fcd23ff1de4"
+    }
+  },
+  "limits": [
+    "No physical Android/iOS/desktop qualification",
+    "Mobile adapters use simulated Appium transports",
+    "No real provider account action",
+    "No proof of human presence from approval stages alone",
+    "Cannot undo dispatched interactions",
+    "No deployment or Git publication"
+  ]
+}

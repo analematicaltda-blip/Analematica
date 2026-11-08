@@ -32,7 +32,7 @@ y WALLET-DESKTOP. Conservar los imports apps.wallet, la etiqueta Django wallet
 y las migraciones existentes mediante adaptadores de compatibilidad. No mover
 bases, secretos o llaves junto con el código.
 
-Actualizar PENDIENTES-PRODUCCION-BILLETERA.md mediante el registro canónico
+Actualizar ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md mediante el registro canónico
 production_pending.json y WALLET-BACKEND/tools/update_pending_doc.py en cada
 entrega que cambie evidencia o deje un bloqueo nuevo. No cerrar pruebas físicas,
 identidad, proveedores o releases usando evidencia sintética.
@@ -51,3 +51,17 @@ que los commits y la actualización del repositorio se harán únicamente al
 terminar el trabajo final y cuando lo indique. Conservar avances en la rama y
 archivos actuales; documentar diferencias frente a main sin obligar a aplicar
 parches parciales. Consultar INTEGRACIONES/plan-maestro/VERIFICACION_MAIN.md.
+
+## Identidad visual obligatoria
+
+Replicar la identidad de SGA-CD en Analemática, ERP, Turismo y billetera: azul
+metalizado, acentos azul claro y texto blanco. Referencia FRONTEND/IDENTIDAD-VISUAL.md.
+Conservar estructura, navegación y componentes existentes. No introducir otra
+paleta primaria, fondos blancos con texto oscuro ni reconstruir layouts como
+parte de una mejora funcional. Verificar contraste, foco y vista móvil.
+
+## Organización de análisis
+
+Los análisis y pendientes consolidados nuevos van en ANALISIS/; no crear informes
+en la raíz. Conservar informes históricos de integración en sus carpetas actuales.
+La directriz contable y matriz de pools están en ANALISIS/contabilidad/.

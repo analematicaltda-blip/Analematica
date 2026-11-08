@@ -22,8 +22,9 @@ export function verifyGrant(envelope,config,at=Math.floor(Date.now()/1000)){
  if(!envelope||typeof envelope.payload!=='string'||envelope.payload.length>32000||typeof envelope.signature!=='string')throw Error('Permiso firmado no válido.');
  if(!crypto.verify(null,Buffer.from(envelope.payload),config.server_public_key,Buffer.from(envelope.signature,'base64')))throw Error('Firma de control no válida.');
  const grant=JSON.parse(envelope.payload),intent=JSON.parse(grant.intent_json);
+ if(grant.checkpoint_required!==true)throw Error('El permiso no exige la comprobación de despacho vigente.');
  if(grant.policy!==policy.version||intent.policy!==policy.version||grant.device_id!==config.device_id||intent.device_id!==config.device_id||grant.owner_id!==config.owner_id||grant.tenant_id!==config.tenant_id||intent.owner_id!==config.owner_id||intent.tenant_id!==config.tenant_id)throw Error('El permiso pertenece a otro equipo o usuario.');
- if(!Number.isInteger(grant.issued_at)||!Number.isInteger(grant.expires_at)||grant.issued_at>at+5||grant.expires_at<at||grant.expires_at-grant.issued_at>policy.max_grant_seconds||grant.expires_at<=grant.issued_at)throw Error('Permiso vencido o duración no permitida.');
+ if(!Number.isInteger(grant.issued_at)||!Number.isInteger(grant.expires_at)||grant.issued_at>at+5||grant.expires_at<=at||grant.expires_at-grant.issued_at>policy.max_grant_seconds||grant.expires_at<=grant.issued_at)throw Error('Permiso vencido o duración no permitida.');
  if(crypto.createHash('sha256').update(grant.intent_json).digest('hex')!==grant.digest)throw Error('El plan aprobado cambió.');
  const keys=policy.operation_arguments[intent.operation];if(!keys||!intent.arguments||Array.isArray(intent.arguments)||Object.keys(intent.arguments).sort().join('|')!==[...keys].sort().join('|')||Object.values(intent.arguments).some(v=>typeof v!=='string'||v.length>4000||v.includes('\0')))throw Error('Argumentos de operación fuera del contrato autorizado.');
  const count=policy.operations[intent.operation];if(!count||!Array.isArray(grant.approvals)||grant.approvals.length!==count)throw Error('Faltan autorizaciones independientes.');
@@ -38,4 +39,12 @@ export function verifyGrant(envelope,config,at=Math.floor(Date.now()/1000)){
  }else if(config.kind!=='desktop')throw Error('Operación de escritorio sobre un móvil.');
  if(!/^[a-f0-9]{48}$/.test(grant.lease_id)||typeof intent.job_id!=='string')throw Error('Permiso de una sola ejecución incompleto.');
  return {grant,intent};
+}
+
+export async function validateDispatch(verified,check,clock=()=>Math.floor(Date.now()/1000)){
+ const expires=verified?.grant?.expires_at,lease=verified?.grant?.lease_id;
+ if(!Number.isInteger(expires)||clock()>=expires||typeof lease!=='string')throw Error('El permiso venció antes del despacho.');
+ const current=await check(lease);
+ if(current?.policy!==policy.version||current?.job_id!==verified.intent.job_id||current?.digest!==verified.grant.digest||current?.allowed!==true||current.new_authorization!==false||current.lease_expires_at!==expires||clock()>=expires)throw Error('El servidor no confirmó un despacho vigente.');
+ return true;
 }

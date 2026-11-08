@@ -126,7 +126,7 @@ export default function FormularioVerificacionPage() {
                                 className="w-full bg-slate-50 border-none px-4 py-3 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500"
                              />
                           </TableCell>
-                       </tr>
+                       </TableRow>
                     );
                  })}
               </TableBody>

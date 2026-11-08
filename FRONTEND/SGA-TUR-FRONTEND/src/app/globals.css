@@ -140,3 +140,28 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   @apply bg-brand/40;
 }
+
+/* Identidad común SGA-CD: colores únicamente; conservar componentes y estructura. */
+@theme {
+ --color-brand:#2563eb;
+ --color-brand-light:#7dd3fc;
+ --color-brand-deep:#0e1b38;
+}
+@layer base {
+ :root,.dark {
+  color-scheme:dark;
+  --background:#060b17;--foreground:#ffffff;
+  --card:#0e1b38;--card-foreground:#ffffff;
+  --popover:#0a1128;--popover-foreground:#ffffff;
+  --primary:#2563eb;--primary-foreground:#ffffff;
+  --secondary:#142850;--secondary-foreground:#ffffff;
+  --muted:#142850;--muted-foreground:#ffffff;
+  --accent:#1a3262;--accent-foreground:#ffffff;
+  --border:#1e3a8a;--input:#60a5fa;--ring:#7dd3fc;
+  --brand-primary:#2563eb;--brand-light:#7dd3fc;--brand-deep:#0e1b38;
+  --action-primary:#2563eb;--action-secondary:#1a3262;
+  --background-main:#060b17;--background-card:#0e1b38;--background-sidebar:#0a1128;
+  --text-primary:#ffffff;--text-secondary:#ffffff;--text-muted:#ffffff;--text-on-brand:#ffffff;
+  --border-default:#1e3a8a;
+ }
+}

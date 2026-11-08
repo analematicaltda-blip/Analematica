@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { ChartOfAccount } from '../../../hooks/useMiNegocioApi';
+import { ChartOfAccount } from '../../hooks/useMiNegocioApi';
 // ... (código del formulario ChartOfAccountForm)
 export default function ChartOfAccountForm({ onSubmit, initialData, isLoading }) {
   const { register, handleSubmit } = useForm({ defaultValues: initialData });

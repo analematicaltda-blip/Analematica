@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-11-08T03:05:14.054934+00:00",
+  "production_ready": false,
+  "scope": "Full generated Next source projects, no deployment",
+  "results": [
+    {
+      "system": "erp",
+      "status": "FAILED",
+      "log": "erp-build.log",
+      "strict_typescript": true,
+      "source_tree_changed": false
+    },
+    {
+      "system": "turismo",
+      "status": "FAILED",
+      "log": "turismo-build.log",
+      "strict_typescript": true,
+      "source_tree_changed": false
+    }
+  ],
+  "dependencies": {
+    "next": "16.4.5"
+  }
+}

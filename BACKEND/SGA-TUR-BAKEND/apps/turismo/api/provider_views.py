@@ -33,6 +33,17 @@ class TourismProviderViewSet(viewsets.ModelViewSet):
         changed='rnt_number' in serializer.validated_data and serializer.validated_data['rnt_number']!=serializer.instance.rnt_number
         serializer.save(**({'rnt_validated':False,'rnt_last_sync':None} if changed else {}))
 
+    @action(detail=True, methods=['get'], url_path='company-identity')
+    def company_identity(self, request, pk=None):
+        from ..services.company_identity import resolve_company
+        provider=self.get_object()
+        link=resolve_company(request.user,provider.pk)
+        response=Response({'provider_id':str(link.provider_id),'company_id':str(link.tenant_id),
+                           'administrator_user_id':link.administrator_id,
+                           'valid_until':link.valid_until,'financial_activation':False})
+        response['Cache-Control']='no-store'
+        return response
+
     @action(detail=True, methods=['post'])
     def sync_rnt(self, request, pk=None):
         """

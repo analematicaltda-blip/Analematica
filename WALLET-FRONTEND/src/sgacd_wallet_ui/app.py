@@ -24,7 +24,7 @@ class WalletApp:
         if mode=='mobile' and self.local_allowed and not root:self.local_allowed=False
         desktop_root=Path(os.environ['LOCALAPPDATA'])/'AnalematicaWallet' if os.name=='nt' and os.environ.get('LOCALAPPDATA') else Path.home()/'.sgacd-wallet'
         self.path=Path(root or desktop_root)/'private-wallet'/'workspace.sqlite3'
-        page.title='Billetera · Analemática';page.theme_mode=ft.ThemeMode.LIGHT;page.bgcolor='#F4F7FB';page.padding=20;page.scroll=ft.ScrollMode.AUTO
+        page.title='Billetera · Analemática';page.theme_mode=ft.ThemeMode.DARK;page.bgcolor='#060B17';page.theme=ft.Theme(color_scheme=ft.ColorScheme(primary='#7DD3FC',on_primary='#FFFFFF',surface='#0E1B38',on_surface='#FFFFFF',secondary='#38BDF8',on_secondary='#FFFFFF'),text_theme=ft.TextTheme(body_medium=ft.TextStyle(color='#FFFFFF'),body_large=ft.TextStyle(color='#FFFFFF'),title_large=ft.TextStyle(color='#FFFFFF')));page.padding=20;page.scroll=ft.ScrollMode.AUTO
         page.on_disconnect=self.disconnect
         page.on_app_lifecycle_state_change=self.lifecycle
         page.window.on_event=self.window_event
@@ -66,7 +66,7 @@ class WalletApp:
                 if control is not None:control.value=None
         if workspace:workspace.close()
     def banner(self):
-        return ft.Container(content=ft.Text('Modo local: apuntes y borradores cifrados. Ninguna transferencia se ejecuta sin conexión. Las revisiones locales no sustituyen las autorizaciones del servidor.',color='#334155'),bgcolor='#E7EFFA',padding=16,border_radius=12)
+        return ft.Container(content=ft.Text('Modo local: apuntes y borradores cifrados. Ninguna transferencia se ejecuta sin conexión. Las revisiones locales no sustituyen las autorizaciones del servidor.',color='#FFFFFF'),bgcolor='#142850',padding=16,border_radius=12)
     def action(self,callback):
         self.last_activity=time.monotonic()
         try:callback();self.message='Operación local completada.'
@@ -87,16 +87,16 @@ class WalletApp:
     def nav(self,name):self.section=name;self.message='';self.render()
     def render(self):
         if not self._alive:return
-        body=[ft.Row([ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET_OUTLINED,color='#1D4ED8',size=32),ft.Text('Billetera',size=30,weight=ft.FontWeight.BOLD)],wrap=True),
-              ft.Text('Tu trabajo local, protegido y bajo tu control.',color='#475569'),self.banner(),
+        body=[ft.Row([ft.Icon(ft.Icons.ACCOUNT_BALANCE_WALLET_OUTLINED,color='#7DD3FC',size=32),ft.Text('Billetera',size=30,weight=ft.FontWeight.BOLD)],wrap=True),
+              ft.Text('Tu trabajo local, protegido y bajo tu control.',color='#FFFFFF'),self.banner(),
               ft.Row([ft.OutlinedButton(name,on_click=lambda e,n=name:self.nav(n)) for name in ['Resumen','Borradores','Apuntes','Equipo','Producción']],wrap=True)]
-        if self.message:body.append(ft.Text(self.message,color='#334155',selectable=True))
+        if self.message:body.append(ft.Text(self.message,color='#FFFFFF',selectable=True))
         if self.section=='Equipo':
             body.extend([ft.Text('Equipo de asistencia',size=22,weight=ft.FontWeight.BOLD),ft.Text('Ocho soldados de reglas locales. Open Duet y agent-desktop quedan sujetos a vinculación y al control de autorizaciones existente.')])
-            for soldier in catalog():body.append(ft.Container(ft.Column([ft.Text(soldier['name'],weight=ft.FontWeight.BOLD),ft.Text(soldier['task'])]),bgcolor='white',padding=14,border_radius=10))
+            for soldier in catalog():body.append(ft.Container(ft.Column([ft.Text(soldier['name'],weight=ft.FontWeight.BOLD),ft.Text(soldier['task'])]),bgcolor='#0E1B38',padding=14,border_radius=10))
         elif self.section=='Producción':
             body.extend([ft.Text('Validaciones pendientes',size=22,weight=ft.FontWeight.BOLD),ft.Text('Registro compartido de lo que aún impide habilitar operaciones reales.')])
-            body.extend(ft.Container(ft.Column([ft.Text(item['id']+' · '+item['title'],weight=ft.FontWeight.BOLD),ft.Text(item['acceptance'])]),bgcolor='white',padding=14,border_radius=10) for item in pending())
+            body.extend(ft.Container(ft.Column([ft.Text(item['id']+' · '+item['title'],weight=ft.FontWeight.BOLD),ft.Text(item['acceptance'])]),bgcolor='#0E1B38',padding=14,border_radius=10) for item in pending())
         elif not self.local_allowed:
             body.extend([ft.Text('Vista web de consulta',size=22,weight=ft.FontWeight.BOLD),ft.Text('Consulta el equipo y las validaciones. Para guardar apuntes cifrados utiliza la aplicación móvil o de escritorio en tu dispositivo. No introduzcas claves financieras en esta vista.')])
         elif not self.foreground:
@@ -117,7 +117,7 @@ class WalletApp:
             elif self.section=='Apuntes':
                 self.note_title=ft.TextField(label='Título');self.note_content=ft.TextField(label='Apunte',multiline=True,min_lines=3,max_length=2000)
                 body.extend([ft.Text('Apuntes privados',size=22,weight=ft.FontWeight.BOLD),self.note_title,self.note_content,ft.ElevatedButton('Guardar apunte',on_click=lambda e:self.action(lambda:self.workspace.add_note(self.note_title.value or '',self.note_content.value or '')))])
-                for note in reversed(state['notes']):body.append(ft.Container(ft.Column([ft.Text(note['title'],weight=ft.FontWeight.BOLD),ft.Text(note['content'],selectable=True)]),bgcolor='white',padding=14,border_radius=10))
+                for note in reversed(state['notes']):body.append(ft.Container(ft.Column([ft.Text(note['title'],weight=ft.FontWeight.BOLD),ft.Text(note['content'],selectable=True)]),bgcolor='#0E1B38',padding=14,border_radius=10))
             elif self.section=='Borradores':
                 self.source=ft.TextField(label='Cuenta de origen (identificador)',value=self.edit_fields.get('source',''));self.destination=ft.TextField(label='Cuenta de destino (identificador)',value=self.edit_fields.get('destination',''));self.amount=ft.TextField(label='Importe',value=self.edit_fields.get('amount',''));self.currency=ft.Dropdown(label='Moneda',value=self.edit_fields.get('currency'),options=[ft.dropdown.Option(value) for value in ['COP','USD','EUR']])
                 body.extend([ft.Text('Preparar, sin enviar dinero',size=22,weight=ft.FontWeight.BOLD),self.source,self.destination,ft.Row([ft.Container(self.amount,expand=True),ft.Container(self.currency,expand=True)]),ft.ElevatedButton('Guardar cambios y reiniciar revisiones' if self.editing_id else 'Guardar borrador',on_click=lambda e:self.action(self.save_draft))])
@@ -128,7 +128,7 @@ class WalletApp:
                     else:controls.append(ft.Text('Esperará una intención nueva y dos autorizaciones de hardware en el servidor. No se envía automáticamente.'))
                     controls.append(ft.TextButton('Modificar borrador',on_click=lambda e,d=draft:self.edit_draft(d)))
                     controls.append(ft.TextButton('Consultar revisión de los soldados',on_click=lambda e,d=draft:self.show_review(d)))
-                    body.append(ft.Container(ft.Column(controls),bgcolor='white',padding=14,border_radius=10))
+                    body.append(ft.Container(ft.Column(controls),bgcolor='#0E1B38',padding=14,border_radius=10))
         self.page.controls.clear();self.page.add(ft.Column(body,spacing=16));self.page.update()
     def edit_draft(self,draft):
         self.editing_id=draft['id'];self.edit_fields=dict(draft['fields']);self.render()

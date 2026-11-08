@@ -1,9 +1,9 @@
 name: Shared foundation and tourism audit
 on:
   push:
-    paths: ['WALLET-BACKEND/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+    paths: ['DESKTOP/asistencia-sgacd/**', 'FRONTEND/ANALEMATICA-FRONTEND/js/control.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/content.js', 'FRONTEND/ANALEMATICA-FRONTEND/content.html', 'FRONTEND/ANALEMATICA-FRONTEND/css/content.css', 'FRONTEND/ANALEMATICA-FRONTEND/tests/content.cjs', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_content.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_control.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/**', 'FRONTEND/deployment/**', 'WALLET-BACKEND/**', 'ANALISIS/**', 'BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
   pull_request:
-    paths: ['WALLET-BACKEND/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+    paths: ['DESKTOP/asistencia-sgacd/**', 'FRONTEND/ANALEMATICA-FRONTEND/js/control.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/content.js', 'FRONTEND/ANALEMATICA-FRONTEND/content.html', 'FRONTEND/ANALEMATICA-FRONTEND/css/content.css', 'FRONTEND/ANALEMATICA-FRONTEND/tests/content.cjs', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_content.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_control.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/**', 'FRONTEND/deployment/**', 'WALLET-BACKEND/**', 'ANALISIS/**', 'BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
 permissions:
   contents: read
 jobs:
@@ -20,11 +20,20 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r BACKEND/deployment/requirements-tourism.txt requests fastapi httpx sqlalchemy pydantic-settings 'python-jose[cryptography]' 'passlib[bcrypt]' email-validator python-multipart
+      - run: python -m pip install -r FRONTEND/deployment/requirements-tools.txt
+      - run: python -m unittest discover -s FRONTEND/deployment/tests -p test_security.py -v
       - run: python BACKEND/deployment/tests/domain_security_check.py -v
       - run: python BACKEND/deployment/tests/provider_security_check.py -v
       - run: CHECK_SERVICE=erp-tur python BACKEND/deployment/tests/schema_readiness_check.py -v
       - run: CHECK_SERVICE=turismo python BACKEND/deployment/tests/schema_readiness_check.py -v
       - run: python BACKEND/deployment/tests/erp_customer_check.py -v
+      - run: python BACKEND/deployment/tests/company_scope_check.py -v
+      - run: python BACKEND/deployment/tests/company_identity_check.py -v
+      - run: python BACKEND/deployment/tests/accounting_foundation_check.py -v
+      - run: python BACKEND/deployment/tests/availability_check.py -v
+      - run: python BACKEND/deployment/tests/erp_session_check.py -v
+      - run: python BACKEND/deployment/tests/password_recovery_check.py -v
+      - run: python BACKEND/deployment/tests/mfa_postgres_check.py
       - run: python WALLET-BACKEND/tests/wallet_security_check.py -v
       - run: python WALLET-BACKEND/tests/access_policy_check.py -v
       - run: python WALLET-BACKEND/tests/attestation_security_check.py -v
@@ -48,4 +57,14 @@ jobs:
       - run: npx playwright install --with-deps chromium
         working-directory: DESKTOP/asistencia-sgacd
       - run: PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" node FRONTEND/ANALEMATICA-FRONTEND/tests/platform.cjs
+      - run: PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" node FRONTEND/ANALEMATICA-FRONTEND/tests/content.cjs
+      - run: npm install --prefix "$RUNNER_TEMP/quotation-ui" --ignore-scripts --no-audit --no-fund esbuild@0.25.11 react@19.2.0 react-dom@19.2.0 typescript@5.9.3 @types/react@19.2.2 @types/react-dom@19.2.2
+      - run: QUOTE_GATEWAY=1 QUOTE_UI_DEPS="$RUNNER_TEMP/quotation-ui/node_modules" QUOTE_PYTHON=python PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" CHROMIUM_PATH=playwright node FRONTEND/deployment/tests/quotation_browser.cjs
+      - run: QUOTE_MFA=1 QUOTE_GATEWAY=1 QUOTE_UI_DEPS="$RUNNER_TEMP/quotation-ui/node_modules" QUOTE_PYTHON=python PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" CHROMIUM_PATH=playwright node FRONTEND/deployment/tests/quotation_browser.cjs
+      - run: QUOTE_RECOVERY=1 QUOTE_MFA=1 QUOTE_GATEWAY=1 QUOTE_UI_DEPS="$RUNNER_TEMP/quotation-ui/node_modules" QUOTE_PYTHON=python PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" CHROMIUM_PATH=playwright node FRONTEND/deployment/tests/quotation_browser.cjs
+      - run: QUOTE_RESET=1 QUOTE_MFA=1 QUOTE_GATEWAY=1 QUOTE_UI_DEPS="$RUNNER_TEMP/quotation-ui/node_modules" QUOTE_PYTHON=python PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" CHROMIUM_PATH=playwright node FRONTEND/deployment/tests/quotation_browser.cjs
+      - run: QUOTE_ISSUE=1 QUOTE_MFA=1 QUOTE_GATEWAY=1 QUOTE_UI_DEPS="$RUNNER_TEMP/quotation-ui/node_modules" QUOTE_PYTHON=python PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" CHROMIUM_PATH=playwright node FRONTEND/deployment/tests/quotation_browser.cjs
+      - run: node FRONTEND/deployment/check_sources.cjs --dependencies "$RUNNER_TEMP/quotation-ui/node_modules" --output "$RUNNER_TEMP/web-source-syntax.json"
+      - run: QUOTE_UI_DEPS="$RUNNER_TEMP/quotation-ui/node_modules" PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" CHROMIUM_PATH=playwright node FRONTEND/deployment/tests/switch_browser.cjs
+      - run: QUOTE_ENROLL=1 QUOTE_GATEWAY=1 QUOTE_UI_DEPS="$RUNNER_TEMP/quotation-ui/node_modules" QUOTE_PYTHON=python PLAYWRIGHT_MODULE="$PWD/DESKTOP/asistencia-sgacd/node_modules/playwright" CHROMIUM_PATH=playwright node FRONTEND/deployment/tests/quotation_browser.cjs
       - run: node --test DESKTOP/asistencia-sgacd/tests/*.test.mjs

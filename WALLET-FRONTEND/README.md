@@ -36,4 +36,4 @@ En móvil se monta `SensitiveDisplay` y se exige su respuesta antes de mostrar c
 
 `main.py` es una vista Flet de consulta sin acceso al espacio privado. Requiere el extra web con versiones fijadas por compatibilidad. Se detectó y corrigió un conflicto FastAPI reciente, pero el cliente Flet0.28.3 descargado requiere CanvasKit/fuentes externas que no están empaquetados aquí; la prueba con red externa bloqueada no pudo renderizarlo. **No se considera una UI Flet web offline validada.** Usar el panel web estático o compilar/proveer legalmente los assets oficiales compatibles antes de habilitar esa vista. No se usaron mirrors para eludir la política de red.
 
-APK/IPA/EXE y la validación física no están entregados como binarios. Ver [pendientes](../PENDIENTES-PRODUCCION-BILLETERA.md).
+APK/IPA/EXE y la validación física no están entregados como binarios. Ver [pendientes](../ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md).

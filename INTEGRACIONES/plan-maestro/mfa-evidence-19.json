@@ -1,0 +1,67 @@
+{
+  "production_ready": false,
+  "committed": false,
+  "published": false,
+  "feature_enabled_by_default": false,
+  "scope": "TOTP sign-in for existing enrolled accounts; not enrollment/recovery or full product certification",
+  "python_passed": 73,
+  "python_skipped": 1,
+  "suites": {
+    "session_mfa": 25,
+    "company_quotation": 27,
+    "migrated_erp": 11,
+    "migrated_tourism_passed": 10,
+    "migrated_tourism_skipped": 1
+  },
+  "https_browser_totp_checks": 19,
+  "https_browser_no_factor_checks": 15,
+  "physical_authenticator_tested": false,
+  "encryption": "versioned Fernet using private environment key; legacy reads retained, ERP requires encryption",
+  "automatic_legacy_conversion": false,
+  "persistent_replay_counter": true,
+  "challenge_binding": [
+    "session",
+    "password_version",
+    "factor_version",
+    "expiry"
+  ],
+  "challenge_seconds": 120,
+  "challenge_attempts": 5,
+  "factor_lock_minutes": 5,
+  "webauthn_bypass_allowed": false,
+  "mfa_replaces_financial_approvals": false,
+  "databases": [
+    {
+      "service": "erp-tur",
+      "migrations": 169,
+      "tables": 591,
+      "foreign_key_violations": 0
+    },
+    {
+      "service": "turismo",
+      "migrations": 169,
+      "tables": 591,
+      "foreign_key_violations": 0
+    }
+  ],
+  "postgres_mfa_two_connection_contract_passed": true,
+  "postgres_replay_cache_enforced": false,
+  "postgres_scenarios": [
+    {
+      "scenario": "different_sessions_same_code",
+      "accepted": 1,
+      "rejected": 1
+    },
+    {
+      "scenario": "same_challenge",
+      "accepted": 1,
+      "rejected": 1
+    }
+  ],
+  "postgres_full_schema_migrated": false,
+  "postgres_multi_process_load_verified": false,
+  "postgres_test_image": "postgres:16-alpine@sha256:aa6cb33cf4c19c765cefcf48d96176258800870a9a1e930ad126200f9d825139",
+  "https_browser_totp_passed": true,
+  "https_browser_timezone": "America/Bogota",
+  "postgres_scenarios_passed": 2
+}

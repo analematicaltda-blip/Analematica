@@ -1,0 +1,11 @@
+{
+  "requirements": 161,
+  "states": {
+    "NO VERIFICADA": 153,
+    "PARCIAL": 7,
+    "DEFECTUOSA": 1
+  },
+  "suites_passed": 10,
+  "tests_passed": 152,
+  "all_end_to_end_verified": false
+}

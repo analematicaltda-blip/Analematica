@@ -8,6 +8,8 @@ El plan de integración y su evidencia están en [INTEGRACIONES/plan-maestro](IN
 - [WALLET-FRONTEND](WALLET-FRONTEND/README.md): interfaz compartida Flet, puente nativo y panel público sin CDN.
 - [WALLET-MOVIL](WALLET-MOVIL/README.md): aplicación Flet móvil y cuatro pools nativos.
 - [WALLET-DESKTOP](WALLET-DESKTOP/README.md): aplicación Flet de escritorio y perfiles limitados sobre Open Duet/agent-desktop.
-- [Pendientes de producción](PENDIENTES-PRODUCCION-BILLETERA.md): registro vivo de responsables, evidencia y criterios de aceptación.
+- [Pendientes de producción](ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md): registro vivo de responsables, evidencia y criterios de aceptación.
 
 El trabajo offline admite apuntes y borradores cifrados; no habilita pagos o liquidación sin servidor. Los binarios firmados, la identidad financiera real y las validaciones en equipos físicos siguen pendientes. No se movieron bases ni credenciales junto con el código.
+
+Los análisis y pendientes están organizados en [ANALISIS](ANALISIS/README.md).

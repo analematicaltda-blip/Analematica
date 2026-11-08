@@ -1,0 +1,46 @@
+{
+  "runtime_verified": false,
+  "python_counts": {
+    "institucional": 988,
+    "erp": 528,
+    "corporativo": 241,
+    "central": 186
+  },
+  "models": 583,
+  "route_fragments": 848,
+  "pages_layouts": 285,
+  "permission_declarations": 302,
+  "exact_duplicate_groups": 144,
+  "syntax_findings": [
+    {
+      "platform": "institucional",
+      "path": "BACKEND/SGA-TUR-BAKEND/apps/enterprise_core/services/self_healing.py",
+      "line": 71,
+      "reason": "expected an indented block after 'for' statement on line 68"
+    },
+    {
+      "platform": "erp",
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/archive/urls.py",
+      "line": 8,
+      "reason": "invalid syntax"
+    },
+    {
+      "platform": "corporativo",
+      "path": "BACKEND/ANALEMATICA-BACKEND/services/gov_reports.py",
+      "line": 4,
+      "reason": "invalid syntax"
+    },
+    {
+      "platform": "central",
+      "path": "BACKEND/SGA-CD-BACKEND/app/open-generative-ai/tests/fixtures/fake-wan2gp/wgp.py",
+      "line": 4,
+      "reason": "invalid syntax"
+    }
+  ],
+  "requirements": 161,
+  "states": {
+    "NO VERIFICADA": 158,
+    "PARCIAL": 2,
+    "DEFECTUOSA": 1
+  }
+}

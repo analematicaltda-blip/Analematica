@@ -163,4 +163,73 @@ class FreshDatabaseChecks(unittest.TestCase):
                 transaction.set_rollback(True)
 
 
+    def test_10_quotation_draft_http_on_migrated_database(self):
+        import uuid
+        from datetime import timedelta
+        from django.utils import timezone
+        from django.db import transaction
+        from api.models import CustomUser
+        from apps.core_erp.tenancy.models import Tenant
+        from apps.turismo.models import TourismProvider,BusinessProfile,QuotationDraft
+        from apps.turismo.services.company_identity import review_link
+        from apps.prestadores.mi_negocio.gestion_operativa.modulos_genericos.clientes.models import Cliente
+        from apps.prestadores.mi_negocio.gestion_operativa.modulos_genericos.productos_servicios.models import Product
+        from rest_framework.test import APIClient
+        with transaction.atomic():
+            try:
+                suffix=uuid.uuid4().hex
+                owner=CustomUser(username='quote-owner-'+suffix,role='BUSINESS_OWNER')
+                other=CustomUser(username='quote-other-'+suffix,role='BUSINESS_OWNER')
+                reviewer=CustomUser(username='quote-reviewer-'+suffix,is_superuser=True,is_staff=True)
+                CustomUser.objects.bulk_create([owner,other,reviewer])
+                provider=TourismProvider.objects.create(owner=owner,name='Synthetic quotation company',provider_type='GUIDE')
+                tax='test-only-'+suffix
+                BusinessProfile.objects.create(provider=provider,legal_name='Synthetic legal profile',tax_id=tax,business_address='test',phone='test',email='test@example.test')
+                tenant=Tenant.objects.create(name='Synthetic accounting identity',tax_id=tax,state='ACTIVE')
+                review_link(operator=reviewer,provider_id=provider.pk,tenant_id=tenant.pk,evidence_digest='a'*64,valid_until=timezone.now()+timedelta(days=1),apply=True)
+                customer=Cliente.objects.create(perfil_id=provider.pk,nombre='Synthetic buyer',email='test@example.test',id_publico=uuid.uuid4())
+                product=Product.objects.create(provider_id=provider.pk,nombre='Synthetic service',base_price='12.50',base_price_currency='COP')
+                client=APIClient(HTTP_HOST='localhost');client.force_authenticate(owner)
+                route='/api/v1/mi-negocio/comercial/quotation-drafts/'
+                body={'provider_id':str(provider.pk),'customer_id':customer.pk,'lines':[{'product_id':str(product.pk),'quantity':2}],'idempotency_key':str(uuid.uuid4())}
+                created=client.post(route,body,format='json');self.assertEqual(created.status_code,201,created.content)
+                draft=created.json()['data'];self.assertEqual(draft['preview']['subtotal'],'25.00');self.assertIsNone(draft['preview']['payable_total'])
+                repeated=client.post(route,body,format='json');self.assertEqual(repeated.status_code,200);self.assertEqual(repeated.json()['data']['id'],draft['id'])
+                self.assertEqual(QuotationDraft.objects.filter(provider=provider).count(),1)
+                client.force_authenticate(other);self.assertEqual(client.get(route+draft['id']+'/').status_code,404)
+                client.force_authenticate(owner)
+                removed=client.post(route+draft['id']+'/withdraw/',{'digest':draft['digest']},format='json');self.assertEqual(removed.status_code,200,removed.content);self.assertEqual(removed.json()['data']['status'],'WITHDRAWN')
+                product.refresh_from_db();self.assertEqual(product.stock,0)
+            finally:
+                transaction.set_rollback(True)
+
+    @unittest.skipUnless(args.service=='erp-tur','The ERP session routes are not exposed by Turismo.')
+    def test_11_totp_session_on_migrated_database(self):
+        import secrets,time,uuid
+        from unittest.mock import patch
+        from django.db import transaction
+        from django.test import override_settings
+        from api.models import CustomUser
+        from apps.turismo.models import ErpTotpUsage
+        from allauth.mfa.totp.internal.auth import TOTP,generate_totp_secret,hotp_value,format_hotp_value
+        from rest_framework.test import APIClient
+        with transaction.atomic(),override_settings(ERP_WEB_SESSION_ENABLED=True):
+            try:
+                password=secrets.token_urlsafe(24)
+                user=CustomUser(username='rollback-mfa-'+uuid.uuid4().hex,role='BUSINESS_OWNER');user.set_password(password);CustomUser.objects.bulk_create([user])
+                secret=generate_totp_secret();factor=TOTP.activate(user,secret).instance
+                client=APIClient(enforce_csrf_checks=True,HTTP_HOST='localhost')
+                base='/api/v1/erp-session/'
+                csrf=client.get(base).json()['data']['csrf_token']
+                first=client.post(base+'login/',{'username':user.username,'password':password},format='json',HTTP_X_CSRFTOKEN=csrf)
+                self.assertEqual(first.status_code,202,first.content);pending=first.json()['data'];self.assertFalse(pending['authenticated'])
+                moment=time.time();code=format_hotp_value(hotp_value(secret,int(moment)//30))
+                with patch('apps.prestadores.mi_negocio.web_mfa.time.time',return_value=moment):
+                    second=client.post(base+'mfa/',{'challenge_id':pending['challenge_id'],'code':code},format='json',HTTP_X_CSRFTOKEN=pending['csrf_token'])
+                self.assertEqual(second.status_code,200,second.content);self.assertTrue(second.json()['data']['authenticated']);self.assertGreaterEqual(ErpTotpUsage.objects.get(factor=factor).last_counter,0)
+                replay=client.post(base+'mfa/',{'challenge_id':pending['challenge_id'],'code':code},format='json',HTTP_X_CSRFTOKEN=second.json()['data']['csrf_token'])
+                self.assertIn(replay.status_code,(401,403))
+            finally:
+                transaction.set_rollback(True)
+
 if __name__=='__main__':unittest.main(argv=[sys.argv[0],*remaining])

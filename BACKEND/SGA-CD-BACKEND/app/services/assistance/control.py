@@ -9,6 +9,7 @@ import uuid
 from urllib.parse import urlsplit
 from fastapi import HTTPException
 from sqlalchemy import update
+from sqlalchemy.orm import selectinload
 from app.models.assistance import ControlPairing,ControlDevice,ControlJob,ControlApproval
 from app.models.user import Usuario
 from app.models.tenancy import Inquilino
@@ -16,9 +17,9 @@ from app.services.assistance import control_crypto as crypto
 from app.services.workspace_service import roles_of
 from app.services.role_contracts import ADMIN_TEAM
 
-POLICY='sgacd-control-v1'
 from pathlib import Path
 POLICY_DATA=json.loads(Path(__file__).with_name('control_policy.json').read_text())
+POLICY=POLICY_DATA['version']
 HOSTS={key:set(value) for key,value in POLICY_DATA['platform_hosts'].items()}
 OPERATIONS=set(POLICY_DATA['operations'])
 MUTATIONS={name for name,count in POLICY_DATA['operations'].items() if count==3}
@@ -27,22 +28,28 @@ def digest(value):return hashlib.sha256(value.encode()).hexdigest()
 def canonical(value):return json.dumps(value,sort_keys=True,ensure_ascii=False,separators=(',',':'),allow_nan=False)
 
 def require_staff(db,who):
-    user=db.get(Usuario,who.user_id);tenant=db.get(Inquilino,who.tenant_id)
+    user=db.query(Usuario).populate_existing().options(selectinload(Usuario.roles)).filter_by(id=who.user_id).first()
+    tenant=db.query(Inquilino).populate_existing().filter_by(id=who.tenant_id).first()
     if not user or not user.activo or user.inquilino_id!=who.tenant_id or not tenant or not tenant.activo or not (roles_of(user)&({'admin_general','admin_empresa'}|ADMIN_TEAM)):
         raise HTTPException(403,'Solo administradores y equipo administrativo activos pueden controlar sus equipos.')
     return who
 
-def device_owned(db,who,identifier):
-    value=db.query(ControlDevice).filter_by(id=identifier,user_id=who.user_id,tenant_id=who.tenant_id).first()
+def device_owned(db,who,identifier,lock=False):
+    query=db.query(ControlDevice).populate_existing().filter_by(id=identifier,user_id=who.user_id,tenant_id=who.tenant_id)
+    if lock:query=query.with_for_update()
+    value=query.first()
     if value is None:raise HTTPException(404,'Equipo no encontrado.')
     return value
 
-def job_owned(db,who,identifier):
-    value=db.query(ControlJob).filter_by(id=identifier,user_id=who.user_id,tenant_id=who.tenant_id).first()
+def job_owned(db,who,identifier,lock=False):
+    query=db.query(ControlJob).populate_existing().filter_by(id=identifier,user_id=who.user_id,tenant_id=who.tenant_id)
+    if lock:query=query.with_for_update()
+    value=query.first()
     if value is None:raise HTTPException(404,'Operación no encontrada.')
     return value
 
 def pair(db,who,platforms):
+    require_staff(db,who)
     crypto.keys();scopes=sorted(set(platforms))
     if not scopes or any(s not in HOSTS for s in scopes):raise HTTPException(422,'Plataformas no permitidas.')
     code=base64.b32encode(secrets.token_bytes(10)).decode().rstrip('=');identifier=str(uuid.uuid4())
@@ -51,10 +58,10 @@ def pair(db,who,platforms):
 
 def claim(db,code,name,kind='desktop'):
     item=db.query(ControlPairing).filter_by(code_hash=digest(code.strip().upper())).first()
-    if not item or item.used or item.expires_at<now():raise HTTPException(401,'Código no válido o vencido.')
+    if not item or item.used or item.expires_at<=now():raise HTTPException(401,'Código no válido o vencido.')
     from .engine import Actor
     require_staff(db,Actor(item.user_id,item.tenant_id))
-    result=db.execute(update(ControlPairing).where(ControlPairing.id==item.id,ControlPairing.used==0,ControlPairing.expires_at>=now()).values(used=1))
+    result=db.execute(update(ControlPairing).where(ControlPairing.id==item.id,ControlPairing.used==0,ControlPairing.expires_at>now()).values(used=1))
     if result.rowcount!=1:db.rollback();raise HTTPException(409,'El código ya se utilizó.')
     identifier=str(uuid.uuid4());token='device_'+secrets.token_urlsafe(32)
     row=ControlDevice(id=identifier,user_id=item.user_id,tenant_id=item.tenant_id,name=name,kind=kind,token_hash=digest(token),scopes=item.scopes,revoked=0,last_seen=now());db.add(row);db.commit()
@@ -106,6 +113,7 @@ def target_allowed(device,platform,operation,args):
     elif operation=='desktop_status' and device.kind!='desktop':raise HTTPException(422,'El diagnóstico es para escritorio.')
 
 def create_job(db,who,device_id,platform,account,operation,args,purpose):
+    require_staff(db,who)
     device=device_owned(db,who,device_id)
     if device.revoked:raise HTTPException(409,'El equipo fue revocado.')
     if platform not in json.loads(device.scopes):raise HTTPException(403,'La vinculación no incluye esta plataforma.')
@@ -117,37 +125,53 @@ def create_job(db,who,device_id,platform,account,operation,args,purpose):
     db.add(row);db.commit();return view(row)
 
 def view(job):
-    return {'id':job.id,'device_id':job.device_id,'intent':json.loads(crypto.decrypt(job.intent)),'digest':job.digest,'required_authorizations':job.required,'authorizations':job.approvals,'status':job.status,'expires_at':job.expires_at,'confirmation_phrase':crypto.decrypt(job.challenge) if job.status in {'awaiting_review','awaiting_execution','awaiting_impact'} else None,'stop_requested':bool(job.stop_requested),'result':json.loads(crypto.decrypt(job.result)) if job.result else None,'verification':'device_reported_not_provider_verified'}
+    intent=json.loads(crypto.decrypt(job.intent));current=intent.get('policy')==POLICY
+    return {'id':job.id,'device_id':job.device_id,'intent':intent,'policy_current':current,'digest':job.digest,'required_authorizations':job.required,'authorizations':job.approvals,'status':job.status,'expires_at':job.expires_at,'confirmation_phrase':crypto.decrypt(job.challenge) if current and job.status in {'awaiting_review','awaiting_execution','awaiting_impact'} else None,'stop_requested':bool(job.stop_requested),'result':json.loads(crypto.decrypt(job.result)) if job.result else None,'verification':'device_reported_not_provider_verified'}
 
 def approve(db,who,identifier,stage,hashed,phrase):
-    row=job_owned(db,who,identifier);device=device_owned(db,who,row.device_id)
-    if device.revoked or row.expires_at<now() or row.challenge_expires<now():raise HTTPException(409,'La autorización venció o el equipo está revocado.')
+    require_staff(db,who)
+    hint=job_owned(db,who,identifier)
+    device=device_owned(db,who,hint.device_id,lock=True)
+    row=job_owned(db,who,identifier,lock=True)
+    if row.device_id!=device.id:raise HTTPException(409,'El equipo de la orden cambió.')
+    if json.loads(crypto.decrypt(row.intent)).get('policy')!=POLICY:raise HTTPException(409,'Recrea el plan bajo la política de control vigente.')
+    if device.revoked or row.expires_at<=now() or row.challenge_expires<=now():raise HTTPException(409,'La autorización venció o el equipo está revocado.')
     if row.stop_requested or row.status not in {'awaiting_review','awaiting_execution','awaiting_impact'} or stage!=row.approvals+1 or stage>row.required:raise HTTPException(409,'La etapa cambió. No se reutilizan autorizaciones.')
     if not hmac.compare_digest(hashed,row.digest) or not hmac.compare_digest(phrase,crypto.decrypt(row.challenge)):raise HTTPException(409,'La confirmación no corresponde al plan revisado.')
     status='approved' if stage==row.required else 'awaiting_execution' if stage==1 else 'awaiting_impact'
     prefix='EJECUTAR ' if stage==1 else 'CONFIRMO IMPACTO '
     challenge=prefix+secrets.token_hex(4).upper() if status!='approved' else ''
-    changed=db.execute(update(ControlJob).where(ControlJob.id==row.id,ControlJob.user_id==who.user_id,ControlJob.tenant_id==who.tenant_id,ControlJob.approvals==stage-1,ControlJob.stop_requested==0).values(approvals=stage,status=status,challenge=crypto.encrypt(challenge),challenge_expires=now()+300))
+    changed=db.execute(update(ControlJob).where(ControlJob.id==row.id,ControlJob.user_id==who.user_id,ControlJob.tenant_id==who.tenant_id,ControlJob.approvals==stage-1,ControlJob.stop_requested==0,ControlJob.status==row.status,ControlJob.digest==hashed,ControlJob.expires_at>now(),ControlJob.challenge_expires>now()).values(approvals=stage,status=status,challenge=crypto.encrypt(challenge),challenge_expires=now()+300))
     if changed.rowcount!=1:db.rollback();raise HTTPException(409,'Otra solicitud consumió esta autorización.')
     db.add(ControlApproval(job_id=row.id,stage=stage,user_id=who.user_id,tenant_id=who.tenant_id,digest=row.digest,created_at=now()));db.commit();db.expire_all();return view(job_owned(db,who,identifier))
 
 def begin(db,device,identifier):
-    row=db.query(ControlJob).filter_by(id=identifier,device_id=device.id,user_id=device.user_id,tenant_id=device.tenant_id).first()
+    from .engine import Actor
+    who=Actor(device.user_id,device.tenant_id);require_staff(db,who)
+    device=device_owned(db,who,device.id,lock=True)
+    row=db.query(ControlJob).populate_existing().with_for_update().filter_by(id=identifier,device_id=device.id,user_id=device.user_id,tenant_id=device.tenant_id).first()
     if not row:raise HTTPException(404,'Operación no encontrada.')
-    if row.status!='approved' or row.stop_requested or device.revoked or row.expires_at<now():raise HTTPException(409,'La operación no tiene autorización ejecutable vigente.')
+    if row.status!='approved' or row.stop_requested or device.revoked or row.expires_at<=now():raise HTTPException(409,'La operación no tiene autorización ejecutable vigente.')
     intent_text=crypto.decrypt(row.intent);intent=json.loads(intent_text);validate_intent(intent['platform'],intent['operation'],intent['arguments'])
     target_allowed(device,intent['platform'],intent['operation'],intent['arguments'])
+    bindings={'policy':POLICY,'job_id':row.id,'device_id':device.id,'owner_id':row.user_id,'tenant_id':row.tenant_id,'target_kind':device.kind,'account_label':'principal'}
+    if any(intent.get(key)!=value for key,value in bindings.items()) or intent['platform'] not in json.loads(device.scopes):raise HTTPException(409,'El plan ya no coincide con el equipo, cuenta o alcance vigente.')
     required=3 if intent['operation'] in MUTATIONS else 2
     approvals=db.query(ControlApproval).filter_by(job_id=row.id,user_id=row.user_id,tenant_id=row.tenant_id,digest=row.digest).order_by(ControlApproval.stage).all()
     if row.required!=required or row.approvals!=required or [a.stage for a in approvals]!=list(range(1,required+1)) or digest(intent_text)!=row.digest:raise HTTPException(409,'Las autorizaciones no coinciden con la operación.')
     lease=secrets.token_hex(24);expires=min(row.expires_at,now()+30)
-    result=db.execute(update(ControlJob).where(ControlJob.id==row.id,ControlJob.status=='approved',ControlJob.stop_requested==0).values(status='leased',lease_id=lease,lease_expires=expires))
+    result=db.execute(update(ControlJob).where(ControlJob.id==row.id,ControlJob.status=='approved',ControlJob.stop_requested==0,ControlJob.digest==row.digest,ControlJob.approvals==required,ControlJob.expires_at>now()).values(status='leased',lease_id=lease,lease_expires=expires))
     if result.rowcount!=1:db.rollback();raise HTTPException(409,'La operación ya fue reclamada.')
     db.commit()
-    return crypto.sign({'policy':POLICY,'device_id':device.id,'owner_id':device.user_id,'tenant_id':device.tenant_id,'intent_json':intent_text,'digest':row.digest,'lease_id':lease,'issued_at':now(),'expires_at':expires,'approvals':[{'stage':a.stage,'user_id':a.user_id,'tenant_id':a.tenant_id,'digest':a.digest} for a in approvals]})
+    return crypto.sign({'checkpoint_required':True,'policy':POLICY,'device_id':device.id,'owner_id':device.user_id,'tenant_id':device.tenant_id,'intent_json':intent_text,'digest':row.digest,'lease_id':lease,'issued_at':now(),'expires_at':expires,'approvals':[{'stage':a.stage,'user_id':a.user_id,'tenant_id':a.tenant_id,'digest':a.digest} for a in approvals]})
 
 def report(db,device,identifier,lease,outcome,data):
-    row=db.query(ControlJob).filter_by(id=identifier,device_id=device.id,user_id=device.user_id,tenant_id=device.tenant_id).first()
+    if outcome not in {'delivered','not_delivered','uncertain'}:raise HTTPException(422,'Resultado no permitido.')
+    from .engine import Actor
+    who=Actor(device.user_id,device.tenant_id);require_staff(db,who)
+    device=device_owned(db,who,device.id,lock=True)
+    if device.revoked:raise HTTPException(409,'El equipo fue revocado.')
+    row=db.query(ControlJob).populate_existing().with_for_update().filter_by(id=identifier,device_id=device.id,user_id=device.user_id,tenant_id=device.tenant_id).first()
     if not row:raise HTTPException(404,'Operación no encontrada.')
     if row.status not in {'leased','stop_requested'} or not row.lease_id or not hmac.compare_digest(lease,row.lease_id):raise HTTPException(409,'El resultado no corresponde a una ejecución pendiente.')
     text=canonical({'outcome':outcome,'data':data,'stop_requested':bool(row.stop_requested),'provider_success_verified':False})
@@ -155,14 +179,33 @@ def report(db,device,identifier,lease,outcome,data):
     row.status=outcome;row.result=crypto.encrypt(text);db.commit();return {'id':row.id,'status':row.status,'provider_success_verified':False}
 
 def stop(db,who,identifier):
-    row=job_owned(db,who,identifier)
+    require_staff(db,who)
+    hint=job_owned(db,who,identifier);device_owned(db,who,hint.device_id,lock=True)
+    row=job_owned(db,who,identifier,lock=True)
     if row.status in {'awaiting_review','awaiting_execution','awaiting_impact','approved'}:row.status='cancelled'
     elif row.status=='leased':row.status='stop_requested'
     row.stop_requested=1;db.commit();return view(row)
 
 def revoke(db,who,identifier):
-    row=device_owned(db,who,identifier);row.revoked=1
+    require_staff(db,who)
+    row=device_owned(db,who,identifier,lock=True);row.revoked=1
     for job in db.query(ControlJob).filter_by(device_id=row.id,user_id=who.user_id,tenant_id=who.tenant_id).all():
         if job.status in {'awaiting_review','awaiting_execution','awaiting_impact','approved'}:job.status='cancelled';job.stop_requested=1
         elif job.status=='leased':job.status='stop_requested';job.stop_requested=1
     db.commit();return {'id':row.id,'revoked':True,'notice':'No deshace acciones que ya se entregaron a la plataforma.'}
+
+
+def checkpoint(db,device,identifier,lease):
+    """Online pre-dispatch check. Does not authorize a new action or extend a lease."""
+    from .engine import Actor
+    who=Actor(device.user_id,device.tenant_id);require_staff(db,who)
+    device=device_owned(db,who,device.id,lock=True)
+    row=job_owned(db,who,identifier,lock=True)
+    if row.device_id!=device.id or device.revoked or row.stop_requested or row.status!='leased' or not row.lease_id or not hmac.compare_digest(lease,row.lease_id) or not row.lease_expires or row.lease_expires<=now() or row.expires_at<=now():
+        raise HTTPException(409,'El permiso de despacho dejó de estar vigente.')
+    intent_text=crypto.decrypt(row.intent);intent=json.loads(intent_text)
+    if digest(intent_text)!=row.digest or intent['platform'] not in json.loads(device.scopes):raise HTTPException(409,'El alcance o el plan cambió.')
+    validate_intent(intent['platform'],intent['operation'],intent['arguments'])
+    target_allowed(device,intent['platform'],intent['operation'],intent['arguments'])
+    db.commit()
+    return {'allowed':True,'policy':POLICY,'job_id':row.id,'digest':row.digest,'lease_expires_at':row.lease_expires,'new_authorization':False}

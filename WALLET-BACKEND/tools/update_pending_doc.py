@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 SOURCE=ROOT/'WALLET-BACKEND/offline/src/sgacd_wallet_offline/production_pending.json'
-TARGET=ROOT/'PENDIENTES-PRODUCCION-BILLETERA.md'
+TARGET=ROOT/'ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md'
 
 def render():
     data=json.loads(SOURCE.read_text())

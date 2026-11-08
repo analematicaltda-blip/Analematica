@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { KPIValue } from '../../types';
+import { KPIValue } from '../types';
 import { FiTrendingUp, FiTrendingDown, FiMinus } from 'react-icons/fi';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';

@@ -3,7 +3,7 @@ SYSTEMS=[
  {'id':'erp','name':'ERP de empresas turísticas','deployment_state':'not_checked_by_this_endpoint'},
  {'id':'turismo','name':'Gestión turística institucional','deployment_state':'not_checked_by_this_endpoint'},
 ]
-MODULES=[{'id':'control','name':'Control autorizado','path':'/control.html'},{'id':'assistance','name':'Guías de asistencia','path':'/assistance.html'},{'id':'resources','name':'Seguridad y recursos IA','path':'/resources.html'}]
+MODULES=[{'id':'content','name':'Taller de contenido','path':'/content.html'},{'id':'control','name':'Control autorizado','path':'/control.html'},{'id':'assistance','name':'Guías de asistencia','path':'/assistance.html'},{'id':'resources','name':'Seguridad y recursos IA','path':'/resources.html'}]
 
 def describe(who):
  # New containers avoid sharing viewer state between users or tenants.

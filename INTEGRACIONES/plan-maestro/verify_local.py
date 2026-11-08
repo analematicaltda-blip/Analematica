@@ -4,8 +4,14 @@ from datetime import datetime,timezone
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 SUITES={
+ 'verified_email_recovery':(['BACKEND/deployment/tests/password_recovery_check.py'],{}),
+ 'company_scope':(['BACKEND/deployment/tests/company_scope_check.py'],{}),
+ 'capacity_holds':(['BACKEND/deployment/tests/availability_check.py'],{}),
+ 'corporate_gateway':(['-m','unittest','discover','-s','BACKEND/deployment/tests','-p','test_local_deployment.py'],{}),
  'institutional_permissions':(['BACKEND/deployment/tests/domain_security_check.py'],{}),
  'provider_isolation':(['BACKEND/deployment/tests/provider_security_check.py'],{}),
+ 'erp_session':(['BACKEND/deployment/tests/erp_session_check.py'],{}),
+ 'company_identity':(['BACKEND/deployment/tests/company_identity_check.py'],{}),
  'erp_customer':(['BACKEND/deployment/tests/erp_customer_check.py'],{}),
  'erp_startup':(['BACKEND/deployment/tests/tourism_runtime_check.py'],{'CHECK_SERVICE':'erp-tur'}),
  'tourism_startup':(['BACKEND/deployment/tests/tourism_runtime_check.py'],{'CHECK_SERVICE':'turismo'}),

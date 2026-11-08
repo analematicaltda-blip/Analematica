@@ -194,6 +194,7 @@ function PrestadorDetailPageContent() {
             </div>
         </Modal>
       )}
+    </div>
     </>
   );
 }

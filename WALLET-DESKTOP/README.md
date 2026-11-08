@@ -25,4 +25,4 @@ El preparador genera ocho workspaces/perfiles privados en `.runtime/army`, modo 
 
 Cualquier control futuro conserva el permiso firmado del motor existente y dos autorizaciones del mismo solicitante, tres cuando corresponda por impacto. No hay permisos de control offline implementados ni una plataforma wallet de pagos añadida al motor. Las revisiones del caché no los sustituyen. Los agentes funcionales nuevos deben usar este contrato y nunca puentearlo mediante shell o un MCP general.
 
-Pendientes para registro, vinculación y pruebas físicas: [documento único](../PENDIENTES-PRODUCCION-BILLETERA.md).
+Pendientes para registro, vinculación y pruebas físicas: [documento único](../ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md).

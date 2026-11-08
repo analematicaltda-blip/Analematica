@@ -1,14 +1,21 @@
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from ....web_session import ErpSessionAuthentication
 # SaritaUnificado/backend/apps/prestadores/mi_negocio/gestion_operativa/modulos_genericos/clientes/views.py
 from rest_framework import viewsets, permissions
 from rest_framework.pagination import PageNumberPagination
 from .models import Cliente
 from .serializers import ClienteSerializer
 from ....permissions import IsPrestadorOwner
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import PermissionDenied, ValidationError, APIException
+from django.db.models.deletion import ProtectedError
 from django.db import transaction, IntegrityError
-from ..permissions import get_current_tenant
 from apps.turismo.models import TourismProvider
 import uuid
+
+class ClientHistoryConflict(APIException):
+    status_code=409
+    default_detail='El cliente tiene documentos comerciales vinculados; debe conservarse su historial.'
+    default_code='customer_history_protected'
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -16,6 +23,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 class ClienteViewSet(viewsets.ModelViewSet):
+    authentication_classes=[JWTAuthentication,ErpSessionAuthentication]
     """
     ViewSet para gestionar los clientes (CRM) de un prestador.
     """
@@ -31,17 +39,8 @@ class ClienteViewSet(viewsets.ModelViewSet):
         return Cliente.objects.filter(perfil=self.get_provider())
 
     def get_provider(self):
-        provider=get_current_tenant()
-        if provider is not None:
-            provider=TourismProvider.objects.filter(pk=provider.pk,owner=self.request.user).first()
-        else:
-            providers=TourismProvider.objects.filter(owner=self.request.user)
-            if providers.count()!=1:
-                raise PermissionDenied('Seleccione explícitamente una empresa propia para gestionar clientes.')
-            provider=providers.first()
-        if provider is None:
-            raise PermissionDenied('No tiene acceso a esta empresa.')
-        return provider
+        from ....company_scope import owned_provider
+        return owned_provider(self.request)
 
     def perform_create(self, serializer):
         """
@@ -62,3 +61,13 @@ class ClienteViewSet(viewsets.ModelViewSet):
                 serializer.save()
         except IntegrityError:
             raise ValidationError({'email':'Ya existe un cliente con este correo en la empresa.'})
+
+    def perform_destroy(self, instance):
+        from apps.turismo.models import QuotationDraft
+        if QuotationDraft.objects.filter(customer_id=instance.pk).exists():
+            raise ClientHistoryConflict()
+        try:
+            with transaction.atomic():
+                instance.delete()
+        except ProtectedError:
+            raise ClientHistoryConflict()

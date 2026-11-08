@@ -77,3 +77,6 @@ api_router.include_router(assistance.router, prefix="/assistance", tags=["User a
 
 from app.api.v1.endpoints import platform
 api_router.include_router(platform.router,prefix="/platform",tags=["Shared administrative platform"])
+
+from app.api.v1.endpoints import assistance_content
+api_router.include_router(assistance_content.router, prefix="/assistance/content", tags=["Editorial content"])

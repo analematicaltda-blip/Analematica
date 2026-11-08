@@ -30,7 +30,7 @@ class CustomerChecks(unittest.TestCase):
   self.assertEqual(self.request(ClienteViewSet,'create',F.other,'post',data).status_code,201)
   self.assertEqual(self.request(ClienteViewSet,'create',F.other,'post',data).status_code,400)
  def test_forged_tenant_context_cannot_access_other_company(self):
-  target='apps.prestadores.mi_negocio.gestion_operativa.modulos_genericos.clientes.views.get_current_tenant'
+  target='apps.prestadores.mi_negocio.gestion_operativa.modulos_genericos.permissions.get_current_tenant'
   with patch(target,return_value=F.q):self.assertEqual(self.request(ClienteViewSet,'list',F.owner).status_code,403)
  def test_unverified_commercial_workflow_cannot_write_or_report_fake_totals(self):
   from apps.prestadores.mi_negocio.gestion_comercial.views import OperacionComercialViewSet,POSView

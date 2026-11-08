@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Map, Navigation, MapPin, Search, Filter } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useMiNegocioApi } from '../../hooks/useMiNegocioApi';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useMiNegocioApi } from '../../../hooks/useMiNegocioApi';
 
 export default function DeliveryRutasPage() {
   const { fetchData } = useMiNegocioApi('delivery/rutas');

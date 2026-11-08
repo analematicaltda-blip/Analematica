@@ -1,0 +1,43 @@
+{
+  "production_ready": false,
+  "python_tests": {
+    "session_suite": 48,
+    "company_identity": 27,
+    "gateway": 5
+  },
+  "browser": {
+    "passed": true,
+    "scope": "Real password authentication, CSRF and Django WSGI on synthetic test accounts",
+    "gateway_https": true,
+    "mfa_totp": true,
+    "enrollment": false,
+    "recovery_codes": false,
+    "issue_codes": true,
+    "checks": [
+      "password_login",
+      "reauthenticated_issuance",
+      "one_time_display",
+      "issued_code_login",
+      "password_is_first_factor_only",
+      "invalid_totp",
+      "valid_totp",
+      "challenge_replay",
+      "bad_password",
+      "login_csrf",
+      "httponly_session",
+      "no_token_storage",
+      "create",
+      "idempotent_retry",
+      "reload_persistence",
+      "withdraw",
+      "logout_failure_recovery",
+      "logout_clears_data",
+      "anonymous",
+      "mobile_width",
+      "sgacd_blue_white_theme",
+      "no_external_requests"
+    ]
+  },
+  "real_accounts_modified": false,
+  "commit_created": false
+}

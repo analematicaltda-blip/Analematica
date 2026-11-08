@@ -46,6 +46,9 @@ class Approval(Body):
     stage:int=Field(ge=1,le=3)
     digest:str=Field(pattern=r'^[a-f0-9]{64}$')
     confirmation:str=Field(min_length=10,max_length=100)
+class Checkpoint(Body):
+    lease_id:str=Field(pattern=r'^[a-f0-9]{48}$')
+
 class Report(Body):
     lease_id:str=Field(pattern=r'^[a-f0-9]{48}$')
     outcome:Literal['delivered','not_delivered','uncertain']
@@ -106,8 +109,8 @@ def stop(identifier:UUID,db=Depends(deps.get_db),who=Depends(administrator)):
 
 @router.get('/device/queue')
 def queue(device=Depends(paired),db=Depends(deps.get_db)):
-    rows=db.query(ControlJob).filter_by(device_id=device.id,status='approved',stop_requested=0).filter(ControlJob.expires_at>=control.now()).order_by(ControlJob.expires_at).limit(5).all()
-    return {'jobs':[{'id':r.id} for r in rows],'policy':control.POLICY}
+    rows=db.query(ControlJob).filter_by(device_id=device.id,user_id=device.user_id,tenant_id=device.tenant_id,status='approved',stop_requested=0).filter(ControlJob.expires_at>control.now()).order_by(ControlJob.expires_at).limit(5).all()
+    return {'jobs':[{'id':r.id} for r in rows if json.loads(control.crypto.decrypt(r.intent)).get('policy')==control.POLICY],'policy':control.POLICY}
 
 @router.post('/device/jobs/{identifier}/begin')
 def begin(identifier:UUID,device=Depends(paired),db=Depends(deps.get_db)):
@@ -116,3 +119,8 @@ def begin(identifier:UUID,device=Depends(paired),db=Depends(deps.get_db)):
 @router.post('/device/jobs/{identifier}/result')
 def report(identifier:UUID,body:Report,device=Depends(paired),db=Depends(deps.get_db)):
     return control.report(db,device,str(identifier),body.lease_id,body.outcome,body.data)
+
+
+@router.post('/device/jobs/{identifier}/checkpoint')
+def checkpoint(identifier:UUID,body:Checkpoint,device=Depends(paired),db=Depends(deps.get_db)):
+    return control.checkpoint(db,device,str(identifier),body.lease_id)

@@ -1,0 +1,89 @@
+{
+  "schema": "sgacd-operation-evidence-v1",
+  "cut": 35,
+  "production_ready": false,
+  "local_checks_complete": false,
+  "profiles": [
+    "core",
+    "fresh",
+    "browser",
+    "devices",
+    "postgres",
+    "web-build"
+  ],
+  "results_count": {
+    "PASSED": 20,
+    "PASSED_WITH_SKIPS": 2,
+    "FAILED": 1
+  },
+  "runner_exit_code": 2,
+  "python_tests": {
+    "run": 236,
+    "passed": 235,
+    "skipped": 1
+  },
+  "node_tests": {
+    "run": 13,
+    "passed": 12,
+    "skipped": 1
+  },
+  "omissions": [
+    {
+      "group": "installed_turismo",
+      "reason": "ERP session routes are not exposed by Turismo"
+    },
+    {
+      "group": "device_contracts",
+      "reason": "Real native desktop status test not enabled"
+    }
+  ],
+  "strict_web_builds": {
+    "erp": "FAILED",
+    "turismo": "FAILED",
+    "known_blocker": "@sarita/shared-ui absent"
+  },
+  "postgresql_scenarios": 21,
+  "postgres_restore": {
+    "restored_to_new_database": true,
+    "source_unchanged": true,
+    "table_count": 28,
+    "row_count": 108,
+    "all_table_rows_match": true,
+    "foreign_keys_validated": true,
+    "encrypted_archive_private_permissions": true,
+    "tampered_archive_rejected": true,
+    "mfa_material_decrypted_with_original_key": 22,
+    "sessions_decoded_with_original_key": 6,
+    "archive_sha256": "38aaa0e368e32f936148698e0ccfb2d44078430360e6a70879b2a4fec8db31c8",
+    "keys_saved_in_archive": false
+  },
+  "editorial_restore": {
+    "actual_model": "ContentDraft",
+    "encrypted_text_recovered_with_original_key": true,
+    "foreign_keys_valid": true,
+    "isolated_fixture": true,
+    "new_database_restored": true,
+    "publication_enabled": false,
+    "restore_verified": true,
+    "reviewed_version_preserved": true,
+    "snapshot_private": true,
+    "source_unchanged": true,
+    "tables": 5
+  },
+  "source_stable": true,
+  "source_files": 2522,
+  "source_digest": "58087661374ded6a8d13a4cdcc702b8ed2470c7798df65cfd3bb04bc5a7dfe3b",
+  "evidence_hash_verification": true,
+  "private_artifacts": "/tmp/sgacd-quality-final-35",
+  "public_summaries": {
+    "local-report.json": "fc711a04813bbc050198cc27f430a139f64e475c8bea9bad6bf333043c923ca8",
+    "build-report.json": "701b6b8f1bb10f61b6e4965f36dddf54387a3206a105691e9807d18a5bf8006a"
+  },
+  "limits": [
+    "No full production schema restored",
+    "No real hardware or provider account qualification",
+    "pip check is not a vulnerability scan",
+    "Source inventory is scoped; local hashes are not author signatures",
+    "No Git publication or deployment"
+  ]
+}

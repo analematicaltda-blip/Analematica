@@ -2,7 +2,7 @@
 import argparse,json,os,shutil,subprocess,sys
 from datetime import datetime,timezone
 from pathlib import Path
-PUBLIC=['platform.html','js/platform.js','resources.html','js/resources.js','control.html','js/control.js','assistance.html','js/assistance.js','css/assistance.css','js/instagram.js','config/meta-public.json','js/meta-setup.js','js/meta-ads.js','css/meta-ads.css','login.html','css/console.css','js/login.js','index.html','admin.html','assets/analema-logo.svg','css/style.css','css/admin.css','js/main.js','js/admin.js','js/connection.js','agents/analematica_army.js']
+PUBLIC=['platform.html','js/platform.js','resources.html','js/resources.js','control.html','js/control.js','content.html','js/content.js','css/content.css','assistance.html','js/assistance.js','css/assistance.css','js/instagram.js','config/meta-public.json','js/meta-setup.js','js/meta-ads.js','css/meta-ads.css','login.html','css/console.css','js/login.js','index.html','admin.html','assets/analema-logo.svg','css/style.css','css/admin.css','js/main.js','js/admin.js','js/connection.js','agents/analematica_army.js']
 def prepare(demo,port,repo):
     demo=demo.resolve();path=demo/'compose.json'
     if not 1024<=port<=65535:raise ValueError('Puerto no válido.')

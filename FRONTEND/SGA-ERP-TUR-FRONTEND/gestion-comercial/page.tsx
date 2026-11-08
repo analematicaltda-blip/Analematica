@@ -21,6 +21,7 @@ import {
 } from 'react-icons/fi';
 import { Badge } from '@/components/ui/Badge';
 import { useComercialApi } from './hooks/useComercialApi';
+import { useMiNegocioApi } from '../hooks/useMiNegocioApi';
 import { TraceabilityBanner, TraceabilityInfo } from '@/components/ui/TraceabilityBanner';
  
 import { GRCIndicator } from '@/components/ui/GRCIndicator';
@@ -323,6 +324,7 @@ export default function GestionComercialPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black transition-colors flex flex-col">
+       <div className="px-8 py-3"><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/cotizaciones">Cotizaciones y borradores</Link></div>
        <ViewState
           isLoading={isLoading}
           loadingMessage="Sincronizando flujo comercial..."

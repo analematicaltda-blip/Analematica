@@ -1,0 +1,16 @@
+{
+  "schema": "sgacd-accounting-foundation-v1",
+  "production_ready": false,
+  "test_count": 9,
+  "passed": 9,
+  "database": "isolated SQLite with real Django ORM",
+  "before": "8 tests, 13 subtest errors; new UUID lookup failed before insertion",
+  "after": "9 tests passed",
+  "log_sha256": "a09b5246e651c776202f3836a41655cb96e163f4e481f8c6a67c4e2b4d93013b",
+  "limits": [
+    "No production database writes or schema migration",
+    "No full posting flow validated",
+    "No PostgreSQL concurrency qualification",
+    "No ZKP, Kafka integration, BYOS or tax provider implemented"
+  ]
+}

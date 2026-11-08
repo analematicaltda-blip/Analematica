@@ -35,4 +35,4 @@ La contraseña local debe tener12–128 caracteres; PBKDF2-SHA256/600000 deriva 
 
 En POSIX se exigen directorios700/archivos600. En Windows se utiliza el perfil de aplicación y herencia del SO; la validación de ACL y almacenamiento nativo sigue pendiente. El borrado de buffers Python/Java/Swift es un esfuerzo limitado, no una garantía de eliminación física. Proteger y respaldar el espacio; perder la contraseña no genera una recuperación automática.
 
-Pendientes y criterios únicos: [PENDIENTES-PRODUCCION-BILLETERA.md](../PENDIENTES-PRODUCCION-BILLETERA.md).
+Pendientes y criterios únicos: [PENDIENTES-PRODUCCION-BILLETERA.md](../ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md).

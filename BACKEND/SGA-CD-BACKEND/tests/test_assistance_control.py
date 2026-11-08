@@ -74,6 +74,56 @@ class ControlTests(fixtures.AssistanceTests):
         url='/assistance/control/device/jobs/'+j['id']+'/result';r=self.client.post(url,headers=headers,json={'lease_id':grant['lease_id'],'outcome':'delivered','data':{'test':True}});self.assertEqual(r.status_code,200);self.assertFalse(r.json()['provider_success_verified'])
         self.assertEqual(self.client.post(url,headers=headers,json={'lease_id':grant['lease_id'],'outcome':'delivered'}).status_code,409)
 
+    def test_checkpoint_rechecks_stop_expiry_and_never_extends_permission(self):
+        d=self.device();j=self.approval(self.approval(self.job(d)));grant=json.loads(self.begin(d,j).json()['payload'])
+        url='/assistance/control/device/jobs/'+j['id']+'/checkpoint';headers={'Authorization':'Bearer '+d['device_token']}
+        response=self.client.post(url,headers=headers,json={'lease_id':grant['lease_id']});self.assertEqual(response.status_code,200,response.text);self.assertEqual(response.json()['lease_expires_at'],grant['expires_at']);self.assertFalse(response.json()['new_authorization'])
+        self.assertEqual(self.client.post(url,headers=headers,json={'lease_id':'b'*48}).status_code,409)
+        with patch.object(control,'now',return_value=grant['expires_at']):self.assertEqual(self.client.post(url,headers=headers,json={'lease_id':grant['lease_id']}).status_code,409)
+        self.call('/jobs/'+j['id']+'/stop');self.assertEqual(self.client.post(url,headers=headers,json={'lease_id':grant['lease_id']}).status_code,409)
+    def test_stale_device_object_cannot_dispatch_after_revocation(self):
+        from app.models.assistance import ControlDevice
+        from app.services.assistance.engine import Actor
+        from fastapi import HTTPException
+        from sqlalchemy import update
+        d=self.device();j=self.approval(self.approval(self.job(d)));stale=self.db.get(ControlDevice,d['device_id'])
+        self.db.execute(update(ControlDevice).where(ControlDevice.id==stale.id).values(revoked=1),execution_options={'synchronize_session':False});self.db.commit()
+        with self.assertRaises(HTTPException) as error:control.begin(self.db,stale,j['id'])
+        self.assertEqual(error.exception.status_code,409)
+    def test_live_device_scope_changes_block_dispatch(self):
+        from app.models.assistance import ControlDevice
+        d=self.device();j=self.approval(self.approval(self.job(d)))
+        row=self.db.get(ControlDevice,d['device_id']);row.scopes='["gmail"]';self.db.commit()
+        self.assertEqual(self.begin(d,j).status_code,409)
+    def test_plan_bindings_are_checked_even_if_storage_digest_was_changed(self):
+        d=self.device();j=self.approval(self.approval(self.job(d)));row=self.db.get(ControlJob,j['id'])
+        intent=json.loads(control_crypto.decrypt(row.intent));intent['job_id']='other-job';text=control.canonical(intent);row.intent=control_crypto.encrypt(text);row.digest=control.digest(text)
+        for approval in self.db.query(ControlApproval).filter_by(job_id=row.id):approval.digest=row.digest
+        self.db.commit();self.assertEqual(self.begin(d,j).status_code,409)
+    def test_exact_expiry_rejects_review_and_execution(self):
+        d=self.device();j=self.job(d)
+        with patch.object(control,'now',return_value=j['expires_at']):
+            response=self.call('/jobs/'+j['id']+'/authorize',{'stage':1,'digest':j['digest'],'confirmation':j['confirmation_phrase']});self.assertEqual(response.status_code,409)
+        j=self.approval(self.approval(self.job(d)))
+        with patch.object(control,'now',return_value=j['expires_at']):self.assertEqual(self.begin(d,j).status_code,409)
+    def test_role_revocation_is_rechecked_at_service_boundary(self):
+        from app.models.user import Usuario,RolesEnum
+        from app.models.assistance import ControlDevice
+        from fastapi import HTTPException
+        d=self.device();j=self.approval(self.approval(self.job(d)));device=self.db.get(ControlDevice,d['device_id'])
+        from sqlalchemy import update
+        self.db.get(Usuario,1)  # Keep an old object in the session identity map.
+        self.db.execute(update(Usuario).where(Usuario.id==1).values(rol=RolesEnum.alumno),execution_options={'synchronize_session':False});self.db.commit()
+        with self.assertRaises(HTTPException) as error:control.begin(self.db,device,j['id'])
+        self.assertEqual(error.exception.status_code,403)
+
+    def test_old_policy_has_no_approval_phrase_and_is_not_queued(self):
+        d=self.device();j=self.approval(self.approval(self.job(d)));row=self.db.get(ControlJob,j['id'])
+        intent=json.loads(control_crypto.decrypt(row.intent));intent['policy']='sgacd-control-v1';row.intent=control_crypto.encrypt(control.canonical(intent));self.db.commit()
+        response=self.client.get('/assistance/control/jobs/'+j['id']);self.assertEqual(response.status_code,200);self.assertFalse(response.json()['policy_current']);self.assertIsNone(response.json()['confirmation_phrase'])
+        queue=self.client.get('/assistance/control/device/queue',headers={'Authorization':'Bearer '+d['device_token']});self.assertEqual(queue.status_code,200);self.assertEqual(queue.json()['jobs'],[])
+        self.assertEqual(self.begin(d,j).status_code,409)
+
 # Avoid executing inherited guide cases a second time in this class.
 for name in list(vars(fixtures.AssistanceTests)):
     if name.startswith('test_') and name not in vars(ControlTests):setattr(ControlTests,name,None)

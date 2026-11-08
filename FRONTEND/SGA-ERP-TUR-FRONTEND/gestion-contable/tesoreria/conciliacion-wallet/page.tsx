@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useMiNegocioApi } from '../../hooks/useMiNegocioApi';
+import { useMiNegocioApi } from '../../../hooks/useMiNegocioApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { FiRefreshCw, FiCheckCircle, FiAlertCircle, FiShield } from 'react-icons/fi';

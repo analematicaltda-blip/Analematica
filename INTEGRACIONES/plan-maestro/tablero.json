@@ -10,51 +10,51 @@
       "id": "F1",
       "frente": "Arquitectura e inventario",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Inventario técnico y matriz preliminar listos; falta recorrido funcional completo."
+      "evidencia_y_limite": "Corte28:inventario ampliado de tres sistemas/dependencia central,161 requisitos,10 hallazgos,144 grupos duplicados candidatos;152 pruebas acotadas aprobadas.153 requisitos no verificados,7 parciales,1 defecto de fuente. Auditoría funcional integral abierta."
     },
     {
       "id": "F2",
       "frente": "Backends y datos",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Bases locales nuevas verificadas en cortes previos; CRM aislado. Operaciones comerciales/POS incompatibles bloqueados con 503 sin escritura. Reservas, contabilidad y migración histórica pendientes."
+      "evidencia_y_limite": "Corte29:disponibilidad semiabierta y retenciones de10 minutos con identidad revisada, bloqueo SQL e idempotencia;14 pruebas y3 carreras PostgreSQL. UI, confirmación, tarifas/impuestos y pagos pendientes."
     },
     {
       "id": "F3",
       "frente": "Identidad y administración",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Jurisdicción de atractivos, propiedad empresarial, reservas y CRM probadas. SSO y delegaciones pendientes."
+      "evidencia_y_limite": "Corte31:contraseña por correo verificado, enlace15min de uso único, MFA conservado y sesiones anteriores invalidadas;81 pruebas,26 controles HTTPS y carrera PostgreSQL. Correo real, WebAuthn, ambos factores, delegaciones y SSO pendientes."
     },
     {
       "id": "F4",
       "frente": "Experiencia web",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Centro común incorporado; auditoría responsive completa y flujos pendientes."
+      "evidencia_y_limite": "Corte32:718 fuentes sin errores sintácticos,3 controles con tipos estrictos,8 pruebas de preparación,13 controles UI y19 HTTPS ERP aprobados. Builds completos ERP/Turismo FAILED por @sarita/shared-ui ausente; contratos y páginas incompletas pendientes."
     },
     {
       "id": "F5",
       "frente": "Motor de control",
-      "estado": "BLOQUEADO",
-      "evidencia_y_limite": "Motor conserva sus autorizaciones. Pool01 y puente Flet de documentos empaquetados con metadatos solamente; 10 pruebas de contrato y 232 aserciones criptográficas. Faltan compilación Flutter/iOS observada, teléfonos físicos y ámbito autenticado de la app."
+      "estado": "EN_CURSO",
+      "evidencia_y_limite": "Corte33: política v2, dos autorizaciones y tercera de impacto, checkpoint online previo al despacho, permisos vigentes y control concurrente;34 pruebas Python,12 Node y4 carreras PostgreSQL aprobadas,1 prueba nativa omitida. Hardware, cuentas reales, identidad integral y distribución firmada pendientes."
     },
     {
       "id": "F6",
       "frente": "Seguridad y observabilidad",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Cuatro carpetas WALLET, caché cifrada, ocho reglas locales; 19 pendientes y 131 ejecuciones Python en corte14. Adaptador empresarial real, AiSOC/hardware pendientes."
+      "evidencia_y_limite": "Eventos transaccionales de emisión/rotación/uso, historial propio y reversión si falla la auditoría. No es almacenamiento inmutable; permisos SQL, retención, notificaciones y SOC pendientes."
     },
     {
       "id": "F7",
       "frente": "IA y contenido",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "Sin fallback ficticio ERP; proveedor real/calidad/coste no verificados."
+      "evidencia_y_limite": "Corte34:taller editorial privado cifrado, revisión por versión y exportación;adaptador Ollama optativo sin publicación.43 pruebas asistencia(9 nuevas),3 plataforma,8 preparación y navegador1440/390/320 aprobados con fixtures. Modelo real, calidad/coste y multimedia pendientes."
     },
     {
       "id": "F8",
       "frente": "Calidad y operación",
       "estado": "EN_CURSO",
-      "evidencia_y_limite": "CI y comprobación local reproducible; workflow incluye rutas WALLET-BACKEND. Evidencia histórica en cada corte; validación central actual y releases productivas no certificadas."
+      "evidencia_y_limite": "Corte36: CLI de respaldo SQLite AES-256-GCM, destinos nuevos y restauración editorial cifrada;14 pruebas nuevas+16 regresiones y21 escenarios PostgreSQL aprobados. Perfiles backup/postgres pasan con fuentes estables. Recuperación integral productiva, almacenamiento externo, RPO/RTO, builds web y hardware pendientes; corte35 conserva2 omisiones y1 fallo."
     }
   ],
-  "latest_review": "2026-11-07",
-  "latest_report": "AVANCE_15.md"
+  "latest_review": "2026-11-08",
+  "latest_report": "BLOQUE09_RESPALDOS_36.md"
 }

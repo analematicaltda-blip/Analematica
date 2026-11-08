@@ -1,0 +1,48 @@
+{
+  "production_ready": false,
+  "tests": {
+    "availability_and_api": 14,
+    "identity_quotes_regression": 27,
+    "gateway_regression": 5
+  },
+  "capacity_postgres": [
+    {
+      "scenario": "last_unit",
+      "accepted": 1,
+      "persisted_holds": 1,
+      "overbooked": false
+    },
+    {
+      "scenario": "idempotent_retry",
+      "accepted": 2,
+      "persisted_holds": 1,
+      "overbooked": false
+    },
+    {
+      "scenario": "key_conflict_across_services",
+      "accepted": 1,
+      "persisted_holds": 1,
+      "overbooked": false
+    }
+  ],
+  "other_postgres_scenarios": 13,
+  "restoration_regression": {
+    "restored_to_new_database": true,
+    "source_unchanged": true,
+    "table_count": 28,
+    "row_count": 104,
+    "all_table_rows_match": true,
+    "foreign_keys_validated": true,
+    "encrypted_archive_private_permissions": true,
+    "tampered_archive_rejected": true,
+    "mfa_material_decrypted_with_original_key": 21,
+    "sessions_decoded_with_original_key": 6,
+    "archive_sha256": "c93ed332c8cb480bab998839887127c63f57a911001d93ec0fbf77a5c65f81d0",
+    "keys_saved_in_archive": false
+  },
+  "fresh_migration": "turismo.0007_availabilityhold",
+  "databases": "Two explicitly selected temporary fresh-local installations",
+  "real_payments": false,
+  "ui_implemented": false,
+  "commit_created": false
+}

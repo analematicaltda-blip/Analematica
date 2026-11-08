@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '@/services/api';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import Modal from '@/components/shared/Modal';
+import Modal from '@/components/ui/Modal';
 import { toast } from 'react-toastify';
 
 interface Costo {

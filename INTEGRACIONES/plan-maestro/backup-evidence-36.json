@@ -1,0 +1,56 @@
+{
+  "schema": "sgacd-backup-evidence-v1",
+  "cut": 36,
+  "production_ready": false,
+  "scope": "Encrypted local SQLite backups and isolated restore contracts; no user database touched",
+  "selected_profiles": [
+    "backup",
+    "postgres"
+  ],
+  "selected_profiles_passed": true,
+  "source_stable": true,
+  "source_digest": "29a4f5a91afa39ff1d9a320d5591c32f8a244f48c9f90058c40989da73c12651",
+  "new_backup_tests": 14,
+  "runner_regression_tests": 14,
+  "previous_snapshot_regression_tests": 2,
+  "editorial_restore": {
+    "actual_model": "ContentDraft",
+    "archive_application_keys_included": false,
+    "backup_encrypted": true,
+    "encrypted_text_recovered_with_original_key": true,
+    "foreign_keys_valid": true,
+    "isolated_fixture": true,
+    "new_database_restored": true,
+    "publication_enabled": false,
+    "restore_verified": true,
+    "reviewed_version_preserved": true,
+    "snapshot_private": true,
+    "source_unchanged": true,
+    "tables": 5
+  },
+  "postgres_restore": {
+    "restored_to_new_database": true,
+    "source_unchanged": true,
+    "table_count": 28,
+    "row_count": 108,
+    "all_table_rows_match": true,
+    "foreign_keys_validated": true,
+    "encrypted_archive_private_permissions": true,
+    "tampered_archive_rejected": true,
+    "mfa_material_decrypted_with_original_key": 22,
+    "sessions_decoded_with_original_key": 6,
+    "archive_sha256": "5437b46ab871f3162765f4eda5b5b5f2c8eb32a993205ddb0fc50cb103842543",
+    "keys_saved_in_archive": false
+  },
+  "postgres_concurrency_scenarios": 21,
+  "evidence_hashes_verified": true,
+  "private_artifacts": "/tmp/sgacd-backup-release-36",
+  "public_report_sha256": "24587879f34d79cfb04f737c16639b91e44c9fc5880878214abb80491df99161",
+  "limits": [
+    "SQLite CLI limited to 64 MiB",
+    "No external application key files included; preserve original keys separately",
+    "No production PostgreSQL backup tool or full application restore qualification",
+    "No external retention storage or measured production RPO/RTO",
+    "Existing web build and hardware blockers remain"
+  ]
+}

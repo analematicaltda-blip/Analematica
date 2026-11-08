@@ -12,7 +12,8 @@ El panel responsive `/control.html` usa el inicio de sesión central SGA-CD y lo
 4. Primera autorización: revisar el plan y escribir la frase de revisión.
 5. Segunda autorización: escribir una frase nueva y autorizar ejecución. Debe aprobar el mismo administrador solicitante; el agente y otros administradores no pueden sustituirlo. Para click, texto, tecla, carga, tap o swipe hay una tercera confirmación de impacto.
 6. El dispositivo reclama una sola vez el permiso Ed25519, válido durante un máximo de 30 segundos para iniciar. Verifica firma, identidad, etapas, alcance y hash antes de despachar una interacción. No son 30 segundos de sesión libre.
-7. Un resultado indica entrega de interacción, no éxito verificado en la plataforma. Los fallos inciertos no se reintentan. Revisa el proveedor antes de emitir otra orden.
+7. Antes de despachar, el ejecutor consulta `/device/jobs/{id}/checkpoint` con su permiso de ejecución. Sin respuesta válida o con parada, revocación o vencimiento, no entrega la interacción. La consulta no amplía el permiso.
+8. Un resultado indica entrega de interacción, no éxito verificado en la plataforma. Los fallos inciertos no se reintentan. Revisa el proveedor antes de emitir otra orden.
 
 No hay aprobaciones globales, por lote ni realizadas por IA. Cada interacción nueva necesita autorizaciones nuevas. Cambiar el plan crea otra orden. Las referencias de elementos vencen en 120 segundos; cambiar el contenido observado impide su utilización. Animaciones/contenido dinámico pueden invalidar observaciones y requieren repetir la revisión. Detener/revocar impide nuevas reclamaciones, pero no puede retirar una interacción ya despachada. Ctrl+C detiene el ejecutor local.
 
@@ -68,3 +69,7 @@ El catálogo de 42 guías/252 pasos y Open Duet planifican/orientan. El MCP limi
 ## Verificación pendiente antes de uso real
 
 Validar en cada host Android/iOS físico: UDID y permisos, app instalada/versionada, bloqueo manual, identidad de cuenta, lectura de elementos, rechazo de pantalla cambiada, dos/tres confirmaciones, entrega única, revocación y pérdida de conexión. Una prueba de protocolo simulada no sustituye esto. Tampoco se han firmado/distribuido nuevos APK/IPA ni certificado seguridad de producción; ninguna aplicación puede garantizar inmunidad absoluta frente a ataques.
+
+## Actualización de protocolo v2
+
+Actualizar backend y ejecutor juntos. Los planes de políticas anteriores se conservan, pero requieren recreación y autorizaciones nuevas. No regenerar claves para esta actualización. La comprobación previa reduce la ventana de revocación; no retira acciones ya entregadas. Evidencia y límites: `INTEGRACIONES/plan-maestro/BLOQUE06_CONTROL_AUTORIZADO_33.md`.

@@ -92,7 +92,7 @@ Estado: **PENDIENTE** · Área: Sincronización · Responsable: Backend
 
 Enviar solo preparación con idempotencia, pedir dos firmas frescas, conciliar recibos y no reenviar aprobaciones locales.
 
-Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio.
+Evidencia: Corte35: pruebas HTTP sobre instalaciones SQLite nuevas de ERP y Turismo repiten dos autorizaciones, rechazo de replay y firmas con llaves de fixture. No acredita sincronización offline, identidad física ni conciliación productiva. Ver INTEGRACIONES/plan-maestro/BLOQUE08_OPERACION_35.md.
 
 ## WAL-012 · Renovación, copias y recuperación probadas
 
@@ -100,7 +100,7 @@ Estado: **PENDIENTE** · Área: Continuidad · Responsable: Operaciones
 
 Definir renovación de confianza, recuperar backups cifrados y medir pérdida de documentos sin exportar privadas.
 
-Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio.
+Evidencia: Corte36: CLI de copia SQLite AES-256-GCM y restauración del modelo ContentDraft con clave de backup independiente y claves originales verificadas en fixture. No acredita recuperación integral de documentos/finanzas de billetera, claves hardware, almacenamiento externo ni RPO/RTO productivo. Ver INTEGRACIONES/plan-maestro/BLOQUE09_RESPALDOS_36.md.
 
 ## WAL-013 · PostgreSQL y migración histórica
 
@@ -108,7 +108,7 @@ Estado: **PENDIENTE** · Área: Datos · Responsable: Backend
 
 Probar concurrencia, reversión y restauración PostgreSQL; resolver el grafo histórico sin alterar saldos existentes.
 
-Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio.
+Evidencia: Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras.
 
 ## WAL-014 · Open Duet y agent-desktop en equipos reales
 
@@ -156,5 +156,5 @@ Estado: **PENDIENTE** · Área: Identidad y empresas · Responsable: Identidad e
 
 Conectar registro público e identidad real; adaptar autoridad empresarial ERP/SGA-CD con verificación de administrador titular; integrar panel web/escritorio y probar revocación. El equipo administrativo solo accede a su perfil personal si se inscribe.
 
-Evidencia: Política backend implementada; adaptador empresarial deshabilitado por defecto. Paneles productivos e identidad real pendientes.
+Evidencia: Vínculo explícito prestador/empresa, revisión independiente y adaptador ERP-TUR opt-in implementados con pruebas ORM/HTTP. No habilitado por defecto. Identidad externa, recuperación/renovación, SSO SGA-CD y paneles web/escritorio productivos pendientes.
 

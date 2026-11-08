@@ -13,3 +13,5 @@ const httpClient = axios.create({
 setupInterceptors(httpClient);
 
 export default httpClient;
+
+export { httpClient };

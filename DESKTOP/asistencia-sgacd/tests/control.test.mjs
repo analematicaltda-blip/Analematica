@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import {verifyGrant,policy} from '../control-client.mjs';
+import {verifyGrant,policy,validateDispatch} from '../control-client.mjs';
 import {MobileDriver} from '../mobile-driver.mjs';
 const key=crypto.generateKeyPairSync('ed25519'),config={device_id:'device-test',kind:'desktop',owner_id:1,tenant_id:1,platforms:['meta'],server_public_key:key.publicKey.export({type:'spki',format:'pem'})};
 function envelope(change=()=>{}){
  const intent={policy:policy.version,target_kind:'desktop',job_id:'job-test',device_id:config.device_id,owner_id:1,tenant_id:1,platform:'meta',account_label:'principal',operation:'browser_snapshot',arguments:{}};
- const grant={policy:policy.version,device_id:config.device_id,owner_id:1,tenant_id:1,intent_json:JSON.stringify(intent),lease_id:'a'.repeat(48),issued_at:100,expires_at:130};
+ const grant={checkpoint_required:true,policy:policy.version,device_id:config.device_id,owner_id:1,tenant_id:1,intent_json:JSON.stringify(intent),lease_id:'a'.repeat(48),issued_at:100,expires_at:130};
  grant.digest=crypto.createHash('sha256').update(grant.intent_json).digest('hex');grant.approvals=[1,2].map(stage=>({stage,user_id:1,tenant_id:1,digest:grant.digest}));change(grant);
  const payload=JSON.stringify(grant);return {payload,signature:crypto.sign(null,Buffer.from(payload),key.privateKey).toString('base64')};
 }
@@ -35,4 +35,18 @@ for(const kind of ['android','ios'])test(kind+' W3C adapter pins UDID, requires 
  source=source.replace('Continue','Changed');await assert.rejects(driver.run(tap),/cambió/);assert.equal(calls.filter(c=>c.route.endsWith('/click')).length,0);
  source=source.replace('Changed','Continue');await driver.run(tap);assert.equal(calls.filter(c=>c.route.endsWith('/click')).length,1);await assert.rejects(driver.run(tap),/vencida/);
  active='com.unapproved.app';await assert.rejects(driver.run(intent),/activa cambió/);await driver.close();
+});
+
+test('pre-dispatch checkpoint fails closed and cannot extend a signed lease',async()=>{
+ const verified=verifyGrant(envelope(),config,110);let calls=0;
+ const valid={policy:policy.version,job_id:verified.intent.job_id,digest:verified.grant.digest,allowed:true,new_authorization:false,lease_expires_at:130};
+ const check=async()=>{calls++;return valid};
+ assert.equal(await validateDispatch(verified,check,()=>110),true);assert.equal(calls,1);
+ await assert.rejects(validateDispatch(verified,check,()=>130),/venció/);assert.equal(calls,1);
+ await assert.rejects(validateDispatch(verified,async()=>{throw Error('offline')},()=>110),/offline/);
+ for(const override of [{allowed:false},{new_authorization:true},{lease_expires_at:131},{job_id:'other'},{digest:'0'.repeat(64)},{policy:'sgacd-control-v1'}])await assert.rejects(validateDispatch(verified,async()=>({...valid,...override}),()=>110));
+ let clock=110;await assert.rejects(validateDispatch(verified,async()=>{clock=130;return valid},()=>clock));
+ assert.throws(()=>verifyGrant(envelope(),config,130));
+ assert.throws(()=>verifyGrant(envelope(grant=>{grant.checkpoint_required=false}),config,110));
+ assert.throws(()=>verifyGrant(envelope(grant=>{grant.policy='sgacd-control-v1'}),config,110));
 });

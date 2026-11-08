@@ -57,3 +57,10 @@ WALLET-*/**/.runtime/
 WALLET-*/**/*.sqlite3
 WALLET-*/**/*.db
 WALLET-DESKTOP/.runtime/
+
+# Private root-level operation evidence and temporary credentials
+/.runtime/
+
+# Generated Python execution artifacts (legacy tracked files are not removed here)
+**/__pycache__/
+*.py[cod]

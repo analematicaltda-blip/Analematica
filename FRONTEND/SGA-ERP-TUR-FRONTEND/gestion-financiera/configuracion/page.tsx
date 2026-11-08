@@ -32,6 +32,7 @@ export default function ConfiguracionFinancieraPage() {
             <Card className="border-none shadow-sm bg-white overflow-hidden">
                <CardHeader className="p-8 border-b">
                   <CardTitle className="text-xl font-black">Parámetros Globales</CardTitle>
+                  <p className="text-white">Configuración pendiente de conexión. Los controles no representan valores confirmados ni ejecutan cambios.</p>
                </CardHeader>
                <CardContent className="p-8 space-y-8">
                   <div className="flex items-center justify-between">
@@ -39,7 +40,7 @@ export default function ConfiguracionFinancieraPage() {
                         <p className="font-bold text-slate-800">Cierre Automático de Caja</p>
                         <p className="text-sm text-slate-500">Permitir que SARITA consolide el flujo diario al finalizar la jornada.</p>
                      </div>
-                     <Switch checked={true} />
+                     <Switch checked={false} disabled />
                   </div>
                   <div className="h-px bg-slate-50" />
                   <div className="flex items-center justify-between">
@@ -47,7 +48,7 @@ export default function ConfiguracionFinancieraPage() {
                         <p className="font-bold text-slate-800">Alertas de Sobrecosto</p>
                         <p className="text-sm text-slate-500">Notificar inmediatamente cuando un rubro excede el 90% del presupuesto.</p>
                      </div>
-                     <Switch checked={true} />
+                     <Switch checked={false} disabled />
                   </div>
                   <div className="h-px bg-slate-50" />
                   <div className="flex items-center justify-between">
@@ -55,7 +56,7 @@ export default function ConfiguracionFinancieraPage() {
                         <p className="font-bold text-slate-800">Modo de Proyección Estricto</p>
                         <p className="text-sm text-slate-500">Utilizar solo datos confirmados para los escenarios conservadores.</p>
                      </div>
-                     <Switch checked={false} />
+                     <Switch checked={false} disabled />
                   </div>
                </CardContent>
             </Card>
@@ -66,7 +67,7 @@ export default function ConfiguracionFinancieraPage() {
                   <h3 className="text-lg font-black uppercase tracking-widest">Integridad de Datos</h3>
                </div>
                <p className="text-slate-400 text-sm mb-8">Sincronización forzada entre el ERP Quíntuple y el motor de finanzas tácticas.</p>
-               <Button className="w-full bg-brand hover:bg-brand-light font-black py-4 rounded-xl transition-all">
+               <Button disabled className="w-full bg-brand hover:bg-brand-light font-black py-4 rounded-xl transition-all">
                   Ejecutar Re-indexación Financiera
                </Button>
             </Card>

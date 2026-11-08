@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
 import {root} from './bridge.mjs';
-import {request,verifyGrant} from './control-client.mjs';
+import {request,verifyGrant,validateDispatch} from './control-client.mjs';
 import {BrowserDriver} from './browser-driver.mjs';
 import {MobileDriver} from './mobile-driver.mjs';
 
@@ -43,8 +43,11 @@ if(command==='pair'){
     const entries=Object.entries(journal).sort((a,b)=>b[1].at-a[1].at).slice(0,2000);for(const key of Object.keys(journal))delete journal[key];Object.assign(journal,Object.fromEntries(entries));
     // Consume before dispatch. Crash/timeout does not replay an external change.
     const temporary=journalFile+'.tmp';writePrivate(temporary,journal);fs.renameSync(temporary,journalFile);
-    let outcome='delivered',data;
-    try{data=await driver.run(verified.intent)}catch(error){outcome='uncertain';data={notice:String(error.message).slice(0,400),automatic_retry:false}}
+    let outcome='not_delivered',data,authorized=false;
+    try{await validateDispatch(verified,lease=>api('/device/jobs/'+item.id+'/checkpoint',{lease_id:lease}));authorized=true}catch{data={notice:'No se confirmó la vigencia antes del despacho. No se ejecutó la acción.',automatic_retry:false}}
+    if(authorized){
+     try{data=await driver.run(verified.intent);outcome='delivered'}catch(error){outcome='uncertain';data={notice:String(error.message).slice(0,400),automatic_retry:false}}
+    }
     try{await api('/device/jobs/'+item.id+'/result',{lease_id:verified.grant.lease_id,outcome,data})}catch{console.error('No se pudo registrar el resultado. Comprueba la plataforma antes de crear otra orden. No se repetirá automáticamente.');}
     console.log('Operación terminada:',outcome,'· el éxito en el proveedor requiere comprobación.');
    }

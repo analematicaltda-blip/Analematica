@@ -1,5 +1,5 @@
 {
-  "version": "sgacd-control-v1",
+  "version": "sgacd-control-v2",
   "platform_hosts": {
     "meta": [
       "adsmanager.facebook.com",
@@ -143,5 +143,6 @@
       "app_id",
       "url"
     ]
-  }
+  },
+  "requires_online_checkpoint": true
 }

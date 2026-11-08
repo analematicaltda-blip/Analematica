@@ -4,7 +4,6 @@ import React from 'react';
 import { SmartKPIWidget } from '../widgets/SmartKPIWidget';
 import { GrowthChart } from '../widgets/GrowthChart';
 import { FiGlobe, FiShield, FiZap, FiActivity } from 'react-icons/fi';
-import { Badge } from '../../ui/components/core/Badge';
 
 export const AdminAnalytics = ({ data }: { data: any }) => {
   return (

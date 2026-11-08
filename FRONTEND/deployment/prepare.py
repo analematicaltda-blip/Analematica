@@ -84,15 +84,16 @@ def public_assets():
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
     # One canonical assistance UI is served under each site's own authenticated origin.
-    for name in ['platform.html','js/platform.js','resources.html','js/resources.js','assistance.html','js/assistance.js','css/assistance.css','control.html','js/control.js']:
+    for name in ['platform.html','js/platform.js','resources.html','js/resources.js','assistance.html','js/assistance.js','css/assistance.css','control.html','js/control.js','content.html','js/content.js','css/content.css']:
         path = ROOT / 'FRONTEND/ANALEMATICA-FRONTEND' / name
         target = site / 'sgacd' / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
 
-def next_projects():
+def next_projects(dependencies=None, systems=('erp','turismo')):
     source = ROOT / 'FRONTEND/SGA-TUR-FRONTEND'
-    for name in ['erp', 'turismo']:
+    for name in systems:
+        if name not in {'erp','turismo'}:raise ValueError('Proyecto web desconocido')
         dest = RUNTIME / name
         dest.mkdir(parents=True, exist_ok=True)
         for folder in ['src', 'public']:
@@ -104,21 +105,33 @@ def next_projects():
             if target.exists():
                 shutil.rmtree(target)
             shutil.copytree(ROOT / 'FRONTEND/SGA-ERP-TUR-FRONTEND', target)
+            entry=dest/'src/app/erp/cotizaciones'
+            entry.mkdir(parents=True,exist_ok=True)
+            (entry/'page.tsx').write_text("export {default} from '../../dashboard/prestador/mi-negocio/gestion-comercial/cotizaciones/page';\n")
             (dest / 'src/app/page.tsx').write_text('''import Dashboard from './dashboard/prestador/mi-negocio/page';
-export default function Preview(){return <><div style={{background:'#fff3cd',padding:12,color:'#4d3900'}}>Vista local de revisión. Las operaciones ERP todavía no están disponibles.</div><Dashboard/></>}
+export default function Preview(){return <><div style={{background:'#142850',padding:12,color:'#ffffff',borderLeft:'3px solid #38bdf8'}}>Vista local de revisión. <a href="/erp/cotizaciones" style={{color:"#ffffff"}}>Acceso a cotizaciones</a>. Los demás procesos continúan en validación.</div><Dashboard/></>}
 ''')
+        if name == 'turismo':
+            # Institutional admin screens reuse ERP components; these are shared
+            # source modules, not newly mounted ERP routes in the institutional app.
+            shared=dest/'src/shared/erp'
+            if shared.exists():shutil.rmtree(shared)
+            shutil.copytree(ROOT/'FRONTEND/SGA-ERP-TUR-FRONTEND',shared)
         (dest / 'package.json').write_text((HERE / 'package.json').read_text())
         (dest / 'postcss.config.mjs').write_text((source / 'postcss.config.mjs').read_text())
-        (dest / 'next.config.mjs').write_text('''import path from 'node:path';
-export default {devIndicators:false, poweredByHeader:false, webpack(config){config.resolve.alias={...config.resolve.alias,'@':path.resolve('src')};return config;}};
-''')
-        (dest / 'tsconfig.json').write_text(json.dumps({'compilerOptions': {'target':'ES2020','lib':['dom','dom.iterable','esnext'],'allowJs':True,'skipLibCheck':True,'strict':True,'noEmit':True,'esModuleInterop':True,'module':'esnext','moduleResolution':'bundler','resolveJsonModule':True,'isolatedModules':True,'jsx':'preserve','incremental':True,'plugins':[{'name':'next'}],'paths':{'@/*':['./src/*']}},'include':['next-env.d.ts','**/*.ts','**/*.tsx','.next/types/**/*.ts'],'exclude':['node_modules']},indent=2))
+        aliases={"@":"src"}
+        paths={'@/*':['./src/*']}
+        if name=='turismo':
+            aliases={'@/app/dashboard/prestador/mi-negocio':'src/shared/erp','@':'src'}
+            paths['@/app/dashboard/prestador/mi-negocio/*']=['./src/shared/erp/*']
+        (dest / 'next.config.mjs').write_text("import path from 'node:path';\nexport default {devIndicators:false,poweredByHeader:false,experimental:{cpus:2},webpack(config){const shared="+json.dumps(aliases)+";config.resolve.alias={...config.resolve.alias,...Object.fromEntries(Object.entries(shared).map(([key,value])=>[key,path.resolve(value)]))};return config;}};\n")
+        (dest / 'tsconfig.json').write_text(json.dumps({'compilerOptions': {'target':'ES2020','lib':['dom','dom.iterable','esnext'],'allowJs':True,'skipLibCheck':True,'strict':True,'noEmit':True,'esModuleInterop':True,'module':'esnext','moduleResolution':'bundler','resolveJsonModule':True,'isolatedModules':True,'jsx':'preserve','incremental':True,'plugins':[{'name':'next'}],'paths':paths},'include':['next-env.d.ts','**/*.ts','**/*.tsx','.next/types/**/*.ts'],'exclude':['node_modules']},indent=2))
         link = dest / 'node_modules'
         if link.is_symlink():
             link.unlink()
         elif link.exists():
             raise RuntimeError('No se reemplaza un node_modules personalizado en ' + str(dest))
-        link.symlink_to('/srv/deps/node_modules', target_is_directory=True)
+        link.symlink_to(str(Path(dependencies).resolve()) if dependencies else '/srv/deps/node_modules', target_is_directory=True)
 
 def nginx():
     text = '''pid /tmp/nginx.pid;
@@ -169,6 +182,18 @@ http {
     proxy_read_timeout 30s;'''
             text += '  location ~ ^/api/.*(login|token) { limit_req zone=login burst=3 nodelay; '+proxy+' }\n'
             text += '  location /api/ { limit_req zone=api burst=30 nodelay; '+proxy+' }\n'
+        elif name=='erp' and os.environ.get('SGACD_ENABLE_ERP_API','0')=='1':
+            # Opt-in only audited session/quotation routes. Never expose legacy finance APIs.
+            proxy = """set $api_upstream erp-tur:8000;
+    proxy_pass http://$api_upstream;
+    proxy_set_header Authorization "";
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 30s;"""
+            text += '  location = /api/v1/erp-session/login/ { limit_req zone=login burst=3 nodelay; '+proxy+' }\n'
+            text += '  location ~ ^/api/v1/(erp-session/((logout|mfa|password-reset/(request|confirm)|security-events|recovery(/issue)?|enrollment/(start|confirm|cancel))/)?|mi-negocio/comercial/(company-scopes/|service-availability/|capacity-holds/([0-9a-f-]+/release/)?|quotation-options/|quotation-preview/|quotation-drafts/([0-9a-f-]+/(withdraw/)?)?))$ { limit_req zone=api burst=30 nodelay; '+proxy+' }\n'
+            text += '  location /api/ { default_type application/json; return 503 \'{"detail":"Ruta ERP pendiente de validación."}\'; }\n'
         else:
             text += '  location /api/ { default_type application/json; return 503 \'{"detail":"Backend turístico pendiente de corregir; no se simula autenticación."}\'; }\n'
         text += f'  location / {{ limit_req zone=views burst=100 nodelay; auth_basic "Vista local {name}"; auth_basic_user_file /private/{name}.htpasswd;\n'
@@ -198,7 +223,7 @@ def main():
     compose()
     report = '# Accesos privados de revisión local\n\nEstas claves abren la vista web; no sustituyen el login de la aplicación.\nEl certificado es local autofirmado. Solo se exponen puertos en 127.0.0.1.\n\n'
     for index, (name,item) in enumerate(access.items()):
-        route = '/dashboard/login' if name == 'turismo' else '/'
+        route = '/dashboard/login' if name == 'turismo' else ('/erp/cotizaciones' if name == 'erp' else '/')
         report += f"- {name}: https://localhost:{8100+index}{route}\n  Usuario: {item['username']}\n  Clave: {item['password']}\n\n"
     target = PRIVATE / 'ACCESOS-LOCALES.md'
     if target.exists():
