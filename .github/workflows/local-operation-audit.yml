@@ -6,7 +6,7 @@ on:
         description: Isolated profile to verify (never deploys)
         type: choice
         default: core
-        options: [core, backup, fresh, browser, devices, postgres]
+        options: [core, accounting, backup, fresh, browser, devices, postgres]
 permissions:
   contents: read
 jobs:

@@ -1,0 +1,261 @@
+{
+  "local_evidence_directory": "/tmp/sgacd-accounting-liquidity-final-41",
+  "hash_verification": "PASSED",
+  "python_test_methods": 68,
+  "fresh_migration": "core_erp.0004_accounting_ratio_policy applied only to private fixture",
+  "fresh_erp_tests": 11,
+  "fresh_erp_log": "/tmp/accounting-ratio-fresh-final-41.log",
+  "wallet_pending_check": "PASSED",
+  "production_ready": false,
+  "postgres_result": {
+    "postgresql": true,
+    "replay_cache_enforced": false,
+    "results": [
+      {
+        "scenario": "different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "issuance_different_sessions_same_totp",
+        "accepted": 1,
+        "rejected": 1,
+        "previous_codes_invalid": true
+      }
+    ],
+    "process_results": [
+      {
+        "scenario": "totp_different_sessions_same_code",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "totp_same_challenge",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_different_sessions_same_code",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_same_challenge",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "issue_different_sessions_same_code",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      }
+    ],
+    "http_results": [
+      {
+        "scenario": "http_totp",
+        "workers": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "csrf_enforced": true,
+        "session_shared_across_workers": true
+      },
+      {
+        "scenario": "http_recovery",
+        "workers": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "csrf_enforced": true,
+        "session_shared_across_workers": true
+      },
+      {
+        "scenario": "http_issuance",
+        "workers": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "audit_events": 1
+      }
+    ],
+    "restore": {
+      "restored_to_new_database": true,
+      "source_unchanged": true,
+      "table_count": 28,
+      "row_count": 108,
+      "all_table_rows_match": true,
+      "foreign_keys_validated": true,
+      "encrypted_archive_private_permissions": true,
+      "tampered_archive_rejected": true,
+      "mfa_material_decrypted_with_original_key": 22,
+      "sessions_decoded_with_original_key": 6,
+      "archive_sha256": "4584e026f86c09c70d76e0edc3e0b88c6bba10749221f8539a6adf225768dbfe",
+      "keys_saved_in_archive": false
+    },
+    "capacity_results": [
+      {
+        "scenario": "last_unit",
+        "accepted": 1,
+        "persisted_holds": 1,
+        "overbooked": false
+      },
+      {
+        "scenario": "idempotent_retry",
+        "accepted": 2,
+        "persisted_holds": 1,
+        "overbooked": false
+      },
+      {
+        "scenario": "key_conflict_across_services",
+        "accepted": 1,
+        "persisted_holds": 1,
+        "overbooked": false
+      }
+    ],
+    "password_reset_result": {
+      "scenario": "same_link_two_processes",
+      "accepted": 1,
+      "rejected": 1,
+      "audit_events": 1,
+      "mfa_preserved": true
+    },
+    "control_result": {
+      "postgresql": true,
+      "scope": "Independent SQLAlchemy sessions/threads; no real executor",
+      "results": [
+        {
+          "scenario": "duplicate_approval",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": false
+        },
+        {
+          "scenario": "duplicate_begin",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": false
+        },
+        {
+          "scenario": "duplicate_result",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": false
+        },
+        {
+          "scenario": "revoke_vs_begin",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": true
+        }
+      ]
+    },
+    "accounting_result": {
+      "postgresql": true,
+      "scope": "Separate temporary database; real Django transactions and row locks",
+      "results": [
+        {
+          "scenario": "same_event",
+          "accepted": 2,
+          "posted_journals": 1,
+          "outbox_count": 1,
+          "chain_valid": true
+        },
+        {
+          "scenario": "changed_payload",
+          "accepted": 1,
+          "posted_journals": 1,
+          "outbox_count": 1,
+          "chain_valid": true
+        },
+        {
+          "scenario": "disjoint_accounts",
+          "accepted": 2,
+          "posted_journals": 2,
+          "outbox_count": 2,
+          "chain_valid": true
+        },
+        {
+          "scenario": "duplicate_reversal",
+          "accepted": 1,
+          "posted_journals": 2,
+          "outbox_count": 2,
+          "chain_valid": true
+        },
+        {
+          "scenario": "post_vs_edit",
+          "accepted": 2,
+          "posted_journals": 1,
+          "outbox_count": 1,
+          "chain_valid": true
+        },
+        {
+          "scenario": "close_vs_post",
+          "accepted": 1,
+          "posted_journals": 0,
+          "outbox_count": 0,
+          "chain_valid": true
+        },
+        {
+          "scenario": "delivery_claim",
+          "projection_receipts": 0,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_duplicate",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_parallel_events",
+          "projection_receipts": 2,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_stale_lease",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_receipt_replay",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_rollback",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "ratio_review_revision_race",
+          "accepted": 1,
+          "stored_revisions": 1
+        }
+      ]
+    }
+  },
+  "limits": [
+    "No independent certification of account coverage or evidence",
+    "No historic production database migration",
+    "No financial execution",
+    "No commits or push"
+  ]
+}

@@ -1,5 +1,6 @@
-from django.db import models
+from django.db import models, transaction
 from django.conf import settings
+from decimal import Decimal
 from apps.core_erp.base_models import (
     BaseErpModel, TenantAwareModel, LedgerAccount as BaseAccount,
     BaseJournalEntry, BaseJournalLine as BaseJournalLineBase,
@@ -24,7 +25,7 @@ class ChartOfAccounts(AccountingTenantModel):
 class Account(BaseAccount, AccountingTenantModel):
     # BaseAccount has code, name, type, parent_account
     chart_of_accounts = models.ForeignKey(ChartOfAccounts, on_delete=models.CASCADE, related_name='accounts')
-    initial_balance = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
+    initial_balance = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal("0.00"))
     is_active = models.BooleanField(default=True)
 
     # Phase B: IFRS and Consolidation mapping
@@ -61,11 +62,15 @@ class JournalEntry(BaseJournalEntry, AccountingTenantModel):
     system_hash = models.CharField(max_length=64, null=True, blank=True, db_index=True)
     previous_hash = models.CharField(max_length=64, null=True, blank=True)
     immutable_signature = models.TextField(null=True, blank=True)
+    hash_version = models.CharField(max_length=16, default="legacy")
 
     def compute_hash(self):
         """
         Calcula el hash SHA-256 del asiento incluyendo sus líneas para garantizar integridad.
         """
+        if self.hash_version == 'v2':
+            from .integrity import journal_hash
+            return journal_hash(self, list(LedgerEntry.plain_objects.filter(journal_entry_id=self.pk).select_related('account')), self.previous_hash)
         import hashlib
         import json
         from decimal import Decimal
@@ -86,7 +91,7 @@ class JournalEntry(BaseJournalEntry, AccountingTenantModel):
 
         # Recopilar datos de las líneas (deben existir para el hash final)
         lines_data = []
-        for line in self.lines.all().order_by('id'):
+        for line in LedgerEntry.plain_objects.filter(journal_entry_id=self.pk).order_by('id'):
             lines_data.append({
                 "account": str(line.account_id),
                 "debit": line.debit_amount,
@@ -101,34 +106,18 @@ class JournalEntry(BaseJournalEntry, AccountingTenantModel):
         content_str = json.dumps(full_content, sort_keys=True, default=default_serializer)
         return hashlib.sha256(content_str.encode()).hexdigest()
 
+    @transaction.atomic
     def save(self, *args, **kwargs):
-        if self.pk and JournalEntry.plain_objects.filter(pk=self.pk, is_posted=True).exists():
-            # Phase 3.5: Irreversibility - No editing posted entries
-            raise PermissionError("Posted journal entries cannot be modified. Use reversal instead.")
-
-        # Lógica de encadenamiento al postear
-        if self.is_posted and not self.system_hash:
-            from django.utils import timezone
-            # 1. Obtener el hash del asiento anterior (por fecha de posteo)
-            last_entry = JournalEntry.plain_objects.filter(
-                is_posted=True,
-                tenant=self.tenant
-            ).order_by('-posted_at', '-id').first()
-
-            if last_entry:
-                self.previous_hash = last_entry.system_hash
-            else:
-                self.previous_hash = "GENESIS_BLOCK_SARITA_V1"
-
-            # 2. Registrar timestamp de posteo
-            if not self.posted_at:
-                self.posted_at = timezone.now()
-
-            # 3. El hash final se calcula después de asegurar que las líneas existen.
-            # Nota: Esto requiere que el AccountingEngine llame a un método .post()
-            # que ejecute esta lógica después de verificar el balance.
-            self.system_hash = self.compute_hash()
-
+        from .validation import lock_company
+        from .exceptions import TenantMismatchError
+        lock_company(self.tenant_id)
+        stored = JournalEntry.plain_objects.select_for_update().filter(pk=self.pk).first()
+        if stored and str(stored.tenant_id) != str(self.tenant_id):
+            raise TenantMismatchError('A journal cannot move between accounting companies.')
+        if stored and stored.is_posted:
+            raise PermissionError('Posted journal entries cannot be modified. Use reversal instead.')
+        if self.is_posted and not getattr(self, '_validated_post', False):
+            raise PermissionError('Use LedgerEngine to post a journal entry.')
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -156,26 +145,59 @@ class AccountingAuditLog(AccountingTenantModel):
 class LedgerEntry(TenantAwareModel):
     journal_entry = models.ForeignKey(JournalEntry, on_delete=models.CASCADE, related_name='lines')
     account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='ledger_entries')
-    debit_amount = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
-    credit_amount = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
+    debit_amount = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal("0.00"))
+    credit_amount = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal("0.00"))
 
     # Phase B: Transaction vs Base Amounts
     currency = models.CharField(max_length=3, default='COP')
-    amount_transaction = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
-    amount_base = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
+    amount_transaction = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal("0.00"))
+    amount_base = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal("0.00"))
 
     description = models.CharField(max_length=255, blank=True, null=True)
 
+    def _locked_parent(self):
+        from .validation import lock_company
+        from .exceptions import TenantMismatchError
+        lock_company(self.tenant_id)
+        stored = LedgerEntry.plain_objects.filter(pk=self.pk).first()
+        if stored and stored.journal_entry_id != self.journal_entry_id:
+            raise PermissionError('Journal lines cannot be reassigned.')
+        parent = JournalEntry.plain_objects.select_for_update().get(pk=self.journal_entry_id,tenant_id=self.tenant_id)
+        if str(parent.tenant_id) != str(self.tenant_id):
+            raise TenantMismatchError('Journal and line company mismatch.')
+        if parent.is_posted:
+            raise PermissionError('Lines of posted journal entries cannot be modified.')
+        return parent
+
+    @transaction.atomic
     def save(self, *args, **kwargs):
-        if JournalEntry.plain_objects.filter(pk=self.journal_entry_id, is_posted=True).exists():
-            raise PermissionError("Lines of posted journal entries cannot be modified.")
+        from .validation import money
+        from .exceptions import TenantMismatchError, UnbalancedEntryError
+        self._locked_parent()
+        if not Account.plain_objects.filter(pk=self.account_id,tenant_id=self.tenant_id,chart_of_accounts__tenant_id=self.tenant_id).exists():
+            raise TenantMismatchError('Account does not belong to this accounting company.')
+        self.debit_amount=money(self.debit_amount);self.credit_amount=money(self.credit_amount)
+        if (self.debit_amount>0)==(self.credit_amount>0):
+            raise UnbalancedEntryError('A line requires exactly one positive side.')
+        self.amount_transaction=money(self.amount_transaction);self.amount_base=money(self.amount_base)
         super().save(*args, **kwargs)
 
+    @transaction.atomic
     def delete(self, *args, **kwargs):
-        if JournalEntry.plain_objects.filter(pk=self.journal_entry_id, is_posted=True).exists():
-            raise PermissionError("Lines of posted journal entries cannot be deleted.")
+        self._locked_parent()
         super().delete(*args, **kwargs)
 
     class Meta:
         app_label = 'core_erp'
         verbose_name = "Ledger Entry"
+
+
+class AccountingEventReceipt(BaseErpModel):
+    tenant = models.ForeignKey('core_erp.Tenant', on_delete=models.PROTECT)
+    event_id = models.CharField(max_length=255)
+    payload_hash = models.CharField(max_length=64)
+    journal = models.ForeignKey(JournalEntry, on_delete=models.PROTECT)
+
+    class Meta:
+        app_label = 'core_erp'
+        constraints = [models.UniqueConstraint(fields=['tenant','event_id'],name='accounting_event_once_per_tenant')]

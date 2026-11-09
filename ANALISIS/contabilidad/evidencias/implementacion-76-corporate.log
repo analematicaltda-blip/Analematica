@@ -1,0 +1,20 @@
+/workspace/SGA-CD/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_actual_compare_confirm_recover_release_no_ledger_mutation (test_corporate_ledger_bank.CorporateBankTests.test_actual_compare_confirm_recover_release_no_ledger_mutation) ... ok
+test_another_source_cannot_reuse_an_active_ledger_line (test_corporate_ledger_bank.CorporateBankTests.test_another_source_cannot_reuse_an_active_ledger_line) ... ok
+test_partial_statement_preserves_unresolved_amount_and_reserves_reference (test_corporate_ledger_bank.CorporateBankTests.test_partial_statement_preserves_unresolved_amount_and_reserves_reference) ... ok
+test_unexplained_difference_cannot_be_confirmed_through_corporate_bridge (test_corporate_ledger_bank.CorporateBankTests.test_unexplained_difference_cannot_be_confirmed_through_corporate_bridge) ... ok
+test_boolean_counts_and_floating_money_rejected (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_boolean_counts_and_floating_money_rejected) ... ok
+test_complete_statement_requires_no_differences (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_complete_statement_requires_no_differences) ... ok
+test_partial_associations_are_valid_without_full_claim (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_partial_associations_are_valid_without_full_claim) ... ok
+test_partial_statement_cannot_be_presented_complete (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_partial_statement_cannot_be_presented_complete) ... ok
+test_released_or_stale_associations_cannot_remain_qualified (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_released_or_stale_associations_cannot_remain_qualified) ... ok
+test_review_decisions_and_totals_must_match_exactly (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_review_decisions_and_totals_must_match_exactly) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 16.986s
+
+OK

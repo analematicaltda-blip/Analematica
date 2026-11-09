@@ -1,0 +1,23 @@
+{
+  "delivery": 78,
+  "scope": "Worktree snapshot, conflict-aware transfer and visible synthetic review",
+  "base_commit": "16bf4fa99d25695559f5502b5c9d45a503d5494c",
+  "repository_commits_created": false,
+  "main_published": false,
+  "all_20_complete": false,
+  "accounting_percent": "63.89",
+  "accounting_backend_files_unchanged_since_delivery77": 213,
+  "new_delivery_tests": 12,
+  "browser_checks": 40,
+  "synthetic_browser_data": true,
+  "production_accepted": false,
+  "proofs": {
+    "INTEGRACIONES/operacion/entrega_segura.py": "731eb235cbdf6581e31331db269312895529b7873ba62a1da6dbd3b4518fca0d",
+    "INTEGRACIONES/operacion/tests/test_entrega_segura.py": "8f03045da485f6de30d59874a7ca3a77c11e738e4289da80fbe2e085f355ae6b",
+    "ANALISIS/entregas/evidencias/REVISION-78-analematica.mp4": "912153b1eb18b4fa5aaeaf7c6ea46055506ea089baa64f3de064aa546e074c7c",
+    "ANALISIS/entregas/evidencias/REVISION-78-erp.mp4": "059d79da96d4b86725e6a9c65488f25ef62ac3edd9f513ef0b4b1afe85d3a593",
+    "ANALISIS/entregas/evidencias/ENTREGA-78-pruebas.log": "b61e46e65db3f3e74799bea0059c657c9f3edb156fa29b86634078d73189fa57",
+    "ANALISIS/entregas/evidencias/ENTREGA-78-navegador.log": "47856efdabe8a645456d3fc16864cb6ff3dd690b410c50500a9530c50842c521"
+  },
+  "operations_suite_tests": 26
+}

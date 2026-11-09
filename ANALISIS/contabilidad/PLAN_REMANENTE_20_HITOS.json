@@ -1,0 +1,576 @@
+{
+  "schema": "sgacd-remaining-workplan-v1",
+  "date": "2026-11-09",
+  "baseline": "accounting-blueprint-v1",
+  "baseline_completed_milestones": 44,
+  "baseline_total_milestones": 72,
+  "baseline_percent": "61.11",
+  "new_plan_does_not_reset_progress": true,
+  "all_20_closed": false,
+  "production_ready": false,
+  "execution_order": [
+    "R01",
+    "R02",
+    "R09",
+    "R03",
+    "R10",
+    "R11",
+    "R12",
+    "R04",
+    "R07",
+    "R08",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R18",
+    "R19",
+    "R05",
+    "R06",
+    "R20"
+  ],
+  "execution_rules": [
+    "Ejecutar cambios locales reversibles autorizados sin pedir confirmación rutinaria.",
+    "Antes de modificar: revisar dependencias y datos; preservar fuentes, migraciones e historia; ningún borrado destructivo.",
+    "Por cada bloque: código, pruebas de rechazo/éxito, evidencia ligada al manifiesto y actualización de pendientes.",
+    "Un bloqueo externo no detiene trabajo local independiente; registrarlo sin inventar credenciales, certificados, acuses ni datos de producción.",
+    "No declarar cierre por simulaciones, presencia de archivos o número de pruebas; separar verificación local de aceptación externa.",
+    "No crear commits parciales, push o merge; publicación y acciones reales mantienen sus autorizaciones existentes.",
+    "Cambios nuevos en ANALISIS/; conservar la identidad visual existente y los servicios operativos."
+  ],
+  "items": [
+    {
+      "id": "R01",
+      "priority": "P0",
+      "title": "Recuperar y verificar el corte interrumpido",
+      "previous_packages": [
+        "H20"
+      ],
+      "depends_on": [],
+      "finding": "La interrupción dejó código tributario sin pruebas y no permitió confirmar la creación del archivo de tests.",
+      "implementation": "Inventariar cambios conservados, restaurar pruebas ausentes, comprobar evidencias anteriores y ejecutar regresión con manifiesto estable.",
+      "local_acceptance": "Fuentes actuales coinciden con el manifiesto; pruebas contables sin omisiones; no se elimina trabajo ni se altera Git.",
+      "external_gates": [],
+      "code_state": "VERIFICADO_LOCAL",
+      "acceptance_state": "VERIFICADO_LOCAL",
+      "fully_closed": true,
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-68.json"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R02",
+      "priority": "P0",
+      "title": "Conectar política tributaria, reserva y ledger",
+      "previous_packages": [
+        "H06",
+        "H07"
+      ],
+      "depends_on": [
+        "R01"
+      ],
+      "finding": "La política versionada cotizaba impuestos mientras el desglose de la reserva seguía siendo manual; la integración escrita quedó sin verificar.",
+      "implementation": "Calcular componentes desde versiones persistidas, ligar evidencia a la revisión y revalidarla antes de solicitud y asiento; conservar flujos manuales identificados.",
+      "local_acceptance": "Ambos backends generan el mismo asiento balanceado; evidencia ausente/alterada, versión inválida y fuente cambiada bloquean; reintento no duplica.",
+      "external_gates": [
+        "Tratamiento tributario y soportes legítimos revisados profesionalmente; la coincidencia interna no equivale a legalidad fiscal."
+      ],
+      "code_state": "VERIFICADO_LOCAL",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-68.json",
+        "BACKEND/deployment/tests/accounting_reservation_policy_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_reservation_policy.py"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R03",
+      "priority": "P1",
+      "title": "Completar retenciones, compras e IVA descontable",
+      "previous_packages": [
+        "H06"
+      ],
+      "depends_on": [
+        "R02"
+      ],
+      "finding": "Las retenciones se cotizan, pero no tienen un flujo completo de contabilización; falta cobertura del IVA descontable.",
+      "implementation": "Implementar hechos de venta/compra, bases y cuentas por componente, vigencias, ajustes y contrapartidas; rechazar reglas o cuentas incompletas.",
+      "local_acceptance": "Casos gravados/exentos/excluidos y devoluciones concilian auxiliares, saldo fiscal y ledger sin redondeos ocultos ni duplicados.",
+      "external_gates": [
+        "Reglas tributarias vigentes, responsabilidades y revisión de un profesional autorizado."
+      ],
+      "code_state": "EN_EJECUCION",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_70.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-70.json",
+        "BACKEND/deployment/tests/accounting_commercial_tax_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_commercial_tax.py",
+        "ANALISIS/contabilidad/IMPLEMENTACION_71.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-71.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_72.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-72.json"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio",
+      "local_result": "Implementación72 añade captura nativa de proveedores/facturas, instantánea, cotejo exacto contra política y reserva de documento/huella, impidiendo bypass por rutas genéricas. Posteo/recuperación/contrapartida probados desde ambos paneles; faltan historia, cambios controlados, devoluciones parciales, fiscalidad completa y revisión profesional."
+    },
+    {
+      "id": "R04",
+      "priority": "P1",
+      "title": "Completar documento fiscal y representación",
+      "previous_packages": [
+        "H07"
+      ],
+      "depends_on": [
+        "R02",
+        "R03"
+      ],
+      "finding": "El UBL actual es borrador estructural; faltan campos y reglas del perfil fiscal y representación requerida.",
+      "implementation": "Conectar fuente comercial/políticas, validar campos y esquemas vigentes, notas/cargos/anticipos y representación fiscal; mantener borrador diferenciado.",
+      "local_acceptance": "XML/representación coinciden con identidad, numeración, líneas y totales revisados; casos incompletos o inválidos no avanzan.",
+      "external_gates": [
+        "Anexo DIAN vigente, resolución e identidad legítimas, formatos/ejemplos autorizados y revisión fiscal."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R05",
+      "priority": "P1",
+      "title": "Cualificar firma y custodia del cliente",
+      "previous_packages": [
+        "H08"
+      ],
+      "depends_on": [
+        "R04",
+        "R08"
+      ],
+      "finding": "La firma disponible solo admite certificados y política de laboratorio; no acredita custodia ni confianza fiscales.",
+      "implementation": "Adaptar firma al perfil aprobado, cadena/política/revocación/reloj y custodia cliente, con recuperación y revocación controladas.",
+      "local_acceptance": "Documento, certificado o política alterados se rechazan; evidencia de custodia/recuperación; ninguna llave maestra retenida por el proveedor.",
+      "external_gates": [
+        "Certificado legítimo, política de confianza, medios/HSM/equipos y revisión independiente que correspondan."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R06",
+      "priority": "P1",
+      "title": "Completar transporte DIAN y acuses auténticos",
+      "previous_packages": [
+        "H09"
+      ],
+      "depends_on": [
+        "R04",
+        "R05"
+      ],
+      "finding": "El verificador y diario actuales son de laboratorio; no hay SOAP/WS-Security cualificado ni estados oficiales autenticados.",
+      "implementation": "Implementar cliente de habilitación con destinos fijos, límites, autenticación aprobada, seguimiento y reintentos de resultado incierto ligados a numeración.",
+      "local_acceptance": "Aceptado, rechazado, pendiente y resultado incierto son distintos; acuse ajeno/alterado se rechaza; un timeout no consume otro consecutivo.",
+      "external_gates": [
+        "Acceso DIAN/proveedor autorizado, credenciales mediante canal seguro, test set, resolución y acuses auténticos."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R07",
+      "priority": "P1",
+      "title": "Completar almacenamiento soberano operativo",
+      "previous_packages": [
+        "H10"
+      ],
+      "depends_on": [
+        "R01"
+      ],
+      "finding": "BYOS PostgreSQL funciona en pruebas; faltan provisionamiento y operación real de ambos paneles y conectores requeridos.",
+      "implementation": "Completar perfiles/grants de cliente, cargas/versiones, revocación, límites, caída y recuperación; implementar OAuth/conectores solo si son necesarios.",
+      "local_acceptance": "Cifrar/subir/recuperar/descifrar y revocar en ambos paneles; caída o respuesta perdida no duplica ni deja documentos claros en el ERP.",
+      "external_gates": [
+        "Destino propiedad del cliente, consentimiento, TLS/roles/grants y retención/backup legítimos."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R08",
+      "priority": "P1",
+      "title": "Completar recuperación y rotación de custodia",
+      "previous_packages": [
+        "H11"
+      ],
+      "depends_on": [
+        "R07"
+      ],
+      "finding": "El paquete portátil permite recuperación/rewrap, pero faltan coordinación de versiones y validación física de custodia.",
+      "implementation": "Implementar referencias de última versión, conflicto de ramas, respaldo y recuperación bajo política explícita; integrar custodia nativa requerida.",
+      "local_acceptance": "Restauración recupera documento y referencias; rotación y revocación tienen alcance explícito; no se restauran autorizaciones vencidas.",
+      "external_gates": [
+        "Política/medios reales del cliente y pruebas físicas de recuperación/hardware cuando aplique."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R09",
+      "priority": "P0",
+      "title": "Implementar despacho SG-SST positivo y transversal",
+      "previous_packages": [
+        "H12"
+      ],
+      "depends_on": [
+        "R01"
+      ],
+      "finding": "El genérico bloquea activación porque aún no existe autorización cualificada de aptitud, EPP y jornada; faltan módulos especializados.",
+      "implementation": "Crear y conectar el contrato verificable de aptitud, EPP, recursos y jornada/descanso; integrar todas las rutas, tareas, ejecutores y guardas SQL requeridas.",
+      "local_acceptance": "Caso apto y autorizado puede iniciar; aptitud vencida, EPP faltante, fatiga, relación ajena o revocación impiden inicio y reanudación con auditoría.",
+      "external_gates": [
+        "Reglas SG-SST, roles profesionales y evidencia de aptitud legítima; nunca inferirla de texto libre ni exponer clínica."
+      ],
+      "code_state": "EN_EJECUCION",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_69.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-69.json",
+        "BACKEND/deployment/tests/accounting_worker_safety_check.py"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio",
+      "local_result": "Datos laborales estructurados, cifrado estricto y ruta positiva para órdenes genéricas verificados en37 pruebas locales; migración SQLite fresca de6 tablas vacías. Pendientes procesos especializados, interfaces, datos/reglas/habilitación profesional y cualificación PostgreSQL. Sin aceptación completa."
+    },
+    {
+      "id": "R10",
+      "priority": "P1",
+      "title": "Completar nómina y costos por operación",
+      "previous_packages": [
+        "H13"
+      ],
+      "depends_on": [
+        "R02",
+        "R09"
+      ],
+      "finding": "La nómina actual cubre una base acotada; faltan novedades, recargos/viáticos y dimensiones turísticas completas.",
+      "implementation": "Implementar reglas versionadas para novedades y provisiones, vincular turnos/servicios/centros de costo y documento electrónico sin dispersión implícita.",
+      "local_acceptance": "Mismo turno no duplica costo ni provisión; recargos, deducciones y contrapartidas concilian con ledger y fuente operacional.",
+      "external_gates": [
+        "Reglas laborales revisadas, datos legítimos de personal y habilitación de nómina electrónica para aceptación oficial."
+      ],
+      "code_state": "EN_EJECUCION",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/nomina/operational_costs.py",
+        "BACKEND/deployment/tests/accounting_operational_cost_check.py",
+        "ANALISIS/contabilidad/evidencias/implementacion-73.json",
+        "ANALISIS/contabilidad/evidencias/implementacion-74.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_74.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-75.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_75.md"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio",
+      "local_result": "Distribución analítica de nómina contabilizada contra jornadas, capacidad explícita, dos confirmaciones, costo sin asignar y revisiones sin doble gasto:23 pruebas ORM/API. Pendientes puente corporativo, interfaces, reglas laborales completas y habilitación externa. Entrega74: puente corporativo con contrato, formulario compartido ERP/Analemática y dos autorizaciones;12 nuevas pruebas HTTP/contrato y40 comprobaciones Chromium. Faltan reglas laborales completas, aceptación profesional y producción. Entrega75: cálculo exacto de horas extra/recargos declarados, bases explícitas de contribuciones, detalle y posteo canónicos en ambos paneles; bloqueo de segunda planilla de salario base superpuesta.16 casos ORM y un recorrido HTTP corporativo nuevos;68 comprobaciones Chromium (suplementos y regresión base). No cubre clasificación legal automática ni otras novedades/DIAN."
+    },
+    {
+      "id": "R11",
+      "priority": "P1",
+      "title": "Completar legados, lotes y valoración FX",
+      "previous_packages": [
+        "H05"
+      ],
+      "depends_on": [
+        "R01"
+      ],
+      "finding": "La apertura acotada no cubre legados no coincidentes, lotes grandes ni valoración/revaluación cambiaria completa.",
+      "implementation": "Agregar migración revisada por lotes, diferencias identificadas y tasas con fuente/vigencia; ajustar mediante contrapartidas conservando libros anteriores.",
+      "local_acceptance": "Descuadre o tasa ausente bloquean; propuesta/asiento coinciden; reintento no duplica y reversión preserva moneda/base/tasa originales.",
+      "external_gates": [
+        "Saldos/soportes originales, fuente FX autorizada y revisión contable profesional."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R12",
+      "priority": "P1",
+      "title": "Completar conciliación bancaria y casos parciales",
+      "previous_packages": [
+        "H14"
+      ],
+      "depends_on": [
+        "R11"
+      ],
+      "finding": "Existen correspondencias revisadas, pero faltan saldos completos, casos parciales/ambiguos, instrumentos/FX y autenticidad bancaria.",
+      "implementation": "Implementar conciliación de período, pagos parciales/cargos y diferencias explícitas, con identidad de fuente y conectores mínimos autorizados.",
+      "local_acceptance": "Archivo repetido no duplica; coincidencias de otra empresa/divisa/importe no concilian; explicación de diferencias y trazabilidad completas.",
+      "external_gates": [
+        "Extractos legítimos; permisos/consentimiento bancarios si se integra API; revisión profesional."
+      ],
+      "code_state": "EN_EJECUCION",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_76.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-76.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_77.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-77.json"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio",
+      "local_result": " Entrega76: selección de candidato ambiguo y diferencias explícitas por fila, conciliación parcial sin falsa completitud, reservas de referencias pendientes, recuperación/liberación y eventosv2;17 casos ORM/API,2 HTTP corporativos y6 de contrato nuevos. Pendientes saldos completos, pagos divididos/agrupados, FX y aceptación bancaria/profesional. Entrega77: cotejo de apertura/cierre y cobertura completa de libro para período declarado COP, con fuente revalidada, omisiones compensadas detectadas y ambos paneles.14 casos ORM,1 HTTP y4 de contrato nuevos. Pendientes banco auténtico, volúmenes/snapshots, períodos sin movimientos, importes divididos/agrupados y FX."
+    },
+    {
+      "id": "R13",
+      "priority": "P2",
+      "title": "Completar ratios turísticos y calibración",
+      "previous_packages": [
+        "H15"
+      ],
+      "depends_on": [
+        "R10",
+        "R11"
+      ],
+      "finding": "RevPAR/GOPPAR acotados no completan ocupación/ADR/cupos/paquetes ni denominadores y calibración independientes.",
+      "implementation": "Implementar observaciones operativas versionadas, costos por producto y ratios con corte económico/de conocimiento y fuente verificable.",
+      "local_acceptance": "Margen/ADR/ocupación y ratios aplicables concilian con ledger y capacidad; cero o fuente faltante son no calculables; sin datos futuros.",
+      "external_gates": [
+        "Series operativas reales y supuestos financieros revisados."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R14",
+      "priority": "P2",
+      "title": "Completar corrección ambiental y reportes ESG",
+      "previous_packages": [
+        "H16"
+      ],
+      "depends_on": [
+        "R01",
+        "R11"
+      ],
+      "finding": "Hay estimaciones y correcciones; faltan formularios, búsqueda/cortes/exportación, incertidumbre y mapeos ESG aplicables.",
+      "implementation": "Completar consulta histórica, evidencia/duplicados semánticos, interfaz y reportes con fuente/unidad/marco explícitos; separar medición de obligación contable.",
+      "local_acceptance": "Correcciones sustituyen sin duplicar; reporte reproducible conserva origen/corte y no emite certificaciones o créditos ficticios.",
+      "external_gates": [
+        "Factores, soportes y marcos revisados; obligación/compensación legítima si se reconoce financieramente."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R15",
+      "priority": "P2",
+      "title": "Completar asistencia contable privada evaluada",
+      "previous_packages": [
+        "H17"
+      ],
+      "depends_on": [
+        "R13"
+      ],
+      "finding": "El asistente determinista funciona, pero falta evaluar modelo privado/abierto, cobertura y calidad con datos autorizados.",
+      "implementation": "Incorporar modelo local/privado mediante herramientas de lectura acotadas, evaluación reproducible y respuestas con fuentes; sin SQL libre ni permisos de escritura.",
+      "local_acceptance": "Consultas enlazan reportes; inyección y empresa ajena se rechazan; calidad/errores/privacidad medidos en dataset autorizado.",
+      "external_gates": [
+        "Dataset consentido, capacidad del equipo y revisión de calidad/privacidad; no afirmar99,8% sin medición."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R16",
+      "priority": "P1",
+      "title": "Completar orquestación supervisada del motor",
+      "previous_packages": [
+        "H18"
+      ],
+      "depends_on": [
+        "R12",
+        "R15"
+      ],
+      "finding": "El ensayo financiero no es un trabajador de ejecución ni está unido al broker limitado con proveedor/recibos reales.",
+      "implementation": "Conectar tareas al motor agent-desktop/Open Duet mediante permisos mínimos, dos autorizaciones separadas del mismo solicitante y revisión adicional de impacto.",
+      "local_acceptance": "Cambiar importe/destino invalida autorizaciones; permisos vencidos no se reutilizan; resultado incierto se recupera sin duplicar; pruebas reales solo autorizadas.",
+      "external_gates": [
+        "Beneficiario/cuenta/proveedor/recibos legítimos y autorización explícita de cada acción real; no pagar por predicción, ubicación o simulación."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R17",
+      "priority": "P1",
+      "title": "Completar operación offline y sincronización nativa",
+      "previous_packages": [
+        "H19"
+      ],
+      "depends_on": [
+        "R08",
+        "R09"
+      ],
+      "finding": "El borrador IndexedDB cifrado no equivale a arranque offline completo ni SQLite/custodia nativa multiplataforma.",
+      "implementation": "Implementar captura y cola cifrada por dominio, arranque sin red, conflictos visibles, sincronización idempotente y almacenamiento nativo requerido.",
+      "local_acceptance": "Desconexión/reinicio/reconexión no pierden ni duplican novedades; conflictos no se ocultan y las aprobaciones deben renovarse online.",
+      "external_gates": [
+        "Dispositivos Android/iOS/escritorio y herramientas de compilación/hardware para pruebas físicas."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    },
+    {
+      "id": "R18",
+      "priority": "P1",
+      "title": "Completar recorridos e interfaces de ambos sistemas",
+      "previous_packages": [
+        "H07",
+        "H10",
+        "H13",
+        "H16",
+        "H18",
+        "H19"
+      ],
+      "depends_on": [
+        "R02",
+        "R07",
+        "R10",
+        "R13",
+        "R14",
+        "R16",
+        "R17"
+      ],
+      "finding": "Varias rutas nuevas tienen pruebas API pero no formularios o recorridos completos en los dos paneles.",
+      "implementation": "Conectar pantallas y estados reales, recuperación de errores, permisos, accesibilidad y vista móvil; conservar azul metalizado/azul claro/texto blanco.",
+      "local_acceptance": "Recorridos completos en ambos sistemas con evidencia visual, teclado/contraste/móvil y datos correctamente aislados; funciones pendientes no aparentan éxito.",
+      "external_gates": [
+        "Aceptación de usuarios/roles reales cuando corresponda; no sustituirla por fixtures."
+      ],
+      "code_state": "EN_EJECUCION",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_71.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-71.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_72.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-72.json",
+        "ANALISIS/contabilidad/evidencias/implementacion-74.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_74.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-75.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_75.md",
+        "ANALISIS/contabilidad/IMPLEMENTACION_76.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-76.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_77.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-77.json"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio",
+      "local_result": "Compras nativas compartidas en ambos paneles, soporte hash local sin subir archivos, confirmaciones separadas y recuperación tras recarga. Catálogo propio de compras con gastos, preservando ventas. UI de un concepto; no completa las otras interfaces pendientes. Entrega74: puente corporativo con contrato, formulario compartido ERP/Analemática y dos autorizaciones;12 nuevas pruebas HTTP/contrato y40 comprobaciones Chromium. Faltan reglas laborales completas, aceptación profesional y producción. Entrega75: cálculo exacto de horas extra/recargos declarados, bases explícitas de contribuciones, detalle y posteo canónicos en ambos paneles; bloqueo de segunda planilla de salario base superpuesta.16 casos ORM y un recorrido HTTP corporativo nuevos;68 comprobaciones Chromium (suplementos y regresión base). No cubre clasificación legal automática ni otras novedades/DIAN. Entrega76: selección de candidato ambiguo y diferencias explícitas por fila, conciliación parcial sin falsa completitud, reservas de referencias pendientes, recuperación/liberación y eventosv2;17 casos ORM/API,2 HTTP corporativos y6 de contrato nuevos. Pendientes saldos completos, pagos divididos/agrupados, FX y aceptación bancaria/profesional. Entrega77: cotejo de apertura/cierre y cobertura completa de libro para período declarado COP, con fuente revalidada, omisiones compensadas detectadas y ambos paneles.14 casos ORM,1 HTTP y4 de contrato nuevos. Pendientes banco auténtico, volúmenes/snapshots, períodos sin movimientos, importes divididos/agrupados y FX."
+    },
+    {
+      "id": "R19",
+      "priority": "P1",
+      "title": "Medir rendimiento y endurecer seguridad",
+      "previous_packages": [
+        "H20"
+      ],
+      "depends_on": [
+        "R18"
+      ],
+      "finding": "No están acreditados250ms ni precisión99,8%; faltan carga representativa, revisión de privilegios y pruebas independientes.",
+      "implementation": "Ejecutar benchmark por flujo con percentiles/máximo/errores, revisar SQL/RLS/roles, dependencias, auditoría y fugas; corregir y volver a medir.",
+      "local_acceptance": "Informe reproducible ligado a fuentes/hardware/dataset; sin garantías universales; ningún fallo crítico abierto se acepta como producción.",
+      "external_gates": [
+        "Hardware/carga objetivo, dataset autorizado y revisión de seguridad independiente para cualificación productiva."
+      ],
+      "code_state": "EN_EJECUCION",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_71.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-71.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_72.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-72.json"
+      ],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio",
+      "local_result": "Medición rehecha sobre las fuentes72:100 documentos sintéticos secuenciales, cuatro flujos, sin errores; máximo de consulta166.293ms. No acredita HTTP, concurrencia, carga productiva ni99.8% IA; clasificador no evaluado."
+    },
+    {
+      "id": "R20",
+      "priority": "P0",
+      "title": "Restauración integral y aceptación final",
+      "previous_packages": [
+        "H20"
+      ],
+      "depends_on": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "R06",
+        "R07",
+        "R08",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13",
+        "R14",
+        "R15",
+        "R16",
+        "R17",
+        "R18",
+        "R19"
+      ],
+      "finding": "La recuperación/despliegue reproducibles y aceptaciones externas de todo el alcance siguen incompletos.",
+      "implementation": "Restaurar datos/archivos/referencias con roles reales, comprobar RPO/RTO, reversión y operación; consolidar entregables y preparar publicación revisable.",
+      "local_acceptance": "Todos los criterios anteriores tienen evidencia vigente; restauración y reversión demostradas; pendientes externos resueltos antes de declarar100%.",
+      "external_gates": [
+        "Medios/llaves/grants reales, aceptación profesional y de proveedor; publicación/producción solo con la autorización correspondiente."
+      ],
+      "code_state": "PENDIENTE",
+      "acceptance_state": "PENDIENTE",
+      "fully_closed": false,
+      "evidence": [],
+      "responsible": "Arquitectura e implementación; revisión especializada según el dominio"
+    }
+  ],
+  "current_completed_milestones": 46,
+  "current_percent": "63.89"
+}

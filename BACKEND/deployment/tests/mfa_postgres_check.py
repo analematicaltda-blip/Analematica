@@ -211,10 +211,12 @@ def worker():
         password_reset_result=run_password_contract(context)
         from control_postgres_contract import run as run_control_contract
         control_result=run_control_contract()
+        from accounting_postgres_contract import run as run_accounting_contract
+        accounting_result=run_accounting_contract()
         from postgres_restore_contract import run as run_restore_contract
         restore_result=run_restore_contract()
         connections.close_all();override.disable()
-        print(json.dumps({'postgresql':True,'replay_cache_enforced':False,'results':results,'process_results':process_results,'http_results':http_results,'restore':restore_result,'capacity_results':capacity_results,'password_reset_result':password_reset_result,'control_result':control_result}),flush=True)
+        print(json.dumps({'postgresql':True,'replay_cache_enforced':False,'results':results,'process_results':process_results,'http_results':http_results,'restore':restore_result,'capacity_results':capacity_results,'password_reset_result':password_reset_result,'control_result':control_result,'accounting_result':accounting_result}),flush=True)
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--worker',action='store_true');args=parser.parse_args()

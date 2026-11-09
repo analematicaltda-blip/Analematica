@@ -16,21 +16,8 @@ class AccountingEngine:
         """
         Garantiza el principio de partida doble (Debe = Haber).
         """
-        # Se asume que entry tiene un related_name 'lines' o 'transactions'
-        lines_manager = getattr(entry, 'lines', None) or getattr(entry, 'transactions', None)
-        if not lines_manager:
-            raise ValidationError("El asiento no tiene líneas definidas.")
-
-        lines = lines_manager.all()
-        total_debit = sum(line.debit for line in lines)
-        total_credit = sum(line.credit for line in lines)
-
-        if abs(total_debit - total_credit) > Decimal('0.001'):
-            raise ValidationError(
-                f"Asiento descuadrado. Débito: {total_debit}, Crédito: {total_credit}. "
-                f"Diferencia: {total_debit - total_credit}"
-            )
-        return True
+        from .accounting.ledger_engine import LedgerEngine
+        return LedgerEngine.validate_balance(entry)
 
     @staticmethod
     def check_period_status(date, tenant):
@@ -38,15 +25,15 @@ class AccountingEngine:
         Verifica si el periodo para la fecha dada está abierto.
         """
         from .accounting.models import FiscalPeriod
-        period = FiscalPeriod.objects.filter(
+        period = FiscalPeriod.plain_objects.filter(
             tenant=tenant,
-            start_date__lte=date,
-            end_date__gte=date
+            period_start__lte=date,
+            period_end__gte=date
         ).first()
 
         if not period:
             return False, "No fiscal period found for date"
-        return period.is_open, "Period closed" if not period.is_open else "OK"
+        return period.status == "open", "OK" if period.status == "open" else "Period closed"
 
     @staticmethod
     @transaction.atomic
@@ -55,7 +42,7 @@ class AccountingEngine:
         Realiza la contabilización definitiva de un asiento delegando al LedgerEngine real.
         """
         from .accounting.ledger_engine import LedgerEngine
-        return LedgerEngine.post_entry(entry.id)
+        return LedgerEngine.post_entry(entry.id,tenant_id=entry.tenant_id,actor=responsible_user)
 
     @staticmethod
     def create_intercompany_entry(origin_tenant, destination_tenant, amount, currency, concept):
@@ -77,7 +64,7 @@ class AccountingEngine:
             tenant=origin_tenant,
             date=now,
             description=f"INTERCOMPANY: {concept} to {destination_tenant}",
-            period=FiscalPeriod.objects.filter(tenant=origin_tenant, is_open=True).first()
+            period=FiscalPeriod.plain_objects.filter(tenant=origin_tenant, is_open=True).first()
         )
 
         # 3. Crear Asiento en Destino
@@ -85,7 +72,7 @@ class AccountingEngine:
             tenant=destination_tenant,
             date=now,
             description=f"INTERCOMPANY: {concept} from {origin_tenant}",
-            period=FiscalPeriod.objects.filter(tenant=destination_tenant, is_open=True).first()
+            period=FiscalPeriod.plain_objects.filter(tenant=destination_tenant, is_open=True).first()
         )
 
         logger.info(f"Intercompany entries created: {entry_origin.id} and {entry_dest.id}")

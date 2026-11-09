@@ -6,7 +6,7 @@ class PostingRules:
     Motor Declarativo de Reglas Contables.
     Define cómo los eventos de negocio impactan el libro mayor.
     """
-    VERSION = "1.0"
+    VERSION = "2.0"
 
     @staticmethod
     def get_rule_for_event(event_type: str, payload: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -44,10 +44,9 @@ class PostingRules:
         commission = Decimal(str(payload.get('commission', 0)))
         tax = Decimal(str(payload.get('tax', 0)))
 
-        # If not provided, use default rate logic
-        if commission == 0 and tax == 0:
-            commission_rate = Decimal(str(payload.get('commission_rate', 0.10)))
-            commission = total * commission_rate
+        if 'commission' not in payload or 'tax' not in payload:
+            from .exceptions import AccountingError
+            raise AccountingError('Reservation commission and tax require explicit reviewed amounts.')
 
         provider_net = total - commission - tax
 

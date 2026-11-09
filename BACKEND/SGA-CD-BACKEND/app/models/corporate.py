@@ -29,3 +29,17 @@ class CorporateCommand(Base):
     result=Column(Text,nullable=False,default='{}')
     undone_by=Column(String(36))
     created_at=Column(DateTime(timezone=True),server_default=func.now())
+
+class CorporateLedgerBinding(Base):
+    """Explicit operator-reviewed identity bridge; never inferred from equal IDs."""
+    __tablename__='corporate_ledger_binding'
+    id=Column(Integer,primary_key=True)
+    owner_id=Column(Integer,ForeignKey('usuarios.id'),nullable=False)
+    reviewer_id=Column(Integer,ForeignKey('usuarios.id'),nullable=False)
+    ledger_actor_id=Column(String(80),nullable=False)
+    provider_id=Column(String(36),nullable=False)
+    tenant_id=Column(String(36),nullable=False)
+    evidence_digest=Column(String(64),nullable=False)
+    valid_until=Column(DateTime(timezone=True),nullable=False)
+    revoked_at=Column(DateTime(timezone=True))
+    created_at=Column(DateTime(timezone=True),server_default=func.now())

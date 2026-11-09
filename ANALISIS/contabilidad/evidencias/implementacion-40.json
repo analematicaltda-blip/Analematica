@@ -1,0 +1,107 @@
+{
+  "scope": "Context return cleanup and stale-response rejection; synthetic deferred transport plus isolated real session regression",
+  "implementation_percent": "38.89",
+  "production_ready": false,
+  "integrated_browser": {
+    "scope": "Real browser, password, cookie/CSRF and Django ledger; isolated synthetic data",
+    "passed": true,
+    "checks": [
+      "accounting_query_profit_real_owner_api",
+      "accounting_query_queue_real_owner_api",
+      "commercial_queue_real_owner_api",
+      "login_cookie_session",
+      "authorized_company_listing",
+      "posted_profitability",
+      "reviewed_quick_ratio",
+      "source_account",
+      "foreign_provider_denied",
+      "logout_hides_values",
+      "duplicate_classification_rejected",
+      "review_and_confirmation",
+      "stale_revision_rejected",
+      "reload_and_revision_save",
+      "indicators_refresh_after_save",
+      "classification_does_not_post_money",
+      "history_retains_old_and_new_revisions",
+      "explicit_historical_revision_and_latest",
+      "cash_simulation_ui",
+      "sensitivity_ui",
+      "editing_hides_stale_scenarios",
+      "company_change_clears_scenario_inputs",
+      "backtest_ui_zero_error",
+      "backtest_ui_negative_error",
+      "edited_outcomes_hide_evaluation",
+      "reconciliation_ui_readonly_page",
+      "reconciliation_hidden_on_company_change",
+      "browser_envelope_server_contract",
+      "plaintext_fields_rejected",
+      "envelope_company_scope",
+      "bounded_envelope_json_reader"
+    ],
+    "production_ready": false
+  },
+  "deferred_transport": {
+    "passed": true,
+    "scope": "Synthetic deferred Chromium transport ignoring AbortSignal",
+    "checks": [
+      "A_B_A_busy_reset",
+      "late_success_ignored",
+      "old_result_not_resurrected",
+      "late_permission_error_ignored",
+      "date_roundtrip_clears_pending",
+      "logout_pending_ignored",
+      "same_identity_reentry_usable",
+      "fresh_query_succeeds"
+    ],
+    "production_ready": false
+  },
+  "query_browser": {
+    "passed": true,
+    "scope": "Synthetic Chromium query UI",
+    "checks": [
+      "exact_money_and_source_rendered",
+      "blue_white_identity",
+      "mobile_no_overflow",
+      "edited_dates_hide_result",
+      "unsafe_contract_rejected",
+      "company_change_hides_result",
+      "permission_denied",
+      "logout_hides_result",
+      "POST_query_only"
+    ],
+    "production_ready": false
+  },
+  "commercial_browser": {
+    "passed": true,
+    "scope": "Synthetic Chromium contract",
+    "checks": [
+      "counts_rendered",
+      "fiscal_pending_explicit",
+      "malformed_response_rejected",
+      "context_change_clears_counts",
+      "permission_error",
+      "logout_clears_panel",
+      "blue_white_identity",
+      "mobile_no_overflow",
+      "GET_only"
+    ],
+    "production_ready": false
+  },
+  "strict_types": [
+    {
+      "scope": "AccountingQuery component only",
+      "strict": true,
+      "errors": []
+    },
+    {
+      "scope": "CommercialQueue component only",
+      "strict": true,
+      "errors": []
+    }
+  ],
+  "source_sha256": {
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/AccountingQuery.tsx": "1aa62c310ccf9aef65eff868a3df1925cdcd02bc70ae4243f99807d2263ec8a9",
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/CommercialQueue.tsx": "ef0226b30e7a33a4a74b44dd711bf361dbc878b41c232a139767ea3dc7d79d87",
+    "FRONTEND/deployment/tests/accounting_query_races.cjs": "c7a316046e9ef1fa2efd34893887bf326ec8a8129be44986cd4dc7580f449bd1"
+  }
+}

@@ -13,6 +13,9 @@ class DomainSargentoContable:
     @staticmethod
     def generar_asiento_partida_doble(tenant_id, date, description, movimientos, user_id=None):
         try:
+            from django.contrib.auth import get_user_model
+            from .validation import current_actor
+            actor=current_actor(get_user_model().objects.filter(pk=user_id).first())
             # Mapping legacy format to core format
             lines_data = []
             for mov in movimientos:
@@ -28,11 +31,11 @@ class DomainSargentoContable:
                 tenant_id=tenant_id,
                 entry_date=date,
                 description=description,
-                lines_data=lines_data
+                lines_data=lines_data, created_by=actor
             )
 
             # Post Entry
-            return LedgerEngine.post_entry(entry.id)
+            return LedgerEngine.post_entry(entry.id,tenant_id=tenant_id,actor=actor)
 
         except Exception as e:
             logger.error(f"DOMAIN SARGENTO: Error generating entry: {e}")

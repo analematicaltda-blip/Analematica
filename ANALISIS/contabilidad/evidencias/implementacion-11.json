@@ -1,0 +1,113 @@
+{
+  "scope": "Local bounded scenario simulation and isolated accounting/API tests",
+  "production_ready": false,
+  "implementation_percent": "25.00",
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T14:42:34.466033+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "b530506a6241bdcfca240d8177c1c6fab90b1680d12010eb0c6014584687bd45",
+    "source_digest_after": "b530506a6241bdcfca240d8177c1c6fab90b1680d12010eb0c6014584687bd45",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.519,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "c5601e95a787e3f7c6c3a2efe02f846c9e728837a1a80827f2cfa258dfce66b0",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.92,
+        "tests": 23,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "6506e3f2ca8c93b74b93e8e46f62d3e660386f9525aa9e746f31e66618086d91",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.622,
+        "tests": 28,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "504924aa00b4680d327992a1c935086d1ee2c8205ae632a3ef0a072f6fc02584",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.125,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "63dc60f2dbf565895d5529d44ba7dd540747ed728aa1abd272e45bea8f619342",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.165,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "4bd3e6458d6da5484df1642c9c9670ee7e0990093c58a40e8c23770dd4bd5d7a",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  },
+  "source_sha256": {
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/intelligence/cash_simulation.py": "6381a4fc732251b2c6c9b220ad25f5b363685f4786a5788862f2fb5e92631db2",
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/intelligence/simulation_engine.py": "ee18d914c06879bb6e47fba7aa80c48c0b8179dadd0b2f6a0a0ac5e8c12e05a0",
+    "BACKEND/deployment/tests/accounting_simulation_check.py": "2aca297f51a0a14cddb31bb39d6df44119c28aaf7fc621fc229035b791938560"
+  },
+  "full_acceptance": false
+}

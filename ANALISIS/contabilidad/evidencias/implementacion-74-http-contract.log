@@ -1,0 +1,22 @@
+/workspace/SGA-CD/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_foreign_source_and_company_override_refused (test_corporate_ledger_payroll_cost.CorporatePayrollCostTests.test_foreign_source_and_company_override_refused) ... ok
+test_full_two_confirmation_cost_flow_shared_history_and_report (test_corporate_ledger_payroll_cost.CorporatePayrollCostTests.test_full_two_confirmation_cost_flow_shared_history_and_report) ... ok
+test_financial_or_restored_authority_rejected (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_financial_or_restored_authority_rejected) ... ok
+test_foreign_payroll_and_company_rejected (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_foreign_payroll_and_company_rejected) ... ok
+test_incomplete_coverage_keeps_null_total (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_incomplete_coverage_keeps_null_total) ... ok
+test_incomplete_report_cannot_claim_even_zero_total (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_incomplete_report_cannot_claim_even_zero_total) ... ok
+test_missing_payroll_cannot_be_presented_as_complete (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_missing_payroll_cannot_be_presented_as_complete) ... ok
+test_money_must_be_exact_string (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_money_must_be_exact_string) ... ok
+test_private_employee_fields_not_allowed (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_private_employee_fields_not_allowed) ... ok
+test_recovery_never_restores_confirmations (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_recovery_never_restores_confirmations) ... ok
+test_report_scope_and_physical_claims_rejected (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_report_scope_and_physical_claims_rejected) ... ok
+test_valid_analytical_record_is_not_a_journal (test_corporate_ledger_payroll_cost_contract.PayrollCostContractChecks.test_valid_analytical_record_is_not_a_journal) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 6.940s
+
+OK

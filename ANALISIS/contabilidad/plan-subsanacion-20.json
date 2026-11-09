@@ -1,0 +1,624 @@
+{
+  "schema": "sgacd-accounting-remediation-v1",
+  "global_baseline": "accounting-blueprint-v1",
+  "global_denominator_unchanged": 72,
+  "execution_policy": "Corregir y verificar autónomamente lo ejecutable localmente; registrar bloqueos externos y seguir con hitos independientes. Los commits y acciones reales conservan sus autorizaciones existentes.",
+  "items": [
+    {
+      "id": "H01",
+      "title": "Privacidad y aislamiento de facturas legadas",
+      "accounting_items": [
+        "ACC-005",
+        "ACC-007",
+        "ACC-008",
+        "ACC-024"
+      ],
+      "finding": "El viewset legado consultaba todas las facturas y serializaba XML en claro; el receptor de señales usaba un atributo de estado incompatible.",
+      "action": "Restringir cabecera y operación a la empresa verificada, exigir dueño/sesión y respuestas privadas, retirar XML/URL del listado y conservar operaciones sin aceptar facturas ficticias.",
+      "acceptance": "Pruebas HTTP/ORM de dueño, empresa ajena, relación inconsistente, vínculo revocado, anonimato y documentos ausentes; alta operativa sin emisión ficticia.",
+      "depends_on": [],
+      "external_gates": [],
+      "state": "VERIFICADO_LOCAL",
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-49.json",
+        "BACKEND/deployment/tests/accounting_legacy_invoice_check.py"
+      ],
+      "local_result": "API legado restringido a dueño/empresa vinculada y relación factura/operación coherente; XML/URL retirados de los metadatos y altas operativas conservadas sin emisión DIAN ficticia. Pruebas locales de implementación49 y regresión posterior."
+    },
+    {
+      "id": "H02",
+      "title": "Recuperación de resultados corporativos inciertos",
+      "accounting_items": [
+        "ACC-003",
+        "ACC-005",
+        "ACC-008"
+      ],
+      "finding": "Un timeout posterior al despacho puede ocultar una escritura ya confirmada; falta recuperar el detalle de la revisión desde la consola.",
+      "action": "Añadir consulta por revisión persistida y estado/journal al puente, más reanudación segura de la interfaz.",
+      "acceptance": "Cortar respuesta después del commit, recuperar el mismo asiento y demostrar que el reintento no duplica; vínculo revocado deniega.",
+      "depends_on": [
+        "H01"
+      ],
+      "external_gates": [],
+      "state": "VERIFICADO_LOCAL",
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-50.json"
+      ],
+      "local_result": "Estado/revisión/historial recuperables con actor/empresa verificados; respuesta perdida tras commit recupera el mismo asiento, sin restaurar aprobaciones."
+    },
+    {
+      "id": "H03",
+      "title": "Paginación e historial de fuentes y cuentas",
+      "accounting_items": [
+        "ACC-005",
+        "ACC-008",
+        "ACC-016"
+      ],
+      "finding": "La selección de reconocimiento solo carga las primeras reservas y rechaza catálogos mayores de 500; falta reanudar revisiones.",
+      "action": "Implementar búsqueda y cursores estables por empresa, detalle de revisión y estados claros en ambos paneles.",
+      "acceptance": "Recorrer más de 20 reservas y 500 cuentas sin omisiones/duplicados ni cruce empresarial; recuperar revisión vigente.",
+      "depends_on": [
+        "H02"
+      ],
+      "external_gates": [],
+      "state": "VERIFICADO_LOCAL",
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-50.json"
+      ],
+      "local_result": "Cursores y búsqueda acotada de cuentas, paginación de reservas e historial; navegación real con más de500 cuentas y20 reservas en ambos paneles."
+    },
+    {
+      "id": "H04",
+      "title": "Cortes y snapshots financieros coherentes",
+      "accounting_items": [
+        "ACC-004",
+        "ACC-006",
+        "ACC-016"
+      ],
+      "finding": "Los reportes históricos no equivalen a un snapshot original de publicación; faltan garantías de corte consistente y diagnóstico de empresas inactivas.",
+      "action": "Consolidar lecturas bajo snapshot/primary explícitos y registrar metadatos del corte con errores accionables.",
+      "acceptance": "Posteo concurrente no mezcla cortes; moneda, fecha, integridad y origen verificables; empresa inactiva rechazada.",
+      "depends_on": [
+        "H01"
+      ],
+      "external_gates": [],
+      "state": "VERIFICADO_LOCAL",
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-50.json"
+      ],
+      "local_result": "Reportes principales bajo bloqueo compartido de empresa/primary, rechazo de empresa inactiva/moneda histórica incompatible y referencia estable al último asiento; carrera PostgreSQL verificada."
+    },
+    {
+      "id": "H05",
+      "title": "Conciliación de legados, apertura y FX",
+      "accounting_items": [
+        "ACC-001",
+        "ACC-004",
+        "ACC-006",
+        "ACC-015"
+      ],
+      "finding": "Saldos iniciales y valoraciones legadas requieren conciliación; faltan aperturas aprobadas y fuentes FX cualificadas.",
+      "action": "Crear propuestas trazables de conciliación/apertura con simulación y confirmaciones, preservando originales; reforzar política FX.",
+      "acceptance": "Descuadres/FX ausente bloquean; propuesta y asiento aprobado coinciden; repetición no duplica y contrapartida conserva historia.",
+      "depends_on": [
+        "H04"
+      ],
+      "external_gates": [
+        "Saldos/documentos legítimos y revisión contable profesional",
+        "Fuente FX autorizada y vigencia para aceptación real"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/opening_balances.py",
+        "BACKEND/deployment/tests/accounting_opening_check.py",
+        "ANALISIS/contabilidad/evidencias/implementacion-51.json"
+      ],
+      "local_result": "Apertura COP de primeros libros desde saldos originales balanceados, dos confirmaciones del mismo titular y prueba de origen persistida. También vincula un asiento existente exactamente coincidente, incluso en período cerrado, sin duplicarlo ni cambiar su hash. Reintento, fuente modificada, contrapartida y carreras verificadas en fixtures; pendientes legados no coincidentes, lotes mayores de100 cuentas, migraciones/valoraciones FX y soportes legítimos revisados."
+    },
+    {
+      "id": "H06",
+      "title": "Políticas tributarias versionadas y conciliación",
+      "accounting_items": [
+        "ACC-014"
+      ],
+      "finding": "La conciliación interna existe; no hay aceptación de reglas normativas, retenciones ni cruce fiscal oficial.",
+      "action": "Modelar políticas revisadas por vigencia/empresa, trazabilidad de IVA y retenciones y discrepancias sin correcciones automáticas.",
+      "acceptance": "Casos con políticas sucesivas, exención, retención, devolución y contrapartida; cálculo exacto y explicación por componente.",
+      "depends_on": [
+        "H04"
+      ],
+      "external_gates": [
+        "Normativa aplicable y revisión tributaria profesional",
+        "Datos/acuse oficial para contraste real"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/tax_policies.py",
+        "BACKEND/deployment/tests/accounting_tax_policy_check.py",
+        "ANALISIS/contabilidad/evidencias/implementacion-51.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_68.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-68.json",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/commercial_tax_posting.py",
+        "BACKEND/deployment/tests/accounting_commercial_tax_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_commercial_tax.py",
+        "ANALISIS/contabilidad/IMPLEMENTACION_70.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-70.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_71.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-71.json",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/tax_register.py",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/tax_register_snapshot.py",
+        "BACKEND/SGA-CD-BACKEND/app/services/tax_register_contract.py",
+        "BACKEND/deployment/tests/accounting_tax_register_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_tax_register_contract.py",
+        "BACKEND/deployment/benchmark_accounting.py",
+        "BACKEND/deployment/accounting_benchmark_metrics.py",
+        "BACKEND/deployment/tests/accounting_benchmark_check.py",
+        "ANALISIS/contabilidad/IMPLEMENTACION_72.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-72.json",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/source_bindings.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py",
+        "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
+        "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx",
+        "BACKEND/deployment/tests/accounting_native_purchase_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase_contract.py",
+        "FRONTEND/deployment/tests/native_purchases_browser.cjs"
+      ],
+      "local_result": "Políticas COP declaradas por el titular, versionadas y con vigencias no solapadas; cotización exacta por componente, categorías y nota crédito simulada. Implementación68 conecta versiones persistidas a revisión de reserva y reconocimiento explícito del ledger en ambos backends, revalidando fuente y evidencia. La cotización sola no crea documentos ni asientos. El flujo ligado es acotado a COP, un único código de impuesto positivo y fecha tributaria igual a contable; retenciones positivas y múltiples impuestos se rechazan. Pendientes posteo por componente, IVA descontable/retenciones, interfaz/recuperación completas, reglas normativas, contraste oficial y aceptación profesional/productiva. Implementación70 incorpora una ruta separada de hechos comerciales revisados con compra/venta, IVA descontable/generado, retenciones por componente y contrapartida canónica. Se verificó por API y puente HTTP; no relaja las restricciones de reservas ni completa fuentes nativas, conciliación unificada, devoluciones parciales, interfaz o aceptación tributaria. Implementación71 conecta conciliación integrada a ambos paneles y valida fuentes/sumas en lote; añade benchmark local reproducible,detecta547.209ms y reduce máximo a134.922ms en100 documentos sintéticos secuenciales. No acredita SLA productiva ni precisión IA. Implementación72: compras nativas operables en ambos paneles, catálogo con gastos y reserva de fuente/huella contra bypass, recuperación/contrapartida con dos confirmaciones; sin histórico, pagos, emisión o aceptación profesional completos."
+    },
+    {
+      "id": "H07",
+      "title": "Documento UBL y representación del cliente",
+      "accounting_items": [
+        "ACC-008",
+        "ACC-009"
+      ],
+      "finding": "Los generadores legados eran incompletos y fabricaban CUFE; ahora están bloqueados.",
+      "action": "Implementar generación local del cliente, contratos completos y validación XSD/reglas; enlazar documento a solicitud sin centralizar el texto claro.",
+      "acceptance": "Identidad, numeración, líneas, impuestos y totales coinciden; documento inválido y datos faltantes bloquean; XML bien escapado.",
+      "depends_on": [
+        "H06"
+      ],
+      "external_gates": [
+        "Anexo DIAN vigente, identidad/resolución y clasificación revisadas",
+        "Homologación de documentos y representación requerida"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ubl-draft.js",
+        "FRONTEND/deployment/tests/ubl_draft_browser.cjs",
+        "FRONTEND/deployment/tests/ubl_panel_browser.cjs",
+        "FRONTEND/deployment/tests/validate_ubl_reference.py",
+        "FRONTEND/shared/accounting/vendor/ubl21-reference/PROVENANCE.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_60.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-60.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_72.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-72.json",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/source_bindings.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py",
+        "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
+        "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx",
+        "BACKEND/deployment/tests/accounting_native_purchase_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase_contract.py",
+        "FRONTEND/deployment/tests/native_purchases_browser.cjs"
+      ],
+      "local_result": "Borrador UBL COP local en ambos paneles, XML/representación en memoria, aritmética BigInt y contrato acotado; cuatro documentos sintéticos pasan XSD de referencia UBL2.1 CS1 con dependencias/procedencia conservadas. No valida XSD en navegador, perfil DIAN, firma, CUFE ni aceptación fiscal. Pendientes anexo vigente, integración CRM/política/solicitud, representación fiscal/PDF-A3, cifrado/custodia, campos tributarios/documentales completos y cualificación profesional. Implementación72: compras nativas operables en ambos paneles, catálogo con gastos y reserva de fuente/huella contra bypass, recuperación/contrapartida con dos confirmaciones; sin histórico, pagos, emisión o aceptación profesional completos."
+    },
+    {
+      "id": "H08",
+      "title": "Firma fiscal y custodia soberana",
+      "accounting_items": [
+        "ACC-009",
+        "ACC-010"
+      ],
+      "finding": "Faltan firma XAdES cualificada, recuperación y certificado bajo custodia del cliente.",
+      "action": "Integrar firmante local restringido, validación de cadena/política y pruebas con claves efímeras; mantener bloqueo productivo hasta cualificación.",
+      "acceptance": "Cambiar documento, certificado, firma o política invalida; claves privadas no aparecen en servidor/logs; recuperación probada.",
+      "depends_on": [
+        "H07"
+      ],
+      "external_gates": [
+        "Certificado legítimo del cliente y política de firma vigente",
+        "Validación de custodia/dispositivos/HSM que correspondan"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_63.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-63.json",
+        "DESKTOP/fiscal-signer/local_signer.py",
+        "BACKEND/deployment/tests/accounting_local_signer_check.py"
+      ],
+      "local_result": "Firmante XAdES restringido a laboratorio en equipo del cliente: entrada/salida cifradas, certificado/política fijados, doble revisión local y verificación criptográfica. No es firma DIAN cualificada ni custodia hardware; aceptación y recuperación reales pendientes."
+    },
+    {
+      "id": "H09",
+      "title": "Transporte DIAN y validación de acuses",
+      "accounting_items": [
+        "ACC-009",
+        "ACC-014"
+      ],
+      "finding": "No existe transporte verificado; configuración local no acredita aceptación.",
+      "action": "Construir adaptador de habilitación con destinos fijos, resultado incierto, reintentos y verificación auténtica de ApplicationResponse.",
+      "acceptance": "Aceptado/rechazado/pendiente distintos; acuse ajeno o alterado rechazado; timeout no consume nueva numeración ni duplica.",
+      "depends_on": [
+        "H08"
+      ],
+      "external_gates": [
+        "Proveedor o acceso DIAN de habilitación autorizado",
+        "Credenciales, test set, red aprobada y acuses legítimos"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_66.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-66.json",
+        "DESKTOP/fiscal-signer/receipt_validation.py",
+        "DESKTOP/fiscal-signer/receipt_journal.py",
+        "BACKEND/deployment/tests/accounting_dian_receipt_check.py"
+      ],
+      "local_result": "Verificador criptográfico ApplicationResponse y diario SQLite solo de laboratorio en el host del cliente. Firma/identidad verificadas, estados de prueba separados, reintentos inciertos con identidad estable, concurrencia y recuperación idempotente. Sin transporte DIAN, numeración oficial ni acuse auténtico; pendientes SOAP/WS-Security, perfil/códigos/confianza oficiales y habilitación legítima."
+    },
+    {
+      "id": "H10",
+      "title": "Carga cifrada y almacenamiento BYOS",
+      "accounting_items": [
+        "ACC-010",
+        "ACC-011"
+      ],
+      "finding": "Existe SDK y adaptador PG aislado; falta recorrido de carga autenticado, OAuth y operación de destinos del cliente.",
+      "action": "Conectar cliente cifrador a destinos permitidos con permisos mínimos, idempotencia y verificación de identidad/procedencia.",
+      "acceptance": "Recorrido cifrar/subir/leer/descifrar y revocar acceso; caída no duplica; servidor del ERP no conserva documento claro.",
+      "depends_on": [
+        "H01"
+      ],
+      "external_gates": [
+        "Almacenamiento/credenciales propiedad del cliente",
+        "Consentimientos OAuth y revisión de permisos reales"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/customer_package_store.py",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/customer_package_api.py",
+        "BACKEND/deployment/tests/customer_package_contract.py",
+        "BACKEND/deployment/tests/accounting_customer_package_check.py",
+        "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-customer-store.js",
+        "FRONTEND/deployment/tests/customer_store_browser.cjs",
+        "ANALISIS/contabilidad/IMPLEMENTACION_62.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-62.json"
+      ],
+      "local_result": "API independiente del cliente y PostgreSQL explícito con paquetes versionados, cadena de versiones, reintento, rol mínimo y guardas. Cliente directo HTTPS, token BYOS distinto del JWT, sin cookies/redirecciones y rechazo de campos en claro antes de enviar. Ruta de navegador/API/PostgreSQL y restore aislados; controles compartidos cerrados sin perfil aprobado. Pendientes propiedad/TLS/credenciales/perfiles reales, ambos paneles provisionados, operación/retención/commit incierto y cualificación independiente."
+    },
+    {
+      "id": "H11",
+      "title": "Recuperación y rotación de claves/documentos",
+      "accounting_items": [
+        "ACC-010",
+        "ACC-011",
+        "ACC-024"
+      ],
+      "finding": "Faltan custodia, recuperación, control de versiones y cualificación de medios de respaldo del cliente.",
+      "action": "Implementar recuperación/rotación sin entregar KEK al proveedor; versionar referencias y probar restauración consistente.",
+      "acceptance": "Rotación conserva autenticidad, revocación impide acceso y respaldo restaura documento más referencias sin exportar llaves privadas.",
+      "depends_on": [
+        "H10"
+      ],
+      "external_gates": [
+        "Medios y política de recuperación del cliente",
+        "Validación física de custodia cuando aplique"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-fiscal-package.js",
+        "FRONTEND/deployment/build_fiscal_runtime.cjs",
+        "FRONTEND/deployment/tests/fiscal_package_browser.cjs",
+        "FRONTEND/deployment/tests/fiscal_package_panels_browser.cjs",
+        "ANALISIS/contabilidad/IMPLEMENTACION_61.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-61.json"
+      ],
+      "local_result": "Paquete cifrado cliente con recuperación local, HMAC de metadatos, revisión/parent digest y rewrap de DEK con KEK nueva, integrado en ambos paneles. Contraseña/empresa/documento erróneos y manipulación rechazados; descargas sin red ni aceptación fiscal. Pendientes custodia/medios/hardware, política de recuperación, referencias/publicación soberana, conflictos de ramas/última versión y cualificación física. No revoca archivos antiguos ni recupera contraseñas perdidas."
+    },
+    {
+      "id": "H12",
+      "title": "Guardas operativas y SG-SST",
+      "accounting_items": [
+        "ACC-005",
+        "ACC-012"
+      ],
+      "finding": "No hay incremento acreditado de aptitud/EPP/fatiga; geolocalización no demuestra aptitud. Hallazgo adicional: SSTService usa un denominador fijo de10 trabajadores; faltan guardas efectivas de despacho/fatiga y revisión del alcance de acceso médico.",
+      "action": "Auditar módulos existentes e integrar guardas explícitas por actividad/rol y evidencias mínimas, con acceso médico restringido.",
+      "acceptance": "Aptitud vencida, EPP faltante o exceso de jornada impiden despacho; correcciones quedan auditadas y datos médicos segregados.",
+      "depends_on": [
+        "H01"
+      ],
+      "external_gates": [
+        "Reglas SG-SST y validación profesional de riesgos/aptitud"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "BACKEND/deployment/tests/accounting_sst_check.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/sg_sst/access.py",
+        "ANALISIS/contabilidad/evidencias/implementacion-52.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_67.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-67.json",
+        "BACKEND/deployment/tests/accounting_dispatch_guard_check.py",
+        "BACKEND/deployment/tests/accounting_worker_safety_check.py",
+        "ANALISIS/contabilidad/IMPLEMENTACION_69.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-69.json",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/dispatch_authorization.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/sg_sst/worker_data.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/sg_sst/worker_data_service.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/sg_sst/worker_data_views.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/sg_sst/worker_data_guards.py",
+        "BACKEND/deployment/worker_dispatch_policy.py"
+      ],
+      "local_result": "Implementación69 añade datos persistentes de autorización profesional cifrada, EPP, jornadas/descanso y revocaciones; permisos clínicos explícitos; despacho positivo de orden genérica con política provisionada y dos confirmaciones del titular; cierre hacia VALIDACION con jornada registrada, sin costo/nómina. Pendientes datos/habilitación profesional y política laboral legítimos, evidencia física/off-platform, procesos especializados, interfaces, migración histórica, PostgreSQL/concurrencia y custodia cualificada. No habilita producción ni actuación física."
+    },
+    {
+      "id": "H13",
+      "title": "Nómina, provisiones y costos por servicio",
+      "accounting_items": [
+        "ACC-003",
+        "ACC-012",
+        "ACC-013"
+      ],
+      "finding": "No hay hito verificado del vínculo operativo con nómina/provisiones/costos. Auditoría adicional52: reglas salariales 2024/2025 fijas, ausencia contada sin período y símbolo Ausencia sin importar; contabilizar_nomina crea borrador y marca CONTABILIZADA sin posteo verificado; acciones liquidar/contabilizar no consultan primero el objeto acotado. Corregir antes de habilitar nómina.",
+      "action": "Integrar novedades revisadas y reglas por vigencia al ledger, con centros de costo, corrección e idempotencia.",
+      "acceptance": "Turno repetido no duplica provisión; recargo/viático y contrapartida trazables; cifras exactas y permisos segregados.",
+      "depends_on": [
+        "H05",
+        "H12"
+      ],
+      "external_gates": [
+        "Reglas laborales revisadas y datos legítimos de personal",
+        "Habilitación de nómina electrónica para aceptación oficial"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "BACKEND/deployment/tests/accounting_payroll_boundary_check.py",
+        "ANALISIS/contabilidad/evidencias/implementacion-52.json",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/nomina/reviewed_payroll.py",
+        "BACKEND/deployment/tests/accounting_payroll_check.py",
+        "FRONTEND/deployment/tests/payroll_browser.cjs",
+        "ANALISIS/contabilidad/evidencias/implementacion-53.json"
+      ],
+      "local_result": "Nuevo flujo explícito en ERP y Analemática: contrato/días/parámetros declarados y cuentas revisados, segunda confirmación y asiento canónico de base/deducciones/aportes/provisiones, sin pago. Recuperación de resultado, reintento único, fuente cambiada y duplicación de período rechazados. Alcance1–10 empleados, COP y modo base sin novedades/ausencias; reglas laborales/nómina oficial/dimensiones turísticas completas pendientes. Las rutas legadas incompletas permanecen en503."
+    },
+    {
+      "id": "H14",
+      "title": "Extractos y conciliación bancaria segura",
+      "accounting_items": [
+        "ACC-008",
+        "ACC-015"
+      ],
+      "finding": "La aplicación de anticipos es declarada por el propietario; no existe conciliación bancaria independiente acreditada.",
+      "action": "Importar extractos con huellas/duplicados, proponer correspondencias y exigir revisión antes de asientos o aplicaciones.",
+      "acceptance": "Archivo repetido no duplica; recibo ajeno/divisa/importe incorrectos no concilian; diferencia y origen quedan visibles.",
+      "depends_on": [
+        "H05"
+      ],
+      "external_gates": [
+        "Extractos autorizados",
+        "Accesos bancarios mínimos si se integra API; ninguna dispersión automática"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-50.json",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_reconciliation.py",
+        "BACKEND/deployment/tests/accounting_bank_reconciliation_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_bank.py",
+        "FRONTEND/deployment/tests/bank_reconciliation_browser.cjs",
+        "ANALISIS/contabilidad/evidencias/implementacion-54.json",
+        "ANALISIS/contabilidad/evidencias/implementacion-76.json",
+        "ANALISIS/contabilidad/evidencias/implementacion-77.json"
+      ],
+      "local_result": "Confirmación persistente de1–30 correspondencias únicas y liberación append-only, cada una con dos pasos del mismo titular. Reservas de línea/referencia impiden duplicación bajo bloqueo de empresa; recuperación y revisión tras contrapartida, datos derivados sin CSV/IDs originales, API y panel compartidos. No autentica extractos, no concilia saldos completos ni escribe asientos/pagos; pendientes fuente bancaria legítima, FX, lotes parciales/ambiguos y garantías operativas/SQL independientes. Entrega76 añade resoluciones explícitas, metadatos parciales con diferencias, reservas de referencias pendientes y selección ambigua; no divide importes ni concilia saldos completos. Los nuevos registros requieren lectorv2. Entrega77 añade saldos de apertura/cierre y cobertura del libro para períodos declarados COP, con calificación separada e invalidación por cambios retroactivos. No autentica el extracto ni amplía los límites de volumen."
+    },
+    {
+      "id": "H15",
+      "title": "Ratios turísticos y calibración financiera",
+      "accounting_items": [
+        "ACC-016",
+        "ACC-017"
+      ],
+      "finding": "Faltan ratios con denominadores operativos reales, ventanas de evaluación completas y cualificación de series.",
+      "action": "Integrar ocupación/cupos/paquetes verificados y ampliar backtesting/sensibilidad en ambos paneles.",
+      "acceptance": "RevPAR/GOPPAR/margen concilian con ledger; división cero es no calculable; ventanas no anticipan información futura.",
+      "depends_on": [
+        "H04",
+        "H13"
+      ],
+      "external_gates": [
+        "Datos operativos reales y revisión de supuestos financieros"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/tourism_metrics.py",
+        "BACKEND/deployment/tests/accounting_tourism_metrics_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_hotel.py",
+        "FRONTEND/deployment/tests/hotel_metrics_browser.cjs",
+        "ANALISIS/contabilidad/evidencias/implementacion-55.json"
+      ],
+      "local_result": "Observaciones diarias versionadas de habitaciones físicas existentes, doble confirmación, cuentas operativas/exclusiones explícitas y RevPAR/GOPPAR desde ledger contabilizado por fecha económica y conocimiento. Cero/missing/unclasificado no calculan; no se usa inventario actual para pasado. UI/API ERP y corporativas. Pendientes ocupación/ADR/cupos/paquetes, denominadores independientes, calibración de series, datos legítimos y validación profesional."
+    },
+    {
+      "id": "H16",
+      "title": "Carbono, impacto y reportes ESG",
+      "accounting_items": [
+        "ACC-018",
+        "ACC-019"
+      ],
+      "finding": "No existen hitos verificados de factores de emisión y reportes ESG; no se puede inferir pasivo financiero ambiental.",
+      "action": "Auditar módulos, registrar factores/unidades/versiones/evidencias y separar medición ambiental de obligación contable.",
+      "acceptance": "Cálculo reproducible, correcciones sin duplicar compensación y reporte con fuente/unidad; ninguna certificación ficticia.",
+      "depends_on": [
+        "H04"
+      ],
+      "external_gates": [
+        "Factores y marcos aplicables revisados",
+        "Evidencia legítima de compensaciones/obligaciones"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/environmental.py",
+        "BACKEND/deployment/tests/accounting_environmental_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_environmental.py",
+        "FRONTEND/deployment/tests/environmental_browser.cjs",
+        "ANALISIS/contabilidad/IMPLEMENTACION_56.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-56.json",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/environmental_records.py",
+        "BACKEND/deployment/tests/accounting_environmental_records_check.py",
+        "FRONTEND/deployment/tests/environmental_records_browser.cjs",
+        "ANALISIS/contabilidad/IMPLEMENTACION_57.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-57.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_65.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-65.json"
+      ],
+      "local_result": "Estimación y registro persistente con doble confirmación, versiones explícitas e inmutables de factores, exclusión de actividades ya confirmadas y recuperación por revisión sin restaurar autorizaciones; ambos paneles/APIs. Sin asientos, pasivos ni créditos. Pendientes fuentes/soportes legítimos, identidad operativa y duplicados semánticos, búsqueda/cortes/exportación, incertidumbre y reconocimiento profesional. Correcciones append-only con revisión de cabecera, dos confirmaciones, factores inmutables y recuperación del total efectivo en ambos paneles (implementación65); sin borrar/reclamar actividades originales ni generar asientos."
+    },
+    {
+      "id": "H17",
+      "title": "Asistente contable en ambos sistemas",
+      "accounting_items": [
+        "ACC-005",
+        "ACC-020"
+      ],
+      "finding": "La consulta acotada ERP no cubre aún todo el recorrido corporativo ni un modelo abierto evaluado.",
+      "action": "Ampliar herramientas de consulta autorizadas y fuentes, primero deterministas; evaluar modelo privado con dataset.",
+      "acceptance": "Consultas explicables enlazan reportes; inyección y empresa ajena rechazadas; sin SQL libre ni escrituras desde el asistente.",
+      "depends_on": [
+        "H04"
+      ],
+      "external_gates": [
+        "Dataset autorizado y evaluación de calidad/privacidad antes de modelo abierto"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-50.json"
+      ],
+      "local_result": "Asistente corporativo de lectura conectado al ERP con fuentes trazables y rechazo de inyección. Falta comprensión abierta/modelo privado evaluado y dataset autorizado."
+    },
+    {
+      "id": "H18",
+      "title": "Orquestación financiera con autorizaciones",
+      "accounting_items": [
+        "ACC-015",
+        "ACC-020",
+        "ACC-021"
+      ],
+      "finding": "No hay hito verificado de dispersión/RPA financiera; una predicción o ubicación no autoriza pagos.",
+      "action": "Integrar borradores de tareas al motor existente, dos autorizaciones del solicitante y confirmación de impacto ligada al payload.",
+      "acceptance": "Cambiar importe/destino invalida aprobaciones; reintento no duplica; prueba local sin ejecutar dinero real.",
+      "depends_on": [
+        "H14",
+        "H17"
+      ],
+      "external_gates": [
+        "Proveedor/cuenta y recibos verificados",
+        "Autorizaciones explícitas para pruebas reales de impacto"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "ANALISIS/contabilidad/IMPLEMENTACION_64.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-64.json",
+        "BACKEND/deployment/tests/accounting_financial_orchestration_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_financial_rehearsal.py"
+      ],
+      "local_result": "Ensayo financiero persistente y acotado: titular/vínculo personal vigentes, dos confirmaciones separadas, importe/destino ligados al digest, revisión de impacto y un solo resultado recuperable. API ERP y puente corporativo HTTP comprobados; sin pagos/trabajador bancario/trabajos de escritorio. Pendientes UI, broker limitado, cuentas/recibos legítimos y cualificación operacional."
+    },
+    {
+      "id": "H19",
+      "title": "Captura offline cifrada y sincronización",
+      "accounting_items": [
+        "ACC-003",
+        "ACC-010",
+        "ACC-022"
+      ],
+      "finding": "No hay aceptación de sincronización real en dispositivos; offline prepara datos y no liquida dinero.",
+      "action": "Integrar cola local cifrada, versiones, idempotencia y resolución de conflictos apropiada a cada campo.",
+      "acceptance": "Desconexión/reconexión no pierde ni duplica novedades; conflicto visible; aprobaciones vencidas no se reutilizan.",
+      "depends_on": [
+        "H11",
+        "H12"
+      ],
+      "external_gates": [
+        "Dispositivos Android/iOS/escritorio y pruebas físicas de custodia/sincronización"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-offline.js",
+        "FRONTEND/deployment/tests/offline_drafts_crypto_browser.cjs",
+        "FRONTEND/deployment/tests/offline_drafts_browser.cjs",
+        "ANALISIS/contabilidad/IMPLEMENTACION_58.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-58.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_59.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-59.json"
+      ],
+      "local_result": "Borrador ambiental individual cifrado en IndexedDB, recuperación/cambio de contraseña sin red, CAS entre pestañas y reanudación online con dos confirmaciones en ambos paneles. Exportación y restauración manual de copia cifrada con contraseña/contexto verificados, sin sobrescribir versiones diferentes ni restaurar autorizaciones. Pendientes arranque offline completo, más dominios, catálogo/retención/evicción, sincronización ampliada, SQLite/custodia nativa y dispositivos reales."
+    },
+    {
+      "id": "H20",
+      "title": "Rendimiento, seguridad, recuperación y cierre",
+      "accounting_items": [
+        "ACC-001",
+        "ACC-002",
+        "ACC-003",
+        "ACC-007",
+        "ACC-023",
+        "ACC-024"
+      ],
+      "finding": "No están acreditados 250 ms, precisión IA, roles productivos completos, RPO/RTO ni restauración soberana integral.",
+      "action": "Ejecutar regresión integrada, carga con métricas, revisión de privilegios y ensayo de restauración; consolidar entrega sin commits parciales.",
+      "acceptance": "Informe reproducible con percentiles/máximo, errores y límites; restore y permisos probados; criterios pendientes impiden declarar 100%.",
+      "depends_on": [
+        "H01",
+        "H02",
+        "H03",
+        "H04",
+        "H05",
+        "H06",
+        "H07",
+        "H08",
+        "H09",
+        "H10",
+        "H11",
+        "H12",
+        "H13",
+        "H14",
+        "H15",
+        "H16",
+        "H17",
+        "H18",
+        "H19"
+      ],
+      "external_gates": [
+        "Infraestructura/hardware objetivo, roles/grants y llaves/medios reales",
+        "Aceptaciones profesionales/proveedor pendientes; aprobación final de publicación"
+      ],
+      "state": "EN_EJECUCION",
+      "evidence": [
+        "ANALISIS/contabilidad/evidencias/implementacion-50.json",
+        "ANALISIS/contabilidad/IMPLEMENTACION_71.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-71.json",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/tax_register.py",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/tax_register_snapshot.py",
+        "BACKEND/SGA-CD-BACKEND/app/services/tax_register_contract.py",
+        "BACKEND/deployment/tests/accounting_tax_register_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_tax_register_contract.py",
+        "BACKEND/deployment/benchmark_accounting.py",
+        "BACKEND/deployment/accounting_benchmark_metrics.py",
+        "BACKEND/deployment/tests/accounting_benchmark_check.py",
+        "ANALISIS/contabilidad/IMPLEMENTACION_72.md",
+        "ANALISIS/contabilidad/evidencias/implementacion-72.json",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/source_bindings.py",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py",
+        "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
+        "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx",
+        "BACKEND/deployment/tests/accounting_native_purchase_check.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase_contract.py",
+        "FRONTEND/deployment/tests/native_purchases_browser.cjs"
+      ],
+      "local_result": "Regresión Python/PostgreSQL/navegador y restore ejecutados. Faltan benchmark con hardware objetivo, precisión IA, roles y recuperación productivos y cierre de dependencias. Implementación71 conecta conciliación integrada a ambos paneles y valida fuentes/sumas en lote; añade benchmark local reproducible,detecta547.209ms y reduce máximo a134.922ms en100 documentos sintéticos secuenciales. No acredita SLA productiva ni precisión IA. Implementación72: compras nativas operables en ambos paneles, catálogo con gastos y reserva de fuente/huella contra bypass, recuperación/contrapartida con dos confirmaciones; sin histórico, pagos, emisión o aceptación profesional completos."
+    }
+  ]
+}

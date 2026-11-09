@@ -1,0 +1,182 @@
+{
+  "scope": "Restricted deterministic Spanish accounting question routing and owner-only read-only API; no LLM or generated SQL",
+  "implementation_percent": "38.89",
+  "production_ready": false,
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T21:15:49.023746+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "ff47ab8808ab8065c2b7b4f68d56601edc230c0ac0d0a0405801c83cc90e1277",
+    "source_digest_after": "ff47ab8808ab8065c2b7b4f68d56601edc230c0ac0d0a0405801c83cc90e1277",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/shared",
+      "FRONTEND/SGA-ERP-TUR-FRONTEND",
+      "FRONTEND/SGA-TUR-FRONTEND/src",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.569,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "481b2ec0dd7a957a1867005cc1d3c026f81b3bc1f3295a07c58fc739d6cc469d",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.07,
+        "tests": 26,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "9fc3f8c120ff20b99d46df59b2f990e1a9a29a15474e66f80be138953eeeb1b2",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.023,
+        "tests": 41,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "d95be1b0369120e9e35c9294f20fd596e50b85d6f49b47b29a16a70cae5d99c4",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.069,
+        "tests": 16,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "dd2e7d2888b510d55a351ee6b3c89c13e32f73ce5e822c38a723846b8c60dcd4",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.466,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "8afffb4519b3f94ed6a0cdb189c7929b84ae2e58b2b39f4128d9ee515ca6652e",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sql",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.819,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sql.log",
+        "log_sha256": "ee1c581f94224d2e5480c2deedb1aff82fff4077e73e08d2231b7c29b6521679",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_envelope",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_envelope.log",
+        "log_sha256": "9836b73d858aa030c00b7e72ab74fa6a6c5540d75a83f9f1317a1e4fcf7ff7e6",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_invoice",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.114,
+        "tests": 10,
+        "skipped": 0,
+        "log": "accounting_invoice.log",
+        "log_sha256": "d09268470c7b54f6ae3079363aeafe12c7b1cb9fa8466360daed472024a3eba4",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_invoice_queue",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.468,
+        "tests": 8,
+        "skipped": 0,
+        "log": "accounting_invoice_queue.log",
+        "log_sha256": "b9f81557a044aab6be8dcf8b4a7650edd6a1b8d47e515250f76a9b62b3de3061",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_source",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.569,
+        "tests": 11,
+        "skipped": 0,
+        "log": "accounting_reservation_source.log",
+        "log_sha256": "19d7a419d4f4a549f293f66a31ed07f34063bf737a9fe506a39320b53ce47cd8",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_query",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_query.log",
+        "log_sha256": "eda535fe8429defca50bf8bc69a0a5e544c0908bb32075edf677069edbb6d554",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  }
+}

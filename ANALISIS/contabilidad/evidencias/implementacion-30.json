@@ -1,0 +1,146 @@
+{
+  "scope": "Pure versioned invoice-intent preparation; no CRM database producer or fiscal provider",
+  "implementation_percent": "36.11",
+  "production_ready": false,
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T20:50:31.275994+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "158f1136e48ac6dcc1e2ff50dd96e48c61d38d29d7d2d9c6ac3fd99a7d7276ee",
+    "source_digest_after": "158f1136e48ac6dcc1e2ff50dd96e48c61d38d29d7d2d9c6ac3fd99a7d7276ee",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/shared",
+      "FRONTEND/SGA-ERP-TUR-FRONTEND",
+      "FRONTEND/SGA-TUR-FRONTEND/src",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.569,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "9456eea119be934e11c568f62d7f7df951f6a5125b6efa4a6deb1f64008f7760",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.019,
+        "tests": 26,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "2c4b86189bf6d8a5d702a5c3cfc477a033db22c739138a7db1e0014eda669ded",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.074,
+        "tests": 37,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "7988c782cb99ad11757a3a2d98cb88970ac6b971730410a21365bc233b9d8c37",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.021,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "badaecbc3dcc92d83d7586ae5bfaa139f34f167100f6ab437e00aca5b102a92c",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.466,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "4c50bfb3968b838d6bf7a41876e23d785f6898844cfcb194a338ca835049dd02",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sql",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.869,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sql.log",
+        "log_sha256": "a7ede7d88c135ec7cc4c304e0b92ebcd69a1415247a0a44631f947fc2d503702",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_envelope",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_envelope.log",
+        "log_sha256": "eb26ff85aa456663f61ee8e0c60def0f25d3da2d2badfffdd72ac6af176190bb",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_invoice",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.116,
+        "tests": 7,
+        "skipped": 0,
+        "log": "accounting_invoice.log",
+        "log_sha256": "eafa4e7a31412ee0486bdb670d88e25c3b10d77306cfe3b60e1ff9e0e18727b5",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  }
+}

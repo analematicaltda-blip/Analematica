@@ -1,0 +1,710 @@
+{
+  "delivery": 76,
+  "scope": "Explicit ambiguous matches and documented partial imported-row reconciliation in both systems",
+  "synthetic_local": true,
+  "bank_authenticated": false,
+  "production_accepted": false,
+  "new_orm_api_tests": 17,
+  "new_corporate_http_tests": 2,
+  "new_contract_tests": 6,
+  "browser": {
+    "passed": true,
+    "scope": "Both browser shells, partial statement matching, explicit differences and release; synthetic fixtures only",
+    "results": [
+      {
+        "shell": "erp",
+        "passed": true,
+        "checks": [
+          "owner_scoped_cash_sources",
+          "csv_preview",
+          "first_reconciliation_confirmation",
+          "second_reconciliation_confirmation",
+          "partial_metadata_not_full_reconciliation",
+          "unresolved_out_200_preserved",
+          "difference_reason_persisted",
+          "persisted_matching_state",
+          "no_plaintext_transaction_identifier_in_state",
+          "recover_without_restored_approval",
+          "first_release_confirmation",
+          "second_release_confirmation",
+          "release_preserves_history",
+          "fresh_revision_after_release",
+          "new_confirmation_id",
+          "ledger_remains_15_balanced",
+          "no_money_or_bank_verification",
+          "discard_clears_file_and_results",
+          "blue_white_mobile"
+        ],
+        "production_ready": false
+      },
+      {
+        "shell": "corporate",
+        "passed": true,
+        "checks": [
+          "owner_scoped_cash_sources",
+          "csv_preview",
+          "first_reconciliation_confirmation",
+          "second_reconciliation_confirmation",
+          "partial_metadata_not_full_reconciliation",
+          "unresolved_out_200_preserved",
+          "difference_reason_persisted",
+          "persisted_matching_state",
+          "no_plaintext_transaction_identifier_in_state",
+          "recover_without_restored_approval",
+          "first_release_confirmation",
+          "second_release_confirmation",
+          "release_preserves_history",
+          "fresh_revision_after_release",
+          "new_confirmation_id",
+          "ledger_remains_15_balanced",
+          "no_money_or_bank_verification",
+          "discard_clears_file_and_results",
+          "blue_white_mobile"
+        ],
+        "production_ready": false
+      }
+    ],
+    "production_ready": false
+  },
+  "scope_of_completeness": "IMPORTED_ROWS_ONLY_NOT_PERIOD_BALANCES",
+  "global_percent": "63.89",
+  "completed_milestones": 46,
+  "total_milestones": 72,
+  "full_acceptance": 0,
+  "proofs": {
+    "ANALISIS/contabilidad/evidencias/implementacion-76-new.log": {
+      "sha256": "4ef20f07ca6bedbce6171dcabaad4fa08f163d6452363d8d5990d9993747c3c0"
+    },
+    "ANALISIS/contabilidad/evidencias/implementacion-76-types.log": {
+      "sha256": "287ed7fb1cdb24b966335356e69faf62ddbb8497fd27496a8b755a9ad0508483"
+    },
+    "ANALISIS/contabilidad/evidencias/implementacion-76-corporate.png": {
+      "sha256": "1caf31f8b8e284ab25b51fc3293dfb3e8772ee32e5c6a9b936fef66dfb14a528"
+    },
+    "ANALISIS/contabilidad/evidencias/implementacion-76-browser.log": {
+      "sha256": "6eb7e77984d0958c815222c74e71ea396976cbe6d06cb60eea77c2413f3ebe6a"
+    },
+    "ANALISIS/contabilidad/evidencias/implementacion-76-base.log": {
+      "sha256": "58408162c717127266199bd68628af35d36b559dade133ac1539d6e1ba529b0e"
+    },
+    "ANALISIS/contabilidad/evidencias/implementacion-76-corporate.log": {
+      "sha256": "77d1953dd6c96cdeb3cec9db06b635821ad302d144d574d23aa94c64ea6014ee"
+    },
+    "ANALISIS/contabilidad/evidencias/implementacion-76-browser-base.log": {
+      "sha256": "92e492d3d337f22f9831de0dbe9c60d26f13cac4882bde9c6fa1d101dc87f603"
+    },
+    "ANALISIS/contabilidad/evidencias/implementacion-76-erp.png": {
+      "sha256": "6227126147cdbf761532ab1081371eaf53449c44447e3004f25809c9e8b70fd8"
+    }
+  },
+  "browser_base": {
+    "passed": true,
+    "scope": "Both authenticated browser shells and real bank matching/release metadata; synthetic fixtures only",
+    "results": [
+      {
+        "shell": "erp",
+        "passed": true,
+        "checks": [
+          "owner_scoped_cash_sources",
+          "csv_preview",
+          "first_reconciliation_confirmation",
+          "second_reconciliation_confirmation",
+          "persisted_matching_state",
+          "no_plaintext_transaction_identifier_in_state",
+          "recover_without_restored_approval",
+          "first_release_confirmation",
+          "second_release_confirmation",
+          "release_preserves_history",
+          "fresh_revision_after_release",
+          "new_confirmation_id",
+          "ledger_remains_15_balanced",
+          "no_money_or_bank_verification",
+          "discard_clears_file_and_results",
+          "blue_white_mobile"
+        ],
+        "production_ready": false
+      },
+      {
+        "shell": "corporate",
+        "passed": true,
+        "checks": [
+          "owner_scoped_cash_sources",
+          "csv_preview",
+          "first_reconciliation_confirmation",
+          "second_reconciliation_confirmation",
+          "persisted_matching_state",
+          "no_plaintext_transaction_identifier_in_state",
+          "recover_without_restored_approval",
+          "first_release_confirmation",
+          "second_release_confirmation",
+          "release_preserves_history",
+          "fresh_revision_after_release",
+          "new_confirmation_id",
+          "ledger_remains_15_balanced",
+          "no_money_or_bank_verification",
+          "discard_clears_file_and_results",
+          "blue_white_mobile"
+        ],
+        "production_ready": false
+      }
+    ],
+    "production_ready": false
+  },
+  "browser_checks": 70,
+  "strict_types": {
+    "scope": "ReservationRecognition, TaxReconciliation and BankComparison, RemediationPanel and NativePurchases, PayrollCosts components only",
+    "strict": true,
+    "errors": []
+  },
+  "regression": {
+    "tests": 801,
+    "suites": 45,
+    "skipped": 0,
+    "all_passed": true,
+    "source_stable": true,
+    "source_digest": "ef0fdf5c18cc1ad4a432de892e90af5c258c3433a06d7fb76db05a940d3cb8fe",
+    "report_sha256": "dd1e7996e81ced41bb44f5bc85c9af014fb4cdf5d45833d66a209e7d00463e27",
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.97,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "e9c422bb37432fc6ffeaddce6b5e62e4a82d40d10efc0a79cc825b46b273aa03",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.273,
+        "tests": 26,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "4c76ec2482866483f45aaa461fe75afed63e37268dab78955e586b388dd236ad",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.924,
+        "tests": 46,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "b88e27c1d39afdead1ede45156ce36d2bb3f01aeeef7c9eddeacdb3e88e1f12c",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.828,
+        "tests": 16,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "50064e4c86dd2cba2189b4bdd6becda5617eca1301b79287ea0498aafda1f3ee",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.466,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "0e3f7fc01990381f36dad9f7331fdd80b3b7897c126076e37c2ede4dd977cc61",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sql",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.326,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sql.log",
+        "log_sha256": "433e370b091a7649c84afa3c728875b688392f167a945d98d3643d93016ea2a9",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_envelope",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_envelope.log",
+        "log_sha256": "eb26ff85aa456663f61ee8e0c60def0f25d3da2d2badfffdd72ac6af176190bb",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_invoice",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 10,
+        "skipped": 0,
+        "log": "accounting_invoice.log",
+        "log_sha256": "d09268470c7b54f6ae3079363aeafe12c7b1cb9fa8466360daed472024a3eba4",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_invoice_queue",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.723,
+        "tests": 8,
+        "skipped": 0,
+        "log": "accounting_invoice_queue.log",
+        "log_sha256": "5be224734e55470f16fdd738130eb09c47e82ebb26a6fd2c9b4f568e82bc252d",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_source",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.671,
+        "tests": 11,
+        "skipped": 0,
+        "log": "accounting_reservation_source.log",
+        "log_sha256": "bf30c4597f6addfc4cd29120263c928773bf3dad1a21edb21cee8fc2996892ea",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_query",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_query.log",
+        "log_sha256": "eda535fe8429defca50bf8bc69a0a5e544c0908bb32075edf677069edbb6d554",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_query_parser",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.416,
+        "tests": 7,
+        "skipped": 0,
+        "log": "accounting_query_parser.log",
+        "log_sha256": "d0142578b0c4e4e3576f3bb9756693faf02bde86f382a90a952e379d6981ebb2",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reports",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.622,
+        "tests": 4,
+        "skipped": 0,
+        "log": "accounting_reports.log",
+        "log_sha256": "14418cda4527cd2846a75a12fb629490ce3cd9c334047f25a78c0195d7083940",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_fiscal",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.722,
+        "tests": 12,
+        "skipped": 0,
+        "log": "accounting_reservation_fiscal.log",
+        "log_sha256": "df0c398f0cbb84f76292d7e48fb1c8b268fbb0fbdd06522f643c88461d7f5095",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_recognition",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 6.3,
+        "tests": 33,
+        "skipped": 0,
+        "log": "accounting_reservation_recognition.log",
+        "log_sha256": "f353ec9f34f35b4be96d00154b7203536ddd049bb8932eee1c73c4d0bd612588",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_tax_reconciliation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.527,
+        "tests": 7,
+        "skipped": 0,
+        "log": "accounting_tax_reconciliation.log",
+        "log_sha256": "1187a6f38b1c620be5b37e7a74187966a8abe5e1e958999afd74022cda7a9d34",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_dian_boundary",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.673,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_dian_boundary.log",
+        "log_sha256": "b34bf58d9a07bd9c9096ff0e78d6e8ed251e4cf7e5244e0723215b7bee8939a1",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_dian_receipt",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.487,
+        "tests": 24,
+        "skipped": 0,
+        "log": "accounting_dian_receipt.log",
+        "log_sha256": "6e1fc413d52ebb78a2f60b17e1ff0b95841cca900b39f7dd136cd97ff488ae46",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_legacy_invoice",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.073,
+        "tests": 7,
+        "skipped": 0,
+        "log": "accounting_legacy_invoice.log",
+        "log_sha256": "0e9da0088fbcde6b8578a3af707fc0c8e0b27741dc094ce16232b2ee86513d60",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_remediation_catalog",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.026,
+        "tests": 5,
+        "skipped": 0,
+        "log": "accounting_remediation_catalog.log",
+        "log_sha256": "fef3b9cbce6e3b6d38e6f1beb8c148d7ccd7f1a809aad1a72288fb2ed4cd8c0c",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_bank_statement",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.674,
+        "tests": 7,
+        "skipped": 0,
+        "log": "accounting_bank_statement.log",
+        "log_sha256": "65845e8ad420ff7bafce3607b383e47747b2bc512bca9c73d1480509c3012deb",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_bank_reconciliation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 4.608,
+        "tests": 23,
+        "skipped": 0,
+        "log": "accounting_bank_reconciliation.log",
+        "log_sha256": "1fa1639a1eeefe300ac477c7ce3fcedbed1163ea10637eaeb7eb0db12f11bccb",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_bank_resolutions",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 4.782,
+        "tests": 17,
+        "skipped": 0,
+        "log": "accounting_bank_resolutions.log",
+        "log_sha256": "5792e1625f4961239dc98a276ed9a85ea9ddd92d5410133a07c1bb8935e37965",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_opening",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.521,
+        "tests": 12,
+        "skipped": 0,
+        "log": "accounting_opening.log",
+        "log_sha256": "c293fda8a2be082286d70f1d5962f3df5f7e4e34487ed07f45d2809d9c34fed1",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_tax_policy",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.971,
+        "tests": 8,
+        "skipped": 0,
+        "log": "accounting_tax_policy.log",
+        "log_sha256": "8edb79ea4e11f65fe7d9e5c5d0d5d9fc1865b01821646fd6a3047f2ece426295",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_commercial_tax",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.832,
+        "tests": 28,
+        "skipped": 0,
+        "log": "accounting_commercial_tax.log",
+        "log_sha256": "9e1bcd164ee9bbaac2f05228993442470ebda9b1847635772d33d6c44c183369",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_native_purchase",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 5.901,
+        "tests": 35,
+        "skipped": 0,
+        "log": "accounting_native_purchase.log",
+        "log_sha256": "23dbecbcc9238a3a909e4c0c9198834f7d70868f002293001b30ce38fda2786a",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_tax_register",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 4.693,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_tax_register.log",
+        "log_sha256": "be8fa443e84ccdb7b3642d61b04143c9100d1ef93dcce825c70a53a4abd702e4",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_benchmark",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.116,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_benchmark.log",
+        "log_sha256": "a5e20b919fbf52ee5cf6a106bf3b03832bb3f85926bf71e1f29596421936638f",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_policy",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.675,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_reservation_policy.log",
+        "log_sha256": "0598d2afa2298dfb2608103bdedee9e408d03d37273e4a73f1d2734832855c28",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sst",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.621,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sst.log",
+        "log_sha256": "8598ca7deeb615d2046069953a1ea4baf3217a71e86c60d4f5786ff28bb5ae6e",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_dispatch_guard",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.657,
+        "tests": 22,
+        "skipped": 0,
+        "log": "accounting_dispatch_guard.log",
+        "log_sha256": "729025d9e6211738c851b229a6bf42c3751ba50e8ce5eda5733170f5c421c84a",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_worker_safety",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 7.292,
+        "tests": 37,
+        "skipped": 0,
+        "log": "accounting_worker_safety.log",
+        "log_sha256": "c8a679ef54426f71ff29db8d4b083ce70ad61d99a7dc777c1601cc4d8eada01b",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_payroll_boundary",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.221,
+        "tests": 8,
+        "skipped": 0,
+        "log": "accounting_payroll_boundary.log",
+        "log_sha256": "22b1674b5b22f864b5083bb4eaad1a45b9ef614ef8f2feedd082562816bc8ed7",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_payroll",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.927,
+        "tests": 22,
+        "skipped": 0,
+        "log": "accounting_payroll.log",
+        "log_sha256": "5665bc37a2304a271d75f23ec1ecb5103bc45a1cc49952bcaf77660a276499c2",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_payroll_earnings",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.573,
+        "tests": 16,
+        "skipped": 0,
+        "log": "accounting_payroll_earnings.log",
+        "log_sha256": "46b9f42d63e17f5fcf5c2afa234fdfbbabb144e9b9ddaa3ad217dd46e31b3f08",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_operational_cost",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 6.783,
+        "tests": 23,
+        "skipped": 0,
+        "log": "accounting_operational_cost.log",
+        "log_sha256": "b4a5b9a7f9aa99fb99547eb94d738ecccefe41348c31ca917707e8ffda25dfda",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_tourism_metrics",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 4.477,
+        "tests": 24,
+        "skipped": 0,
+        "log": "accounting_tourism_metrics.log",
+        "log_sha256": "52ad2b82fcdbf67b302c5d5c5fbbc525318ab2a44683c95999e137ac4d4c3322",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_environmental",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.72,
+        "tests": 16,
+        "skipped": 0,
+        "log": "accounting_environmental.log",
+        "log_sha256": "8829bc915b3afb24a28d934c5023e8c06dfcb15e23ce1d99943531e1bb05d68d",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_environmental_records",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.322,
+        "tests": 16,
+        "skipped": 0,
+        "log": "accounting_environmental_records.log",
+        "log_sha256": "0988b1ac5e8456fbb2ec4eda0dfbf1381e6f52df58d3d39db81274a8a622bab0",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_environmental_corrections",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.822,
+        "tests": 15,
+        "skipped": 0,
+        "log": "accounting_environmental_corrections.log",
+        "log_sha256": "e66104fb8d24c56a5f5138e739d9981de81471001c119cef43a4c0b00fabd11d",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_customer_package",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.716,
+        "tests": 15,
+        "skipped": 0,
+        "log": "accounting_customer_package.log",
+        "log_sha256": "253711af4f79349bcaa5810d3f2d4a8f8fcf264c0dc51de4fb3aafc28a225bac",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_local_signer",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 12.03,
+        "tests": 24,
+        "skipped": 0,
+        "log": "accounting_local_signer.log",
+        "log_sha256": "f23d95cee9b0c10c136ffe70ada9d7601961cfdc3e53ce3e34a0d9d1e1074e68",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_financial_orchestration",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.829,
+        "tests": 18,
+        "skipped": 0,
+        "log": "accounting_financial_orchestration.log",
+        "log_sha256": "e8acef9083fd72bd7b8d56515b237dff05e435bb9310d003e0b6cbca25bc29a7",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_corporate_bridge",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 118.467,
+        "tests": 79,
+        "skipped": 0,
+        "log": "accounting_corporate_bridge.log",
+        "log_sha256": "ab2f8838803d1f44cedeffca2de6b9ad8f0e9cc08401d3c2754eb4a4f593041d",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ]
+  }
+}

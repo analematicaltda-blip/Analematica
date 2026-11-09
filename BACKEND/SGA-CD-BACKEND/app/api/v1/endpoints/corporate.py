@@ -3,7 +3,7 @@ import json,re,uuid,html
 from datetime import datetime,timezone
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
-from fastapi import APIRouter,Depends,HTTPException,Response
+from fastapi import APIRouter,Depends,HTTPException,Response,Request
 from pydantic import BaseModel,Field,EmailStr,ConfigDict,UUID4
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
@@ -138,3 +138,69 @@ def public_sga_content(response:Response,db=Depends(deps.get_db)):
     from app.services.corporate_commands import FIELDS,Setting
     response.headers['Cache-Control']='no-store'
     return {key:row.value for key in FIELDS.values() if (row:=db.get(Setting,key)) is not None}
+
+
+from fastapi.routing import APIRoute
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+class PrivateLedgerRoute(APIRoute):
+    def get_route_handler(self):
+        original=super().get_route_handler()
+        async def private_handler(request):
+            headers={'Cache-Control':'private, no-store, no-cache, max-age=0','Vary':'Authorization, Cookie'}
+            try:result=await original(request)
+            except HTTPException as exc:
+                exc.headers={**(exc.headers or {}),**headers};raise
+            except RequestValidationError:
+                return JSONResponse(status_code=422,content={'detail':'Parámetros de consulta inválidos.'},headers=headers)
+            result.headers.update(headers);return result
+        return private_handler
+
+accounting_router=APIRouter(route_class=PrivateLedgerRoute)
+
+@accounting_router.get('/report')
+def accounting_report(request:Request,response:Response,report:str,until:str,since:str|None=None,account_id:str|None=None,actor=Depends(owner),db=Depends(deps.get_db)):
+    from app.services.corporate_ledger import read_report,COOKIE
+    response.headers['Cache-Control']='private, no-store, no-cache, max-age=0'
+    response.headers['Vary']='Authorization, Cookie'
+    if set(request.query_params)-{'report','since','until','account_id'}:raise HTTPException(422,'No se permite seleccionar otra empresa desde esta consulta.')
+    return read_report(db,user=actor.user,session_cookie=request.cookies.get(COOKIE),report=report,since=since,until=until,account_id=account_id)
+
+@accounting_router.get('/sources/{resource}')
+def accounting_sources(resource:str,request:Request,actor=Depends(owner),db=Depends(deps.get_db)):
+    from app.services.corporate_ledger import COOKIE
+    from app.services.corporate_ledger_commands import read_sources
+    if len(request.query_params.multi_items())!=len(request.query_params):raise HTTPException(422,'Parámetros repetidos.')
+    return read_sources(db,user=actor.user,session_cookie=request.cookies.get(COOKIE),resource=resource,parameters=dict(request.query_params))
+
+@accounting_router.post('/commands/{operation}')
+async def accounting_write(operation:str,request:Request,actor=Depends(owner),db=Depends(deps.get_db)):
+    from app.services.corporate_ledger import COOKIE
+    from app.services.corporate_ledger_commands import dispatch
+    if request.query_params:raise HTTPException(422,'No se admiten selectores de empresa u origen.')
+    raw=bytearray()
+    async for part in request.stream():
+        raw.extend(part)
+        if len(raw)>8192:raise HTTPException(413,'Solicitud contable demasiado grande.')
+    def pairs(items):
+        result={}
+        for key,value in items:
+            if key in result:raise ValueError('duplicate')
+            result[key]=value
+        return result
+    try:
+        if request.headers.get('content-type','').split(';')[0]!='application/json':raise ValueError()
+        payload=json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:(_ for _ in ()).throw(ValueError()))
+        def depth(value,level=0):
+            if level>8:raise ValueError()
+            if isinstance(value,dict):
+                for child in value.values():depth(child,level+1)
+            elif isinstance(value,list):
+                for child in value:depth(child,level+1)
+        depth(payload)
+    except (ValueError,RecursionError,UnicodeError):raise HTTPException(422,'JSON contable inválido.') from None
+    from starlette.concurrency import run_in_threadpool
+    return await run_in_threadpool(dispatch,db,user=actor.user,session_cookie=request.cookies.get(COOKIE),operation=operation,payload=payload)
+
+router.include_router(accounting_router,prefix='/accounting')

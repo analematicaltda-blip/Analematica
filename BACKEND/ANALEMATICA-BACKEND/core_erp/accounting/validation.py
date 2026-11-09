@@ -40,3 +40,24 @@ def validate_lines(lines):
     if debit != credit:
         raise UnbalancedEntryError('Debit and credit totals must match exactly.')
     return normalized
+
+
+def lock_company(tenant_id):
+    from apps.core_erp.tenancy.models import Tenant
+    from .exceptions import TenantMismatchError
+    if not tenant_id:
+        raise TenantMismatchError('An explicit accounting company is required.')
+    company = Tenant.objects.select_for_update().filter(pk=tenant_id).first()
+    if company is None or not company.is_active or company.state != 'ACTIVE':
+        raise TenantMismatchError('Accounting company is inactive or unavailable.')
+    return company
+
+
+def current_actor(actor):
+    from django.contrib.auth import get_user_model
+    if actor is None or not getattr(actor, 'pk', None):
+        raise AccountingError('An explicit audit actor is required.')
+    user = get_user_model().objects.filter(pk=actor.pk, is_active=True).first()
+    if user is None:
+        raise AccountingError('Audit actor is inactive or unavailable.')
+    return user

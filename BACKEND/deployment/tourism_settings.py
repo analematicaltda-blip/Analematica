@@ -55,3 +55,9 @@ ERP_CAPACITY_HOLDS_ENABLED=os.environ.get('ERP_CAPACITY_HOLDS_ENABLED','0')=='1'
 ERP_PASSWORD_RESET_ENABLED=os.environ.get('ERP_PASSWORD_RESET_ENABLED','0')=='1'
 ERP_PASSWORD_RESET_URL=os.environ.get('ERP_PASSWORD_RESET_URL','')
 ERP_PASSWORD_RESET_MAIL_READY=os.environ.get('ERP_PASSWORD_RESET_MAIL_READY','0')=='1'
+
+ACCOUNTING_ENFORCE_DB_PRIVILEGES=os.environ.get('ACCOUNTING_ENFORCE_DB_PRIVILEGES','0')=='1'
+
+# No dispatch profile or clinical grants are fabricated at startup.
+from worker_dispatch_policy import load as load_worker_dispatch_policies
+OPERATIONAL_DISPATCH_POLICIES=load_worker_dispatch_policies(os.environ.get('OPERATIONAL_DISPATCH_POLICY_FILE'))

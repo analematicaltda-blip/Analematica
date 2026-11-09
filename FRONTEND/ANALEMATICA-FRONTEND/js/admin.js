@@ -308,7 +308,7 @@ async function loadSystemAudit() {
         const sMem = document.getElementById('auditMemoryStatus');
         if (sStatus) sStatus.textContent = data.estado_servidor || 'OPTIMO';
         if (sRls) sRls.textContent = data.rls_enforcement || 'ACTIVO (100%)';
-        if (sLedger) sLedger.textContent = data.ledger_status || 'CERTIFICADO INMUTABLE';
+        if (sLedger) sLedger.textContent = 'PENDIENTE DE VERIFICACIÓN'; // System telemetry is not a ledger integrity attestation.
         if (sMem) sMem.textContent = (data.memory_usage_mb || 412.5) + ' MB';
         if (data.active_agents) {
             if (document.getElementById('auditDivisions')) document.getElementById('auditDivisions').textContent = data.active_agents.divisiones;
@@ -431,42 +431,14 @@ async function processAgentCommand(orderText) {
                 if (tel.certificado_no_repudio && document.getElementById('archCertNoRepudio')) document.getElementById('archCertNoRepudio').textContent = tel.certificado_no_repudio;
                 if (tel.ultimo_hash_sha256 && document.getElementById('archHashSha256')) document.getElementById('archHashSha256').textContent = tel.ultimo_hash_sha256;
             } else if (result.target_division === 'CONTABLE') {
-                if (tel.sumas_iguales_cuadradas && document.getElementById('contableSumasStatus')) document.getElementById('contableSumasStatus').textContent = 'CUADRADO (ΣD ≡ ΣC)';
-                if (tel.precierre_estado && document.getElementById('contablePrecierreStatus')) document.getElementById('contablePrecierreStatus').textContent = tel.precierre_estado + ' 100%';
-                if (tel.auditoria_star_bandera && document.getElementById('contableStarStatus')) document.getElementById('contableStarStatus').textContent = tel.auditoria_star_bandera.replace('_', ' ');
-                if (tel.conciliacion_bancaria && document.getElementById('contableConciliacionStatus')) document.getElementById('contableConciliacionStatus').textContent = tel.conciliacion_bancaria.estado.replace('_', ' ');
-                if (tel.activos_fijos && document.getElementById('contableDepreciacionStatus')) document.getElementById('contableDepreciacionStatus').textContent = '$' + (tel.activos_fijos.depreciacion_mensual_cop / 1000000).toFixed(2) + 'M / MES';
-                if (tel.cierre_checklist && document.getElementById('contableChecklistStatus')) document.getElementById('contableChecklistStatus').textContent = tel.cierre_checklist.transacciones_importadas + ' TX AUDITADAS';
-
-                // Suite Fiscal DIAN
-                if (tel.suite_fiscal_dian) {
-                    const sf = tel.suite_fiscal_dian;
-                    const ing = document.getElementById('cont_suite_ingresos');
-                    const egr = document.getElementById('cont_suite_egresos');
-                    const uti = document.getElementById('cont_suite_utilidad');
-                    const iva = document.getElementById('cont_suite_iva_neto');
-                    const ret = document.getElementById('cont_suite_retenciones');
-                    const ren = document.getElementById('cont_suite_impuesto_renta');
-                    if (ing) ing.value = '$ ' + Number(sf.ingresos_brutos_cop).toLocaleString('es-CO') + ' COP';
-                    if (egr) egr.value = '$ ' + Number(sf.egresos_operacionales_cop).toLocaleString('es-CO') + ' COP';
-                    if (uti) uti.value = '$ ' + Number(sf.utilidad_fiscal_antes_impuesto_cop).toLocaleString('es-CO') + ' COP';
-                    if (iva) iva.value = '$ ' + Number(sf.iva_neto_pagar_cop).toLocaleString('es-CO') + ' COP';
-                    if (ret) ret.value = '$ ' + Number(sf.retenciones_practicadas_cop).toLocaleString('es-CO') + ' COP';
-                    if (ren) ren.value = '$ ' + Number(sf.provision_impuesto_renta_35_cop).toLocaleString('es-CO') + ' COP';
+                // Assistant telemetry is not an authorized ledger or fiscal report.
+                // Keep financial conclusions unavailable until the company-bound API is connected.
+                for (const id of ['contableSumasStatus','contablePrecierreStatus','contableStarStatus',
+                    'contableConciliacionStatus','contableDepreciacionStatus','contableChecklistStatus']) {
+                    const element=document.getElementById(id);
+                    if(element)element.textContent='PENDIENTE DE VERIFICACIÓN';
                 }
 
-                // Enlaces intermodulares
-                if (tel.enlaces_intermodulares) {
-                    const e = tel.enlaces_intermodulares;
-                    const lv = document.getElementById('linkContableVentas');
-                    const lc = document.getElementById('linkContableCompras');
-                    const lf = document.getElementById('linkContableFinanzas');
-                    const la = document.getElementById('linkContableArchivo');
-                    if (lv && e.ventas) lv.textContent = `Ventas PUC ${e.ventas.cuenta_puc_ingreso}: Facturado $${Number(e.ventas.subtotal_cop).toLocaleString('es-CO')} | IVA $${Number(e.ventas.iva_generado_cop).toLocaleString('es-CO')} (${e.ventas.estado_cartera})`;
-                    if (lc && e.compras) lc.textContent = `Compras PUC ${e.compras.cuenta_puc_gasto}: Causado $${Number(e.compras.subtotal_cop).toLocaleString('es-CO')} | Retenciones $${Number(e.compras.retenciones_cop).toLocaleString('es-CO')} (${e.compras.estado_cuenta_por_pagar})`;
-                    if (lf && e.finanzas) lf.textContent = `Finanzas PUC ${e.finanzas.cuenta_puc_bancos}: Saldo $${Number(e.finanzas.saldo_disponible_cop).toLocaleString('es-CO')} | Conciliado ${e.finanzas.conciliacion_bancaria}`;
-                    if (la && e.archivo) la.textContent = `Archivo TRD ${e.archivo.serie_trd}: Expediente ${e.archivo.expediente_radicado} | SHA256: ${e.archivo.sha256_integridad.slice(0, 16)}...`;
-                }
             }
         }
     }catch(error){if(message)message.textContent=error.message;appendTacticalLog('NO CONFIRMADO',error.message);}

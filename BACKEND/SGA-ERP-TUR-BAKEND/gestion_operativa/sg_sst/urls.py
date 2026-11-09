@@ -6,7 +6,10 @@ from .views import (
     InspeccionSSTViewSet, IndicadorSSTViewSet, AlertaSSTViewSet, DashboardSSTViewSet
 )
 
+from .worker_data_views import WorkerSafetyDataViewSet
+
 router = DefaultRouter()
+router.register(r'datos-trabajador',WorkerSafetyDataViewSet,basename='sgsst-datos-trabajador')
 router.register(r'riesgos', MatrizRiesgoViewSet, basename='sgsst-riesgos')
 router.register(r'incidentes', IncidenteLaboralViewSet, basename='sgsst-incidentes')
 router.register(r'salud', SaludOcupacionalViewSet, basename='sgsst-salud')

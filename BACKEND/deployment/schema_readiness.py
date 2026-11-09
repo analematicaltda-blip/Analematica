@@ -27,6 +27,13 @@ def inspect_schema():
                 columns = {column.name for column in connection.introspection.get_table_description(cursor, table)}
                 if any(field.column not in columns for field in model._meta.local_fields):
                     issues.append('missing_columns')
+        if {'core_erp_journalentry','core_erp_ledgerentry','core_erp_accountingratiopolicy'}<=tables:
+            from apps.core_erp.accounting.sql_guard_health import inspect_guards
+            issues.extend(inspect_guards(connection)['checks'])
+            from django.conf import settings
+            if getattr(settings,'ACCOUNTING_ENFORCE_DB_PRIVILEGES',False):
+                from apps.core_erp.accounting.db_privileges import inspect_privileges
+                issues.extend(inspect_privileges(connection)['checks'])
     except (NodeNotFoundError, CircularDependencyError, InvalidBasesError, InconsistentMigrationHistory):
         issues.append('migration_history_invalid')
     except DatabaseError:

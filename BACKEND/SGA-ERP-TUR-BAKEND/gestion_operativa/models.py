@@ -3,10 +3,13 @@ import uuid
 from django.utils import timezone
 from .modulos_genericos.perfil.models import TenantAwareModel
 
-class ProcesoOperativo(TenantAwareModel):
+from .state_guard import OperationalStateMixin, OperationalQuerySet
+
+class ProcesoOperativo(OperationalStateMixin, TenantAwareModel):
     """
     Representa una orquestación de tareas para cumplir un objetivo.
     """
+    objects = OperationalQuerySet.as_manager()
     class EstadoProceso(models.TextChoices):
         PLANIFICADO = 'PLANIFICADO', 'Planificado'
         EN_EJECUCION = 'EN_EJECUCION', 'En Ejecución'
@@ -36,10 +39,11 @@ class TareaOperativa(TenantAwareModel):
     class Meta(TenantAwareModel.Meta):
         app_label = 'mi_negocio'
 
-class OrdenOperativa(TenantAwareModel):
+class OrdenOperativa(OperationalStateMixin, TenantAwareModel):
     """
     Motor de ejecución derivado de un contrato.
     """
+    objects = OperationalQuerySet.as_manager()
     class EstadoOrden(models.TextChoices):
         PENDIENTE = 'PENDIENTE', 'Pendiente'
         PREPARACION = 'PREPARACION', 'En Preparación'

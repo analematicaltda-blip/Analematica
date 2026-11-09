@@ -7,3 +7,6 @@ ollama-aarch64-apple-darwin !text !filter !merge !diff
 # Preserve exact licensed upstream snapshots (no line-ending conversion).
 /SEGURIDAD/AiSOC/** -text
 /llm/free-ai-apis/** -text
+
+# Preserve licensed UBL reference bytes; upstream whitespace is intentional.
+/FRONTEND/shared/accounting/vendor/ubl21-reference/** -text -whitespace

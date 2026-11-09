@@ -1,0 +1,82 @@
+{
+  "scope": "Local UI contracts; no complete-app build or real-account integration",
+  "production_ready": false,
+  "browser": {
+    "scope": "Synthetic browser/API contract; no live accounts or production",
+    "checks": [
+      "decimal_values",
+      "company_switch_clears_values",
+      "permission_error",
+      "missing_classification",
+      "malformed_payload_rejected",
+      "invalid_dates",
+      "logout_clears_values",
+      "white_text_blue_surface",
+      "mobile_no_overflow",
+      "GET_only",
+      "analematica_no_unverified_status"
+    ],
+    "passed": true,
+    "production_ready": false
+  },
+  "strict_types": {
+    "strict": true,
+    "errors": []
+  },
+  "syntax": {
+    "files": {
+      "analematica": 12,
+      "erp": 242,
+      "turismo": 467
+    },
+    "errors": [],
+    "inherited_page_contract_warnings": [
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/alertas/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/antifraude/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/auditoria/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/comisiones/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/reglas/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/retenciones/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      },
+      {
+        "system": "erp",
+        "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/monedero/transacciones/page.tsx",
+        "issue": "PAGE_WITHOUT_DEFAULT_EXPORT"
+      }
+    ]
+  },
+  "source_sha256": {
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/LedgerIndicators.tsx": "dc68e2834c26a699a2ba5c89d3bf2ad570cce4c9deafb62015fdfae980ab9f18",
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/page.tsx": "a58d57bd5ed743e2691d6c706114cfba051b8380c9485ba554d00257cf1dae0e",
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/contabilidad/page.tsx": "89ce04813213d7d13eef98e429867c729f88b3e4cb0a8f3dc837e7fcf1867a78",
+    "FRONTEND/ANALEMATICA-FRONTEND/admin.html": "2e14aa9be6481365063d7b5d3e25b560d0f10b46d5a16c21acd8ecf91bc119df",
+    "FRONTEND/ANALEMATICA-FRONTEND/js/admin.js": "15983286320bf741fb65e35c059e6ab0eb874407fd07b07513cfd18ee884aa35",
+    "FRONTEND/deployment/tests/accounting_browser.cjs": "d58f5e00ea776f47a4fe635478d139924b1cd36a8d1e3d02730dd898197ab193",
+    ".github/workflows/master-integration.yml": "898f2f1bb46bc347fcfa1f6d1393fd8546a35849f01efb9bf4f8e2ad9ee13529"
+  },
+  "wallet_pending_document": "CHECK_PASSED",
+  "git_publication": "none"
+}

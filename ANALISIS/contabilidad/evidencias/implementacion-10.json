@@ -1,0 +1,128 @@
+{
+  "scope": "Local historical-policy recalculation; isolated synthetic data",
+  "production_ready": false,
+  "implementation_percent": "22.22",
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T14:35:59.966984+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "840e5f1a430071793e8c9f28a0ef2e86ef844577f3572c1a7ed7ddc1d6718a71",
+    "source_digest_after": "840e5f1a430071793e8c9f28a0ef2e86ef844577f3572c1a7ed7ddc1d6718a71",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.584,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "58c25a988559f4c6578c4be8ae536bbf35d072b7cc4d47276cd8209ea2247d55",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.971,
+        "tests": 23,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "b5410b5d8a589dba941774debae8309626b96dcff850dc3d1408e0384b27fdbb",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.674,
+        "tests": 27,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "54e2f7ff1a489da13671ac638a20c51fb97ef38848fd6a3cba69da66806806ea",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.071,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "7db190adc3d79a3c88151e15d416b7191ab9baf3b4cfcef7a079fca2a65350e3",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  },
+  "browser": {
+    "scope": "Real browser, password, cookie/CSRF and Django ledger; isolated synthetic data",
+    "passed": true,
+    "checks": [
+      "login_cookie_session",
+      "authorized_company_listing",
+      "posted_profitability",
+      "reviewed_quick_ratio",
+      "source_account",
+      "foreign_provider_denied",
+      "logout_hides_values",
+      "duplicate_classification_rejected",
+      "review_and_confirmation",
+      "stale_revision_rejected",
+      "reload_and_revision_save",
+      "indicators_refresh_after_save",
+      "classification_does_not_post_money",
+      "history_retains_old_and_new_revisions",
+      "explicit_historical_revision_and_latest"
+    ],
+    "production_ready": false
+  },
+  "strict_types": {
+    "strict": true,
+    "errors": []
+  },
+  "source_sha256": {
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ratios.py": "7e99955882291c0591f263fefe964c44c3f058a1b1608134cbabbfb9a31be14e",
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/views.py": "095a8021c71843c0b1a7c212601dd0ac1b2f54dedf63c8dfceb093822a8250e0",
+    "BACKEND/deployment/tests/accounting_adapter_check.py": "f090bcaa04fb3e4c3d72f6a90fe81435e298ac392086706686a5c5d29f6d11ad",
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/LedgerIndicators.tsx": "465bcbc057683a2b7eedc538d5eb4791788d8202e76243def54f847f882a237d",
+    "FRONTEND/deployment/tests/accounting_integration_browser.cjs": "769e79d7b6c5cf82ad3fea56e8f3934d2611333cb5ab3d2aa91f9b07da464cb9"
+  }
+}

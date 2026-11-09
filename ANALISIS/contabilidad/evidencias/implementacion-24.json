@@ -1,0 +1,182 @@
+{
+  "scope": "Local reconciliation UI, real-session synthetic integration and controlled response contracts",
+  "production_ready": false,
+  "implementation_percent": "27.78",
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T20:06:22.058662+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "a7864a00ed687b3d2f18820aa249c8ac546d7d6f050f32f9e05c4b65bb345906",
+    "source_digest_after": "a7864a00ed687b3d2f18820aa249c8ac546d7d6f050f32f9e05c4b65bb345906",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.723,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "7707ef9a0c18603032c81fe1169f5fcef86c5030f45d0f993638db97dd0db15d",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.374,
+        "tests": 26,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "cf0212e3503c9ca403c12f2fe4fc46188c2a6f95f9c34baff526b49e909c76c7",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.126,
+        "tests": 35,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "65d5d903328bc5b29af09ea51aa6e9fa3f682390aa707a5499e1456b0e7a7fd8",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.971,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "0845572729eddc4cd0fd806472c6730967a0dbee5b7e6fbded2c1e510aac8743",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.416,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "d93ab4abcfbcd12f99c8960d13dd9d2759fb08e5308e991ea43845f628b1532b",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sql",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.77,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sql.log",
+        "log_sha256": "d15bc9737fb1c4952d3a1c3f0ebbffafad599b1788f1d96ccd20cbd4961e750e",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  },
+  "browser": {
+    "scope": "Real browser, password, cookie/CSRF and Django ledger; isolated synthetic data",
+    "passed": true,
+    "checks": [
+      "login_cookie_session",
+      "authorized_company_listing",
+      "posted_profitability",
+      "reviewed_quick_ratio",
+      "source_account",
+      "foreign_provider_denied",
+      "logout_hides_values",
+      "duplicate_classification_rejected",
+      "review_and_confirmation",
+      "stale_revision_rejected",
+      "reload_and_revision_save",
+      "indicators_refresh_after_save",
+      "classification_does_not_post_money",
+      "history_retains_old_and_new_revisions",
+      "explicit_historical_revision_and_latest",
+      "cash_simulation_ui",
+      "sensitivity_ui",
+      "editing_hides_stale_scenarios",
+      "company_change_clears_scenario_inputs",
+      "backtest_ui_zero_error",
+      "backtest_ui_negative_error",
+      "edited_outcomes_hide_evaluation",
+      "reconciliation_ui_readonly_page",
+      "reconciliation_hidden_on_company_change"
+    ],
+    "production_ready": false
+  },
+  "ui_contract": {
+    "scope": "Synthetic browser/API contract; no live accounts or production",
+    "checks": [
+      "decimal_values",
+      "company_switch_clears_values",
+      "permission_error",
+      "missing_classification",
+      "malformed_payload_rejected",
+      "invalid_dates",
+      "logout_clears_values",
+      "white_text_blue_surface",
+      "mobile_no_overflow",
+      "GET_only",
+      "analematica_no_unverified_status",
+      "diagnostic_findings_and_opening_accounts",
+      "diagnostic_next_page",
+      "diagnostic_rejects_mutating_payload",
+      "diagnostic_logout_clears_view"
+    ],
+    "passed": true,
+    "production_ready": false
+  },
+  "strict_types": {
+    "strict": true,
+    "errors": []
+  },
+  "source_sha256": {
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/ReconciliationDiagnostic.tsx": "f3d56c03340c0134e554617bc83f8412943030b852d32ae917d477dbc93342cf",
+    "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/page.tsx": "fd8e8c167bc56965be32daf97d9cf84cc15283ac1f12e26b89945c74fa9534ae",
+    "FRONTEND/deployment/tests/accounting_browser.cjs": "94d319e1d7af20e8f716c8c8133c7139468678a90b13c899ae488d4c41733553",
+    "FRONTEND/deployment/tests/accounting_integration_browser.cjs": "88aa8ec49d32a44a24ac14bf80442e541898343c23c0fe690a6714f2c7c452fc"
+  }
+}

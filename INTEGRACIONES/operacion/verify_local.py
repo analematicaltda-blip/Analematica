@@ -18,13 +18,14 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 MAX_LOG = 8 * 1024 * 1024
-SOURCE_DIRS = ('BACKEND/ANALEMATICA-BACKEND/core_erp/accounting', 'BACKEND/deployment', 'BACKEND/SGA-CD-BACKEND/app/services/assistance',
+SOURCE_DIRS = ('BACKEND/ANALEMATICA-BACKEND/core_erp', 'BACKEND/ANALEMATICA-BACKEND/deployment', 'BACKEND/deployment', 'BACKEND/SGA-CD-BACKEND/app/services',
                'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints', 'BACKEND/SGA-CD-BACKEND/app/models',
-               'BACKEND/SGA-CD-BACKEND/tests', 'BACKEND/SGA-ERP-TUR-BAKEND',
-               'BACKEND/SGA-TUR-BAKEND', 'FRONTEND/deployment',
+               'BACKEND/SGA-CD-BACKEND/tests', 'BACKEND/SGA-CD-BACKEND/tools', 'BACKEND/SGA-ERP-TUR-BAKEND',
+               'BACKEND/SGA-TUR-BAKEND', 'FRONTEND/deployment', 'FRONTEND/shared',
+               'FRONTEND/SGA-ERP-TUR-FRONTEND', 'FRONTEND/SGA-TUR-FRONTEND/src',
                'FRONTEND/ANALEMATICA-FRONTEND', 'INTEGRACIONES/operacion',
-               'DESKTOP/asistencia-sgacd')
-SUFFIXES = {'.py', '.txt', '.toml', '.yaml', '.yml', '.json', '.js', '.mjs', '.cjs', '.html', '.css'}
+               'DESKTOP/asistencia-sgacd', 'DESKTOP/fiscal-signer')
+SUFFIXES = {'.py', '.txt', '.toml', '.yaml', '.yml', '.json', '.js', '.mjs', '.cjs', '.ts', '.tsx', '.html', '.css'}
 EXCLUDED = {'node_modules', '__pycache__', '.runtime', '.next', '.venv', 'venv', 'dist', 'build'}
 
 
@@ -141,10 +142,15 @@ def suites(profiles, python, dependencies, output):
         for name in ['test_assistance*.py', 'test_platform.py', 'test_resources.py']:
             add(name.replace('.py','').replace('*',''), [python, '-m', 'unittest', 'discover', '-s', 'BACKEND/SGA-CD-BACKEND/tests', '-p', name, '-v'])
         add('web_preparation', [python, '-m', 'unittest', 'discover', '-s', 'FRONTEND/deployment/tests', '-p', 'test_*.py', '-v'])
-        for name in ['domain_security', 'company_scope', 'company_identity', 'accounting_foundation', 'availability', 'erp_session', 'password_recovery']:
+        for name in ['domain_security', 'company_scope', 'company_identity', 'accounting_foundation', 'accounting_posting', 'accounting_adapter', 'accounting_delivery', 'accounting_simulation', 'accounting_sql', 'accounting_envelope', 'accounting_invoice', 'accounting_invoice_queue', 'accounting_reservation_source', 'accounting_query', 'accounting_query_parser', 'accounting_reports', 'accounting_reservation_fiscal', 'accounting_reservation_recognition', 'accounting_tax_reconciliation', 'accounting_dian_boundary', 'accounting_dian_receipt', 'accounting_legacy_invoice', 'accounting_remediation_catalog', 'accounting_bank_statement', 'accounting_bank_reconciliation', 'accounting_bank_resolutions', 'accounting_bank_period', 'accounting_opening', 'accounting_tax_policy', 'accounting_commercial_tax', 'accounting_native_purchase', 'accounting_tax_register', 'accounting_benchmark', 'accounting_reservation_policy', 'accounting_sst', 'accounting_dispatch_guard', 'accounting_worker_safety', 'accounting_payroll_boundary', 'accounting_payroll', 'accounting_payroll_earnings', 'accounting_operational_cost', 'accounting_tourism_metrics', 'accounting_environmental', 'accounting_environmental_records', 'accounting_environmental_corrections', 'accounting_customer_package', 'accounting_local_signer', 'accounting_financial_orchestration', 'availability', 'erp_session', 'password_recovery']:
             add(name, [python, f'BACKEND/deployment/tests/{name}_check.py', '-v'])
         add('sqlite_restore', [python, '-m', 'unittest', 'discover', '-s', 'BACKEND/deployment/tests', '-p', 'test_sqlite_snapshot.py', '-v'])
         add('editorial_restore', [python, 'INTEGRACIONES/operacion/rehearse_editorial_restore.py'], 'command')
+    if 'accounting' in profiles and 'core' not in profiles:
+        for name in ['accounting_foundation','accounting_posting','accounting_adapter','accounting_delivery','accounting_simulation', 'accounting_sql', 'accounting_envelope', 'accounting_invoice', 'accounting_invoice_queue', 'accounting_reservation_source', 'accounting_query', 'accounting_query_parser', 'accounting_reports', 'accounting_reservation_fiscal', 'accounting_reservation_recognition', 'accounting_tax_reconciliation', 'accounting_dian_boundary', 'accounting_dian_receipt', 'accounting_legacy_invoice', 'accounting_remediation_catalog', 'accounting_bank_statement', 'accounting_bank_reconciliation', 'accounting_bank_resolutions', 'accounting_bank_period', 'accounting_opening', 'accounting_tax_policy', 'accounting_commercial_tax', 'accounting_native_purchase', 'accounting_tax_register', 'accounting_benchmark', 'accounting_reservation_policy', 'accounting_sst', 'accounting_dispatch_guard', 'accounting_worker_safety', 'accounting_payroll_boundary', 'accounting_payroll', 'accounting_payroll_earnings', 'accounting_operational_cost', 'accounting_tourism_metrics', 'accounting_environmental', 'accounting_environmental_records', 'accounting_environmental_corrections', 'accounting_customer_package', 'accounting_local_signer', 'accounting_financial_orchestration']:
+            add(name, [python, f'BACKEND/deployment/tests/{name}_check.py', '-v'])
+    if 'accounting' in profiles or 'core' in profiles:
+        add('accounting_corporate_bridge', [python, '-m', 'unittest', 'discover', '-s', 'BACKEND/SGA-CD-BACKEND/tests', '-p', 'test_corporate_ledger*.py', '-v'],timeout=150)
     if 'backup' in profiles:
         add('encrypted_backup', [python, '-m', 'unittest', 'discover', '-s', 'BACKEND/deployment/tests', '-p', 'test_encrypted_backup.py', '-v'])
         if 'core' not in profiles:
@@ -194,7 +200,7 @@ def verify_artifacts(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--profile', action='append', choices=['core','backup','fresh','browser','devices','postgres','web-build'])
+    parser.add_argument('--profile', action='append', choices=['core','accounting','backup','fresh','browser','devices','postgres','web-build'])
     parser.add_argument('--output', type=Path)
     parser.add_argument('--web-dependencies', type=Path)
     parser.add_argument('--verify', type=Path, help='Verify existing log/source hashes only; does not rerun tests')

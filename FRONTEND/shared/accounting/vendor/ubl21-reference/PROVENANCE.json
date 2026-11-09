@@ -1,0 +1,41 @@
+{
+  "source_repository": "https://github.com/phax/ph-ubl",
+  "source_commit": "c98245e3631c3914663ce4cb4162b8d26aad1c02",
+  "source_path": "ph-ubl21/src/main/resources/external/schemas/ubl21",
+  "schema_header": "OASIS UBL 2.1 CS1, generated 2013-06-16; mirrored reference, not DIAN annex qualification",
+  "modifications": "None; transitive invoice schema closure copied with original copyright notices",
+  "files": {
+    "common/UBL-CommonAggregateComponents-2.1.xsd": "528eb001745a79736f6670b1709907783bbcfb5ac121136764e273d0d80cf5bd",
+    "common/UBL-CommonBasicComponents-2.1.xsd": "a823da6fef43553b6e36c8be4e85e31adac71d4784cb9d4533ff290313aa2b8f",
+    "common/UBL-CommonExtensionComponents-2.1.xsd": "a6ab5a2505b97d5c70b7a7ef1e892f75b6c6817a861c48b51734b2c6ec71264b",
+    "common/UBL-CommonSignatureComponents-2.1.xsd": "25b61f0a8375e76dc6e28d19d4d92937770e822466b113b2236879d71621d981",
+    "common/UBL-ExtensionContentDataType-2.1.xsd": "5ce28bab70a88fe5a668215fae482c03f6111b56e67d1df30da82efe4a009071",
+    "common/UBL-QualifiedDataTypes-2.1.xsd": "f05722cc678188bd1aaa3ef410cedda39e3b95f88e97de786207e342421c5f48",
+    "common/UBL-SignatureAggregateComponents-2.1.xsd": "25fa89fe43be6e890ef2835851db1d19df9be753d3fcc39b7ec242b3250a57bf",
+    "common/UBL-SignatureBasicComponents-2.1.xsd": "ae2c29db19b46d3f76b1c347098419eb1753e7fae2e29d9c76901d6325133463",
+    "common/UBL-UnqualifiedDataTypes-2.1.xsd": "47ad1bbdec949d3b8b1a76f9a1dbee8f7e54b310ba08abf0ef5abd471027785d",
+    "dependencies/ph-xsds-ccts-cct-schemamodule/schemas/CCTS_CCT_SchemaModule.xsd": "0ef40b2f502934909edc11bea050306902ba328006434e8dfe20df063ad45f3e",
+    "dependencies/ph-xsds-xades132/schemas/XAdES01903v132-201601.xsd": "942936bdf288b6411e6a88737ba187f01fa8489f5a66f70e9e3e83109949ffb9",
+    "dependencies/ph-xsds-xades141/schemas/XAdES01903v141-201601.xsd": "c35e7a61ee8413d9c3067e40d5d13d0156fef2a94c726e6e5cf43be0e5dce8c2",
+    "dependencies/ph-xsds-xmldsig/schemas/xmldsig-core-schema.xsd": "dd603f6137029f46421e680e55d3eadcab357b3f71c5e1ce62b11477553eff86",
+    "maindoc/UBL-Invoice-2.1.xsd": "6943ac608d877dc014b6bda8accdd985f526e3a3314b6f6abdb7eb4ff558cc36"
+  },
+  "dependencies": {
+    "repository": "https://github.com/phax/ph-xsds",
+    "commit": "adf5c6b6c2a8c62be66502db8aef4c60ebb9c5a0",
+    "modules": [
+      "ph-xsds-ccts-cct-schemamodule",
+      "ph-xsds-xmldsig",
+      "ph-xsds-xades132",
+      "ph-xsds-xades141"
+    ],
+    "purpose": "Resolve namespace-only imports via an authored local validation catalog; no runtime signature validation"
+  },
+  "validation_import_order": [
+    "dependencies/ph-xsds-ccts-cct-schemamodule/schemas/CCTS_CCT_SchemaModule.xsd",
+    "dependencies/ph-xsds-xmldsig/schemas/xmldsig-core-schema.xsd",
+    "dependencies/ph-xsds-xades132/schemas/XAdES01903v132-201601.xsd",
+    "dependencies/ph-xsds-xades141/schemas/XAdES01903v141-201601.xsd",
+    "maindoc/UBL-Invoice-2.1.xsd"
+  ]
+}

@@ -232,4 +232,26 @@ class FreshDatabaseChecks(unittest.TestCase):
             finally:
                 transaction.set_rollback(True)
 
+    def test_12_missing_sql_guard_blocks_http_readiness_without_repair(self):
+        from django.db import transaction
+        with transaction.atomic():
+            with connection.cursor() as cursor:cursor.execute('DROP TRIGGER accounting_line_update_v1')
+            result=inspect_schema()
+            self.assertEqual(result['status'],'not_ready')
+            self.assertIn('accounting_sql_guards_missing',result['checks'])
+            response=Client(HTTP_HOST='localhost').get('/readyz')
+            self.assertEqual(response.status_code,503)
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='trigger' AND name='accounting_line_update_v1'")
+                self.assertEqual(cursor.fetchone()[0],0)
+            transaction.set_rollback(True)
+        self.assertEqual(inspect_schema(),{'status':'ready','checks':[]})
+
+    def test_13_explicit_privilege_enforcement_blocks_unqualified_sqlite(self):
+        from django.test import override_settings
+        with override_settings(ACCOUNTING_ENFORCE_DB_PRIVILEGES=True):
+            self.assertIn('accounting_db_privileges_unsupported',inspect_schema()['checks'])
+            self.assertEqual(Client(HTTP_HOST='localhost').get('/readyz').status_code,503)
+        self.assertEqual(inspect_schema(),{'status':'ready','checks':[]})
+
 if __name__=='__main__':unittest.main(argv=[sys.argv[0],*remaining])

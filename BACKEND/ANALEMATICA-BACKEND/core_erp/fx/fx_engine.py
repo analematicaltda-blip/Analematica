@@ -12,13 +12,17 @@ class FXEngine:
     """
 
     @staticmethod
-    def get_rate(base_code: str, target_code: str, version: int = None):
+    def get_rate(base_code: str, target_code: str, version: int = None, as_of=None):
         """
         Obtiene la tasa de cambio más reciente o una versión específica.
         """
+        if base_code == target_code:
+            return Decimal("1.000000")
         query = {
             "base_currency__code": base_code,
             "target_currency__code": target_code,
+            "base_currency__is_active": True, "target_currency__is_active": True,
+            "is_official": True, "effective_from__lte": as_of or timezone.now(), "rate__gt": 0,
         }
         if version:
             query["version"] = version

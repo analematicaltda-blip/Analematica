@@ -65,3 +65,25 @@ parte de una mejora funcional. Verificar contraste, foco y vista móvil.
 Los análisis y pendientes consolidados nuevos van en ANALISIS/; no crear informes
 en la raíz. Conservar informes históricos de integración en sus carpetas actuales.
 La directriz contable y matriz de pools están en ANALISIS/contabilidad/.
+
+## Seguimiento del motor contable
+
+En cada entrega contable informar el porcentaje calculado de implementación y
+optimización según ANALISIS/contabilidad/PROGRESO.md. La base estable es la matriz
+de 24 tareas y 72 hitos: incremento funcional, verificación y aceptación completa.
+Actualizar el registro de evidencias y regenerar con
+`python ANALISIS/contabilidad/tools/update_progress.py`; comprobar con `--check`.
+No aumentar el porcentaje por añadir documentación, duplicar evidencia o repetir
+pruebas de un hito ya acreditado. La presencia de un archivo no demuestra por sí
+sola un proceso operativo. No acreditar aceptación completa, ambos sistemas,
+proveedores o producción usando únicamente pruebas sintéticas. Conservar la base
+anterior al cambiar alcance o ponderaciones; no inventar porcentajes ad hoc.
+
+## Seguimiento consolidado autorizado
+
+El usuario exige un solo archivo de novedades/hallazgos/pendientes: actualizar
+ANALISIS/contabilidad/CIERRE_20_HITOS.md. No crear nuevos informes por análisis o
+entrega (IMPLEMENTACION_NN.md, cierres nuevos, etc.). Conservar documentos históricos
+y enlaces existentes; mantener las matrices/registros automáticos canónicos.
+La actualización de main solicitada el2026-11-09 es una entrega consolidada
+explícitamente autorizada; después se conserva la preferencia de no commits parciales.

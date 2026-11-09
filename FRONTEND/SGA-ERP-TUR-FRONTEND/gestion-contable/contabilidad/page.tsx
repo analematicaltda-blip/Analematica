@@ -21,6 +21,7 @@ const ContabilidadPage = () => {
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Módulo de Contabilidad</h1>
+            <p><a href="/dashboard/prestador/mi-negocio/gestion-contable/indicadores-ledger">Consultar rentabilidad y liquidez del libro mayor</a></p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Sección de Centros de Costo */}

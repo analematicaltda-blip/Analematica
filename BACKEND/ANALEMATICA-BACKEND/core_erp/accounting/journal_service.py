@@ -3,7 +3,7 @@ from datetime import date
 from typing import List, Dict, Any
 from django.db import transaction
 from .models import JournalEntry, LedgerEntry, Account, FiscalPeriod
-from .validation import validate_lines
+from .validation import validate_lines, lock_company, current_actor
 from .exceptions import AccountingError, TenantMismatchError, InactiveAccountError
 
 logger = logging.getLogger(__name__)
@@ -19,12 +19,15 @@ class JournalService:
         entry_date: date,
         description: str,
         lines_data: List[Dict[str, Any]],
-        reference: str = ""
+        reference: str = "",
+        *, created_by=None, period_id=None, currency="COP", base_currency="COP", exchange_rate="1.000000"
     ) -> JournalEntry:
         """
         Creates a new journal entry with multiple lines.
         """
+        lock_company(tenant_id)
         normalized = validate_lines(lines_data)
+        if created_by is not None: created_by=current_actor(created_by)
         if not tenant_id:
             raise TenantMismatchError('An explicit accounting tenant is required.')
         # Resolve all accounts before creating a header; never trust a cached model.
@@ -43,9 +46,11 @@ class JournalService:
             if len(found) != 1:
                 raise AccountingError('Account is missing or ambiguous in this company.')
             accounts.append(found[0])
-        locked = {a.pk: a for a in Account.plain_objects.select_for_update().filter(
+        locked = {a.pk: a for a in Account.plain_objects.select_for_update(of=('self',)).select_related('chart_of_accounts').filter(
             pk__in=[a.pk for a in accounts], tenant_id=tenant_id).order_by('pk')}
         for account in accounts:
+            if account.pk in locked and str(locked[account.pk].chart_of_accounts.tenant_id)!=str(tenant_id):
+                raise TenantMismatchError('Chart belongs to another accounting company.')
             if account.pk not in locked or not locked[account.pk].is_active:
                 raise InactiveAccountError('Account is unavailable or inactive.')
         # 1. Resolve Fiscal Period
@@ -56,6 +61,8 @@ class JournalService:
         if len(periods) != 1:
             raise AccountingError('Exactly one open fiscal period must cover the entry date.')
         period = periods[0]
+        if period_id is not None and str(period.pk)!=str(period_id):
+            raise AccountingError("The requested period does not cover this company and date.")
 
         # 2. Create the Header
         entry = JournalEntry.objects.create(
@@ -63,7 +70,7 @@ class JournalService:
             date=entry_date,
             description=description,
             reference=reference,
-            period=period
+            period=period, created_by=created_by, currency=currency, base_currency=base_currency, exchange_rate=exchange_rate
         )
 
         # 3. Create Lines

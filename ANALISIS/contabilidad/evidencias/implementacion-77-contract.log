@@ -1,0 +1,15 @@
+test_boolean_counts_and_floating_money_rejected (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_boolean_counts_and_floating_money_rejected) ... ok
+test_complete_statement_requires_no_differences (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_complete_statement_requires_no_differences) ... ok
+test_partial_associations_are_valid_without_full_claim (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_partial_associations_are_valid_without_full_claim) ... ok
+test_partial_statement_cannot_be_presented_complete (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_partial_statement_cannot_be_presented_complete) ... ok
+test_period_arithmetic_mismatch_rejected (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_period_arithmetic_mismatch_rejected) ... ok
+test_released_or_stale_associations_cannot_remain_qualified (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_released_or_stale_associations_cannot_remain_qualified) ... ok
+test_review_decisions_and_totals_must_match_exactly (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_review_decisions_and_totals_must_match_exactly) ... ok
+test_stale_period_cannot_claim_reconciled (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_stale_period_cannot_claim_reconciled) ... ok
+test_unrequested_period_cannot_claim_balances (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_unrequested_period_cannot_claim_balances) ... ok
+test_zero_balance_difference_cannot_hide_omitted_ledger_lines (test_corporate_ledger_bank_resolution_contract.BankResolutionContractTests.test_zero_balance_difference_cannot_hide_omitted_ledger_lines) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.003s
+
+OK

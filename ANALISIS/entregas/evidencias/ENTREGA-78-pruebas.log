@@ -1,0 +1,31 @@
+test_check_has_no_side_effects_and_preserves_source_git_head (test_entrega_segura.SafeDeliveryTests.test_check_has_no_side_effects_and_preserves_source_git_head) ... ok
+test_conflict_refuses_entire_delivery_before_any_change (test_entrega_segura.SafeDeliveryTests.test_conflict_refuses_entire_delivery_before_any_change) ... ok
+test_deletion_is_explicit_and_original_is_backed_up (test_entrega_segura.SafeDeliveryTests.test_deletion_is_explicit_and_original_is_backed_up) ... ok
+test_existing_archive_is_never_overwritten (test_entrega_segura.SafeDeliveryTests.test_existing_archive_is_never_overwritten) ... ok
+test_full_modified_and_untracked_delivery_applies_and_replays (test_entrega_segura.SafeDeliveryTests.test_full_modified_and_untracked_delivery_applies_and_replays) ... ok
+test_generated_tracked_bytecode_is_explicitly_excluded (test_entrega_segura.SafeDeliveryTests.test_generated_tracked_bytecode_is_explicitly_excluded) ... ok
+test_interrupted_application_rolls_back_and_keeps_recovery_journal (test_entrega_segura.SafeDeliveryTests.test_interrupted_application_rolls_back_and_keeps_recovery_journal) ... ok
+test_private_runtime_paths_and_private_key_material_are_not_packaged (test_entrega_segura.SafeDeliveryTests.test_private_runtime_paths_and_private_key_material_are_not_packaged) ... ok
+test_rollback_preserves_newer_concurrent_edit (test_entrega_segura.SafeDeliveryTests.test_rollback_preserves_newer_concurrent_edit) ... ok
+test_symlink_and_traversal_cannot_write_outside_destination (test_entrega_segura.SafeDeliveryTests.test_symlink_and_traversal_cannot_write_outside_destination) ... ok
+test_tampered_payload_is_rejected_before_writing (test_entrega_segura.SafeDeliveryTests.test_tampered_payload_is_rejected_before_writing) ... ok
+test_zipapp_is_directly_executable_for_dry_run (test_entrega_segura.SafeDeliveryTests.test_zipapp_is_directly_executable_for_dry_run) ... ok
+test_cancellation_stops_the_child_and_is_not_a_pass (test_verify_local.QualityContracts.test_cancellation_stops_the_child_and_is_not_a_pass) ... ok
+test_evidence_detects_changed_log (test_verify_local.QualityContracts.test_evidence_detects_changed_log) ... ok
+test_evidence_detects_changed_report (test_verify_local.QualityContracts.test_evidence_detects_changed_report) ... ok
+test_fresh_profile_uses_new_databases_and_no_git_or_deployment (test_verify_local.QualityContracts.test_fresh_profile_uses_new_databases_and_no_git_or_deployment) ... ok
+test_log_cap_fails_closed (test_verify_local.QualityContracts.test_log_cap_fails_closed) ... ok
+test_missing_runtime_is_blocked (test_verify_local.QualityContracts.test_missing_runtime_is_blocked) ... ok
+test_nonzero_cannot_be_hidden_by_printed_ok (test_verify_local.QualityContracts.test_nonzero_cannot_be_hidden_by_printed_ok) ... ok
+test_private_writer_never_overwrites (test_verify_local.QualityContracts.test_private_writer_never_overwrites) ... ok
+test_real_unittest_result_and_private_log (test_verify_local.QualityContracts.test_real_unittest_result_and_private_log) ... ok
+test_skip_is_reported_separately (test_verify_local.QualityContracts.test_skip_is_reported_separately) ... ok
+test_source_manifest_ignores_private_and_symlinked_files (test_verify_local.QualityContracts.test_source_manifest_ignores_private_and_symlinked_files) ... ok
+test_tap_skips_cannot_be_counted_as_full_completion (test_verify_local.QualityContracts.test_tap_skips_cannot_be_counted_as_full_completion) ... ok
+test_timeout_is_not_passed (test_verify_local.QualityContracts.test_timeout_is_not_passed) ... ok
+test_zero_exit_without_test_discovery_is_failure (test_verify_local.QualityContracts.test_zero_exit_without_test_discovery_is_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.837s
+
+OK

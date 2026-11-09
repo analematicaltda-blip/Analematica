@@ -21,6 +21,7 @@ Se pueden repetir perfiles en una sola invocación; se deduplican. Sin `--profil
 | Perfil | Verificación | Requisitos adicionales |
 | --- | --- | --- |
 | `core` | Coherencia de paquetes, contratos de la herramienta, asistencia/contenido, catálogo, recursos, preparación web, permisos territoriales/empresa, identidad, cupos, sesiones, recuperación y restauraciones SQLite | Dependencias Python de validación |
+| `accounting` | Fundación, posteo, identidad/API y consumidor contable local | Fixtures aislados; añadir `postgres` para concurrencia real |
 | `backup` | Copia cifrada AES-256-GCM, rechazos y restauración editorial con claves originales | SQLite local estándar, hasta 64 MiB; ver `RESPALDOS.md` |
 | `fresh` | Crea **dos bases nuevas** con migraciones locales y comprueba esquema, HTTP y respaldo | Dependencias Django; no usa directorios existentes |
 | `browser` | Panel y taller en Chromium, fixtures API y vistas responsive | Playwright disponible; `PLAYWRIGHT_MODULE` opcional |

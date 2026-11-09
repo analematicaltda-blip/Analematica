@@ -1,0 +1,179 @@
+{
+  "scope": "Opaque envelope shape validation only; browser crypto and isolated owner/API fixtures",
+  "production_ready": false,
+  "implementation_percent": "30.56",
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T20:25:25.500700+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "fc47b1399e06c8adddfe575d3b0744498e25763b7017ded269254cb2c3f1b369",
+    "source_digest_after": "fc47b1399e06c8adddfe575d3b0744498e25763b7017ded269254cb2c3f1b369",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/shared",
+      "FRONTEND/SGA-ERP-TUR-FRONTEND",
+      "FRONTEND/SGA-TUR-FRONTEND/src",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.622,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "17940b990bad7a3773102d4e7b93cd7e089529d2334bc0d96ad6869a3fc51f1a",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.226,
+        "tests": 26,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "eb6dcfc833f8b9c2886943ef619f2a6a380f77fbaa9e438eabd397f14ac4ad66",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 3.235,
+        "tests": 37,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "c0ace16d045498bf77f9153ac83ff789c082dad1d3d28710dd4e3d16a083698a",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.178,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "b16e8dda0b2c556862759c26a317ddd41251de999a31610a9250c1471e98ccbf",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.466,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "9114b5022b9dc71c14fbe17ee251626ac9b932e3600524b611723eda3b663359",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sql",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.922,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sql.log",
+        "log_sha256": "933e358d751e15d00dc47b9320718e329108b00d2843b00f125b99e2e5602ac3",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_envelope",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_envelope.log",
+        "log_sha256": "a1a199c3f18e063d09797d7ca51e7fdf4a1eb6127e26e4204deb1a15f916c893",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  },
+  "browser": {
+    "scope": "Real browser, password, cookie/CSRF and Django ledger; isolated synthetic data",
+    "passed": true,
+    "checks": [
+      "login_cookie_session",
+      "authorized_company_listing",
+      "posted_profitability",
+      "reviewed_quick_ratio",
+      "source_account",
+      "foreign_provider_denied",
+      "logout_hides_values",
+      "duplicate_classification_rejected",
+      "review_and_confirmation",
+      "stale_revision_rejected",
+      "reload_and_revision_save",
+      "indicators_refresh_after_save",
+      "classification_does_not_post_money",
+      "history_retains_old_and_new_revisions",
+      "explicit_historical_revision_and_latest",
+      "cash_simulation_ui",
+      "sensitivity_ui",
+      "editing_hides_stale_scenarios",
+      "company_change_clears_scenario_inputs",
+      "backtest_ui_zero_error",
+      "backtest_ui_negative_error",
+      "edited_outcomes_hide_evaluation",
+      "reconciliation_ui_readonly_page",
+      "reconciliation_hidden_on_company_change",
+      "browser_envelope_server_contract",
+      "plaintext_fields_rejected",
+      "envelope_company_scope",
+      "bounded_envelope_json_reader"
+    ],
+    "production_ready": false
+  },
+  "source_sha256": {
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/fiscal_envelope.py": "ff7a1ce47dcdb2ccccbfa2e920759e2e56376535d7817a78e51ea5327cd3cc1f",
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/fiscal_envelope_parser.py": "e237fa8023c7ed86ebe67dcdb1594d980e7593d40a8f71b005c13a240803da62",
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/views.py": "b2bd635a37e18b97836e95cad8ded5e8578b3d4d3859924af1516104d5f1574c",
+    "BACKEND/deployment/tests/accounting_envelope_check.py": "74c1ea53326176af707aaef4a6c654c5f6c47dc5e363a5066c3c14e6b1b6cd68",
+    "FRONTEND/deployment/tests/accounting_integration_browser.cjs": "77a650b42e9367a6ce89bcbefe320793cbb8f997a7270c32a06470787e45a690"
+  },
+  "storage_qualified": false,
+  "ciphertext_authentication_verified": false,
+  "key_custody_qualified": false
+}

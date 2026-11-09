@@ -999,7 +999,7 @@
                             </div>
                             <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
                                 <span style="color:var(--sky-muted-300);">Libro Mayor (Ledger):</span>
-                                <span id="auditLedgerStatus" style="color:var(--sky-bright-300); font-weight:600;">CERTIFICADO INMUTABLE</span>
+                                <span id="auditLedgerStatus" style="color:var(--sky-bright-300); font-weight:600;">PENDIENTE DE VERIFICACIÓN</span>
                             </div>
                             <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--metal-border-700); padding-bottom:0.4rem;">
                                 <span style="color:var(--sky-muted-300);">Memoria en Ejecución:</span>
@@ -1269,6 +1269,9 @@
 
             <!-- Pestaña ERP 5: Gestión Contable & PUC -->
             <section id="tab-contable" class="tab-pane">
+
+
+                <p role="status">Los indicadores contables requieren conexión autenticada al libro mayor de la empresa. Las respuestas del asistente no certifican conciliación, cierre ni cumplimiento fiscal.</p>
                 <div class="pane-header">
                     <div>
                         <h2 class="pane-title">
@@ -1280,21 +1283,37 @@
                     </div>
                 </div>
 
+                <!-- CORPORATE_LEDGER_PANEL_START -->
+                <section id="corporate-ledger-panel" class="admin-card" aria-label="Libro mayor corporativo" style="background:#0E1B38;color:#FFFFFF;border:1px solid #60A5FA;padding:20px;border-radius:8px;margin-bottom:20px;overflow-wrap:anywhere;">
+                    <h3>Consulta del libro mayor de Analemática</h3>
+                    <p>Empresa fijada mediante revisión autorizada. Requiere sesión de dueño corporativo y sesión contable vigente del ERP en la misma instalación.</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;">
+                        <label>Reporte <select id="corporateLedgerReport" aria-label="Reporte corporativo" style="background:#142850;color:#FFFFFF;border:1px solid #60A5FA;padding:10px;max-width:100%;"><option value="trial_balance">Balance de prueba</option><option value="profitability">Rentabilidad</option><option value="tax_reconciliation">Conciliación tributaria</option></select></label>
+                        <label id="corporateLedgerAccountLabel" hidden>Cuenta tributaria (UUID revisado) <input id="corporateLedgerAccount" aria-label="Cuenta tributaria corporativa" style="background:#142850;color:#FFFFFF;border:1px solid #60A5FA;padding:10px;max-width:100%;box-sizing:border-box;"></label>
+                        <label id="corporateLedgerSinceLabel" hidden>Desde <input id="corporateLedgerSince" aria-label="Desde corporativo" type="date" style="background:#142850;color:#FFFFFF;border:1px solid #60A5FA;padding:10px;"></label>
+                        <label>Hasta <input id="corporateLedgerUntil" aria-label="Hasta corporativo" type="date" style="background:#142850;color:#FFFFFF;border:1px solid #60A5FA;padding:10px;"></label>
+                        <button id="corporateLedgerLoad" type="button" style="background:#142850;color:#FFFFFF;border:1px solid #60A5FA;padding:10px;border-radius:6px;">Consultar libro mayor</button>
+                    </div>
+                    <p id="corporateLedgerStatus" role="status">Consulta pendiente. El vínculo y las sesiones se comprueban en cada solicitud.</p>
+                    <div id="corporateLedgerOutput" aria-live="polite"></div>
+                </section>
+                <!-- CORPORATE_LEDGER_PANEL_END -->
+
                 <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
                     <div class="admin-card" style="text-align:center;">
                         <span class="rank-badge">SUMAS IGUALES</span>
-                        <div id="contableSumasStatus" style="font-size:1.8rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.75rem;">CUADRADO (ΣD ≡ ΣC)</div>
-                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Diferencia Cero en Partida Doble</p>
+                        <div id="contableSumasStatus" style="font-size:1.8rem; font-weight:700; color:#FFFFFF; margin-top:0.75rem;">PENDIENTE DE VERIFICACIÓN</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Requiere consulta del libro mayor</p>
                     </div>
                     <div class="admin-card" style="text-align:center;">
                         <span class="rank-badge">PRECIERRE MENSUAL</span>
-                        <div id="contablePrecierreStatus" style="font-size:1.8rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.75rem;">CONCILIADO 100%</div>
-                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Libros Oficiales Generados</p>
+                        <div id="contablePrecierreStatus" style="font-size:1.8rem; font-weight:700; color:#FFFFFF; margin-top:0.75rem;">PENDIENTE DE VERIFICACIÓN</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Requiere cierre contable verificado</p>
                     </div>
                     <div class="admin-card" style="text-align:center;">
                         <span class="rank-badge">BANDERA FISCAL STAR</span>
-                        <div id="contableStarStatus" style="font-size:1.8rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.75rem;">VERDE STAR</div>
-                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">ReteFuente, ReteIVA y ReteICA OK</p>
+                        <div id="contableStarStatus" style="font-size:1.8rem; font-weight:700; color:#FFFFFF; margin-top:0.75rem;">PENDIENTE DE VERIFICACIÓN</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin-top:0.5rem;">Requiere validación fiscal</p>
                     </div>
                 </div>
 
@@ -1302,18 +1321,18 @@
                 <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
                     <div class="admin-card" style="text-align:center;">
                         <span class="rank-badge">CONCILIACIÓN BANCARIA</span>
-                        <div id="contableConciliacionStatus" style="font-size:1.6rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.5rem;">CONCILIADO EXACTO</div>
-                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">Bancolombia & Pasarelas Sync</p>
+                        <div id="contableConciliacionStatus" style="font-size:1.6rem; font-weight:700; color:#FFFFFF; margin-top:0.5rem;">PENDIENTE DE VERIFICACIÓN</div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">Requiere conciliación bancaria</p>
                     </div>
                     <div class="admin-card" style="text-align:center;">
                         <span class="rank-badge">ACTIVOS FIJOS & NIC 16</span>
-                        <div id="contableDepreciacionStatus" style="font-size:1.6rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">$9.29M / MES</div>
+                        <div id="contableDepreciacionStatus" style="font-size:1.6rem; font-weight:700; color:#FFFFFF; margin-top:0.5rem;">PENDIENTE DE VERIFICACIÓN</div>
                         <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">Depreciación Lineal en Libros</p>
                     </div>
                     <div class="admin-card" style="text-align:center;">
                         <span class="rank-badge">CIERRE CHECKLIST</span>
-                        <div id="contableChecklistStatus" style="font-size:1.6rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">247 TX AUDITADAS</div>
-                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">0 Anomalías Detectadas</p>
+                        <div id="contableChecklistStatus" style="font-size:1.6rem; font-weight:700; color:#FFFFFF; margin-top:0.5rem;">PENDIENTE DE VERIFICACIÓN</div>
+                        <p style="font-size:0.8rem; color:var(--sky-pale-200); margin:0;">Auditoría pendiente</p>
                     </div>
                 </div>
 
@@ -1363,29 +1382,29 @@
                     <div class="form-grid-3">
                         <div class="form-group-admin">
                             <label for="cont_suite_ingresos">Ingresos Operacionales (Ventas 4135)</label>
-                            <input type="text" id="cont_suite_ingresos" class="form-input-admin" data-key="contable.suite_ingresos" placeholder="Ej.: $ 120.000.000 COP">
+                            <input type="text" id="cont_suite_ingresos" class="form-input-admin" data-key="contable.suite_ingresos" placeholder="Dato de configuración; no saldo verificado">
                         </div>
                         <div class="form-group-admin">
                             <label for="cont_suite_egresos">Egresos Operacionales (Compras 5135)</label>
-                            <input type="text" id="cont_suite_egresos" class="form-input-admin" data-key="contable.suite_egresos" placeholder="Ej.: $ 45.000.000 COP">
+                            <input type="text" id="cont_suite_egresos" class="form-input-admin" data-key="contable.suite_egresos" placeholder="Dato de configuración; no saldo verificado">
                         </div>
                         <div class="form-group-admin">
                             <label for="cont_suite_utilidad">Utilidad Fiscal Antes de Impuestos</label>
-                            <input type="text" id="cont_suite_utilidad" class="form-input-admin" data-key="contable.suite_utilidad" placeholder="Ej.: $ 75.000.000 COP">
+                            <input type="text" id="cont_suite_utilidad" class="form-input-admin" data-key="contable.suite_utilidad" placeholder="Dato de configuración; no saldo verificado">
                         </div>
                     </div>
                     <div class="form-grid-3" style="margin-top:1rem;">
                         <div class="form-group-admin">
                             <label for="cont_suite_iva_neto">IVA Neto a Pagar (Generado - Descontable)</label>
-                            <input type="text" id="cont_suite_iva_neto" class="form-input-admin" data-key="contable.suite_iva_neto" placeholder="Ej.: $ 14.250.000 COP">
+                            <input type="text" id="cont_suite_iva_neto" class="form-input-admin" data-key="contable.suite_iva_neto" placeholder="Dato de configuración; no saldo verificado">
                         </div>
                         <div class="form-group-admin">
                             <label for="cont_suite_retenciones">Retenciones Practicadas (ReteFuente + ReteICA)</label>
-                            <input type="text" id="cont_suite_retenciones" class="form-input-admin" data-key="contable.suite_retenciones" placeholder="Ej.: $ 1.575.000 COP">
+                            <input type="text" id="cont_suite_retenciones" class="form-input-admin" data-key="contable.suite_retenciones" placeholder="Dato de configuración; no saldo verificado">
                         </div>
                         <div class="form-group-admin">
                             <label for="cont_suite_impuesto_renta">Provisión Impuesto de Renta (35%)</label>
-                            <input type="text" id="cont_suite_impuesto_renta" class="form-input-admin" data-key="contable.suite_impuesto_renta" placeholder="Ej.: $ 26.250.000 COP">
+                            <input type="text" id="cont_suite_impuesto_renta" class="form-input-admin" data-key="contable.suite_impuesto_renta" placeholder="Dato de configuración; no saldo verificado">
                         </div>
                     </div>
                 </div>
@@ -1492,6 +1511,15 @@
     <!-- Ejército de Agentes Tácticos de Analemática (DEAA-V2.1) -->
     <script src="agents/analematica_army.js"></script>
     <script src="js/connection.js"></script>
+    <script src="js/fiscal-envelope-runtime.js"></script>
+    <script src="js/accounting-fiscal-package.js"></script>
+    <script src="js/accounting-customer-store.js"></script>
+    <script src="js/accounting-ubl-draft.js"></script>
+    <script src="js/accounting-offline.js"></script>
+    <script src="js/accounting-remediation.js"></script>
+    <script src="js/accounting-ledger.js"></script>
+    <script src="js/native-purchases.js"></script>
+    <script src="js/payroll-costs.js"></script>
     <script src="js/admin.js"></script>
     <script src="js/meta-ads.js"></script>
     <script src="js/meta-setup.js"></script>

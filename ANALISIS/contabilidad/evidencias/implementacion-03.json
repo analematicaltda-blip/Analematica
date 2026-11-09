@@ -1,0 +1,125 @@
+{
+  "schema": "sgacd-accounting-projection-v1",
+  "production_ready": false,
+  "local_only": true,
+  "enabled_by_default": false,
+  "source_stable": true,
+  "source_digest": "9f2fd33bb62ad7e778fdb4fd619fb27c52e7ba49ff47f8bfd8cc52e9cb8f6d64",
+  "profiles": [
+    "accounting",
+    "postgres"
+  ],
+  "focused_groups": 5,
+  "focused_python_methods": 55,
+  "delivery_test_methods": 14,
+  "adapter_test_methods": 9,
+  "general_regression_methods": 269,
+  "general_regression_source_digest": "2fad5174075da0e1751f6a3230ad2666c927b3fbb906ae11790699107d7c17a8",
+  "general_regression_note": "General regression ran before the final metadata/invalid-token handling refinements; focused regression validates current source.",
+  "runner_regression_methods": 14,
+  "postgresql_accounting": {
+    "postgresql": true,
+    "scope": "Separate temporary database; real Django transactions and row locks",
+    "results": [
+      {
+        "scenario": "same_event",
+        "accepted": 2,
+        "posted_journals": 1,
+        "outbox_count": 1,
+        "chain_valid": true
+      },
+      {
+        "scenario": "changed_payload",
+        "accepted": 1,
+        "posted_journals": 1,
+        "outbox_count": 1,
+        "chain_valid": true
+      },
+      {
+        "scenario": "disjoint_accounts",
+        "accepted": 2,
+        "posted_journals": 2,
+        "outbox_count": 2,
+        "chain_valid": true
+      },
+      {
+        "scenario": "duplicate_reversal",
+        "accepted": 1,
+        "posted_journals": 2,
+        "outbox_count": 2,
+        "chain_valid": true
+      },
+      {
+        "scenario": "post_vs_edit",
+        "accepted": 1,
+        "posted_journals": 1,
+        "outbox_count": 1,
+        "chain_valid": true
+      },
+      {
+        "scenario": "close_vs_post",
+        "accepted": 1,
+        "posted_journals": 0,
+        "outbox_count": 0,
+        "chain_valid": true
+      },
+      {
+        "scenario": "delivery_claim",
+        "projection_receipts": 0,
+        "duplicate_effect": false,
+        "external_publication_verified": false
+      },
+      {
+        "scenario": "delivery_duplicate",
+        "projection_receipts": 1,
+        "duplicate_effect": false,
+        "external_publication_verified": false
+      },
+      {
+        "scenario": "delivery_parallel_events",
+        "projection_receipts": 2,
+        "duplicate_effect": false,
+        "external_publication_verified": false
+      },
+      {
+        "scenario": "delivery_stale_lease",
+        "projection_receipts": 1,
+        "duplicate_effect": false,
+        "external_publication_verified": false
+      },
+      {
+        "scenario": "delivery_receipt_replay",
+        "projection_receipts": 1,
+        "duplicate_effect": false,
+        "external_publication_verified": false
+      },
+      {
+        "scenario": "delivery_rollback",
+        "projection_receipts": 1,
+        "duplicate_effect": false,
+        "external_publication_verified": false
+      }
+    ]
+  },
+  "postgresql_previous_scenarios": 21,
+  "fresh_erp_methods": 11,
+  "fresh_migration": "core_erp.0003_accounting_projection",
+  "fresh_database_only": true,
+  "native_historical_migration_qualified": false,
+  "external_publication_verified": false,
+  "evidence_integrity_verified": true,
+  "raw_evidence_directory": "/tmp/sgacd-accounting-final-scope-39",
+  "private_log_sha256": {
+    "/tmp/accounting-projection-migration-39.log": "c21e7ad8f87dca03cee4f2d03b97befa0b1092e9fbbfa8a5b5c81d80f29447ec",
+    "/tmp/accounting-projection-fresh-39.log": "f8ced8b792447edaad60c1455031ffd13a696aea41f19ec2a53d711d75fe7cfe",
+    "/tmp/accounting-runner-39.log": "715eb669d55de66b9bb53bdd0175f3324fd3dee145647bea6a42cc7593d24985"
+  },
+  "limits": [
+    "No external Kafka transport or scheduler enabled",
+    "No funds, banking or tax authority integration",
+    "No rebuild/reset or production retention implemented",
+    "Read APIs use fixture identities in tests",
+    "No new browser/hardware qualification or latency SLA certification",
+    "No commits, push or actual user database migration"
+  ]
+}

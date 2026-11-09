@@ -1,0 +1,475 @@
+{
+  "scope": "Exact historical FX reversal in isolated ORM/PostgreSQL and restricted runtime fixtures",
+  "production_ready": false,
+  "implementation_percent": "27.78",
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T19:50:01.329825+00:00",
+    "profiles": [
+      "accounting",
+      "postgres"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "c8160ed9195f5978874d6ec6d8bdf4bdae812b0deb9ff952bad22107bc3ec213",
+    "source_digest_after": "c8160ed9195f5978874d6ec6d8bdf4bdae812b0deb9ff952bad22107bc3ec213",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.62,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "5ed8a1dd0d9d6e50d296df8a57f5472c8a26c0469c288956ef1b9ed23c6d6118",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.222,
+        "tests": 26,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "67971996c5a5c37ab71a881c9674a749bcdd3e7ef74053f23522c1fe89a9d115",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.723,
+        "tests": 31,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "633be32cbf94a20df7781c7b54ae177d6f510fa2ddf8f2da7816ee5fac644b42",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.073,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "afbf16f4912cbd64eb19b621d22f406b359983f3839755fc288eb41191e9813b",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.466,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "4c3c5f4c948454555a0a0c826494f10e4d9f6b0cb7a5363102573d1166b690d0",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sql",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.82,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sql.log",
+        "log_sha256": "08b0f454eb1e6be7b9b0cf34f40466f45ca21689f592939928b27a5e855a1908",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "postgres_restore_concurrency",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 31.07,
+        "tests": null,
+        "skipped": null,
+        "log": "postgres_restore_concurrency.log",
+        "log_sha256": "e05104c6fe067096342bdf73a9fd5db4b428225e2a7eb738c0e41d57de70ad14",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  },
+  "postgres_result": {
+    "postgresql": true,
+    "replay_cache_enforced": false,
+    "results": [
+      {
+        "scenario": "different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_different_sessions_same_code",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_same_challenge",
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "issuance_different_sessions_same_totp",
+        "accepted": 1,
+        "rejected": 1,
+        "previous_codes_invalid": true
+      }
+    ],
+    "process_results": [
+      {
+        "scenario": "totp_different_sessions_same_code",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "totp_same_challenge",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_different_sessions_same_code",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "recovery_same_challenge",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      },
+      {
+        "scenario": "issue_different_sessions_same_code",
+        "distinct_processes": 2,
+        "accepted": 1,
+        "rejected": 1
+      }
+    ],
+    "http_results": [
+      {
+        "scenario": "http_totp",
+        "workers": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "csrf_enforced": true,
+        "session_shared_across_workers": true
+      },
+      {
+        "scenario": "http_recovery",
+        "workers": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "csrf_enforced": true,
+        "session_shared_across_workers": true
+      },
+      {
+        "scenario": "http_issuance",
+        "workers": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "audit_events": 1
+      }
+    ],
+    "restore": {
+      "restored_to_new_database": true,
+      "source_unchanged": true,
+      "table_count": 28,
+      "row_count": 108,
+      "all_table_rows_match": true,
+      "foreign_keys_validated": true,
+      "encrypted_archive_private_permissions": true,
+      "tampered_archive_rejected": true,
+      "mfa_material_decrypted_with_original_key": 22,
+      "sessions_decoded_with_original_key": 6,
+      "archive_sha256": "2cdb170b1d88f4a73fda90f133ef646731a4a289a3f6eefac7e875be30759f5a",
+      "keys_saved_in_archive": false
+    },
+    "capacity_results": [
+      {
+        "scenario": "last_unit",
+        "accepted": 1,
+        "persisted_holds": 1,
+        "overbooked": false
+      },
+      {
+        "scenario": "idempotent_retry",
+        "accepted": 2,
+        "persisted_holds": 1,
+        "overbooked": false
+      },
+      {
+        "scenario": "key_conflict_across_services",
+        "accepted": 1,
+        "persisted_holds": 1,
+        "overbooked": false
+      }
+    ],
+    "password_reset_result": {
+      "scenario": "same_link_two_processes",
+      "accepted": 1,
+      "rejected": 1,
+      "audit_events": 1,
+      "mfa_preserved": true
+    },
+    "control_result": {
+      "postgresql": true,
+      "scope": "Independent SQLAlchemy sessions/threads; no real executor",
+      "results": [
+        {
+          "scenario": "duplicate_approval",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": false
+        },
+        {
+          "scenario": "duplicate_begin",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": false
+        },
+        {
+          "scenario": "duplicate_result",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": false
+        },
+        {
+          "scenario": "revoke_vs_begin",
+          "completed": 1,
+          "checkpoint_after_revocation_denied": true
+        }
+      ]
+    },
+    "accounting_result": {
+      "postgresql": true,
+      "scope": "Separate temporary database; real Django transactions and row locks",
+      "results": [
+        {
+          "scenario": "same_event",
+          "accepted": 2,
+          "posted_journals": 1,
+          "outbox_count": 1,
+          "chain_valid": true
+        },
+        {
+          "scenario": "changed_payload",
+          "accepted": 1,
+          "posted_journals": 1,
+          "outbox_count": 1,
+          "chain_valid": true
+        },
+        {
+          "scenario": "disjoint_accounts",
+          "accepted": 2,
+          "posted_journals": 2,
+          "outbox_count": 2,
+          "chain_valid": true
+        },
+        {
+          "scenario": "duplicate_reversal",
+          "accepted": 1,
+          "posted_journals": 2,
+          "outbox_count": 2,
+          "chain_valid": true
+        },
+        {
+          "scenario": "post_vs_edit",
+          "accepted": 1,
+          "posted_journals": 1,
+          "outbox_count": 1,
+          "chain_valid": true
+        },
+        {
+          "scenario": "close_vs_post",
+          "accepted": 1,
+          "posted_journals": 0,
+          "outbox_count": 0,
+          "chain_valid": true
+        },
+        {
+          "scenario": "delivery_claim",
+          "projection_receipts": 0,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_duplicate",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_parallel_events",
+          "projection_receipts": 2,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_stale_lease",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_receipt_replay",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "delivery_rollback",
+          "projection_receipts": 1,
+          "duplicate_effect": false,
+          "external_publication_verified": false
+        },
+        {
+          "scenario": "ratio_review_revision_race",
+          "accepted": 1,
+          "stored_revisions": 1
+        },
+        {
+          "scenario": "guard_health_and_temp_shadowing",
+          "disabled_detected": true,
+          "temp_shadow_bypass_blocked": true
+        },
+        {
+          "scenario": "posted_sql_guards",
+          "blocked_operations": 11,
+          "posting_and_reversal_valid": true,
+          "privileged_bypass_protection": false
+        },
+        {
+          "scenario": "foreign_neutral_reversal_race",
+          "single_reversal": true,
+          "historical_rate_preserved": true
+        },
+        {
+          "scenario": "restricted_accounting_runtime",
+          "posting_replay_reversal_reports_projection_valid": true,
+          "metadata_rewrites_denied": 2,
+          "foreign_neutral_reversal_valid": true,
+          "database_admin": false,
+          "scope": "Core flow fixture; not all ERP paths or production roles"
+        },
+        {
+          "scenario": "accounting_privilege_boundary",
+          "admin_rejected": true,
+          "separate_runtime_qualified_for_guarded_tables": true,
+          "disable_trigger_denied": true,
+          "session_admin_cannot_hide_behind_set_role": true
+        },
+        {
+          "scenario": "ledger_backup_restore",
+          "digest_equal": true,
+          "source_unchanged": true,
+          "guards_and_integrity_valid": true
+        }
+      ],
+      "restore_expectation": {
+        "digest": "2ca2a226d1fd6c7018f712a8aceb25648e8f34518895bbf54871bc16a5bd1d32",
+        "component_digests": {
+          "tables": "2327cfe0ca1323b75ba0f385b68ae069d7878b367eb37641f4760ec7c035b361",
+          "sequences": "109f5104058394cc580ea84bb8fed566875c8bb49ac354434a06cec0cc645229",
+          "functions": "96d611dfbc918b6c0cbbea2456e9ed63b9dd80ec78e58d078884eaa829a5afde",
+          "triggers": "7c0cfdb96f951788b3c9793a0f880579f1d798e681109f5ea47bf44b71f44e73",
+          "columns": "8df9b218f4ae7ba088b1c52684260f8ecab6376bc743f2ae0e47c9c33ae363cd",
+          "constraints": "bf16321c4230bd610fdb4709acd8880eee54f2cc04f8302bee0ed1de8dd26eb4",
+          "indexes": "a0dc86eb5d7d357abb4ed9e67b671a13a1256756bf92c1037d1e5da7ec1544bc"
+        },
+        "table_count": 26,
+        "total_rows": 255,
+        "posted_companies_verified": 22,
+        "sequence_count": 9,
+        "accounting_functions": 3,
+        "guard_triggers": 6,
+        "columns": 211,
+        "constraints": 91,
+        "indexes": 104,
+        "ledger_integrity_valid": true,
+        "guards_ready": true,
+        "mutation_blocked": true,
+        "status_constraint_behavior_verified": true,
+        "constraint_normalization": "status_text_array_cast_v1"
+      },
+      "restore": {
+        "digest": "2ca2a226d1fd6c7018f712a8aceb25648e8f34518895bbf54871bc16a5bd1d32",
+        "component_digests": {
+          "tables": "2327cfe0ca1323b75ba0f385b68ae069d7878b367eb37641f4760ec7c035b361",
+          "sequences": "109f5104058394cc580ea84bb8fed566875c8bb49ac354434a06cec0cc645229",
+          "functions": "96d611dfbc918b6c0cbbea2456e9ed63b9dd80ec78e58d078884eaa829a5afde",
+          "triggers": "7c0cfdb96f951788b3c9793a0f880579f1d798e681109f5ea47bf44b71f44e73",
+          "columns": "8df9b218f4ae7ba088b1c52684260f8ecab6376bc743f2ae0e47c9c33ae363cd",
+          "constraints": "bf16321c4230bd610fdb4709acd8880eee54f2cc04f8302bee0ed1de8dd26eb4",
+          "indexes": "a0dc86eb5d7d357abb4ed9e67b671a13a1256756bf92c1037d1e5da7ec1544bc"
+        },
+        "table_count": 26,
+        "total_rows": 255,
+        "posted_companies_verified": 22,
+        "sequence_count": 9,
+        "accounting_functions": 3,
+        "guard_triggers": 6,
+        "columns": 211,
+        "constraints": 91,
+        "indexes": 104,
+        "ledger_integrity_valid": true,
+        "guards_ready": true,
+        "mutation_blocked": true,
+        "status_constraint_behavior_verified": true,
+        "constraint_normalization": "status_text_array_cast_v1",
+        "source_unchanged": true,
+        "archive_mode_private": true,
+        "external_keys_restored": false,
+        "production_qualified": false
+      }
+    }
+  },
+  "source_sha256": {
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py": "ad716c86c9b41005778fb16d7f449168c00e4ce1bbd322adb1a98ad4b431fc73",
+    "BACKEND/deployment/tests/accounting_posting_check.py": "70df37eba5b265f08509a59fc5b110a014c6681debc1c717f46f3a2192923387",
+    "BACKEND/deployment/tests/accounting_postgres_contract.py": "fbf15e9acb28d9d576d664bf5c6b4038c39e7581ea6c37a17c5f1d133f1d6f69"
+  }
+}

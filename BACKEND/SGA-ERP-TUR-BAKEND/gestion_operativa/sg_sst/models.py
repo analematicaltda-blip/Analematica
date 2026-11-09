@@ -192,3 +192,6 @@ class CapacitacionSST(TenantAwareModel):
     realizada = models.BooleanField(default=False)
 
     class Meta: app_label = 'prestadores'
+
+# New normalized safety records belong to this installed app's own migration label.
+from .worker_data import ProfessionalAuthorization,PPEAssignment,WorkPeriod,WorkPeriodEnd,RestPeriod,SafetyRevocation

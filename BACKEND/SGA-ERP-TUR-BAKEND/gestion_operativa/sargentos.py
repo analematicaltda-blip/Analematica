@@ -14,51 +14,39 @@ class SargentoOperativo:
     """
 
     @staticmethod
-    def crear_orden_servicio(perfil_id, descripcion, parametros=None):
+    def crear_orden_servicio(perfil_id, descripcion, parametros=None, *, usuario_id=None):
+        from django.db import transaction
+        from django.utils.dateparse import parse_datetime
+        from rest_framework.exceptions import ValidationError
+        from .sg_sst.sargentos import _context
         from .models import OrdenOperativa
-
-        orden = OrdenOperativa.objects.create(
-            provider_id=perfil_id,
-            contrato_ref_id=parametros.get("contrato_id", uuid.uuid4()) if parametros else uuid.uuid4(),
-            descripcion_servicio=descripcion,
-            fecha_inicio=timezone.now(),
-            fecha_fin_estimada=timezone.now() + timezone.timedelta(days=1),
-            estado=OrdenOperativa.EstadoOrden.PENDIENTE
-        )
-        logger.info(f"SARGENTO: Orden operativa {orden.id} creada.")
-        return {"id": str(orden.id), "status": "CREATED"}
+        if not isinstance(parametros,dict) or not {'contrato_id','fecha_inicio','fecha_fin_estimada'}<=set(parametros):
+            raise ValidationError('Contrato y fechas explícitas requeridos; no se inventan referencias.')
+        if not isinstance(descripcion,str) or not 1<=len(descripcion.strip())<=2000:raise ValidationError('Descripción acotada requerida.')
+        begin=parse_datetime(parametros['fecha_inicio']);end=parse_datetime(parametros['fecha_fin_estimada'])
+        if begin is None or end is None or timezone.is_naive(begin) or timezone.is_naive(end) or end<=begin:raise ValidationError('Ventana prevista explícita y con zona requerida.')
+        contract=uuid.UUID(str(parametros['contrato_id']))
+        with transaction.atomic():
+            user,provider=_context(usuario_id,perfil_id)
+            orden=OrdenOperativa.objects.create(provider_id=provider.pk,contrato_ref_id=contract,
+                descripcion_servicio=descripcion,fecha_inicio=begin,fecha_fin_estimada=end)
+            AuditLog.objects.create(user=user,username=user.username,action='OPERATIONAL_DRAFT_CREATED',
+                details={'provider_id':str(provider.pk),'operation_id':str(orden.pk),'kind':'OrdenOperativa'})
+            return {'id':str(orden.pk),'status':'DRAFT_CREATED','service_started':False,
+                    'contract_independently_verified':False,'ledger_written':False}
 
     @staticmethod
-    def actualizar_estado(entidad_tipo, entidad_id, nuevo_estado, motivo="", agente_id=None):
-        from .models import OrdenOperativa, RegistroOperativo
-
-        logger.info(f"SARGENTO: Actualizando estado de {entidad_tipo} {entidad_id} a {nuevo_estado}")
-
-        if entidad_tipo == "OrdenOperativa":
-            try:
-                orden = OrdenOperativa.objects.get(id=entidad_id)
-                estado_anterior = orden.estado
-                orden.estado = nuevo_estado
-                orden.save()
-
-                RegistroOperativo.objects.create(
-                    orden=orden,
-                    estado_anterior=estado_anterior,
-                    estado_nuevo=nuevo_estado,
-                    agente_responsable_id=agente_id or uuid.uuid4(),
-                    observaciones=motivo
-                )
-                return True
-            except OrdenOperativa.DoesNotExist:
-                logger.error(f"SARGENTO: OrdenOperativa {entidad_id} no existe.")
-                return False
-
-        return False
+    def actualizar_estado(entidad_tipo, entidad_id, nuevo_estado, motivo="", agente_id=None,
+                           *, provider_id=None, expected_state=None, confirmed=False):
+        from .state_service import transition
+        return transition(usuario_id=agente_id,provider_id=provider_id,kind=entidad_tipo,
+            operation_id=entidad_id,expected_state=expected_state,new_state=nuevo_estado,
+            reason=motivo,confirmed=confirmed)
 
     @staticmethod
     def registrar_ejecucion_tarea(tarea_id, operario_id, resultado):
-        logger.info(f"SARGENTO: Registrando ejecución de tarea {tarea_id} por operario {operario_id}")
-        return True
+        from rest_framework.exceptions import ValidationError
+        raise ValidationError('Ejecución de tarea no cualificada: no se devuelve éxito sin persistencia y controles de despacho.')
 
     @staticmethod
     def registrar_costo_operativo(perfil_id, orden_id, concepto, monto):

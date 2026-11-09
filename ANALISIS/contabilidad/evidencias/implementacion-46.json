@@ -1,0 +1,304 @@
+{
+  "scope": "Corporate Analematica UI -> reviewed SQLAlchemy identity -> real HTTP -> authenticated Django ERP session -> shared ledger reports; isolated stores",
+  "implementation_percent": "38.89",
+  "production_ready": false,
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T22:51:35.478463+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "714c00fa21e07ab5c71bd5f9939e776f6bc1fa18aee7ea22c409d49a3c55730c",
+    "source_digest_after": "714c00fa21e07ab5c71bd5f9939e776f6bc1fa18aee7ea22c409d49a3c55730c",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/ANALEMATICA-BACKEND/deployment",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-CD-BACKEND/tools",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/shared",
+      "FRONTEND/SGA-ERP-TUR-FRONTEND",
+      "FRONTEND/SGA-TUR-FRONTEND/src",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.571,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "6a628109497949964eb0d7d54d1f2003a0bbae4ca5ca6fb461bf07bfa0ac6c8b",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.819,
+        "tests": 26,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "9262718ff48fd67d6610363acdf275ad4fddd6d744e74a8fc0f9048d56cb6f31",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.771,
+        "tests": 46,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "253e3f076c8b76bcf531060f09b05ef2abbd140dfe819c69d124261a3737e0ea",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.872,
+        "tests": 16,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "2143dea7d416febfba7774060fdf73452e7bddf725d05ec570e2cdbefc9f575a",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.416,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "7f6c8970e63a3ac034f750043356716dd2e9f7d60936fcc70d7a96ce4f185b1c",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_sql",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.618,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_sql.log",
+        "log_sha256": "0dbd163d3e85b5d7f7e336fa94ecd8af577882d710eade6832d4e077ccfbb528",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_envelope",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_envelope.log",
+        "log_sha256": "a1a199c3f18e063d09797d7ca51e7fdf4a1eb6127e26e4204deb1a15f916c893",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_invoice",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 10,
+        "skipped": 0,
+        "log": "accounting_invoice.log",
+        "log_sha256": "d09268470c7b54f6ae3079363aeafe12c7b1cb9fa8466360daed472024a3eba4",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_invoice_queue",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.317,
+        "tests": 8,
+        "skipped": 0,
+        "log": "accounting_invoice_queue.log",
+        "log_sha256": "dbf0c7571b62a8f612061ec0e19dd1746b78314f63c3bdc46d606225b8d305cf",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_source",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.368,
+        "tests": 11,
+        "skipped": 0,
+        "log": "accounting_reservation_source.log",
+        "log_sha256": "72aaeb657440639beed44ad9a2f7a132b4284f477ae4eacf406d9320545ea12c",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_query",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.115,
+        "tests": 6,
+        "skipped": 0,
+        "log": "accounting_query.log",
+        "log_sha256": "e9456e34f5e8ba297520b958fbd08c0d7fbf58ec7882f5d30b4dc64297879873",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_query_parser",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.365,
+        "tests": 7,
+        "skipped": 0,
+        "log": "accounting_query_parser.log",
+        "log_sha256": "8a37852cf3cf9fb670a99f87775dd9c2a0bdf0b0b6756b85c6b0a33a37debbf0",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reports",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.468,
+        "tests": 4,
+        "skipped": 0,
+        "log": "accounting_reports.log",
+        "log_sha256": "21ab6c445467bc31a5bfb4d24a89732de7b24662477756243488e07a41e3de56",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_fiscal",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.668,
+        "tests": 12,
+        "skipped": 0,
+        "log": "accounting_reservation_fiscal.log",
+        "log_sha256": "f5c5ca314a66a0ca680ff1bc1bb2d6cb4c5a124806ee0c180cc9432fdf214771",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_reservation_recognition",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.521,
+        "tests": 20,
+        "skipped": 0,
+        "log": "accounting_reservation_recognition.log",
+        "log_sha256": "02caf2341ac1ef44d57b6f0f727c33f1259f700fcea95cf1c54d66ee93d54538",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_corporate_bridge",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 13.252,
+        "tests": 19,
+        "skipped": 0,
+        "log": "accounting_corporate_bridge.log",
+        "log_sha256": "74c1d1d1bde23ecd4a29f4692c2ad5e1f7976a5e2189f1dc87ab9334fb7cc96c",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  },
+  "corporate_browser": {
+    "passed": true,
+    "scope": "Actual Chromium/corporate SQLAlchemy API/HTTP/Django shared ledger, isolated identities",
+    "checks": [
+      "reviewed_corporate_binding",
+      "dual_authenticated_sessions",
+      "trial_balance_real_15_COP",
+      "actual_ledger_table",
+      "profitability_real_10_COP",
+      "query_change_clears_values",
+      "missing_ERP_session_denied",
+      "storage_logout_clears_values",
+      "anonymous_corporate_denied",
+      "private_no_store",
+      "blue_white_identity",
+      "mobile_no_overflow"
+    ],
+    "production_ready": false
+  },
+  "erp_ui_regression": {
+    "scope": "Synthetic browser/API contract; no live accounts or production",
+    "checks": [
+      "decimal_values",
+      "company_switch_clears_values",
+      "permission_error",
+      "missing_classification",
+      "malformed_payload_rejected",
+      "invalid_dates",
+      "logout_clears_values",
+      "white_text_blue_surface",
+      "mobile_no_overflow",
+      "GET_only",
+      "analematica_no_unverified_status",
+      "diagnostic_findings_and_opening_accounts",
+      "diagnostic_next_page",
+      "diagnostic_rejects_mutating_payload",
+      "diagnostic_logout_clears_view"
+    ],
+    "passed": true,
+    "production_ready": false
+  },
+  "corporate_existing_regression": {
+    "tests": 4,
+    "passed": true,
+    "private_log": "/tmp/sgacd-corporate-node-regression-96.log"
+  },
+  "source_sha256": {
+    "BACKEND/SGA-CD-BACKEND/app/models/corporate.py": "405054a702876d9aaddecb38f141d1ac40fd328074c282ae6928bf20f4b1c151",
+    "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger.py": "221401b93b4bff5046ef1b45dbd3fed19562b81b40021a741d500b87c7dbd810",
+    "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/corporate.py": "d3a4c2de396a47a41908b3cacac49a7ec54063c553cb971c9ee21ec622351a20",
+    "BACKEND/SGA-CD-BACKEND/tools/review_corporate_ledger.py": "278c6855e24e7286377238ebb250856d760558f304006e878136a31550c9ce3a",
+    "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ledger.js": "08e44b806eb07ab05a73374a8c5ddd47e4247df778ac6975ccbe6844e6881b40",
+    "FRONTEND/ANALEMATICA-FRONTEND/admin.html": "ec87bcb62864146d905afa1eb1fcf462b7f107725734f189040c2dd688b2354d",
+    "BACKEND/ANALEMATICA-BACKEND/deployment/start.py": "fa8cba19e8cdc1d558b0c5c5d6c562e1835ee6f5ce56abd75d2f2d2ee1c8f0ee"
+  },
+  "screenshot": {
+    "private_local_path": "/tmp/sgacd-analematica-contabilidad-98.png",
+    "sha256": "7a02dc175ac88d5741459fc74ab942cf9e65afe79976208977e1f4e7e4613bbb",
+    "synthetic_data": true
+  }
+}

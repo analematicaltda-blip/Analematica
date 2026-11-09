@@ -1,2 +1,8 @@
-# Only needed by the local configuration generator to create separate RSA key pairs.
+# Local development tools: configuration keys and reference XML validation.
 cryptography>=44,<51
+
+# Local-only UBL reference XSD verification; not a runtime fiscal validator.
+lxml==6.0.2
+
+# Customer-host laboratory signer and its local regression checks.
+-r ../../DESKTOP/fiscal-signer/requirements.txt

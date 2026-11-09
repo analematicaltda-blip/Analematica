@@ -1,0 +1,113 @@
+{
+  "scope": "Local chronological multi-holdout and isolated API regression",
+  "production_ready": false,
+  "implementation_percent": "25.00",
+  "backend_report": {
+    "schema": "sgacd-local-quality-v1",
+    "created_at": "2026-11-08T14:55:39.046166+00:00",
+    "profiles": [
+      "accounting"
+    ],
+    "local_checks_complete": true,
+    "production_ready": false,
+    "source_digest_before": "848b2b28fd16d097144ed1796abe4e9a4c92278f512eb81a727c7d9b230fe618",
+    "source_digest_after": "848b2b28fd16d097144ed1796abe4e9a4c92278f512eb81a727c7d9b230fe618",
+    "source_stable": true,
+    "source_scope": [
+      "BACKEND/ANALEMATICA-BACKEND/core_erp",
+      "BACKEND/deployment",
+      "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+      "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+      "BACKEND/SGA-CD-BACKEND/app/models",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "BACKEND/SGA-ERP-TUR-BAKEND",
+      "BACKEND/SGA-TUR-BAKEND",
+      "FRONTEND/deployment",
+      "FRONTEND/ANALEMATICA-FRONTEND",
+      "INTEGRACIONES/operacion",
+      "DESKTOP/asistencia-sgacd"
+    ],
+    "python": "3.12.14",
+    "packages": {
+      "Django": "5.2.19",
+      "fastapi": "0.162.0",
+      "SQLAlchemy": "2.1.8",
+      "cryptography": "50.0.2",
+      "httpx": "0.28.1",
+      "psycopg2-binary": "2.9.13"
+    },
+    "results": [
+      {
+        "id": "accounting_foundation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 1.571,
+        "tests": 9,
+        "skipped": 0,
+        "log": "accounting_foundation.log",
+        "log_sha256": "e4d2e139bf2bf483ff398a0d2e89b736c70d9697684d6aa66ed34b8d5b18192e",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_posting",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.071,
+        "tests": 23,
+        "skipped": 0,
+        "log": "accounting_posting.log",
+        "log_sha256": "4eb28cb0f4d011d5db64633fe839e3c7e3b49c8ebac806e4d413a4c6ce379dc5",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_adapter",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.673,
+        "tests": 31,
+        "skipped": 0,
+        "log": "accounting_adapter.log",
+        "log_sha256": "2254ffd0bdb8318235858cfd73d9d3c2a42254ade78131c881a356bd802bbb63",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_delivery",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 2.223,
+        "tests": 14,
+        "skipped": 0,
+        "log": "accounting_delivery.log",
+        "log_sha256": "deddb6b3d265017499cee27f5f2fb5a58bc9d2793d0e31826e103c8e4e0f8a19",
+        "log_truncated": false,
+        "log_write_error": false
+      },
+      {
+        "id": "accounting_simulation",
+        "status": "PASSED",
+        "returncode": 0,
+        "duration_seconds": 0.466,
+        "tests": 21,
+        "skipped": 0,
+        "log": "accounting_simulation.log",
+        "log_sha256": "4e31671160a4fdc502d492432f224366c2eec127fcf788853eb279d555e83f77",
+        "log_truncated": false,
+        "log_write_error": false
+      }
+    ],
+    "limits": [
+      "Scoped source hashes, not a full release image attestation",
+      "No production deployment, hardware qualification or live account actions",
+      "Passing a profile does not complete unselected profiles or the master plan"
+    ]
+  },
+  "source_sha256": {
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/intelligence/cash_simulation.py": "84e54e0ce28539d7ed22c951b46efde6d5f9c52ed2b6d8cfff19730e7602d790",
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/views.py": "30d63affb18f4c14a59c07f952322d21788ae3aca365f655db2e22b54f03994a",
+    "BACKEND/deployment/tests/accounting_simulation_check.py": "f51aa19a97a50aac6fdc607929d09ad2693c4052c3fd2a78362552b23b8e509b",
+    "BACKEND/deployment/tests/accounting_adapter_check.py": "934e0f70ddf08eec2352598ba1e3ea81b330ce0fe26d5b1e0411a4f177ac7286"
+  }
+}

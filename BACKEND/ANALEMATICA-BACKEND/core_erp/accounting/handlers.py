@@ -11,16 +11,14 @@ class StandardAccountingHandlers:
     """
 
     @staticmethod
-    def handle_business_event(event_type: str, payload: dict):
+    def handle_business_event(event_type: str, payload: dict, *, actor=None):
         """
         Generic handler that delegates to LedgerEngine.
         """
         logger.info(f"Accounting Handler: Processing {event_type}")
-        try:
-            LedgerEngine.post_event(event_type, payload)
-        except Exception as e:
-            logger.error(f"Failed to process accounting for {event_type}: {e}")
-            # In a production system, we would move this to a Dead Letter Queue
+        # Legacy producers without an authenticated/configured actor fail visibly.
+        # Do not let the bus mark a failed accounting operation as processed.
+        return LedgerEngine.post_event(event_type, payload, actor=actor)
 
     @staticmethod
     def register_all():

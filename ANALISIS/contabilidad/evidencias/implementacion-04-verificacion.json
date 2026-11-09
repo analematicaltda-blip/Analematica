@@ -1,0 +1,7 @@
+{
+  "evidence_directory": "/tmp/sgacd-accounting-ratios-final-40",
+  "hash_verification": "PASSED",
+  "production_ready": false,
+  "wallet_pending_document_check": "PASSED",
+  "note": "Hashes de integridad local; no firma ni aprobación productiva. Sin migraciones, commits o push."
+}

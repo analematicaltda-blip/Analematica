@@ -62,50 +62,22 @@ class AccountingValidator:
         """
         Re-calcula todos los hashes del Ledger para validar la inmutabilidad.
         """
-        from apps.prestadores.mi_negocio.gestion_contable.contabilidad.models import AsientoContable
-
-        # En esta implementación, el hash está en JournalEntry del Ledger central
+        from apps.core_erp.accounting.ledger_engine import LedgerEngine,scope
         from apps.core_erp.accounting.models import JournalEntry
-
-        entries = JournalEntry.objects.filter(is_posted=True).order_by('posted_at', 'id')
-        previous_hash = "GENESIS_SARITA_2026"
-        blocks_verified = 0
-
-        for entry in entries:
-            # Reconstruir payload para verificación
-            # (Debe coincidir EXACTAMENTE con la lógica en LedgerEngine.post_event)
-            payload = {
-                "id": str(entry.id),
-                "event_type": entry.event_type,
-                "timestamp": entry.posted_at.isoformat() if entry.posted_at else "",
-                "previous_hash": previous_hash
-            }
-            payload_str = json.dumps(payload, sort_keys=True, cls=DjangoJSONEncoder)
-            calculated_hash = hashlib.sha256(payload_str.encode()).hexdigest()
-
-            if entry.system_hash and entry.system_hash != calculated_hash:
-                return {
-                    "success": False,
-                    "error_block": str(entry.id),
-                    "blocks_verified": blocks_verified,
-                    "last_hash": previous_hash
-                }
-
-            previous_hash = entry.system_hash or calculated_hash
-            blocks_verified += 1
-
-        return {
-            "success": True,
-            "blocks_verified": blocks_verified,
-            "last_hash": previous_hash
-        }
+        tenant_id=scope(None)
+        result=LedgerEngine.validate_ledger_integrity(tenant_id)
+        last=JournalEntry.plain_objects.filter(tenant_id=tenant_id,is_posted=True).order_by('-posted_at','-pk').first()
+        return {'success':result['is_valid'],'error_block':result['errors'][0] if result['errors'] else None,
+                'blocks_verified':result['entries_count'],'last_hash':last.system_hash if last else 'GENESIS_SARITA_2026'}
 
     def _check_event_accounting_mapping(self) -> int:
         """
         Busca eventos económicos (SALE_CREATED) en EventAuditLog que no estén marcados como PROCESSED.
         """
         from apps.core_erp.models import EventAuditLog
+        from apps.core_erp.accounting.ledger_engine import scope
         return EventAuditLog.objects.filter(
+            tenant_id=str(scope(None)),
             event_type='SALE_CREATED',
             status__in=['EMITTED', 'PARTIAL_FAILURE']
         ).count()

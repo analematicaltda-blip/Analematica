@@ -1,0 +1,90 @@
+{
+  "schema": "sgacd-local-quality-v1",
+  "created_at": "2026-11-08T11:24:32.467834+00:00",
+  "profiles": [
+    "accounting"
+  ],
+  "local_checks_complete": true,
+  "production_ready": false,
+  "source_digest_before": "2eb990c86a194e6e4f489672db4016c31b982dbaaec2c703a6481c8f86858580",
+  "source_digest_after": "2eb990c86a194e6e4f489672db4016c31b982dbaaec2c703a6481c8f86858580",
+  "source_stable": true,
+  "source_scope": [
+    "BACKEND/ANALEMATICA-BACKEND/core_erp",
+    "BACKEND/deployment",
+    "BACKEND/SGA-CD-BACKEND/app/services/assistance",
+    "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+    "BACKEND/SGA-CD-BACKEND/app/models",
+    "BACKEND/SGA-CD-BACKEND/tests",
+    "BACKEND/SGA-ERP-TUR-BAKEND",
+    "BACKEND/SGA-TUR-BAKEND",
+    "FRONTEND/deployment",
+    "FRONTEND/ANALEMATICA-FRONTEND",
+    "INTEGRACIONES/operacion",
+    "DESKTOP/asistencia-sgacd"
+  ],
+  "python": "3.12.14",
+  "packages": {
+    "Django": "5.2.19",
+    "fastapi": "0.162.0",
+    "SQLAlchemy": "2.1.8",
+    "cryptography": "50.0.2",
+    "httpx": "0.28.1",
+    "psycopg2-binary": "2.9.13"
+  },
+  "results": [
+    {
+      "id": "accounting_foundation",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 1.469,
+      "tests": 9,
+      "skipped": 0,
+      "log": "accounting_foundation.log",
+      "log_sha256": "f52a46d178f11e308511f27790b459da00664d77318a2c7d93eddda58a0d7c5e",
+      "log_truncated": false,
+      "log_write_error": false
+    },
+    {
+      "id": "accounting_posting",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 1.82,
+      "tests": 23,
+      "skipped": 0,
+      "log": "accounting_posting.log",
+      "log_sha256": "5d7fd46735e37e7b50b36290b40e7d8c95a44b43be39046e9cca78bf0498522a",
+      "log_truncated": false,
+      "log_write_error": false
+    },
+    {
+      "id": "accounting_adapter",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 1.871,
+      "tests": 14,
+      "skipped": 0,
+      "log": "accounting_adapter.log",
+      "log_sha256": "5baa31c8f9c942a19e77047efdbd36f064f41478c336e6e37660c402eb7da89e",
+      "log_truncated": false,
+      "log_write_error": false
+    },
+    {
+      "id": "accounting_delivery",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 1.919,
+      "tests": 14,
+      "skipped": 0,
+      "log": "accounting_delivery.log",
+      "log_sha256": "1ba794ef6db73465c901fda0aba00d40a7591578b9cf320f1dd242db6341d674",
+      "log_truncated": false,
+      "log_write_error": false
+    }
+  ],
+  "limits": [
+    "Scoped source hashes, not a full release image attestation",
+    "No production deployment, hardware qualification or live account actions",
+    "Passing a profile does not complete unselected profiles or the master plan"
+  ]
+}

@@ -112,3 +112,7 @@ El tablero y las evidencias por corte distinguen código comprobado de pendiente
 ## Estado consolidado y pendientes
 
 Consultar [PENDIENTES-PRODUCCION-ECOSISTEMA.md](../../ANALISIS/produccion/PENDIENTES-PRODUCCION-ECOSISTEMA.md): distingue desarrollo local pendiente, validaciones con infraestructura/equipos reales y criterios de cierre. El plan sigue en curso; producción no habilitada.
+
+- [Implementación contable02](../../ANALISIS/contabilidad/IMPLEMENTACION_02.md): posteo/outbox local, identidad verificada ERP, hashv2, FX registrado y reportes agrupados;254 pruebas locales,27 escenarios PostgreSQL y11 regresiones de instalación ERP. No se activa producción ni se cierran los siete pools.
+
+- [Implementación contable03](../../ANALISIS/contabilidad/IMPLEMENTACION_03.md): consumidor local con recibos, leases/reintentos y proyección diaria;55 métodos contables y33 escenarios PostgreSQL aprobados. Kafka/producción y demás pools siguen pendientes.

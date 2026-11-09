@@ -7,6 +7,13 @@ from .models import (
 )
 from .serializers import *
 from .services import NominaService
+from django.db import transaction
+from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from apps.prestadores.mi_negocio.web_session import ErpSessionAuthentication
+from apps.core_erp.accounting.http_privacy import PrivateAccountingResponseMixin
+from apps.prestadores.mi_negocio.gestion_operativa.sg_sst.access import company_context
+
 
 class IsNominaOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -41,27 +48,50 @@ class ContratoViewSet(BaseNominaViewSet):
     def get_queryset(self):
         return Contrato.objects.filter(empleado__perfil=self.request.user.perfil_prestador)
 
-class PlanillaViewSet(BaseNominaViewSet):
+class PlanillaViewSet(PrivateAccountingResponseMixin, BaseNominaViewSet):
+    authentication_classes = [JWTAuthentication, ErpSessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
     model = Planilla
     serializer_class = PlanillaSerializer
     def get_queryset(self):
-        return Planilla.objects.filter(perfil=self.request.user.perfil_prestador)
+        provider = company_context(self.request)
+        return Planilla.objects.filter(perfil_id=provider.pk).order_by('-periodo_fin', 'pk')
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['payroll_provider'] = company_context(self.request)
+        return context
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        provider = company_context(self.request, lock=True)
+        serializer.save(perfil_id=provider.pk, estado='BORRADOR')
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        company_context(self.request, lock=True)
+        row = self.get_queryset().select_for_update().get(pk=serializer.instance.pk)
+        if row.estado != 'BORRADOR' or row.asiento_contable_ref_id or row.orden_pago_ref_id:
+            raise ValidationError('No se modifica una planilla con estado o efectos financieros previos.')
+        serializer.save(perfil_id=row.perfil_id)
+
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        company_context(self.request, lock=True)
+        row = self.get_queryset().select_for_update().get(pk=instance.pk)
+        if row.estado != 'BORRADOR' or row.asiento_contable_ref_id or row.orden_pago_ref_id:
+            raise ValidationError('No se elimina historia laboral o contable mediante esta ruta.')
+        row.delete()
 
     @action(detail=True, methods=['post'])
     def liquidar(self, request, pk=None):
-        try:
-            planilla = NominaService.liquidar_periodo(pk, request.user.id)
-            return Response(PlanillaSerializer(planilla).data)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        planilla = self.get_object()
+        NominaService.liquidar_periodo(planilla.pk, request.user.pk)
 
     @action(detail=True, methods=['post'])
     def contabilizar(self, request, pk=None):
-        try:
-            asiento = NominaService.contabilizar_nomina(pk, request.user.id)
-            return Response({"status": "SUCCESS", "asiento_id": str(asiento.id)})
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        planilla = self.get_object()
+        NominaService.contabilizar_nomina(planilla.pk, request.user.pk)
 
 class ConceptoNominaViewSet(viewsets.ModelViewSet):
     queryset = ConceptoNomina.objects.all()
