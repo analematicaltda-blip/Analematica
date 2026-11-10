@@ -1,0 +1,788 @@
+{
+  "schema": "sgacd-recovered-originals-v1",
+  "date": "2026-11-10",
+  "original_base": "81dccf79cb531b5db81a7d1cc4c924f8ba6f34f1",
+  "compared_main": "db754af1630b99bd89c602b02c252ee16fe92835",
+  "mode": "preservation_only_not_installed",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 5996,
+      "sha256": "210da3bb85613fe4fde5c91786b315bf500d1e813b3d865dd00212ee034ebd92",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/BLOQUEOS_POR_TAREA.md",
+      "bytes": 13707,
+      "sha256": "353283394a6e27f738b0729d0f761a5149f4fcf63671981ac4b64650da1fc78d",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/CIERRE_20_HITOS.md",
+      "bytes": 68323,
+      "sha256": "2ddf69e0a226458139e3c71b41a5d0b389b4f21d2f42f39b3eadb56a8be2210b",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/PLAN_REMANENTE_20_HITOS.json",
+      "bytes": 44236,
+      "sha256": "0664efa9528ceeea5a53735ab66a27830c6c9e7b56f7ea3db1980a77c2419679",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/PLAN_SUBSANACION_20_HITOS.md",
+      "bytes": 37606,
+      "sha256": "bd6e63667accb41ae5787f23b192ceb9e103d948b85083fd42235b75e1cf3bff",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/PROGRESO.md",
+      "bytes": 2761,
+      "sha256": "1ea9ad37a0704c3358690b63176028e7956b1f3ef267f7c725e47e9d441b96bc",
+      "comparison": "identical_to_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/abonos-parciales-corporate.png",
+      "bytes": 190149,
+      "sha256": "a092dd120e7e9b3cd4e1ef60b0ea7ccee7ccca09c7f2a960517f1ed8bb7f4794",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/abonos-parciales-erp.png",
+      "bytes": 165791,
+      "sha256": "f3f721f103bfaf516eedf69a46d67c24d3a9ce756954a811ef52f51c6e174464",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/agrupacion-bancaria-analematica.png",
+      "bytes": 147065,
+      "sha256": "a66ba672471ecffbc4b9c57b435970a30fc1bbb226cf58c2be7da992244c3a2c",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/agrupacion-bancaria-erp.png",
+      "bytes": 130882,
+      "sha256": "b429c6e07ab2f20a08f1a0e0f819b6da286b742532f15d63dab878637b223b33",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/cancelacion-tramos-bold-erp.png",
+      "bytes": 322372,
+      "sha256": "1bb5e7b84ece56a80dd442288307c756b70a676e56b82fb00a21696408a83b23",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/cierre-compra-corregida-corporate.png",
+      "bytes": 161294,
+      "sha256": "5af0b23d3b3de47907abc575342d7a98f87d65e2d3820c8ef3066f7b8cb7df51",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/cierre-compra-corregida-erp.png",
+      "bytes": 146524,
+      "sha256": "f1d2baa9c621741c0c616221a076b4af59b4f2b303b1d99add2cf9c4ddb23f3c",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/correccion-devolucion-corporate.png",
+      "bytes": 167045,
+      "sha256": "f1087a5f66d297f0fcfab8dffcffe8078b54eb81066cc52e706daa39f86a5a79",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/correccion-devolucion-erp.png",
+      "bytes": 150818,
+      "sha256": "d71252ccf473193c01153aabb464ef1ee2c106e5594e32c614994af700d26a7e",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/devolucion-billetera-erp.png",
+      "bytes": 386502,
+      "sha256": "6d50c0265b225849e8b8a8af1ad930f53682f29576123f4765922b39897ac515",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/devoluciones-compra-corporate.png",
+      "bytes": 106640,
+      "sha256": "3e72096ba855a888c3342fdc38cbd71b450fc723a585df3a959377a1f23c2b94",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/devoluciones-compra-erp.png",
+      "bytes": 95509,
+      "sha256": "b5202eafd995a4833a38cd861c1fc934e32192cc68fe7b38fd80302407919be3",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/gestion-intencion-billetera-erp.png",
+      "bytes": 389534,
+      "sha256": "80554df47190405626f0a6f2bdbe9da8beefa36877c7eb003db37eea711e2172",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/historial-compras-corporate.png",
+      "bytes": 31710,
+      "sha256": "4847982cd88e3a200628b43582092cbe2a8bfc7623ea2e33a76c197a0c9b767b",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/historial-compras-erp.png",
+      "bytes": 28721,
+      "sha256": "b6cd5c099a108e4e875d0986670e475ce50caccc315ed0905fdd941da409c00a",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/ocupacion-adr-corporate.png",
+      "bytes": 204504,
+      "sha256": "bb56fdbc6341c9f1f4cfbbbf714fa53fadc0f919b0667e4d59c6f29e196a4b48",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/ocupacion-adr-erp.png",
+      "bytes": 182819,
+      "sha256": "f6d52076a417c0f4bbf611dd88c5e81d0863ab25315315dc65eca2c513531927",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/reporte-esg-corporate.png",
+      "bytes": 123533,
+      "sha256": "b8898c74315628d9ac74ef8fc1f77b94310e4e9d8f86e8a5e7a9d6836d3b5af0",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/reporte-esg-erp.png",
+      "bytes": 111723,
+      "sha256": "f672a814f4adaca1fcbb2c2ee6ce4ff1d13b75309c3bbd4df82dd9ed7b8be045",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/retencion-comercial-erp.png",
+      "bytes": 206943,
+      "sha256": "07a4eee0b6a8d1b45b5dba0a7f49ee901828236e7a24ae02792adf9518a562b3",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/matriz-pools.csv",
+      "bytes": 12202,
+      "sha256": "5f09294b8b836c838bfbac3cbaf6b89ef43589b43c38c70f7cb66adfc7ad835e",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/plan-subsanacion-20.json",
+      "bytes": 40871,
+      "sha256": "179e43b07089842265fb8446835367f5ec176bfbd18b216d355394f3eb8b007f",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/progreso.json",
+      "bytes": 19071,
+      "sha256": "5ed9172bdc5e9042f18971f907097fdc322c5237054035710aa0e05cb0268102",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/progress-registry.json",
+      "bytes": 35565,
+      "sha256": "e4c3dafddda1479c4b29b42c640eb3a85fe437f8963f607ce16c2055b005001a",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/contabilidad/tools/test_progress.py",
+      "bytes": 3020,
+      "sha256": "50463cb11aacbc21ec9df898e0e35c6377ecd100651c19effc76858c728eafed",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md",
+      "bytes": 9961,
+      "sha256": "96b91b801c9c78949a7860c969b1a7fa9657b23c607fb071ad3928b3487239a0",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_capacity.py",
+      "bytes": 2672,
+      "sha256": "6cb68e6097f9a921d3a46e2b0ab92a3bd49c3c6a882c24c7b7c7e7c20823e45d",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_grouped.py",
+      "bytes": 19755,
+      "sha256": "ce92771a06b6416a623ac4d574d0e2b5f937fa2101214fe9255851d782342fca",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_reconciliation.py",
+      "bytes": 21160,
+      "sha256": "c14a27ff54bf7c945bfe323c25ba603edeb9a1c7b97858e66dd3228068325599",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/commercial_tax_posting.py",
+      "bytes": 24014,
+      "sha256": "a419ddf2d2337cd67b9ab770f62c32fe6fa1634a7913fc9606abc029c5ba8f14",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py",
+      "bytes": 19798,
+      "sha256": "c8dc4aca88709dc51be67538853ae3a83d85bde7e4e1cc6f004628890d6b183b",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/native_return_reversal.py",
+      "bytes": 3163,
+      "sha256": "8cd6d34cb9a74fde08e7e7faffa80d281bd6307265469be27be4a343110edc9e",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/tax_register_snapshot.py",
+      "bytes": 5272,
+      "sha256": "febd1ef4b0639fae1fb4f2b59775fc6c20cffe2606962c160b12443957f2d71b",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/payments.py",
+      "bytes": 2374,
+      "sha256": "10c3087d8abd02b1e8acbf0b4983045d03c7aba217c48cb3f32bd21ff9189ee2",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/bank_group_contract.py",
+      "bytes": 8417,
+      "sha256": "38f28ecefcd734cf2601234bc220e473ca8b7bb0fb6511d06d2e0bff05cf88a6",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py",
+      "bytes": 33971,
+      "sha256": "4dc84ea02a8ff24c59531107ff31cbcdb62d61a5dea7367e7f013d7b2109e799",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/esg_report_contract.py",
+      "bytes": 5237,
+      "sha256": "df80f31ec24a3a04a49745793d8dd2e717175426ddf4b5a4cbb80b6721a0f41e",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/native_purchase_contract.py",
+      "bytes": 7707,
+      "sha256": "5480c87c7ce86e352951a11a92a42e5bd2d95de6ee44a5f49a4bfa93106aad40",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/payment_gateway_adapter.py",
+      "bytes": 5192,
+      "sha256": "0a4a8d8f8ddd2756923650eaa32622c666d822a3b87b714f299c66df4597cf5d",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/purchase_return_contract.py",
+      "bytes": 6589,
+      "sha256": "bff97171613ee19cf44fc866ca9925d39a3f54f652b22acd2c3fb27ca326d9d7",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_bank.py",
+      "bytes": 13616,
+      "sha256": "0d2451b2cea224aab3bbbaef0e83458493c961a0381428f42eed0322d7a14829",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_bank_group_contract.py",
+      "bytes": 3147,
+      "sha256": "76407c21b2f9ebb4cc6e7c751d1cc55f70a59585031f9202f31bb4c6d1cb01db",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_environmental.py",
+      "bytes": 4946,
+      "sha256": "d02c7963de06dce8838910f51fa2a96525507c0eab24874d81200455055f2dc9",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_esg_contract.py",
+      "bytes": 2685,
+      "sha256": "7c662c88e51f3089779e34f4aaab520a94a77e6109c8c3a4392eed6b0b76e7e1",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_hotel.py",
+      "bytes": 3307,
+      "sha256": "cabfd6cb87a9a1210e5fb9678cd884702c981ff57f7ee99c3aaafd822cefac18",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
+      "bytes": 9863,
+      "sha256": "b458c23d1dcb0fc67242a590ea097bc27daca536817d4fe35c723e341361c2f5",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase_contract.py",
+      "bytes": 5005,
+      "sha256": "9715979635fbcf1d05670fc31527b475f724262894a33994d4abec5cad1dad68",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_purchase_return_contract.py",
+      "bytes": 4372,
+      "sha256": "1271b2fb59e6d69cd740ad660f2f39849472a5c6a688f0d6a344318d58384967",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/cancellation_policies.py",
+      "bytes": 23300,
+      "sha256": "54ab339e29eceaac9d9e4bec11e61213663598a1e0ca06dc927110528d26b40a",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/cancellation_views.py",
+      "bytes": 2685,
+      "sha256": "e80c1ad3cd07db73b72916b438e58eec3b43217ad987d8f305d1eb88a058da2e",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/refund_liability.py",
+      "bytes": 3792,
+      "sha256": "11d8098ebe41914b8e7b7c99fd67a99d8e40459c92560ba85d25ae7d839e3181",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/refund_orders.py",
+      "bytes": 7355,
+      "sha256": "15222338a65ad8825a69777ae582f40d3fe099375e3c0a0926ba9db6392eac72",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/urls.py",
+      "bytes": 1804,
+      "sha256": "5603fc2283bfb416f31b9b5881c106ad08de452abd4499cc01860d3a401431bb",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/wallet_refund.py",
+      "bytes": 18706,
+      "sha256": "51789233ef7b860bab048595fbc6acac0336f57cd4fd3aa2772f42cc9ddefeaa",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/wallet_refund_lifecycle.py",
+      "bytes": 11438,
+      "sha256": "41c1174a28dfde841ebd3b075ed89dfea8e928860f7c06dff50ecdf6aeaa9a03",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py",
+      "bytes": 22261,
+      "sha256": "4fe176cad2b3a9702417da6a6d454377ffd094f5e9cd3cdc59a56250a269d29e",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/purchase_return_voids.py",
+      "bytes": 9557,
+      "sha256": "8670fa4daf0800c1d39e1bd6f2df0b243325e7249f8a402f9665b70e31962695",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/purchase_returns.py",
+      "bytes": 20257,
+      "sha256": "00e5da2c94047d658235042f51a6a2543375739b1b23bab9e9a185d0890cd39a",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/esg_reporting.py",
+      "bytes": 5147,
+      "sha256": "1e7636b673ba04d772bce8b43ba8131101470cef3eda9fea7e239bfc39cd45e6",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/hotel_sales.py",
+      "bytes": 10724,
+      "sha256": "9122d99a0bb74eac453be1fb0ce06f220d1fa1b36ac466a4efb11fae7398605c",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/tourism_metrics.py",
+      "bytes": 20211,
+      "sha256": "4c29d2d75e683e4670106d87834b3ace59d6bed444e9a4fe223c9e25a8e54e20",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/views.py",
+      "bytes": 57270,
+      "sha256": "4fd8cfda505a0e8fb7876721a9f08b37ba5413db40de6b95224b97d89ae5092e",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_financiera/services.py",
+      "bytes": 6757,
+      "sha256": "eca1f2eeff4d207b63255693463c5f431804ac67a10d9b6050eaff1721a433c9",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/modulos_genericos/reservas/serializers.py",
+      "bytes": 3898,
+      "sha256": "ac0e1dc7afdc625b6ddf16c2cd633a48ed8a3bc4b137e8f0d44ac3abd7c75143",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/modulos_genericos/reservas/views.py",
+      "bytes": 2572,
+      "sha256": "57220364a31a87a57ecfb4d01dc03c461f865d4db02acb1692362ccf3e3ee89c",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/fresh_local_settings.py",
+      "bytes": 2297,
+      "sha256": "e78ba8d63237ead166a0510d079d9350c3107c409fd4e79a05a8116e33d124f2",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_bank_grouped_check.py",
+      "bytes": 8051,
+      "sha256": "5613b5b9a75a3da9cb4ef095a628486250e098be7aafa567582b59c4aba7ea57",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_bank_partial_check.py",
+      "bytes": 6521,
+      "sha256": "51df36f4d97cca84f57d1dfb799534aeacbe37eea792caba4d852be99b9b8e70",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_esg_reporting_check.py",
+      "bytes": 4972,
+      "sha256": "e2c38ab8068c53809b7b211370114ba99e96e8279a13d5f9a6707f104c1671bb",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_hotel_sales_check.py",
+      "bytes": 7702,
+      "sha256": "89087903d0df8c2744a19e8eff7b24eb0bb612b4003ddb12f26ac0e3824b7bd8",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_purchase_history_check.py",
+      "bytes": 4475,
+      "sha256": "08f7e76f9ab3f05131736c27dd0e8801d485a1ed3dc843b3b4ce0b0d7b738320",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_purchase_return_check.py",
+      "bytes": 7635,
+      "sha256": "0536bf78b19da44f7c11445f2a28d18b0c1d4a6648d36ba72c2374d55e659134",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_purchase_return_void_check.py",
+      "bytes": 6070,
+      "sha256": "f75e67a3bd1c7ef5fe6e6c33168c17ac8d62607f0615ee4cba5bc0a0549c1eef",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_return_final_reversal_check.py",
+      "bytes": 6445,
+      "sha256": "50c0c820dbea47ad9cf05fa40d130bdffb6dba57aea4ed24bc950aaedf56bb65",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_wallet_refund_check.py",
+      "bytes": 16512,
+      "sha256": "8ddd4981adb0870ea98a354540c7475c5cfb7620a8db59873f29539c0bd3af0d",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_wallet_refund_lifecycle_check.py",
+      "bytes": 8366,
+      "sha256": "124b79984f5a7d083ce13da50a0ed8b4c833a776e9c2b2c2a9e45968cbc2cb37",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/cancellation_policy_check.py",
+      "bytes": 10460,
+      "sha256": "561d2a94db44c5556ec4f5b641ba7e0fada359b7181a7e120d931987c75f2837",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "BACKEND/deployment/tests/cancellation_timing_check.py",
+      "bytes": 8521,
+      "sha256": "25a4169aa90780733a81ef5c9cba6a7e565d0256c948e32a4f26137294eda85b",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/admin.html",
+      "bytes": 113794,
+      "sha256": "5be220e3334b519502a8067da45a15c78a0a7ced83a0d6f315b991756bc54935",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ledger.js",
+      "bytes": 32473,
+      "sha256": "207f0a50c8ee835bb18f93387560a5aab1dd4a7ff59db5909d6c1d507cc99142",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-remediation.js",
+      "bytes": 81260,
+      "sha256": "52f3e1156b9eb84ac99155abf169b8d93e35f3d40d8bc56edc0fea81b6324f38",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/bank-groups.js",
+      "bytes": 16201,
+      "sha256": "b20f26836062aa7920c8cc3abafeab8eb5b709b5c9e96c3065f6ce4dbbcdbdbd",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/esg-report.js",
+      "bytes": 7233,
+      "sha256": "f21b1dee1155924af5aeb6d5541f40afdc3c5057b4e38c363111a926b931bfb2",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
+      "bytes": 24193,
+      "sha256": "e13fcbba0e50f287ba5859dd6dbd982a544aea535315ab96781d70bd12f462ec",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/purchase-returns.js",
+      "bytes": 11572,
+      "sha256": "ae9aaba5ab4737e5ae660cf0dbadff8da01a4561f58677e19a5f3893d7d019d3",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/page.tsx",
+      "bytes": 18828,
+      "sha256": "236392301cee37a9f261030bac5c060dd0b1a830674911bd083b41484cedfd52",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/politicas-devolucion/CancellationPolicyPanel.tsx",
+      "bytes": 1801,
+      "sha256": "d5fce27e3767a1704d747c0d5543ab78a49a805565210f6b4dedf4f7f3716d09",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/politicas-devolucion/page.tsx",
+      "bytes": 2538,
+      "sha256": "1edd02ec811f59352f4b83f33a74d1efd3944387c1dbcf99e8f54b974f287a29",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/politicas-devolucion/panel.js",
+      "bytes": 31109,
+      "sha256": "9c80a4add6af0e2a57604a4d3d1b906d3391390061cb7667d8c5e83281159fe7",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/BankGroups.tsx",
+      "bytes": 1879,
+      "sha256": "db49eacfc3383ec3180f6328121abc704654d9a234a14cc5043c31e260edc099",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/ESGReport.tsx",
+      "bytes": 1506,
+      "sha256": "124d9b2339593f753917ba7095d01dbf16c8560135f8b5d48fc4212064ff165b",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx",
+      "bytes": 2770,
+      "sha256": "60246178b152d7537ab381fd4f5d4fc6651015fa7fe8c85ad0a66879797564e6",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/RemediationPanel.tsx",
+      "bytes": 3738,
+      "sha256": "debea398845e8c5664dc111948293b5dfe5072013d458c8e69b25d91246b463a",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/page.tsx",
+      "bytes": 6442,
+      "sha256": "771a8d6f2cd1d34f4883b131be69b3527b9a619ec45db663f975c9072129f3c8",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/bank_allocations_browser.cjs",
+      "bytes": 8460,
+      "sha256": "7ac6d0f4eb7a944b584b26d30d599586c453e760d1e0350e4d6f371f7d7cd277",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/bank_grouped_browser.cjs",
+      "bytes": 10572,
+      "sha256": "150542b5b1816563e32962dc24734b06377f1d2b360fd5b82e6e2110067202ca",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/cancellation_policy_browser.cjs",
+      "bytes": 14303,
+      "sha256": "83b644e7ba69bc09700ec785a1cb69962c37b670b1bc06e328237c2d5a729593",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/cancellation_policy_types.cjs",
+      "bytes": 946,
+      "sha256": "ea05a6893fc9c7e7b3edb4d303026aa1f518e4f8a695b466eed038db991cf05f",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/corporate_ledger_server.py",
+      "bytes": 4794,
+      "sha256": "7f6ccf040d1fc8383b2b49007d17b468310213a6cc0ab2bb6362574ecf6663a5",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/esg_report_browser.cjs",
+      "bytes": 9722,
+      "sha256": "2415f5deeaf6930f905cdaa576bce38a9df36a8343d31e2467bb8ebb41e8ef13",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/hotel_metrics_browser.cjs",
+      "bytes": 12968,
+      "sha256": "1cd4d9244d83d16bf14f93aa21770a9d612b22efd42e74f7e0b22dc9d9e94901",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/native_purchases_browser.cjs",
+      "bytes": 13654,
+      "sha256": "ff89e32b7688cdc5939806ed63ecaae0e83b27bb46b5801622be21d255ec4a6c",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/purchase_return_final_reversal_browser.cjs",
+      "bytes": 17956,
+      "sha256": "50dc018c6dfcb94fc6965eae3237a74e28c50b4162e5acee312598afa506b850",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/purchase_return_void_browser.cjs",
+      "bytes": 16453,
+      "sha256": "62da2fc0113ccc5aa7c5a46da7e93dd83242c26f72138c8b842b893e1b0e31b9",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/purchase_returns_browser.cjs",
+      "bytes": 14695,
+      "sha256": "854e1e0a4c3b0dad861d06cf4915853278e44b2087df6657e6d51491833386ed",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/quotation_server.py",
+      "bytes": 12609,
+      "sha256": "41c230fc98599b2bb0ec7598281bea39ee9036491a7d7fb265bb5a609db74952",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/reservation_recognition_types.cjs",
+      "bytes": 1963,
+      "sha256": "a76fc10e66ba5aee3f41dc328f8c14dcfa8b9acbf8640285c310d0f7bdbfd1e7",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/wallet_lifecycle_fixture.py",
+      "bytes": 4153,
+      "sha256": "64ced62ae1efdb2f3c86aa7956a642c464f3abf276fb891ab97f967a1583c440",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "FRONTEND/deployment/tests/wallet_refund_lifecycle_browser.cjs",
+      "bytes": 9636,
+      "sha256": "3a6c9d0ad20bbe3a894c82cda1ed68920bfce528b863ea4206169458af73a9f8",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "INTEGRACIONES/operacion/verify_local.py",
+      "bytes": 18191,
+      "sha256": "fdf2c0616d8e8f6f2e5db477899230ea7ea2a291ce32f446f6e26bbfafe6d442",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/models.py",
+      "bytes": 12556,
+      "sha256": "cca01d1008919eaff0c7bfbe0e9e79028ee90702c410dff30fb5278bcfa3d607",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/serializers.py",
+      "bytes": 3719,
+      "sha256": "7b9999eea5156811fb68b84ed6aa4681c0c81f7e3d963ad1c3e6ac0c123f9167",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/services/internal_transfer.py",
+      "bytes": 8537,
+      "sha256": "d8e76d3376eb4bc77e4f90ce4d193c48592786abfb2f1c86d19188df08d3223b",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/services/refund_guard.py",
+      "bytes": 2801,
+      "sha256": "514b21f8b0b008ceb2b0ffedb1dd7f9f50abe2b6beccf55267d2b796d9d853a5",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/fresh_migrations/wallet/0005_transfer_cancellation_state.py",
+      "bytes": 406,
+      "sha256": "112c8f0236c8ccd67918aea95e8c6eab08bf62b5058bc6e6be71ae3c8bcc7da4",
+      "comparison": "absent_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/offline/src/sgacd_wallet_offline/production_pending.json",
+      "bytes": 11084,
+      "sha256": "8f24eed1797055b7ee41e09f260e6e1a6fa6541db0471b441e9d219822609634",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/tests/device_approval_check.py",
+      "bytes": 11154,
+      "sha256": "3262e806ee81eb8f0c39a6f429a4c8178b8a9c9b57802f35ae8cba14f2d63e2e",
+      "comparison": "differs_from_published_main"
+    },
+    {
+      "path": "WALLET-BACKEND/tests/wallet_security_check.py",
+      "bytes": 11099,
+      "sha256": "e5c7b98f7d95ad634344cd4e8c61c0f6d403f0d0757419a09a6a53f2b6a81681",
+      "comparison": "differs_from_published_main"
+    }
+  ],
+  "counts": {
+    "absent_from_published_main": 71,
+    "differs_from_published_main": 52,
+    "identical_to_published_main": 1
+  },
+  "file_count": 124,
+  "archive_sha256": "c87231e0c41a1058fa4a08ccb38c9a510fecefdbe81a4060cb0025ac4744b33f",
+  "verification": {
+    "all_members_hashed": true,
+    "known_private_bold_values_absent": true,
+    "private_key_headers_absent": true,
+    "original_workspace_modified": false,
+    "token_format_scan": "no_matches",
+    "progress_registry_check": "66.67%, 48/72, full acceptance 0/24",
+    "progress_unit_tests": {
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "excluded": [
+    "tracked Python bytecode and __pycache__",
+    "ignored .runtime/bold-test.env",
+    "private pre-recovery tar and patch"
+  ],
+  "limits": [
+    "These are 124 original source/evidence files, not the separate 44 Codespace ZIP/backups.",
+    "Originals are preserved with canonical paths inside the archive, not installed over main.",
+    "API/ledger/migration conflicts require semantic integration and regression before activation.",
+    "RAT/ADR/reservations enhancements remain deferred.",
+    "No accounting milestone credited by preservation."
+  ],
+  "installed_original_paths": [
+    "AGENTS.md",
+    "ANALISIS/contabilidad/tools/test_progress.py"
+  ]
+}

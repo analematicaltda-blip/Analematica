@@ -79,3 +79,52 @@ Evidencias históricas: `evidencias/implementacion-77.json`, `../entregas/eviden
 ## Regla de mantenimiento
 
 Actualizar aquí cada novedad con problema, solución, prueba y pendiente concreto. Actualizar estados/evidencias de las matrices existentes y regenerar PROGRESO.md cuando cambie el crédito verificable. No aumentar porcentajes por repetir pruebas o ampliar una tarea ya acreditada. No crear nuevos `IMPLEMENTACION_NN.md` ni documentos de cierre por entrega. Los registros técnicos automáticos y evidencias de pruebas pueden mantenerse en sus carpetas, sin duplicar análisis narrativos.
+
+
+## Reconexión y hallazgo de originales · 2026-11-10
+
+Se recuperó el acceso de esta conversación al entorno gestionado y se comprobó conexión Git real con `https://github.com/analematicaltda-blip/SGA-CD.git`. `git ls-remote` devolvió main `db754af1630b99bd89c602b02c252ee16fe92835`; después de fetch, una copia de trabajo nueva quedó en ese mismo SHA, rama `codex/conectado-20261110`, ruta `/workspace/SGA-CD-conectado`. El verificador de progreso del commit publicado aprobó `--check`:24 incrementos,24 verificaciones registradas y0 aceptaciones completas,48/72 (66,67%). Esto comprueba coherencia del registro, no vuelve a ejecutar la regresión funcional ni acredita producción.
+
+**Hallazgo:** el directorio original `/workspace/SGA-CD` conserva modificaciones y archivos nuevos posteriores a `81dccf79c`, incluidos devoluciones, billetera y pruebas. No corresponde tratar ese trabajo como desaparecido ni reemplazar la recuperación publicada sin comparación. Antes de fetch o preparar la copia nueva, se respaldaron184 archivos existentes modificados/nuevos (59 son cachés `.pyc`, no184 funciones ni archivos de código nuevos), junto con diff binario, estado Git y manifiesto. Archivo privado `/workspace/recuperacion-original-sgacd-20261110T110746Z/archivos-locales.tar`, SHA256 de cada archivo cotejado contra el contenido del TAR. Permisos del directorio0700 y archivos0600; contiene configuración privada y no debe publicarse ni añadirse a Git. Sigue siendo un respaldo en el entorno, no una copia externa descargada.
+
+Pendiente: comparar semánticamente los originales con el commit recuperado y con las siguientes entregas de Codespaces antes de integrar diferencias; no sobrescribir cambios del otro entorno ni publicar cachés o credenciales. La conexión es de esta conversación a GitHub mediante Git y su copia de trabajo gestionada; no es control directo del Codespace `glowing sniffle`. No se crearon commits ni se modificó main durante esta reconexión.
+
+
+## Preservación consolidada de originales · 2026-11-10
+
+Comparación real contra main remoto `db754af1630b99bd89c602b02c252ee16fe92835`:
+124 archivos originales de fuente/evidencia, de los cuales 71 no estaban en el árbol
+publicado, 52 diferían y uno coincidía. Se preservan íntegros, con sus rutas
+canónicas dentro de `ANALISIS/entregas/evidencias/recuperacion-originales-20261110/originales.tar.gz`.
+El manifiesto contiguo registra tamaño, SHA-256 individual y comparación contra
+ese corte; todos los miembros fueron leídos y sus hashes comprobados. Se excluyen
+bytecode/cachés, el archivo privado de credenciales Bold y el respaldo privado
+previo. El directorio original de trabajo permanece intacto.
+
+**Preservación no equivale a integración funcional.** Los originales no se
+instalaron encima de los servicios de main: la comparación encontró contratos
+incompatibles para las mismas operaciones y una colisión de migraciones wallet
+0005. También hay motores alternativos de devolución/conciliación que requieren
+controles cruzados antes de activarse, para no duplicar devoluciones, asientos o
+consumo de líneas bancarias. La integración semántica, su regresión conjunta y
+la activación de los formularios originales siguen pendientes. RAT, reservas y
+ADR continúan diferidos. Los documentos dentro del paquete son instantáneas
+históricas, no sustituyen este seguimiento vigente.
+
+Los «44 archivos» del Codespace descritos anteriormente eran otro conjunto de
+ZIP/respaldos locales. Esta sesión recuperó los originales de `/workspace/SGA-CD`;
+no inspeccionó ese conjunto de 44 en la máquina Codespace y no afirma haberlo
+publicado ni eliminado. No se deben confundir ambos inventarios.
+
+Se incorpora directamente el recordatorio de elegibilidad personal universal de
+billetera en AGENTS.md y la prueba de progreso original: detectó que main esperaba
+46/72 aunque su registro ya contabilizaba 48/72. Ahora verifica 48/72 y conserva
+una comprobación del corte anterior de 46/72 retirando únicamente los dos créditos
+ACC-019. El porcentaje sigue siendo **66,67 %**, aceptación completa 0/24,
+producción no habilitada. La preservación no acredita hitos adicionales.
+
+Validación de esta preservación: hashes de los 124 miembros comprobados, búsqueda
+de formatos de tokens sin coincidencias, `update_progress.py --check` correcto,
+8 pruebas del registro aprobadas y `git diff --check` sin errores. No se ha
+ejecutado ni se acredita aquí una nueva regresión funcional de los originales
+archivados. El cierre de publicación se confirma comparando el SHA local y remoto.

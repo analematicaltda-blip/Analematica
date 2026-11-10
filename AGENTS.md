@@ -27,6 +27,12 @@ La configuración MCP del proyecto no conecta automáticamente esta sesión de c
 
 ## Organización de la billetera
 
+Requisito permanente del usuario: cualquier persona de Colombia puede registrarse
+y usar su billetera personal, sin pertenecer al ERP, SGA-CD ni al sector turístico.
+TURISTA/EMPLEADO son etiquetas históricas, no requisitos de elegibilidad. El vínculo
+con una reserva y el consentimiento se exigen para recibir ese reembolso concreto,
+no para el acceso general a la billetera.
+
 Las fuentes canónicas están en WALLET-BACKEND, WALLET-FRONTEND, WALLET-MOVIL
 y WALLET-DESKTOP. Conservar los imports apps.wallet, la etiqueta Django wallet
 y las migraciones existentes mediante adaptadores de compatibilidad. No mover

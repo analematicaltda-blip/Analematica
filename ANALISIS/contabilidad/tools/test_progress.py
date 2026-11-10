@@ -8,10 +8,20 @@ class ProgressTests(unittest.TestCase):
         with (HERE/'matriz-pools.csv').open(newline='') as stream:self.rows=list(csv.DictReader(stream))
     def test_baseline_has_no_full_acceptance_or_production_claim(self):
         result=calculate(self.registry,self.rows)
+        self.assertEqual(result['completed_milestones'],48)
+        self.assertEqual(result['implementation_percent'],'66.67')
+        self.assertEqual(result['fully_accepted_items'],0)
+        self.assertFalse(result['production_ready'])
+    def test_esg_increment_adds_only_two_credits_to_previous_cut(self):
+        before=copy.deepcopy(self.registry)
+        task=next(row for row in before['items'] if row['id']=='ACC-019')
+        self.assertFalse(task['milestones']['full_acceptance'])
+        task['milestones']['functional_increment']=[]
+        task['milestones']['automated_verification']=[]
+        result=calculate(before,self.rows)
         self.assertEqual(result['completed_milestones'],46)
         self.assertEqual(result['implementation_percent'],'63.89')
         self.assertEqual(result['fully_accepted_items'],0)
-        self.assertFalse(result['production_ready'])
     def test_fronts_partition_existing_milestones_without_double_count(self):
         result=calculate(self.registry,self.rows)
         self.assertEqual(sum(r['completed_milestones'] for r in result['fronts']),result['completed_milestones'])
