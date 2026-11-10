@@ -1,0 +1,201 @@
+{
+  "schema": "sgacd-accounting-recovery-evidence-v1",
+  "date": "2026-11-10",
+  "baseline": {
+    "commit": "81dccf79cb531b5db81a7d1cc4c924f8ba6f34f1",
+    "completed_milestones": 46,
+    "total_milestones": 72,
+    "accepted_tasks": 0
+  },
+  "scope": [
+    "ACC-019 ESG draft mapping",
+    "environmental effective corrections",
+    "grouped and partial bank associations",
+    "purchase corrections history and proportional returns",
+    "declared anticipation policy",
+    "funded internal wallet refund and atomic journal",
+    "consent cancellation and renewal"
+  ],
+  "excluded": [
+    "reservation changes",
+    "RAT",
+    "ADR",
+    "bank payment simulation",
+    "secrets",
+    "personal ZIP and backups"
+  ],
+  "environment": {
+    "python": "Python 3.14.2",
+    "storage": "disposable SQLite; local HTTP fixtures",
+    "device_signatures": "software fixture ECDSA, not physical attestation",
+    "production_acceptance": false
+  },
+  "verification": {
+    "local_suites": [
+      {
+        "suite": "BACKEND/deployment/tests/accounting_environmental_check.py",
+        "exit_code": 0,
+        "tests": 16,
+        "source_sha256": "80edf6053e3f42d6a411a1107118c6a40b0d0814f7814626b57a2c6800a1cc03",
+        "log_sha256": "1a100725a4b7cb3a818d6fa6c41f9ce2f3c170bfd4a0344ff0f07b9404f5f461"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_environmental_records_check.py",
+        "exit_code": 0,
+        "tests": 16,
+        "source_sha256": "24fa8beeb708b851a612c4bb38f99a2e74cf1e5eedeac80b417f75719e7b0639",
+        "log_sha256": "76819d1e1c2d781a1d27a9d8f560a4aa80e55a9acb0e3d3d5a80000a7071f359"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_environmental_corrections_check.py",
+        "exit_code": 0,
+        "tests": 15,
+        "source_sha256": "f0cd2edd1553d141ef6084fb1ba76b7db6ee21a077a44c10461966c867a7da35",
+        "log_sha256": "ae25cf8d2c0fa8a699fa2d736655fad05fc81160ff614f403ae0e9c08c13eef3"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_esg_recovery_check.py",
+        "exit_code": 0,
+        "tests": 7,
+        "source_sha256": "8453619a0eb679dd2be6d5c7acee11219da270f007b8c09ac02bc98ac41d9c02",
+        "log_sha256": "e9dd0c93af022905c3073bedff398dfd34be9258ec91c2c9aea4aff90ec5b205"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_bank_statement_check.py",
+        "exit_code": 0,
+        "tests": 7,
+        "source_sha256": "bbdb28f25a939b2286d74f5f170aa032d6acc5a4d325deadc7e312b1e9a278be",
+        "log_sha256": "9cd2a51cb1aedbf2ba51cd64c635ad52df06c0ef0f902780e4c858f17157ecd8"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_bank_reconciliation_check.py",
+        "exit_code": 0,
+        "tests": 23,
+        "source_sha256": "4d99c31149665a523094704d5c86bdd56b81ecffaf40dcdad2af6615b737fce2",
+        "log_sha256": "35cae2c41fb4e83ee74a703833de1d50ec43850b3c3494a9d53c77bdce7f6a55"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_bank_resolutions_check.py",
+        "exit_code": 0,
+        "tests": 17,
+        "source_sha256": "f6b244071010628b74ff18362a083772c3fbd56fac3923c9302aba5531896622",
+        "log_sha256": "e6bccabbdee6b26915e19685d32648e554b71b96c64e6f815d62be95ec244255"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_bank_period_check.py",
+        "exit_code": 0,
+        "tests": 14,
+        "source_sha256": "53c6085723d9f7f45dcd029fcc0859f9d60153f283d7dbc8f9e66902ef99a71c",
+        "log_sha256": "c9295b9c43f9ae183acd018f6c6ae440af36c994162a0c60ff32dee33ec89f2e"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_bank_groups_check.py",
+        "exit_code": 0,
+        "tests": 11,
+        "source_sha256": "118ed9fa960360d509c69e56ac6eb71c0a7eece30937ca29bc43e8a6b284d68c",
+        "log_sha256": "5946e6ba05d6a7430c868fc7424653a167b941d56b0ca2350fe6c87ad35e5413"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_native_purchase_check.py",
+        "exit_code": 0,
+        "tests": 35,
+        "source_sha256": "6fabff02afd922ae2e74634fa8d7bd10123d4439d80c6c1d494bc49842c7883b",
+        "log_sha256": "91d3d1217a783cdd125ad160ee8e87e9991ca9072fd7f5b9712eb3da12988515"
+      },
+      {
+        "suite": "BACKEND/deployment/tests/accounting_purchase_recovery_check.py",
+        "exit_code": 0,
+        "tests": 7,
+        "source_sha256": "d39b7aa87842a3ab2f83c9c253b53baddcb9863619f501c79f16ca3245950cdd",
+        "log_sha256": "ade8d9481feba732d8f7eac9d2574a3822a2edef497cf77b412441e4779fbc5f"
+      },
+      {
+        "suite": "WALLET-BACKEND/tests/access_policy_check.py",
+        "exit_code": 0,
+        "tests": 7,
+        "source_sha256": "b5c38ef5a5793344158e9df28b0929f4eec1cc5079747a6a9b166106e135fe66",
+        "log_sha256": "fc06d174fa234587852e7914016e626b7d48a3d2bbfe0c5074ca580f45eece9e"
+      },
+      {
+        "suite": "WALLET-BACKEND/tests/wallet_security_check.py",
+        "exit_code": 0,
+        "tests": 15,
+        "source_sha256": "5ef7c5adf3de4c6e5fb1ef58de72781c899f44d8d0b0576fd3d384454a70f70c",
+        "log_sha256": "1fb691352f12397ccea326e99de6945d8f893fc862d18c51c648f2c02351de3d"
+      },
+      {
+        "suite": "WALLET-BACKEND/tests/device_approval_check.py",
+        "exit_code": 0,
+        "tests": 13,
+        "source_sha256": "5d3307370733896ad9137c98dfbe703a24650c654ba804d1d332dfa0a728e014",
+        "log_sha256": "f56143308ce026742d5d4fb4410fe5141e6b4a5f8449cfc7d999e5add4b3a231"
+      },
+      {
+        "suite": "WALLET-BACKEND/tests/recovery_check.py",
+        "exit_code": 0,
+        "tests": 14,
+        "source_sha256": "da912c906d9ca9acdcac37b10e24fba6d402dcc670df2295b0a0f726d536918d",
+        "log_sha256": "8d438dc067133c820db8ff4366436c27bb82c065f92462a22ff31d06bd1f21cc"
+      },
+      {
+        "suite": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_recovery_contract.py",
+        "exit_code": 0,
+        "tests": 4,
+        "source_sha256": "c9e161242c62bcef83aa00ef14190f348bcebbf143684337f6b3f36423874739",
+        "log_sha256": "feabb4add9e2ca3374e538560634d1ec97dc4f4ce89aab12f3d726e36ea9b2f6"
+      }
+    ],
+    "http_suites": [
+      {
+        "suite": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
+        "exit_code": 0,
+        "tests": 2,
+        "source_sha256": "0f531dcdda92884a358425fc190cafe8148787274ce5ec4e4c3f4267fb21c9a6",
+        "log_sha256": "25a4c8d6636557b6e3f1bb954483f81784ec250288d664eecba5d82078f8c906"
+      },
+      {
+        "suite": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_bank.py",
+        "exit_code": 0,
+        "tests": 5,
+        "source_sha256": "1dd958ffe65571f02512039038183144a66ec2cce0aa212168766f07f29f4ac6",
+        "log_sha256": "46f5b4c9319038389c8e3ab1e250fb7b3c533a8eaff35d7d9a2354ed0dd7c2b4"
+      },
+      {
+        "suite": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_recovery.py",
+        "exit_code": 0,
+        "tests": 4,
+        "source_sha256": "e82f4f4663db58b410841e7ae2243d2ec9e9d2cdf8c2902119f3f3fb3dc5fe7a",
+        "log_sha256": "6448da15bed97e07bd900e539403665a28291114c4605f7f957563137af19095"
+      }
+    ],
+    "tests_passed": 232,
+    "failed_suites": 0
+  },
+  "source_sha256": {
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_reconciliation.py": "0d0b11e2cc9074a76b6c41cca76a498c7dd3672c5bb3d32a5f7c242d4f3fbb4a",
+    "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py": "f5c204fdace0427e6576f44fc11e04b1cab8f847329725e4ee76be78706424a3",
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py": "bccb96656f49187db07da09ab31552de5c5c8be3a78440b9995e801efd6b9796",
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/views.py": "63b3fd3e617e769a478e2d0be3f16ad54de30161490275bc4d138fedc432b852",
+    "WALLET-BACKEND/apps/wallet/models.py": "7e963be8e85f0ea862c9092e8784f467b6204b76ea6879d4997ff53650cc373b",
+    "WALLET-BACKEND/apps/wallet/serializers.py": "b8f710a597a9e26c89bb05177581016b5893e13346eca6773532cd2235f8a737",
+    "WALLET-BACKEND/apps/wallet/services/internal_transfer.py": "50fc176554142a97ffc956d150df6cad05273d0264e363339540765b992e9703",
+    "WALLET-BACKEND/apps/wallet/views.py": "66683a9c238cbc5fd8a9aa38793383861a0ddc077385996b01079034e26045c3",
+    "WALLET-BACKEND/tests/device_approval_check.py": "5d3307370733896ad9137c98dfbe703a24650c654ba804d1d332dfa0a728e014",
+    "WALLET-BACKEND/tests/wallet_security_check.py": "5ef7c5adf3de4c6e5fb1ef58de72781c899f44d8d0b0576fd3d384454a70f70c",
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_groups.py": "1395c427d6dfafee4bc4794418994344dfb363ce455f4bcf80a630028e701262",
+    "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/return_policy.py": "d44c4dcf0df072a53e9b9f78255590ad2c9d6477f7c150e07eed8971949f9d94",
+    "BACKEND/SGA-CD-BACKEND/app/services/recovery_contract.py": "95cb4ea7b21e7932e9b02f11f8895824b13632fdf088e09729496f16510fbda8",
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/esg_reports.py": "4d3ad7ee0b1d1f66f587ac3dead300966baea46ac9b11a6adb5b6f0f01b76c33",
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/purchase_recovery.py": "21204b0ac854fee058d97515ced4a664b3626a56048722b24e2119c624aef032",
+    "WALLET-BACKEND/apps/wallet/services/funded_refund.py": "6ab1f4fc5c4916dbd01ad9bc6a888a6c1cea3ad4448e101d8137c9086b30cb77",
+    "WALLET-BACKEND/fresh_migrations/wallet/0005_consent_refund_lifecycle.py": "51024a8fb3442e32f121424c05dab3b43dc33865151a827bece0658b17b29be2"
+  },
+  "limitations": [
+    "Declared GRI/SASB mapping, not verified normative applicability or source authenticity.",
+    "No new frontend forms; API and authenticated corporate bridge only.",
+    "Partial cash lines reserved in full until release and combined review; no incremental consumption between batches or grouped period qualification.",
+    "Proportional purchase returns require exact cents; tax-register attribution of adjustment journals and fiscal credit notes remain pending.",
+    "Refund requires a prior executed internal transfer, an authorized corporate source, existing funds, recipient consent and two approvals; no banking provider.",
+    "Wallet migration verified only on disposable existing SQLite data; PostgreSQL concurrency and historical live migrations pending."
+  ]
+}

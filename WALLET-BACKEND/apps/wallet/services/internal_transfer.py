@@ -23,6 +23,7 @@ class TransferConflict(APIException):
 
 def principal(user):
     registered_actor(user)
+    if getattr(user,'is_agent',False):raise PermissionDenied('Las autorizaciones financieras requieren al titular personal.')
     if not getattr(settings,'WALLET_INTERNAL_TRANSFERS_ENABLED',False):
         raise WalletOperationUnavailable()
 
@@ -37,8 +38,9 @@ def money(value):
         raise ValidationError({'amount':'Importe positivo, finito y con máximo dos decimales requerido.'})
 
 
-def fingerprint(source,destination,amount,currency):
+def fingerprint(source,destination,amount,currency,purpose=None):
     data={'source':str(source),'destination':str(destination),'amount':str(amount),'currency':currency}
+    if purpose:data['purpose']=purpose
     return hashlib.sha256(json.dumps(data,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
@@ -78,7 +80,7 @@ def owned_intent(user,intent_id,digest):
     principal(user)
     intent=get_object_or_404(WalletTransferIntent.objects.select_for_update(),pk=intent_id,requested_by_id=user.pk)
     require_wallet_access(user,intent.source)
-    expected=fingerprint(intent.source_id,intent.destination_id,intent.amount,intent.currency)
+    expected=fingerprint(intent.source_id,intent.destination_id,intent.amount,intent.currency,intent.purpose)
     if not hmac.compare_digest(str(digest),intent.digest) or not hmac.compare_digest(expected,intent.digest):raise TransferConflict('El resumen autorizado no coincide.')
     return intent
 
@@ -102,20 +104,81 @@ def review(user,intent_id,digest,device_proof=None):
 def execute(user,intent_id,digest,token,device_proof=None):
     intent=owned_intent(user,intent_id,digest)
     if not token or not hmac.compare_digest(hashlib.sha256(str(token).encode()).hexdigest(),intent.confirmation_hash):raise PermissionDenied('Segunda autorización inválida.')
-    if intent.state=='EXECUTED':return intent
+    if intent.state=='EXECUTED':
+        if intent.purpose:
+            from .funded_refund import verify_posted
+            verify_posted(intent)
+        return intent
     if intent.state!='REVIEWED' or intent.expires_at<=timezone.now():raise TransferConflict('Se requieren dos autorizaciones vigentes y separadas.')
+    if not intent.consent_at or intent.consent_digest!=intent.digest or not intent.consent_by_id:
+        raise TransferConflict('Se requiere consentimiento explícito del destinatario para esta intención.')
     if getattr(settings,'WALLET_DEVICE_APPROVALS_REQUIRED',True):
         from .device_approvals import consume
         consume(user,intent,'EXECUTE',device_proof)
     wallets={wallet.pk:wallet for wallet in Wallet.objects.select_for_update().filter(pk__in=[intent.source_id,intent.destination_id]).order_by('pk')}
     source=wallets[intent.source_id];destination=wallets[intent.destination_id]
+    from django.contrib.auth import get_user_model
+    recipient=get_user_model().objects.filter(pk=intent.consent_by_id,is_active=True).first()
+    if recipient is None:raise TransferConflict('El destinatario ya no está activo.')
+    require_wallet_access(recipient,destination)
     check_wallets(user,source,destination,intent.amount)
     if source.currency!=intent.currency:raise TransferConflict('La moneda cambió después de preparar la operación.')
+    if intent.purpose:
+        from .funded_refund import validate_execution
+        validate_execution(user,intent)
     if WalletTransferIntent.objects.filter(pk=intent.pk,state='REVIEWED').update(state='EXECUTED')!=1:raise TransferConflict()
     if Wallet.objects.filter(pk=source.pk,estado=Wallet.Status.ACTIVO,currency=intent.currency,saldo_disponible__gte=intent.amount).update(saldo_disponible=models.F('saldo_disponible')-intent.amount,updated_at=timezone.now())!=1:raise TransferConflict('El saldo disponible cambió.')
     if Wallet.objects.filter(pk=destination.pk,estado=Wallet.Status.ACTIVO,currency=intent.currency).update(saldo_disponible=models.F('saldo_disponible')+intent.amount,updated_at=timezone.now())!=1:raise TransferConflict()
     tx=WalletTransaccion.objects.create(referencia_operativa='INTERNAL-'+str(intent.pk),monto_total=intent.amount,estado=WalletTransaccion.Status.COMPLETADA,metadata={'kind':'INTERNAL_TRANSFER_V1','currency':intent.currency,'intent_id':str(intent.pk)})
     for wallet,kind in [(source,WalletMovimiento.TipoMovimiento.PAGO),(destination,WalletMovimiento.TipoMovimiento.INGRESO)]:
         WalletMovimiento.objects.create(wallet=wallet,transaccion=tx,tipo=kind,monto=intent.amount,referencia_modelo='InternalTransfer',referencia_id=str(intent.pk))
+    if intent.purpose:
+        from .funded_refund import post_accounting
+        post_accounting(user,intent,tx)
     intent.transaction=tx;intent.executed_at=timezone.now();intent.state='EXECUTED';intent.save(update_fields=['transaction','executed_at','state'])
     return intent
+
+
+@transaction.atomic
+def consent(user,intent_id,digest,confirmed):
+    principal(user)
+    intent=get_object_or_404(WalletTransferIntent.objects.select_for_update(),pk=intent_id,destination__in=accessible_wallets(user))
+    require_wallet_access(user,intent.destination)
+    if confirmed is not True or intent.state not in {'PENDING','REVIEWED'} or intent.expires_at<=timezone.now() or digest!=intent.digest:
+        raise TransferConflict('Consentimiento explícito vigente y resumen exacto requeridos.')
+    intent.consent_by_id=user.pk;intent.consent_at=timezone.now();intent.consent_digest=digest
+    intent.save(update_fields=['consent_by_id','consent_at','consent_digest'])
+    return intent
+
+
+@transaction.atomic
+def cancel(user,intent_id,digest,confirmed):
+    intent=owned_intent(user,intent_id,digest)
+    if confirmed is not True or intent.state=='EXECUTED':raise TransferConflict('Una intención ejecutada no se cancela.')
+    intent.state='CANCELLED';intent.confirmation_hash='';intent.review_device=None
+    intent.save(update_fields=['state','confirmation_hash','review_device'])
+    from ..models import WalletDeviceChallenge
+    WalletDeviceChallenge.objects.filter(intent=intent,consumed_at__isnull=True,invalidated_at__isnull=True).update(invalidated_at=timezone.now())
+    return intent
+
+
+@transaction.atomic
+def renew(user,intent_id,digest,key,confirmed):
+    old=owned_intent(user,intent_id,digest)
+    if confirmed is not True or old.state=='EXECUTED' or old.expires_at>timezone.now():raise TransferConflict('Solo se renuevan intenciones vencidas sin ejecutar.')
+    existing=WalletTransferIntent.objects.filter(renewed_from=old).first()
+    if existing:
+        if existing.idempotency_key!=key:raise TransferConflict('La renovación ya existe; recupere su estado.')
+        return existing
+    if WalletTransferIntent.objects.filter(requested_by_id=user.pk,idempotency_key=key).exists():raise TransferConflict('La renovación necesita una clave nueva sin uso previo.')
+    cancel(user,old.pk,digest,True)
+    new=prepare(user,old.source_id,old.destination_id,old.amount,key)
+    if new.renewed_from_id or new.state!='PENDING' or new.created_at<=old.created_at or new.purpose:raise TransferConflict('Clave de renovación ya utilizada.')
+    new.purpose=dict(old.purpose)
+    if new.purpose:
+        new.purpose['requested_date']=timezone.localdate().isoformat()
+        from .funded_refund import validate_execution
+        validate_execution(user,new)
+    new.digest=fingerprint(new.source_id,new.destination_id,new.amount,new.currency,new.purpose);new.renewed_from=old
+    new.save(update_fields=['purpose','digest','renewed_from'])
+    return new

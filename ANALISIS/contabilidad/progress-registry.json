@@ -1,6 +1,6 @@
 {
   "baseline": "accounting-blueprint-v1",
-  "review_basis": "Entrega77 amplía ACC-015 con saldos y cobertura de período declarado, invalidación por cambio retroactivo y ambos paneles. Conserva46/72 y0/24 aceptaciones completas.",
+  "review_basis": "Recuperación2026-11-10: ACC-019 acredita incremento ejecutable y verificación reproducible locales. Los demás cambios amplían tareas ya acreditadas sin sumar hitos. Sin aceptación completa/productiva. Evidencia automática: recuperacion-2026-11-10.json.",
   "items": [
     {
       "id": "ACC-001",
@@ -116,7 +116,8 @@
           "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/source_bindings.py",
           "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py",
           "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
-          "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx"
+          "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx",
+          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/purchase_recovery.py"
         ],
         "automated_verification": [
           "ANALISIS/contabilidad/evidencias/implementacion-30.json",
@@ -137,11 +138,13 @@
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase_contract.py",
           "FRONTEND/deployment/tests/native_purchases_browser.cjs",
-          "ANALISIS/contabilidad/evidencias/implementacion-72.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-72.json",
+          "BACKEND/deployment/tests/accounting_purchase_recovery_check.py",
+          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json"
         ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "Revisiones, solicitud, reconocimiento/anticipos/contrapartida y escritura corporativa locales implementados. Falta emisión/acuse DIAN auténticos, conciliación bancaria independiente, múltiples anticipos, política normativa y aceptación profesional/productiva. Implementación68 conecta política declarada versionada a reserva y reconocimiento, con evidencia revalidada; COP/1–5 componentes/un único código de impuesto positivo/fecha igual. Retenciones positivas y múltiples impuestos se rechazan; faltan normativa, interfaz/recuperación completas, SQL/concurrencia específica y aceptación real. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva."
+      "acceptance_remaining": "Revisiones, solicitud, reconocimiento/anticipos/contrapartida y escritura corporativa locales implementados. Falta emisión/acuse DIAN auténticos, conciliación bancaria independiente, múltiples anticipos, política normativa y aceptación profesional/productiva. Implementación68 conecta política declarada versionada a reserva y reconocimiento, con evidencia revalidada; COP/1–5 componentes/un único código de impuesto positivo/fecha igual. Retenciones positivas y múltiples impuestos se rechazan; faltan normativa, interfaz/recuperación completas, SQL/concurrencia específica y aceptación real. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva. Recuperación2026-11-10: historial, correcciones previas a revisión/posteo y devoluciones proporcionales acumuladas con dos confirmaciones y asiento compensatorio local. Conserva fuentes originales; no emite nota fiscal ni ejecuta reembolso. Pendientes retorno por concepto, atribución tributaria de los nuevos ajustes en el registro unificado, normativa e interfaces completas."
     },
     {
       "id": "ACC-009",
@@ -273,7 +276,8 @@
           "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/source_bindings.py",
           "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py",
           "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
-          "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx"
+          "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx",
+          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/purchase_recovery.py"
         ],
         "automated_verification": [
           "ANALISIS/contabilidad/evidencias/implementacion-48.json",
@@ -291,11 +295,13 @@
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase_contract.py",
           "FRONTEND/deployment/tests/native_purchases_browser.cjs",
-          "ANALISIS/contabilidad/evidencias/implementacion-72.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-72.json",
+          "BACKEND/deployment/tests/accounting_purchase_recovery_check.py",
+          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json"
         ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "Implementación70 añade hecho comercial declarado/revisado: compras/ventas, IVA descontable/generado y retenciones con cuentas por componente, asiento canónico y contrapartida, dos confirmaciones y recuperación. Pendientes fuentes nativas/documentales, deduplicación entre rutas, conciliación fiscal unificada, devoluciones parciales, interfaz, SQL/concurrencia PostgreSQL y revisión normativa/profesional. Las reservas conservan sus restricciones de retención/múltiples impuestos. No hay aceptación oficial, pagos ni emisión fiscal. Implementación71 atribuye reservas/hechos comerciales y contrapartidas en un registro integrado de activos/pasivos visible en ambos paneles; valida sumas y evidencia en lote. No completa normativa, fuentes nativas ni aceptación profesional. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva."
+      "acceptance_remaining": "Implementación70 añade hecho comercial declarado/revisado: compras/ventas, IVA descontable/generado y retenciones con cuentas por componente, asiento canónico y contrapartida, dos confirmaciones y recuperación. Pendientes fuentes nativas/documentales, deduplicación entre rutas, conciliación fiscal unificada, devoluciones parciales, interfaz, SQL/concurrencia PostgreSQL y revisión normativa/profesional. Las reservas conservan sus restricciones de retención/múltiples impuestos. No hay aceptación oficial, pagos ni emisión fiscal. Implementación71 atribuye reservas/hechos comerciales y contrapartidas en un registro integrado de activos/pasivos visible en ambos paneles; valida sumas y evidencia en lote. No completa normativa, fuentes nativas ni aceptación profesional. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva. Recuperación2026-11-10: historial, correcciones previas a revisión/posteo y devoluciones proporcionales acumuladas con dos confirmaciones y asiento compensatorio local. Conserva fuentes originales; no emite nota fiscal ni ejecuta reembolso. Pendientes retorno por concepto, atribución tributaria de los nuevos ajustes en el registro unificado, normativa e interfaces completas."
     },
     {
       "id": "ACC-015",
@@ -305,18 +311,21 @@
           "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_reconciliation.py",
           "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_resolutions.py",
           "BACKEND/SGA-CD-BACKEND/app/services/bank_resolution_contract.py",
-          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_period.py"
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_period.py",
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_groups.py"
         ],
         "automated_verification": [
           "ANALISIS/contabilidad/evidencias/implementacion-50.json",
           "BACKEND/deployment/tests/accounting_bank_reconciliation_check.py",
           "ANALISIS/contabilidad/evidencias/implementacion-54.json",
           "ANALISIS/contabilidad/evidencias/implementacion-76.json",
-          "ANALISIS/contabilidad/evidencias/implementacion-77.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-77.json",
+          "BACKEND/deployment/tests/accounting_bank_groups_check.py",
+          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json"
         ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "Cotejo de saldos y cobertura de período declarado COP, filas únicas/seleccionadas, diferencias y reservas locales en ambos paneles. Pendientes fuente bancaria auténtica, períodos sin movimientos, snapshots/grandes volúmenes, importes divididos/agrupados, FX, consentimiento y cualificación productiva."
+      "acceptance_remaining": "Cotejo de saldos y cobertura de período declarado COP, filas únicas/seleccionadas, diferencias y reservas locales en ambos paneles. Pendientes fuente bancaria auténtica, períodos sin movimientos, snapshots/grandes volúmenes, importes divididos/agrupados, FX, consentimiento y cualificación productiva. Recuperación2026-11-10: agrupación muchos-a-muchos y asignación parcial explícita de libro con remanente, reservas exclusivas compartidas con v1/v2, estado y liberación con dos confirmaciones, ORM y HTTP corporativo. La línea parcial queda reservada completa hasta liberar/revisar; no hay consumo incremental entre lotes ni conciliación de período agrupado, FX, banco auténtico o aceptación productiva."
     },
     {
       "id": "ACC-016",
@@ -357,7 +366,8 @@
           "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/environmental.py",
           "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-remediation.js",
           "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/environmental_records.py",
-          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/environmental_corrections.py"
+          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/environmental_corrections.py",
+          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/esg_reports.py"
         ],
         "automated_verification": [
           "BACKEND/deployment/tests/accounting_environmental_check.py",
@@ -369,20 +379,28 @@
           "BACKEND/deployment/tests/accounting_environmental_corrections_check.py",
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_environmental_corrections.py",
           "FRONTEND/deployment/tests/environmental_records_browser.cjs",
-          "ANALISIS/contabilidad/evidencias/implementacion-65.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-65.json",
+          "BACKEND/deployment/tests/accounting_esg_recovery_check.py",
+          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json"
         ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "Cálculo y registro revisado persistente, versiones de factores y exclusión por código de actividad en ambos paneles/APIs; sin obligación ni crédito. Faltan fuentes/soportes legítimos, integración operativa y duplicados semánticos, búsqueda/cortes/exportación, incertidumbre, cualificación profesional y reconocimiento válido. Implementación65: correcciones append-only con dos revisiones y recuperación de valor efectivo en ambos paneles; faltan formularios de corrección, concurrencia PostgreSQL específica y controles de historia frente a SQL privilegiado."
+      "acceptance_remaining": "Cálculo y registro revisado persistente, versiones de factores y exclusión por código de actividad en ambos paneles/APIs; sin obligación ni crédito. Faltan fuentes/soportes legítimos, integración operativa y duplicados semánticos, búsqueda/cortes/exportación, incertidumbre, cualificación profesional y reconocimiento válido. Implementación65: correcciones append-only con dos revisiones y recuperación de valor efectivo en ambos paneles; faltan formularios de corrección, concurrencia PostgreSQL específica y controles de historia frente a SQL privilegiado. Recuperación2026-11-10: reporte por fechas vuelve a verificar la cadena y conserva la corrección efectiva, fuentes de factores y soportes declarados. Sin autenticidad externa, formulario nuevo ni cierre de aceptación."
     },
     {
       "id": "ACC-019",
       "milestones": {
-        "functional_increment": [],
-        "automated_verification": [],
+        "functional_increment": [
+          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/esg_reports.py"
+        ],
+        "automated_verification": [
+          "BACKEND/deployment/tests/accounting_esg_recovery_check.py",
+          "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_recovery.py",
+          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json"
+        ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "No afirmar certificación sin revisión"
+      "acceptance_remaining": "Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva."
     },
     {
       "id": "ACC-020",
@@ -406,16 +424,19 @@
       "milestones": {
         "functional_increment": [
           "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/financial_orchestration.py",
-          "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py"
+          "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py",
+          "WALLET-BACKEND/apps/wallet/services/funded_refund.py"
         ],
         "automated_verification": [
           "BACKEND/deployment/tests/accounting_financial_orchestration_check.py",
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_financial_rehearsal.py",
-          "ANALISIS/contabilidad/evidencias/implementacion-64.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-64.json",
+          "WALLET-BACKEND/tests/recovery_check.py",
+          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json"
         ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "Primer incremento: ensayo financiero persistente en ERP y puente corporativo con dos confirmaciones del mismo titular y revisión de importe/destino; idempotencia, vencimiento, cancelación y vínculo revocado probados. Sin pagos, trabajador bancario ni integración con motor de escritorio. Faltan UI, proveedor/beneficiario/soportes legítimos, autorizaciones resistentes a suplantación, recibos, concurrencia PostgreSQL, recuperación operacional y aceptación profesional/productiva."
+      "acceptance_remaining": "Primer incremento: ensayo financiero persistente en ERP y puente corporativo con dos confirmaciones del mismo titular y revisión de importe/destino; idempotencia, vencimiento, cancelación y vínculo revocado probados. Sin pagos, trabajador bancario ni integración con motor de escritorio. Faltan UI, proveedor/beneficiario/soportes legítimos, autorizaciones resistentes a suplantación, recibos, concurrencia PostgreSQL, recuperación operacional y aceptación profesional/productiva. Recuperación2026-11-10: reembolso de una transferencia interna ejecutada, financiado por saldo empresarial existente, consentimiento del destinatario y dos firmas separadas; saldos/movimientos/asiento en una misma transacción local. Cancelación/renovación de intenciones vencidas invalidan autorizaciones. Sin pagos bancarios, activación financiera automática, aceptación física ni producción."
     },
     {
       "id": "ACC-022",

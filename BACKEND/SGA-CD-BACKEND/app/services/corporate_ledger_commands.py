@@ -65,6 +65,21 @@ COMMANDS={
  'review_reversal':('revisar-contrapartida-reserva/',{'reservation_id','reason','evidence_digest','confirmed'},set()),
  'reverse_recognition':('contrapartida-reserva/',{'reservation_id','review_id','confirmed'},set()),
 }
+RECOVERY_COMMANDS={'confirm_purchase_correction', 'review_purchase_return', 'review_bank_groups', 'review_purchase_correction', 'confirm_purchase_return', 'esg_report', 'purchase_history', 'confirm_bank_groups'}
+COMMANDS['esg_report']=('reporte-esg/',{'mappings', 'until', 'since'},set())
+COMMANDS['review_bank_groups']=('revisar-grupos-bancarios/',{'account_id', 'csv_text', 'groups', 'evidence_digest', 'differences', 'confirmed'},set())
+COMMANDS['confirm_bank_groups']=('confirmar-grupos-bancarios/',{'review_id', 'confirmed'},set())
+COMMANDS['review_purchase_correction']=('revisar-correccion-compra/',{'invoice_id', 'changes', 'evidence_digest', 'confirmed', 'request_id'},set())
+COMMANDS['confirm_purchase_correction']=('confirmar-correccion-compra/',{'invoice_id', 'review_id', 'confirmed'},set())
+COMMANDS['review_purchase_return']=('revisar-devolucion-compra/',{'invoice_id', 'evidence_digest', 'confirmed', 'reason_code', 'economic_date', 'return_bps', 'request_id'},set())
+COMMANDS['confirm_purchase_return']=('confirmar-devolucion-compra/',{'invoice_id', 'review_id', 'confirmed'},set())
+COMMANDS['purchase_history']=('historia-compra/',{'invoice_id'},set())
+COMMANDS['bank_group_state']=('estado-grupos-bancarios/',{'review_id'},set())
+RECOVERY_COMMANDS.add('bank_group_state')
+COMMANDS['review_bank_group_release']=('revisar-liberacion-grupos-bancarios/',{'evidence_digest', 'review_id', 'confirmed', 'reason_code'},set())
+RECOVERY_COMMANDS.add('review_bank_group_release')
+COMMANDS['confirm_bank_group_release']=('liberar-grupos-bancarios/',{'review_id', 'confirmed'},set())
+RECOVERY_COMMANDS.add('confirm_bank_group_release')
 NATIVE_COMMANDS={'native_supplier_sources','record_native_supplier', 'record_native_purchase', 'reverse_native_purchase', 'post_native_purchase', 'review_native_purchase_reversal', 'native_purchase_sources', 'review_native_purchase', 'native_purchase_state'}
 FIELDS=['owner_id','reviewer_id','ledger_actor_id','provider_id','tenant_id','evidence_digest','valid_until']
 
@@ -111,7 +126,7 @@ def read_sources(db,*,user,session_cookie,resource,parameters=None):
 def dispatch(db,*,user,session_cookie,operation,payload):
     if operation not in COMMANDS:raise HTTPException(422,'Operación contable no admitida.')
     path,required,optional=COMMANDS[operation]
-    if not isinstance(payload,dict) or not required<=set(payload) or set(payload)-required-optional or (operation not in {'query','quote_tax_policy','compare_bank_statement','estimate_environmental','commercial_tax_state','native_purchase_state','native_purchase_sources','native_supplier_sources','payroll_cost_sources','payroll_cost_state','operation_labor_costs'} and payload.get('confirmed') is not True):
+    if not isinstance(payload,dict) or not required<=set(payload) or set(payload)-required-optional or (operation not in {'query','quote_tax_policy','compare_bank_statement','estimate_environmental','commercial_tax_state','native_purchase_state','native_purchase_sources','native_supplier_sources','payroll_cost_sources','payroll_cost_state','operation_labor_costs','esg_report','purchase_history','bank_group_state'} and payload.get('confirmed') is not True):
         raise HTTPException(422,'Contrato o confirmación contable inválidos.')
     selected=context(db,user,session_cookie);target=ledger.origin()
     try:
@@ -137,6 +152,11 @@ def dispatch(db,*,user,session_cookie,operation,payload):
             raw=json.loads(b''.join(chunks));data=raw['data'] if isinstance(raw,dict) and raw.get('success') is True else raw
     except (ledger.httpx.HTTPError,ValueError):raise HTTPException(503,'Resultado no confirmado. Reintenta con la misma revisión persistida para evitar duplicados.') from None
     if not isinstance(data,dict):raise HTTPException(503,'Resultado contable incompatible; consulta la revisión original.')
+    if operation in RECOVERY_COMMANDS:
+        from app.services.recovery_contract import validate
+        try:validate(operation,data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Resultado de recuperación incompatible; consulta la misma revisión.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
     if operation in COST_COMMANDS:
         from app.services.payroll_cost_contract import validate as validate_cost
         try:validate_cost(operation,data,payload,selected)

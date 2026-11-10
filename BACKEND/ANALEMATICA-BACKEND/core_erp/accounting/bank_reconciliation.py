@@ -67,6 +67,8 @@ def _claims(proof,body):
     return expected
 
 def _origin(company,proof):
+    from . import bank_groups
+    if proof is not None and proof.event_type==bank_groups.APPLIED:return bank_groups.origin(company,proof)
     if proof is None or proof.event_type not in (APPLIED,APPLIED_V2) or proof.payload.get('company_id')!=str(company.pk):raise AccountingError('Reconciliation unavailable in company.')
     p=proof.payload;review=OutboxEvent.objects.filter(pk=p.get('review_id'),event_type__in=(REVIEW,REVIEW_V2)).first();body=_review(review,company)
     if proof.version!=(2 if proof.event_type==APPLIED_V2 else 1) or (proof.event_type==APPLIED_V2)!=(review.event_type==REVIEW_V2):raise AccountingError('Bank confirmation version mismatch.')
@@ -107,7 +109,7 @@ def _conflicts(company,body):
     for claim in claims:
         identifier=claim.payload.get('reconciliation_id')
         if identifier in seen:continue
-        seen.add(identifier);proof=OutboxEvent.objects.filter(pk=identifier,event_type__in=(APPLIED,APPLIED_V2)).first()
+        seen.add(identifier);proof=OutboxEvent.objects.filter(pk=identifier,event_type__in=(APPLIED,APPLIED_V2,'accounting.bank-groups.confirmed.v1')).first()
         _origin(company,proof)
         if not _released(company,proof):raise AccountingError('A transaction or ledger line already has an active reconciliation.')
 

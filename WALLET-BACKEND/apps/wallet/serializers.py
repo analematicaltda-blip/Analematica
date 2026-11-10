@@ -32,7 +32,7 @@ class WalletTransactionSerializer(serializers.ModelSerializer):
 class TransferIntentSerializer(serializers.ModelSerializer):
     class Meta:
         model=WalletTransferIntent
-        fields=['id','source','destination','amount','currency','digest','state','expires_at','reviewed_at','executed_at','transaction']
+        fields=['id','source','destination','amount','currency','digest','state','expires_at','reviewed_at','executed_at','transaction','consent_at','purpose','renewed_from']
         read_only_fields=fields
 
 class PrepareTransferSerializer(serializers.Serializer):

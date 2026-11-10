@@ -43,6 +43,7 @@ class DeviceChecks(unittest.TestCase):
   # production enrollment API cannot create this state without a trusted verifier.
   self.device=WalletDeviceCredential.objects.create(user_id=self.owner.pk,audience=uuid.UUID(AUDIENCE),public_key=self.public,status='VERIFIED',enrollment_nonce_hash='0'*64,enrollment_expires_at=timezone.now()+timedelta(minutes=5),verified_at=timezone.now(),valid_until=timezone.now()+timedelta(days=1))
   self.intent=transfers.prepare(self.owner,self.source.pk,self.target.pk,'10',uuid.uuid4())
+  transfers.consent(self.other,self.intent.pk,self.intent.digest,True)
  def proof(self,phase,intent=None,device=None,key=None):
   challenge,message=devices.issue(self.owner,(intent or self.intent).pk,(device or self.device).pk,phase)
   signature=(key or self.key).sign(message,ec.ECDSA(hashes.SHA256()))

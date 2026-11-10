@@ -1,6 +1,6 @@
 # Avance verificable del motor de contabilidad
 
-**Implementación y optimización: 63.89 %** · 46/72 hitos.
+**Implementación y optimización: 66.67 %** · 48/72 hitos.
 **Alcance completo aceptado: 0/24 tareas. Producción: no habilitada.**
 
 La base es la directriz de siete pools y las 24 tareas de `matriz-pools.csv`. Cada tarea tiene tres hitos de igual peso:
@@ -11,7 +11,7 @@ La base es la directriz de siete pools y las 24 tareas de `matriz-pools.csv`. Ca
 
 El máximo antes de aceptación completa de una tarea es 2/3. El porcentaje mide estos hitos, no líneas de código, horas, porcentaje de pruebas cubiertas ni ausencia de vulnerabilidades. No se obtiene crédito por documentación o planificación solas. El registro es una evaluación explícita de evidencias, no una deducción automática por presencia de archivos.
 
-23 tareas tienen incrementos verificados; ninguna acredita aún su alcance completo. Reforzar pruebas existentes no aumenta automáticamente el porcentaje. El 100 % significará cumplimiento comprobado de esta versión del alcance, no perfección absoluta ni inmunidad a ataques.
+24 tareas tienen incrementos verificados; ninguna acredita aún su alcance completo. Reforzar pruebas existentes no aumenta automáticamente el porcentaje. El 100 % significará cumplimiento comprobado de esta versión del alcance, no perfección absoluta ni inmunidad a ataques.
 
 | Frente | Hitos | Implementación verificable |
 |---|---:|---:|
@@ -20,7 +20,7 @@ El máximo antes de aceptación completa de una tarea es 2/3. El porcentaje mide
 | Bóveda documental | 4/6 | 66.67 % |
 | Operación y nómina | 4/6 | 66.67 % |
 | Analítica financiera | 4/6 | 66.67 % |
-| Sostenibilidad | 2/6 | 33.33 % |
+| Sostenibilidad | 4/6 | 66.67 % |
 | Asistencia y automatización | 4/6 | 66.67 % |
 | Offline, rendimiento y operación | 6/9 | 66.67 % |
 
@@ -46,7 +46,7 @@ Los frentes agrupan las mismas 24 tareas sin duplicarlas ni cambiar el denominad
 | ACC-016 | 2/3 | No |
 | ACC-017 | 2/3 | No |
 | ACC-018 | 2/3 | No |
-| ACC-019 | 0/3 | No |
+| ACC-019 | 2/3 | No |
 | ACC-020 | 2/3 | No |
 | ACC-021 | 2/3 | No |
 | ACC-022 | 2/3 | No |

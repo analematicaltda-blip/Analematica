@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .models import Wallet,WalletTransaccion,WalletTransferIntent
 from .serializers import (WalletAccountSerializer,WalletTransactionSerializer,TransferIntentSerializer,PrepareTransferSerializer,ReviewTransferSerializer,ExecuteTransferSerializer)
 from .services.wallet_service import WalletOperationUnavailable
+from .services import funded_refund
 from .services import internal_transfer
 from .services import device_approvals
 from .serializers import DeviceChallengeSerializer,DeviceAttestationSerializer,DeviceCredentialSerializer
@@ -20,6 +21,8 @@ class PrivateWalletMixin:
         response['Cache-Control']='no-store'
         return response
     def handle_exception(self,exception):
+        from apps.core_erp.accounting.exceptions import AccountingError
+        if isinstance(exception,AccountingError):exception=ValidationError('La operación requiere revisar fuentes, política y período contable.')
         if isinstance(exception,DatabaseError):
             exception=WalletOperationUnavailable('No se pudo confirmar el resultado. Consulte el estado de la intención antes de reintentar; conserve la misma clave de idempotencia.')
         return super().handle_exception(exception)
@@ -77,6 +80,47 @@ class WalletTransferViewSet(PrivateWalletMixin,mixins.CreateModelMixin,mixins.Li
         form=ExecuteTransferSerializer(data=request.data);form.is_valid(raise_exception=True)
         intent=internal_transfer.execute(request.user,pk,form.validated_data['digest'],form.validated_data['confirmation'],form.validated_data.get('device_proof'))
         return Response(self.get_serializer(intent).data)
+
+    @action(detail=False,methods=['get'])
+    def incoming(self,request):
+        rows=WalletTransferIntent.objects.filter(destination__in=accessible_wallets(request.user),state__in=['PENDING','REVIEWED']).order_by('-created_at')[:50]
+        return Response(self.get_serializer(rows,many=True).data)
+
+    @action(detail=True,methods=['post'])
+    def consent(self,request,pk=None):
+        if not isinstance(request.data,dict) or set(request.data)!={'digest','confirmed'}:raise ValidationError('Resumen y consentimiento explícito requeridos.')
+        row=internal_transfer.consent(request.user,pk,request.data['digest'],request.data['confirmed'])
+        return Response(self.get_serializer(row).data)
+
+    @action(detail=True,methods=['post'])
+    def cancel(self,request,pk=None):
+        self.get_object()
+        if not isinstance(request.data,dict) or set(request.data)!={'digest','confirmed'}:raise ValidationError('Resumen y confirmación requeridos.')
+        row=internal_transfer.cancel(request.user,pk,request.data['digest'],request.data['confirmed'])
+        return Response(self.get_serializer(row).data)
+
+    @action(detail=True,methods=['post'])
+    def renew(self,request,pk=None):
+        from uuid import UUID
+        self.get_object()
+        if not isinstance(request.data,dict) or set(request.data)!={'digest','confirmed','idempotency_key'}:raise ValidationError('Resumen, clave nueva y confirmación requeridos.')
+        try:key=UUID(str(request.data['idempotency_key']))
+        except (ValueError,TypeError):raise ValidationError('Clave inválida.') from None
+        row=internal_transfer.renew(request.user,pk,request.data['digest'],key,request.data['confirmed'])
+        return Response(self.get_serializer(row).data)
+
+    @action(detail=False,methods=['post'],url_path='funded-refund')
+    def funded_refund(self,request):
+        from uuid import UUID
+        fields={'provider_id','original_intent_id','source_id','destination_id','amount','key','policy','scheduled_date','debit_account_id','credit_account_id'}
+        if not isinstance(request.data,dict) or set(request.data)!=fields:raise ValidationError('Contrato de reembolso financiado inválido.')
+        from apps.core_erp.accounting.exceptions import AccountingError
+        data=dict(request.data)
+        try:
+            data['key']=UUID(str(data['key']))
+            row=funded_refund.prepare(request.user,**data)
+        except (AccountingError,ValueError,TypeError):raise ValidationError('Revisa pago original, política y cuentas contables.') from None
+        return Response(self.get_serializer(row).data,status=201)
 
     @action(detail=True,methods=['post'])
     def challenge(self,request,pk=None):

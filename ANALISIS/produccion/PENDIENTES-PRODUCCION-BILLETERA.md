@@ -108,7 +108,7 @@ Estado: **PENDIENTE** · Área: Datos · Responsable: Backend
 
 Probar concurrencia, reversión y restauración PostgreSQL; resolver el grafo histórico sin alterar saldos existentes.
 
-Evidencia: Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras.
+Evidencia: Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras. Recuperación2026-11-10: migración wallet0005 aplicada sobre datos históricos desechables en SQLite conserva saldos y exige consentimiento nuevo; no acredita migración de bases reales ni concurrencia PostgreSQL.
 
 ## WAL-014 · Open Duet y agent-desktop en equipos reales
 
@@ -140,7 +140,7 @@ Estado: **PENDIENTE** · Área: Finanzas · Responsable: Finanzas
 
 Validar proveedores/contratos, recibos, límites y conciliación; no presentar transferencias internas de pruebas como retiros o depósitos reales.
 
-Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio.
+Evidencia: Recuperación2026-11-10: pruebas ORM/API aisladas de reembolso de transferencia interna con fondos existentes, consentimiento, dos autorizaciones y asiento atómico; fallo contable revierte saldos y movimientos. Cancelación y renovación verificadas sin restaurar permisos. Sin pagos bancarios, depósitos/retiros reales ni cierre de proveedores. Evidencia: ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json.
 
 ## WAL-018 · Revisión externa, aislamiento y sesión local
 

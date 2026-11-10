@@ -192,7 +192,7 @@ class WalletTransferIntent(models.Model):
     amount = models.DecimalField(max_digits=18, decimal_places=2)
     currency = models.CharField(max_length=3)
     digest = models.CharField(max_length=64)
-    state = models.CharField(max_length=12, default='PENDING', choices=[('PENDING','Pending'),('REVIEWED','Reviewed'),('EXECUTED','Executed')])
+    state = models.CharField(max_length=12, default='PENDING', choices=[('PENDING','Pending'),('REVIEWED','Reviewed'),('EXECUTED','Executed'),('CANCELLED','Cancelled')])
     confirmation_hash = models.CharField(max_length=64, blank=True)
     expires_at = models.DateTimeField()
     reviewed_at = models.DateTimeField(null=True)
@@ -204,6 +204,11 @@ class WalletTransferIntent(models.Model):
         constraints = [models.UniqueConstraint(fields=['requested_by_id','idempotency_key'], name='wallet_transfer_actor_key_unique'),
                        models.CheckConstraint(condition=models.Q(amount__gt=0), name='wallet_transfer_amount_positive')]
 
+    consent_by_id = models.PositiveBigIntegerField(null=True)
+    consent_digest = models.CharField(max_length=64, blank=True)
+    consent_at = models.DateTimeField(null=True)
+    purpose = models.JSONField(default=dict, blank=True)
+    renewed_from = models.OneToOneField('self', null=True, on_delete=models.PROTECT, related_name='renewal')
     review_device = models.ForeignKey('WalletDeviceCredential', null=True, on_delete=models.PROTECT)
 
 

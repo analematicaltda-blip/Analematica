@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-08",
+  "updated": "2026-11-10",
   "production_enabled": false,
   "items": [
     {
@@ -118,7 +118,7 @@
       "owner": "Backend",
       "status": "PENDIENTE",
       "acceptance": "Probar concurrencia, reversión y restauración PostgreSQL; resolver el grafo histórico sin alterar saldos existentes.",
-      "evidence": "Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras."
+      "evidence": "Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras. Recuperación2026-11-10: migración wallet0005 aplicada sobre datos históricos desechables en SQLite conserva saldos y exige consentimiento nuevo; no acredita migración de bases reales ni concurrencia PostgreSQL."
     },
     {
       "id": "WAL-014",
@@ -154,7 +154,7 @@
       "owner": "Finanzas",
       "status": "PENDIENTE",
       "acceptance": "Validar proveedores/contratos, recibos, límites y conciliación; no presentar transferencias internas de pruebas como retiros o depósitos reales.",
-      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+      "evidence": "Recuperación2026-11-10: pruebas ORM/API aisladas de reembolso de transferencia interna con fondos existentes, consentimiento, dos autorizaciones y asiento atómico; fallo contable revierte saldos y movimientos. Cancelación y renovación verificadas sin restaurar permisos. Sin pagos bancarios, depósitos/retiros reales ni cierre de proveedores. Evidencia: ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json."
     },
     {
       "id": "WAL-018",

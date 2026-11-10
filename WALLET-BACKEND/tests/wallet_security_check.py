@@ -27,7 +27,8 @@ class WalletChecks(unittest.TestCase):
   self.source=Wallet.objects.create(user_id=F.owner.pk,owner_type='TURISTA',metadata={'wallet_signup':True},owner_id=str(uuid.uuid4()),currency='COP',saldo_disponible='100.00')
   self.target=Wallet.objects.create(user_id=F.other.pk,owner_type='TURISTA',metadata={'wallet_signup':True},owner_id=str(uuid.uuid4()),currency='COP')
   WalletLimiteOperativo.objects.create(wallet=self.source,monto_maximo_transaccion='40',monto_maximo_diario='60')
- def prepare(self,amount='10',key=None):return engine.prepare(F.owner,self.source.pk,self.target.pk,amount,key or uuid.uuid4())
+ def prepare(self,amount='10',key=None):
+  intent=engine.prepare(F.owner,self.source.pk,self.target.pk,amount,key or uuid.uuid4());engine.consent(F.other,intent.pk,intent.digest,True);return intent
  def approved(self,amount='10'):
   intent=self.prepare(amount);intent,token=engine.review(F.owner,intent.pk,intent.digest);return intent,token
  def balances(self):
@@ -123,6 +124,7 @@ class WalletChecks(unittest.TestCase):
   self.assertEqual(r.status_code,201,r.content);intent=r.json()['data'];detail=route+intent['id']+'/'
   review=client.post(detail+'review/',{'digest':intent['digest']},format='json');self.assertEqual(review.status_code,200,review.content)
   self.assertEqual(self.balances(),(Decimal('100'),Decimal('0')))
+  engine.consent(F.other,intent['id'],intent['digest'],True)
   confirmation=review.json()['data']['confirmation'];self.assertNotIn('confirmation',client.get(detail).json()['data'])
   r=client.post(detail+'execute/',{'digest':intent['digest'],'confirmation':confirmation},format='json');self.assertEqual(r.status_code,200,r.content)
   self.assertEqual(r['Cache-Control'],'no-store');self.assertEqual(self.balances(),(Decimal('90'),Decimal('10')))

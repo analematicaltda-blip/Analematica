@@ -68,7 +68,8 @@ def capture_for(company,row):
     if link is None or link.event_type!='accounting.native-purchase.capture-link.v1' or link.domain!='accounting' or link.version!=1 or link.aggregate_root!=str(company.pk) or set(link.payload)!={'capture_id','invoice_id','company_id'} or link.payload.get('invoice_id')!=row.pk or link.payload.get('company_id')!=str(company.pk):raise AccountingError('Historical invoice requires reviewed reconciliation; do not invent native intake evidence.')
     capture=OutboxEvent.objects.filter(pk=link.payload['capture_id']).first();body=read_proof(capture,INTAKE,company.pk)
     if body['invoice_id']!=row.pk or body['provider_id']!=str(row.perfil_id):raise AccountingError('Native invoice/capture mismatch.')
-    return body
+    from .purchase_recovery import effective_capture
+    return effective_capture(company,row,body)
 
 @transaction.atomic
 def record_supplier(*,actor,provider_id,request_id,name,identification,evidence_digest,confirmed):
@@ -165,6 +166,8 @@ def purchase_sources(*,actor,provider_id,after_id):
 
 def reversal_context(actor,provider_id,invoice_id):
     user,provider,company=context(actor,provider_id);row=invoice(provider,invoice_id);capture_for(company,row)
+    from .purchase_recovery import returns
+    if returns(company,row):raise AccountingError('Purchase has partial returns; do not reverse the full original twice.')
     state=purchase_state(actor=user,provider_id=provider.pk,invoice_id=row.pk)
     if state['posted'] is None:raise AccountingError('Posted native purchase required for reversal.')
     body=ledger.checked(ledger.latest(company.pk,document(company,row)),ledger.REVIEW,company.pk);binding=body.get('source_binding')

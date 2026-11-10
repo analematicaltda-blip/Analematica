@@ -63,9 +63,9 @@
         "ACC-018",
         "ACC-019"
       ],
-      "completed_milestones": 2,
+      "completed_milestones": 4,
       "total_milestones": 6,
-      "implementation_percent": "33.33"
+      "implementation_percent": "66.67"
     },
     {
       "front": "Asistencia y automatización",
@@ -91,11 +91,11 @@
   ],
   "baseline": "accounting-blueprint-v1",
   "measurement": "curated evidence-backed milestones, not effort or code coverage",
-  "completed_milestones": 46,
+  "completed_milestones": 48,
   "total_milestones": 72,
-  "implementation_percent": "63.89",
+  "implementation_percent": "66.67",
   "fully_accepted_items": 0,
-  "items_with_verified_increment": 23,
+  "items_with_verified_increment": 24,
   "total_items": 24,
   "production_ready": false,
   "items": [
@@ -157,7 +157,7 @@
     },
     {
       "task": "Contrato CRM y reserva hacia facturación",
-      "remaining": "Revisiones, solicitud, reconocimiento/anticipos/contrapartida y escritura corporativa locales implementados. Falta emisión/acuse DIAN auténticos, conciliación bancaria independiente, múltiples anticipos, política normativa y aceptación profesional/productiva. Implementación68 conecta política declarada versionada a reserva y reconocimiento, con evidencia revalidada; COP/1–5 componentes/un único código de impuesto positivo/fecha igual. Retenciones positivas y múltiples impuestos se rechazan; faltan normativa, interfaz/recuperación completas, SQL/concurrencia específica y aceptación real. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva.",
+      "remaining": "Revisiones, solicitud, reconocimiento/anticipos/contrapartida y escritura corporativa locales implementados. Falta emisión/acuse DIAN auténticos, conciliación bancaria independiente, múltiples anticipos, política normativa y aceptación profesional/productiva. Implementación68 conecta política declarada versionada a reserva y reconocimiento, con evidencia revalidada; COP/1–5 componentes/un único código de impuesto positivo/fecha igual. Retenciones positivas y múltiples impuestos se rechazan; faltan normativa, interfaz/recuperación completas, SQL/concurrencia específica y aceptación real. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva. Recuperación2026-11-10: historial, correcciones previas a revisión/posteo y devoluciones proporcionales acumuladas con dos confirmaciones y asiento compensatorio local. Conserva fuentes originales; no emite nota fiscal ni ejecuta reembolso. Pendientes retorno por concepto, atribución tributaria de los nuevos ajustes en el registro unificado, normativa e interfaces completas.",
       "id": "ACC-008",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -205,7 +205,7 @@
     },
     {
       "task": "Impuestos y conciliación continua",
-      "remaining": "Implementación70 añade hecho comercial declarado/revisado: compras/ventas, IVA descontable/generado y retenciones con cuentas por componente, asiento canónico y contrapartida, dos confirmaciones y recuperación. Pendientes fuentes nativas/documentales, deduplicación entre rutas, conciliación fiscal unificada, devoluciones parciales, interfaz, SQL/concurrencia PostgreSQL y revisión normativa/profesional. Las reservas conservan sus restricciones de retención/múltiples impuestos. No hay aceptación oficial, pagos ni emisión fiscal. Implementación71 atribuye reservas/hechos comerciales y contrapartidas en un registro integrado de activos/pasivos visible en ambos paneles; valida sumas y evidencia en lote. No completa normativa, fuentes nativas ni aceptación profesional. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva.",
+      "remaining": "Implementación70 añade hecho comercial declarado/revisado: compras/ventas, IVA descontable/generado y retenciones con cuentas por componente, asiento canónico y contrapartida, dos confirmaciones y recuperación. Pendientes fuentes nativas/documentales, deduplicación entre rutas, conciliación fiscal unificada, devoluciones parciales, interfaz, SQL/concurrencia PostgreSQL y revisión normativa/profesional. Las reservas conservan sus restricciones de retención/múltiples impuestos. No hay aceptación oficial, pagos ni emisión fiscal. Implementación71 atribuye reservas/hechos comerciales y contrapartidas en un registro integrado de activos/pasivos visible en ambos paneles; valida sumas y evidencia en lote. No completa normativa, fuentes nativas ni aceptación profesional. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva. Recuperación2026-11-10: historial, correcciones previas a revisión/posteo y devoluciones proporcionales acumuladas con dos confirmaciones y asiento compensatorio local. Conserva fuentes originales; no emite nota fiscal ni ejecuta reembolso. Pendientes retorno por concepto, atribución tributaria de los nuevos ajustes en el registro unificado, normativa e interfaces completas.",
       "id": "ACC-014",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -213,7 +213,7 @@
     },
     {
       "task": "Legacy bridge y open banking",
-      "remaining": "Cotejo de saldos y cobertura de período declarado COP, filas únicas/seleccionadas, diferencias y reservas locales en ambos paneles. Pendientes fuente bancaria auténtica, períodos sin movimientos, snapshots/grandes volúmenes, importes divididos/agrupados, FX, consentimiento y cualificación productiva.",
+      "remaining": "Cotejo de saldos y cobertura de período declarado COP, filas únicas/seleccionadas, diferencias y reservas locales en ambos paneles. Pendientes fuente bancaria auténtica, períodos sin movimientos, snapshots/grandes volúmenes, importes divididos/agrupados, FX, consentimiento y cualificación productiva. Recuperación2026-11-10: agrupación muchos-a-muchos y asignación parcial explícita de libro con remanente, reservas exclusivas compartidas con v1/v2, estado y liberación con dos confirmaciones, ORM y HTTP corporativo. La línea parcial queda reservada completa hasta liberar/revisar; no hay consumo incremental entre lotes ni conciliación de período agrupado, FX, banco auténtico o aceptación productiva.",
       "id": "ACC-015",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -237,7 +237,7 @@
     },
     {
       "task": "Factores de carbono y ledger ambiental",
-      "remaining": "Cálculo y registro revisado persistente, versiones de factores y exclusión por código de actividad en ambos paneles/APIs; sin obligación ni crédito. Faltan fuentes/soportes legítimos, integración operativa y duplicados semánticos, búsqueda/cortes/exportación, incertidumbre, cualificación profesional y reconocimiento válido. Implementación65: correcciones append-only con dos revisiones y recuperación de valor efectivo en ambos paneles; faltan formularios de corrección, concurrencia PostgreSQL específica y controles de historia frente a SQL privilegiado.",
+      "remaining": "Cálculo y registro revisado persistente, versiones de factores y exclusión por código de actividad en ambos paneles/APIs; sin obligación ni crédito. Faltan fuentes/soportes legítimos, integración operativa y duplicados semánticos, búsqueda/cortes/exportación, incertidumbre, cualificación profesional y reconocimiento válido. Implementación65: correcciones append-only con dos revisiones y recuperación de valor efectivo en ambos paneles; faltan formularios de corrección, concurrencia PostgreSQL específica y controles de historia frente a SQL privilegiado. Recuperación2026-11-10: reporte por fechas vuelve a verificar la cadena y conserva la corrección efectiva, fuentes de factores y soportes declarados. Sin autenticidad externa, formulario nuevo ni cierre de aceptación.",
       "id": "ACC-018",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -245,9 +245,9 @@
     },
     {
       "task": "Reportes ESG y marcos aplicables",
-      "remaining": "No afirmar certificación sin revisión",
+      "remaining": "Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva.",
       "id": "ACC-019",
-      "completed_milestones": 0,
+      "completed_milestones": 2,
       "total_milestones": 3,
       "full_acceptance": false
     },
@@ -261,7 +261,7 @@
     },
     {
       "task": "RPA financiera con autorizaciones",
-      "remaining": "Primer incremento: ensayo financiero persistente en ERP y puente corporativo con dos confirmaciones del mismo titular y revisión de importe/destino; idempotencia, vencimiento, cancelación y vínculo revocado probados. Sin pagos, trabajador bancario ni integración con motor de escritorio. Faltan UI, proveedor/beneficiario/soportes legítimos, autorizaciones resistentes a suplantación, recibos, concurrencia PostgreSQL, recuperación operacional y aceptación profesional/productiva.",
+      "remaining": "Primer incremento: ensayo financiero persistente en ERP y puente corporativo con dos confirmaciones del mismo titular y revisión de importe/destino; idempotencia, vencimiento, cancelación y vínculo revocado probados. Sin pagos, trabajador bancario ni integración con motor de escritorio. Faltan UI, proveedor/beneficiario/soportes legítimos, autorizaciones resistentes a suplantación, recibos, concurrencia PostgreSQL, recuperación operacional y aceptación profesional/productiva. Recuperación2026-11-10: reembolso de una transferencia interna ejecutada, financiado por saldo empresarial existente, consentimiento del destinatario y dos firmas separadas; saldos/movimientos/asiento en una misma transacción local. Cancelación/renovación de intenciones vencidas invalidan autorizaciones. Sin pagos bancarios, activación financiera automática, aceptación física ni producción.",
       "id": "ACC-021",
       "completed_milestones": 2,
       "total_milestones": 3,
