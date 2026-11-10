@@ -15,6 +15,9 @@ class WalletMovimientoSerializer(serializers.ModelSerializer):
         read_only_fields=fields
 
 class WalletTransactionSerializer(serializers.ModelSerializer):
+    purpose=serializers.SerializerMethodField()
+    def get_purpose(self,instance):
+        return 'COMMERCIAL_REFUND' if instance.metadata.get('purpose')=='COMMERCIAL_REFUND' else 'INTERNAL_TRANSFER' if instance.metadata.get('kind')=='INTERNAL_TRANSFER_V1' else 'UNCLASSIFIED'
     movimientos=serializers.SerializerMethodField()
     currency=serializers.SerializerMethodField()
     def get_movimientos(self,instance):
@@ -26,10 +29,14 @@ class WalletTransactionSerializer(serializers.ModelSerializer):
     def get_currency(self,instance):return instance.metadata.get('currency','')
     class Meta:
         model=WalletTransaccion
-        fields=['id','monto_total','estado','timestamp','currency','movimientos']
+        fields=['id','monto_total','estado','timestamp','currency','purpose','movimientos']
         read_only_fields=fields
 
 class TransferIntentSerializer(serializers.ModelSerializer):
+    state=serializers.SerializerMethodField()
+    def get_state(self,instance):
+        from .services.refund_guard import cancelled
+        return 'CANCELLED' if cancelled(instance) else instance.state
     class Meta:
         model=WalletTransferIntent
         fields=['id','source','destination','amount','currency','digest','state','expires_at','reviewed_at','executed_at','transaction','consent_at','purpose','renewed_from']

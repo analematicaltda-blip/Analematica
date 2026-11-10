@@ -191,9 +191,12 @@ def review_reversal(company_id,*,actor,document_id,reason_code,evidence_digest,c
     original,body,proof,state=original_state(company,document_id)
     source_bindings.require(company.pk,document_id,body.get('source_binding'),user.pk,'REVERSE_REVIEW',body['fact']['document_digest'])
     if state['reversed']:raise AccountingError('Original is already reversed; no second adjustment.')
+    from .native_return_reversal import snapshot
+    return_reconciliation=snapshot(company,body,state)
     old=OutboxEvent.objects.filter(event_type=REV_REVIEW,aggregate_root=root(company.pk,document_id)).order_by('-payload__revision').first()
     revision=checked(old,REV_REVIEW,company.pk)['revision'] if old else 0
     content={'company_id':str(company.pk),'document_id':document_id,'revision':revision+1,'reviewed_by':str(user.pk),'original_review_id':str(original.pk),'original_proof_digest':proof.payload['digest'],'original_journal_id':state['journal_id'],'reason_code':reason_code,'evidence_digest':evidence_digest,'expires_at':(timezone.now()+timedelta(minutes=15)).isoformat()}
+    if return_reconciliation is not None:content['return_reconciliation']=return_reconciliation
     row=save(REV_REVIEW,content)
     return {'company_id':str(company.pk),'document_id':document_id,'review_id':str(row.pk),'original_journal_id':state['journal_id'],'ledger_written':False,'regulatory_verified':False,'money_transferred':False}
 
@@ -206,6 +209,9 @@ def reverse_fact(company_id,*,actor,document_id,review_id,confirmed):
     original,source,proof,state=original_state(company,document_id)
     source_bindings.require(company.pk,document_id,source.get('source_binding'),user.pk,'REVERSE_POST',source['fact']['document_digest'])
     if body['original_review_id']!=str(original.pk) or body['original_proof_digest']!=proof.payload['digest'] or body['original_journal_id']!=state['journal_id']:raise AccountingError('Original posting changed after review.')
+    from .native_return_reversal import snapshot,_permit
+    current_returns=snapshot(company,source,state)
+    if body.get('return_reconciliation')!=current_returns:raise AccountingError('Return history changed after full reversal review.')
     prior=OutboxEvent.objects.filter(pk=uuid5(NS,REVERSED+':'+root(company.pk,document_id)+':'+str(body['revision']))).first()
     if prior:
         result=checked(prior,REVERSED,company.pk)
@@ -218,6 +224,7 @@ def reverse_fact(company_id,*,actor,document_id,review_id,confirmed):
         return {'company_id':str(company.pk),'document_id':document_id,'journal_id':str(journal.pk),'original_journal_id':state['journal_id'],'replayed':True,'ledger_written':True,'regulatory_verified':False,'money_transferred':False,'fiscal_document_created':False}
     if state['reversed']:raise AccountingError('Unlinked reversal requires reconciliation; no reconstruction.')
     if timezone.now()>=timezone.datetime.fromisoformat(body['expires_at']):raise AccountingError('Reversal review expired.')
-    journal=LedgerEngine.reverse_entry(body['original_journal_id'],reason='Reviewed commercial reversal '+body['reason_code'],tenant_id=company.pk,actor=user)
+    with _permit(company,body['original_journal_id'],user.pk,current_returns):
+        journal=LedgerEngine.reverse_entry(body['original_journal_id'],reason='Reviewed commercial reversal '+body['reason_code'],tenant_id=company.pk,actor=user)
     save(REVERSED,{'company_id':str(company.pk),'document_id':document_id,'revision':body['revision'],'review_id':str(row.pk),'review_digest':fingerprint(body),'journal_id':str(journal.pk),'journal_hash':journal.system_hash})
     return {'company_id':str(company.pk),'document_id':document_id,'journal_id':str(journal.pk),'original_journal_id':state['journal_id'],'replayed':False,'ledger_written':True,'regulatory_verified':False,'money_transferred':False,'fiscal_document_created':False}

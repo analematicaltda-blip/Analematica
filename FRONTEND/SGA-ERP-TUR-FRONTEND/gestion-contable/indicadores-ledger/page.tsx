@@ -10,6 +10,8 @@ import {BankComparison} from './BankComparison';
 import {TaxReconciliation} from './TaxReconciliation';
 import {NativePurchases} from './NativePurchases';
 import {PayrollCosts} from './PayrollCosts';
+import {BankGroups} from './BankGroups';
+import {ESGReport} from './ESGReport';
 import {ReservationRecognition} from './ReservationRecognition';
 import {ReservationBilling} from './ReservationBilling';
 import {AccountingQuery} from './AccountingQuery';
@@ -35,6 +37,7 @@ export default function LedgerWorkspace(){
  const authorized=identity!==null&&companyIdentity===identity;
  return <main style={{background:'#0A1128',color:'#FFFFFF',minHeight:'100vh',padding:20}}>
   <h1>Consulta contable empresarial</h1>
+  <a style={{color:'#FFFFFF'}} href="/dashboard/prestador/mi-negocio/gestion-comercial/politicas-devolucion">Administrar políticas de devolución comercial</a>
   {(session.user||session.logoutUnconfirmed)&&<div style={{display:'flex',gap:16,flexWrap:'wrap',alignItems:'center'}}>
    {session.user&&<p>Sesión: {session.user.username}</p>}
    <button type="button" disabled={session.loading} onClick={()=>session.logout()} style={{background:'#142850',color:'#FFFFFF',border:'1px solid #60A5FA',padding:10,borderRadius:6}}>{session.logoutUnconfirmed?'Reintentar cierre de sesión':'Cerrar sesión'}</button>
@@ -50,6 +53,8 @@ export default function LedgerWorkspace(){
   <ReservationRecognition key={'reservation-recognition:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request} onPosted={()=>setRevisionSignal(n=>n+1)}/>
   <ReservationBilling key={'reservation-billing:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <AccountingQuery key={'accounting-query:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
+  <ESGReport identity={identity} providerId={authorized?provider:''} request={session.request}/>
+  <BankGroups identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <PayrollCosts identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <NativePurchases identity={identity} providerId={authorized?provider:''} request={session.request} onPosted={()=>setRevisionSignal(n=>n+1)}/>
   <CommercialQueue key={'commercial-queue:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>

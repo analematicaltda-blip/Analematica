@@ -97,6 +97,8 @@ def original(actor,provider_id,invoice_id):
 
 
 def returns(company,row):
+    from .purchase_returns import POSTED
+    if OutboxEvent.objects.filter(event_type=POSTED,payload__body__company_id=str(company.pk),payload__body__invoice_id=row.pk).exists():raise AccountingError('This invoice uses the native net-amount return protocol; reconcile it there before changing protocol.')
     results=[]
     for event,body in events(company,row.pk,RETURNED):
         review=native.read_proof(OutboxEvent.objects.filter(pk=body['review_id']).first(),RETURN_REVIEW,company.pk)

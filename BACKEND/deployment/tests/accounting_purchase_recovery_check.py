@@ -48,4 +48,18 @@ class PurchaseRecoveryChecks(unittest.TestCase):
   with self.assertRaises(AccountingError):self.review_return(confirmed=False)
   r=self.review_return(return_bps=4000)
   with self.assertRaises(AccountingError):self.returned(r,confirmed=False)
+ def native_review(self):
+  from apps.prestadores.mi_negocio.gestion_contable.compras import purchase_returns
+  return purchase_returns.review(**self.scope,return_id=str(uuid.uuid4()),net_amount='25.00',entry_date=self.base.invoice_args['issue_date'],document_digest=uuid.uuid4().hex*2,evidence_digest='b'*64,expected_revision=0,confirmed=True)
+ def test_native_return_blocks_previously_reviewed_recovery_return(self):
+  from apps.prestadores.mi_negocio.gestion_contable.compras import purchase_returns
+  self.post();old=self.review_return();new=self.native_review()
+  purchase_returns.post(**self.scope,review_id=new['review_id'],confirmed=True)
+  with self.assertRaises(AccountingError):self.returned(old)
+  with self.assertRaises(AccountingError):self.review_return()
+ def test_recovery_return_blocks_previously_reviewed_native_return(self):
+  from apps.prestadores.mi_negocio.gestion_contable.compras import purchase_returns
+  self.post();new=self.native_review();self.returned(self.review_return())
+  with self.assertRaises(AccountingError):purchase_returns.post(**self.scope,review_id=new['review_id'],confirmed=True)
+  with self.assertRaises(AccountingError):self.native_review()
 if __name__=='__main__':unittest.main()

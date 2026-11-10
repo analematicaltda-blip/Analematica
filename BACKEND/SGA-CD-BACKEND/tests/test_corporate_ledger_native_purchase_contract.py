@@ -27,3 +27,32 @@ class NativePurchaseContractChecks(unittest.TestCase):
   for change in [{'invoice_id':8},{'ledger_written':False},{'money_transferred':True},{'regulatory_verified':True}]:
    with self.assertRaises(ValueError):validate('post_native_purchase',{**base,**change},{'invoice_id':7},self.context)
 if __name__=='__main__':unittest.main()
+
+class PurchaseHistoryContractChecks(unittest.TestCase):
+ def setUp(self):
+  self.context={'tenant_id':str(uuid.uuid4()),'provider_id':str(uuid.uuid4())};self.payload={'after_id':None,'search':'SYN'}
+  self.row={'invoice_id':7,'supplier_id':5,'number':'SYN-1','issue_date':'2026-11-09','subtotal':'100.00','tax':'19.00','gross':'119.00','state':'POR_PAGAR','accounting_phase':'CAPTURED','source_changed':False,'journal_id':None,'review_revision':0}
+  self.data={'company_id':self.context['tenant_id'],'provider_id':self.context['provider_id'],'search':'SYN','after_id':None,'invoices':[self.row],'next_after_id':None,'read_only':True,'ledger_written':False,'money_transferred':False,'documents_returned':False,'confirmations_restored':False,'regulatory_verified':False}
+ def check(self):return validate('native_purchase_history',self.data,self.payload,self.context)
+ def test_valid_native_and_legacy_phases(self):
+  self.check();self.row.update(accounting_phase='LEGACY_UNRECONCILED',source_changed=None);self.check()
+ def test_cannot_claim_posting_without_journal_and_revision(self):
+  self.row['accounting_phase']='POSTED'
+  with self.assertRaises(ValueError):self.check()
+ def test_cannot_leak_documents_or_restore_authorizations(self):
+  for key in ['documents_returned','confirmations_restored','money_transferred']:
+   self.data[key]=True
+   with self.assertRaises(ValueError):self.check()
+   self.data[key]=False
+ def test_search_scope_cursor_and_duplicate_rows_are_checked(self):
+  for mutate in [lambda:self.data.update(search='OTHER'),lambda:self.data.update(next_after_id=7),lambda:self.data.update(invoices=[self.row,self.row]),lambda:self.row.update(gross='118.00')]:
+   saved=copy.deepcopy(self.data);mutate()
+   with self.assertRaises(ValueError):self.check()
+   self.data=saved;self.row=self.data['invoices'][0]
+
+ def test_history_envelope_cannot_leak_fields_or_accept_float_cursor(self):
+  self.data['plaintext_document']='FORBIDDEN'
+  with self.assertRaises(ValueError):self.check()
+  del self.data['plaintext_document'];self.data['invoices']=[{**self.row,'invoice_id':n} for n in range(1,21)];self.data['next_after_id']=20.0
+  with self.assertRaises(ValueError):self.check()
+  self.data['next_after_id']=20;self.check()

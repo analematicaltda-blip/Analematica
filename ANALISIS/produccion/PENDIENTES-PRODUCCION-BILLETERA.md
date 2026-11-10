@@ -108,7 +108,7 @@ Estado: **PENDIENTE** · Área: Datos · Responsable: Backend
 
 Probar concurrencia, reversión y restauración PostgreSQL; resolver el grafo histórico sin alterar saldos existentes.
 
-Evidencia: Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras. Recuperación2026-11-10: migración wallet0005 aplicada sobre datos históricos desechables en SQLite conserva saldos y exige consentimiento nuevo; no acredita migración de bases reales ni concurrencia PostgreSQL.
+Evidencia: Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras. Recuperación2026-11-10: migración wallet0005 aplicada sobre datos históricos desechables en SQLite conserva saldos y exige consentimiento nuevo; no acredita migración de bases reales ni concurrencia PostgreSQL. Corte35: instalación y contratos acotados en esquemas fresh-local SQLite verificados; migración histórica y concurrencia/restauración PostgreSQL de la billetera siguen pendientes. El ensayo PostgreSQL MFA/control no sustituye estas pruebas financieras.
 
 ## WAL-014 · Open Duet y agent-desktop en equipos reales
 
@@ -140,7 +140,7 @@ Estado: **PENDIENTE** · Área: Finanzas · Responsable: Finanzas
 
 Validar proveedores/contratos, recibos, límites y conciliación; no presentar transferencias internas de pruebas como retiros o depósitos reales.
 
-Evidencia: Recuperación2026-11-10: pruebas ORM/API aisladas de reembolso de transferencia interna con fondos existentes, consentimiento, dos autorizaciones y asiento atómico; fallo contable revierte saldos y movimientos. Cancelación y renovación verificadas sin restaurar permisos. Sin pagos bancarios, depósitos/retiros reales ni cierre de proveedores. Evidencia: ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json.
+Evidencia: Recuperación2026-11-10: pruebas ORM/API aisladas de reembolso de transferencia interna con fondos existentes, consentimiento, dos autorizaciones y asiento atómico; fallo contable revierte saldos y movimientos. Cancelación y renovación verificadas sin restaurar permisos. Sin pagos bancarios, depósitos/retiros reales ni cierre de proveedores. Evidencia: ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json. No acreditado en producción; consultar cortes de pruebas del repositorio.
 
 ## WAL-018 · Revisión externa, aislamiento y sesión local
 
@@ -156,5 +156,13 @@ Estado: **PENDIENTE** · Área: Identidad y empresas · Responsable: Identidad e
 
 Conectar registro público e identidad real; adaptar autoridad empresarial ERP/SGA-CD con verificación de administrador titular; integrar panel web/escritorio y probar revocación. El equipo administrativo solo accede a su perfil personal si se inscribe.
 
-Evidencia: Vínculo explícito prestador/empresa, revisión independiente y adaptador ERP-TUR opt-in implementados con pruebas ORM/HTTP. No habilitado por defecto. Identidad externa, recuperación/renovación, SSO SGA-CD y paneles web/escritorio productivos pendientes.
+Evidencia: Vínculo explícito prestador/empresa, revisión independiente y adaptador ERP-TUR opt-in implementados con pruebas ORM/HTTP. No habilitado por defecto. Identidad externa, recuperación/renovación, SSO SGA-CD y paneles web/escritorio productivos pendientes. Vínculo explícito prestador/empresa, revisión independiente y adaptador ERP-TUR opt-in implementados con pruebas ORM/HTTP. No habilitado por defecto. Identidad externa, recuperación/renovación, SSO SGA-CD y paneles web/escritorio productivos pendientes. Requisito permanente: billetera personal para cualquier persona de Colombia, sin vínculo laboral, empresarial ni turístico. Para un reembolso se verifica únicamente el titular y su consentimiento respecto de esa reserva.
+
+## WAL-020 · Cualificar reembolso comercial a billetera, compra y retiro posterior
+
+Estado: **PENDIENTE** · Área: Devoluciones, contabilidad y uso de saldo · Responsable: Finanzas, Identidad, Seguridad y Aplicaciones
+
+Vincular cliente de reserva con titular personal y consentimiento mediante adaptador confiable; configurar empresa/billetera/activo conciliado y obligación neta legítima; validar firmas y atestación con dispositivos reales; habilitar transferencias y devolución solo tras conciliación. Integrar las dos autorizaciones en las aplicaciones nativas/web, recuperación/cancelación de intenciones vencidas, checkout con saldo y retiro bancario con proveedor habilitado, recibos auténticos y conciliación. Verificar PostgreSQL/concurrencia, custodia real y revisión profesional. No forzar billetera como medio de reembolso.
+
+Evidencia: Backend wallet_refund.py:23 pruebas locales sintéticas de traslado de fondos existentes y asiento ACID, incluido protocolo de doble firma con claves software; no certifica identidad, hardware ni fondos reales. API de saldo/historial personal identifica COMMERCIAL_REFUND y oculta movimientos empresariales ajenos. Panel ERP prepara/recupera; firma nativa/UI completa y adaptador de identidad productivo pendientes. Feature opt-in deshabilitada por defecto; no se habilitó retiro ni pago de reservas automáticamente. Integración2026-11-10: 21 pruebas de ciclo, 15 de reembolso de transferencia y recorrido Chromium de 14 comprobaciones; consentimiento ligado al resumen y renovación con fecha económica preservada. Transferencias genéricas no sustituyen la gestión contable. Evidencia: ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json. Sin aceptación productiva.
 

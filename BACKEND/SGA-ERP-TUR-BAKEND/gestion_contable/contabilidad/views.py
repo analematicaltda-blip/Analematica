@@ -112,6 +112,17 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except (AccountingError,ValueError,TypeError):raise ValidationError('Revisa cantidades, unidades, vigencias, límites y fuentes explícitas. No se certifican factores ni obligaciones contables.') from None
         return Response(result)
 
+    @action(detail=False,methods=['post'],url_path='reporte-evidencia-esg',parser_classes=[AccountingQueryJSONParser])
+    def esg_report(self,request):
+        if isinstance(request.data,dict) and 'as_of' not in request.data:return self.recovery_esg_report(request)
+        from .esg_reporting import report
+        from apps.core_erp.accounting.exceptions import AccountingError
+        self.company()
+        if not isinstance(request.data,dict) or set(request.data)!={'since','until','as_of','mappings'} or set(request.query_params)!={'provider_id'} or len(request.query_params.getlist('provider_id'))!=1:raise ValidationError('Contrato ESG explícito requerido.')
+        try:result=report(actor=request.user,provider_id=owned_provider(request).pk,**request.data)
+        except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa período, corte UTC, fuentes y mapeo declarado; no es certificación ESG.') from None
+        return Response(result)
+
     def _environmental_command(self,request,operation,fields):
         from . import environmental_records
         from apps.core_erp.accounting.exceptions import AccountingError
@@ -175,15 +186,15 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa fuentes, historia, ámbito y autorizaciones. No se presume aceptación productiva.') from None
 
     @action(detail=False,methods=['post'],url_path='reporte-esg',parser_classes=[AccountingQueryJSONParser])
-    def esg_report(self,request):
+    def recovery_esg_report(self,request):
         return self._recovery_command(request,'esg_reports','report',{'mappings', 'until', 'since'})
 
     @action(detail=False,methods=['post'],url_path='revisar-grupos-bancarios',parser_classes=[AccountingQueryJSONParser])
-    def review_bank_groups(self,request):
+    def recovery_review_bank_groups(self,request):
         return self._recovery_command(request,'bank_groups','review_groups',{'account_id', 'csv_text', 'groups', 'evidence_digest', 'differences', 'confirmed'})
 
     @action(detail=False,methods=['post'],url_path='confirmar-grupos-bancarios',parser_classes=[AccountingQueryJSONParser])
-    def confirm_bank_groups(self,request):
+    def recovery_confirm_bank_groups(self,request):
         return self._recovery_command(request,'bank_groups','confirm_groups',{'review_id', 'confirmed'})
 
     @action(detail=False,methods=['post'],url_path='revisar-correccion-compra',parser_classes=[AccountingQueryJSONParser])
@@ -194,8 +205,7 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
     def confirm_purchase_correction(self,request):
         return self._recovery_command(request,'purchase_recovery','confirm_correction',{'invoice_id', 'review_id', 'confirmed'})
 
-    @action(detail=False,methods=['post'],url_path='revisar-devolucion-compra',parser_classes=[AccountingQueryJSONParser])
-    def review_purchase_return(self,request):
+    def recovery_review_purchase_return(self,request):
         return self._recovery_command(request,'purchase_recovery','review_return',{'invoice_id', 'evidence_digest', 'confirmed', 'reason_code', 'economic_date', 'return_bps', 'request_id'})
 
     @action(detail=False,methods=['post'],url_path='confirmar-devolucion-compra',parser_classes=[AccountingQueryJSONParser])
@@ -207,15 +217,15 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         return self._recovery_command(request,'purchase_recovery','history',{'invoice_id'})
 
     @action(detail=False,methods=['post'],url_path='estado-grupos-bancarios',parser_classes=[AccountingQueryJSONParser])
-    def bank_group_state(self,request):
+    def recovery_bank_group_state(self,request):
         return self._recovery_command(request,'bank_groups','group_state',{'review_id'})
 
     @action(detail=False,methods=['post'],url_path='revisar-liberacion-grupos-bancarios',parser_classes=[AccountingQueryJSONParser])
-    def review_bank_group_release(self,request):
+    def recovery_review_bank_group_release(self,request):
         return self._recovery_command(request,'bank_groups','review_group_release',{'evidence_digest', 'review_id', 'confirmed', 'reason_code'})
 
     @action(detail=False,methods=['post'],url_path='liberar-grupos-bancarios',parser_classes=[AccountingQueryJSONParser])
-    def confirm_bank_group_release(self,request):
+    def recovery_confirm_bank_group_release(self,request):
         return self._recovery_command(request,'bank_groups','confirm_group_release',{'review_id', 'confirmed'})
 
     def _hotel_command(self,request,operation,fields,optional=frozenset()):
@@ -312,6 +322,27 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except (AccountingError,ValueError,TypeError):raise ValidationError('Catálogo de cuentas de compra no disponible.') from None
         return Response(result)
 
+    @action(detail=False,methods=['post'],url_path='revisar-devolucion-compra',parser_classes=[AccountingQueryJSONParser])
+    def review_purchase_return(self,request):
+        if isinstance(request.data,dict) and 'return_bps' in request.data:return self.recovery_review_purchase_return(request)
+        return self._native_purchase_command(request,'review_return',{'invoice_id','return_id','net_amount','entry_date','document_digest','evidence_digest','expected_revision','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='contabilizar-devolucion-compra',parser_classes=[AccountingQueryJSONParser])
+    def post_purchase_return(self,request):
+        return self._native_purchase_command(request,'post_return',{'invoice_id','review_id','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='estado-devoluciones-compra',parser_classes=[AccountingQueryJSONParser])
+    def purchase_return_state(self,request):
+        return self._native_purchase_command(request,'return_state',{'invoice_id'})
+
+    @action(detail=False,methods=['post'],url_path='revisar-correccion-devolucion-compra',parser_classes=[AccountingQueryJSONParser])
+    def review_purchase_return_void(self,request):
+        return self._native_purchase_command(request,'review_return_void',{'invoice_id','return_id','request_id','entry_date','reason_code','evidence_digest','expected_revision','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='corregir-devolucion-compra',parser_classes=[AccountingQueryJSONParser])
+    def void_purchase_return(self,request):
+        return self._native_purchase_command(request,'post_return_void',{'invoice_id','review_id','confirmed'})
+
     def _native_purchase_command(self,request,operation,fields):
         from apps.prestadores.mi_negocio.gestion_contable.compras import native_purchase
         from apps.core_erp.accounting.exceptions import AccountingError
@@ -349,6 +380,10 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
     @action(detail=False,methods=['post'],url_path='fuentes-compras-nativas',parser_classes=[AccountingQueryJSONParser])
     def native_purchase_sources(self,request):
         return self._native_purchase_command(request,'purchase_sources',{'after_id'})
+
+    @action(detail=False,methods=['post'],url_path='historial-compras-nativas',parser_classes=[AccountingQueryJSONParser])
+    def native_purchase_history(self,request):
+        return self._native_purchase_command(request,'purchase_history',{'after_id','search'})
 
     @action(detail=False,methods=['post'],url_path='revisar-contrapartida-compra-nativa',parser_classes=[AccountingQueryJSONParser])
     def review_native_purchase_reversal(self,request):
@@ -486,6 +521,44 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
     @action(detail=False,methods=['post'],url_path='aplicar-apertura',parser_classes=[AccountingQueryJSONParser])
     def apply_opening(self,request):
         return self._opening_command(request,'apply_opening',{'review_id','confirmed'})
+
+    def _bank_group_command(self,request,operation,fields):
+        from apps.core_erp.accounting import bank_grouped
+        from apps.core_erp.accounting.exceptions import AccountingError
+        with transaction.atomic():
+            company=self.company();lock_company(company.pk)
+            if self.company().pk!=company.pk:raise PermissionDenied('La empresa cambió.')
+            optional={'ledger_since'} if operation in {'sources','review'} else set()
+            if not isinstance(request.data,dict) or not fields<=set(request.data) or set(request.data)-fields-optional:raise ValidationError('Contrato de agrupación bancaria inválido.')
+            try:result=getattr(bank_grouped,operation)(company.pk,actor=request.user,**request.data)
+            except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa grupos, importes, fecha, cuenta, reservas activas y autorizaciones.') from None
+            return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='fuentes-agrupacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def bank_group_sources(self,request):return self._bank_group_command(request,'sources',{'account_id','csv_text'})
+
+    @action(detail=False,methods=['post'],url_path='revisar-agrupacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def review_bank_groups(self,request):
+        if isinstance(request.data,dict) and 'differences' in request.data:return self.recovery_review_bank_groups(request)
+        return self._bank_group_command(request,'review',{'account_id','csv_text','groups','evidence_digest','expected_revision','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='confirmar-agrupacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def confirm_bank_groups(self,request):
+        if isinstance(request.data,dict) and 'statement_id' not in request.data:return self.recovery_confirm_bank_groups(request)
+        return self._bank_group_command(request,'confirm',{'statement_id','review_id','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='estado-agrupacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def bank_group_state(self,request):
+        if isinstance(request.data,dict) and 'review_id' in request.data:return self.recovery_bank_group_state(request)
+        return self._bank_group_command(request,'state',{'account_id','source_digest'})
+
+    @action(detail=False,methods=['post'],url_path='revisar-liberacion-agrupacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def review_bank_group_release(self,request):
+        if isinstance(request.data,dict) and 'reconciliation_id' not in request.data:return self.recovery_review_bank_group_release(request)
+        return self._bank_group_command(request,'review_release',{'reconciliation_id','reason_code','evidence_digest','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='liberar-agrupacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def confirm_bank_group_release(self,request):return self._bank_group_command(request,'confirm_release',{'review_id','confirmed'})
 
     def _bank_reconciliation_command(self,request,operation,fields):
         from apps.core_erp.accounting import bank_reconciliation

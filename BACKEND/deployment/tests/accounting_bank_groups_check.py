@@ -63,4 +63,19 @@ class GroupChecks(unittest.TestCase):
   call=self.case.call;payload={k:v for k,v in self.args.items() if k!='actor'}
   r=call('review_bank_groups','post',payload);self.assertEqual(r.status_code,200,r.data)
   a=call('confirm_bank_groups','post',{'review_id':r.data['review_id'],'confirmed':True});self.assertEqual(a.status_code,200,a.data);self.assertIn('no-store',a['Cache-Control'])
+ def original_review(self):
+  from apps.core_erp.accounting import bank_grouped
+  return bank_grouped.review(self.case.tenant.pk,actor=self.case.user,account_id=str(self.case.a.pk),csv_text=self.csv,groups=[{'group_id':str(uuid.uuid4()),'bank_rows':[1,2],'ledger_line_ids':[self.line]}],evidence_digest='b'*64,expected_revision=0,confirmed=True)
+ def test_published_group_reserves_original_protocol_capacity(self):
+  self.confirm(self.review())
+  with self.assertRaises(AccountingError):self.original_review()
+ def test_original_group_blocks_published_protocol(self):
+  from apps.core_erp.accounting import bank_grouped
+  r=self.original_review();bank_grouped.confirm(self.case.tenant.pk,actor=self.case.user,statement_id=r['statement_id'],review_id=r['review_id'],confirmed=True)
+  with self.assertRaises(AccountingError):self.review()
+ def test_released_published_group_restores_original_capacity(self):
+  r=self.review();self.confirm(r)
+  release=engine.review_group_release(self.case.tenant.pk,actor=self.case.user,review_id=r['review_id'],reason_code='WRONG_MATCH',evidence_digest='b'*64,confirmed=True)
+  engine.confirm_group_release(self.case.tenant.pk,actor=self.case.user,review_id=release['review_id'],confirmed=True)
+  self.assertIn('review_id',self.original_review())
 if __name__=='__main__' :unittest.main()

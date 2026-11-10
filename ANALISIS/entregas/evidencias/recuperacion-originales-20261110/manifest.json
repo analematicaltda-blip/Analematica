@@ -784,5 +784,6 @@
   "installed_original_paths": [
     "AGENTS.md",
     "ANALISIS/contabilidad/tools/test_progress.py"
-  ]
+  ],
+  "integration_verification": "verificacion.json"
 }

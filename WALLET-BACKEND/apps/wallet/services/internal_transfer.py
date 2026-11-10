@@ -63,6 +63,8 @@ def check_wallets(user,source,destination,amount):
 @transaction.atomic
 def prepare(user,source_id,destination_id,amount,key):
     principal(user);amount=money(amount)
+    from .refund_guard import require_prepare
+    require_prepare(key,user)
     source=get_object_or_404(accessible_wallets(user),pk=source_id)
     destination=get_object_or_404(Wallet,pk=destination_id)
     digest=fingerprint(source.pk,destination.pk,amount,source.currency)
@@ -76,10 +78,12 @@ def prepare(user,source_id,destination_id,amount,key):
     return intent
 
 
-def owned_intent(user,intent_id,digest):
+def owned_intent(user,intent_id,digest,*,allow_inactive=False):
     principal(user)
     intent=get_object_or_404(WalletTransferIntent.objects.select_for_update(),pk=intent_id,requested_by_id=user.pk)
     require_wallet_access(user,intent.source)
+    from .refund_guard import require_active
+    if not allow_inactive:require_active(intent)
     expected=fingerprint(intent.source_id,intent.destination_id,intent.amount,intent.currency,intent.purpose)
     if not hmac.compare_digest(str(digest),intent.digest) or not hmac.compare_digest(expected,intent.digest):raise TransferConflict('El resumen autorizado no coincide.')
     return intent
@@ -103,6 +107,8 @@ def review(user,intent_id,digest,device_proof=None):
 @transaction.atomic
 def execute(user,intent_id,digest,token,device_proof=None):
     intent=owned_intent(user,intent_id,digest)
+    from .refund_guard import require
+    require(intent,user)
     if not token or not hmac.compare_digest(hashlib.sha256(str(token).encode()).hexdigest(),intent.confirmation_hash):raise PermissionDenied('Segunda autorización inválida.')
     if intent.state=='EXECUTED':
         if intent.purpose:
@@ -154,6 +160,8 @@ def consent(user,intent_id,digest,confirmed):
 @transaction.atomic
 def cancel(user,intent_id,digest,confirmed):
     intent=owned_intent(user,intent_id,digest)
+    from .refund_guard import require
+    require(intent,user)
     if confirmed is not True or intent.state=='EXECUTED':raise TransferConflict('Una intención ejecutada no se cancela.')
     intent.state='CANCELLED';intent.confirmation_hash='';intent.review_device=None
     intent.save(update_fields=['state','confirmation_hash','review_device'])
@@ -164,7 +172,9 @@ def cancel(user,intent_id,digest,confirmed):
 
 @transaction.atomic
 def renew(user,intent_id,digest,key,confirmed):
-    old=owned_intent(user,intent_id,digest)
+    old=owned_intent(user,intent_id,digest,allow_inactive=True)
+    from .refund_guard import require
+    require(old,user)
     if confirmed is not True or old.state=='EXECUTED' or old.expires_at>timezone.now():raise TransferConflict('Solo se renuevan intenciones vencidas sin ejecutar.')
     existing=WalletTransferIntent.objects.filter(renewed_from=old).first()
     if existing:
@@ -176,7 +186,6 @@ def renew(user,intent_id,digest,key,confirmed):
     if new.renewed_from_id or new.state!='PENDING' or new.created_at<=old.created_at or new.purpose:raise TransferConflict('Clave de renovación ya utilizada.')
     new.purpose=dict(old.purpose)
     if new.purpose:
-        new.purpose['requested_date']=timezone.localdate().isoformat()
         from .funded_refund import validate_execution
         validate_execution(user,new)
     new.digest=fingerprint(new.source_id,new.destination_id,new.amount,new.currency,new.purpose);new.renewed_from=old

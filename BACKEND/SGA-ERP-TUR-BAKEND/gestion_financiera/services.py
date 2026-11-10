@@ -39,7 +39,7 @@ class PagoService:
             fecha_pago=timezone.now().date(),
             monto=monto,
             concepto=concepto,
-            estado=OrdenPago.EstadoPago.PAGADA
+            estado=OrdenPago.EstadoPago.PENDIENTE
         )
 
         # 3. Integración con el SGA

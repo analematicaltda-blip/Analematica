@@ -34,3 +34,6 @@ WALLET_ANDROID_ATTESTATION_POLICY_FILE = os.environ.get('WALLET_ANDROID_ATTESTAT
 WALLET_ENROLLMENT_IDENTITY_VERIFIER = None  # Configure an independently verified server workflow.
 
 WALLET_COMPANY_ADMIN_VERIFIER = None  # No employee/general-admin/company-header fallback.
+
+WALLET_COMMERCIAL_REFUNDS_ENABLED=os.environ.get('WALLET_COMMERCIAL_REFUNDS_ENABLED','0')=='1'
+WALLET_REFUND_BENEFICIARY_VERIFIER=None  # Trusted customer/wallet identity adapter; never request JSON.

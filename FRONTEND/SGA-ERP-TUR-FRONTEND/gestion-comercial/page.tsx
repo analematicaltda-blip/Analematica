@@ -325,6 +325,7 @@ export default function GestionComercialPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black transition-colors flex flex-col">
        <div className="px-8 py-3"><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/cotizaciones">Cotizaciones y borradores</Link></div>
+       <div className="px-8 py-3"><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/politicas-devolucion">Políticas de devolución y retención comercial</Link></div>
        <ViewState
           isLoading={isLoading}
           loadingMessage="Sincronizando flujo comercial..."

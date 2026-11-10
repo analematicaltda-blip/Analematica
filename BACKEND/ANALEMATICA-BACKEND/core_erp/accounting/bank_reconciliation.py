@@ -102,7 +102,7 @@ def _validate_rows(company,body,*,require_current_policy):
             checked.add(journal.pk)
 
 def _conflicts(company,body):
-    rows=body['rows'];lines=[r['ledger_line_id'] for r in rows];refs=[r['transaction_ref_digest'] for r in rows+body.get('differences',[])]
+    rows=body['rows'];lines=[r['ledger_line_id'] for r in rows];refs=[r['transaction_ref_digest'] for r in rows+body.get('differences',[]) if r.get('transaction_ref_digest')]
     claims=list(OutboxEvent.objects.filter(event_type=CLAIM,payload__company_id=str(company.pk)).filter(Q(payload__ledger_line_id__in=lines)|Q(payload__transaction_ref_digest__in=refs))[:1001])
     if len(claims)>1000:raise AccountingError('Claim history exceeds this bounded review; separate reconciliation required.')
     seen=set()
@@ -110,8 +110,13 @@ def _conflicts(company,body):
         identifier=claim.payload.get('reconciliation_id')
         if identifier in seen:continue
         seen.add(identifier);proof=OutboxEvent.objects.filter(pk=identifier,event_type__in=(APPLIED,APPLIED_V2,'accounting.bank-groups.confirmed.v1')).first()
-        _origin(company,proof)
-        if not _released(company,proof):raise AccountingError('A transaction or ledger line already has an active reconciliation.')
+        if proof is None:
+            from . import bank_grouped
+            grouped=OutboxEvent.objects.filter(pk=identifier,event_type=bank_grouped.APPLIED).first();bank_grouped.origin(company,grouped)
+            if not bank_grouped.released(company,grouped):raise AccountingError('A transaction or ledger line has an active grouped reconciliation.')
+        else:
+            _origin(company,proof)
+            if not _released(company,proof):raise AccountingError('A transaction or ledger line already has an active reconciliation.')
 
 def _result(company,proof,*,replayed):
     body=_origin(company,proof);released=_released(company,proof);valid=False

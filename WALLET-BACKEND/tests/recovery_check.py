@@ -71,6 +71,13 @@ class RecoveryChecks(unittest.TestCase):
   with self.assertRaises(APIException):self.execute(fresh,token)
   self.assertEqual(fresh.pk,transfers.renew(self.owner,a.pk,a.digest,key,True).pk)
   fresh,new_token=self.approve(fresh);self.execute(fresh,new_token)
+ def test_renewal_keeps_original_economic_request_date(self):
+  a=self.prepare();original=copy.deepcopy(a.purpose)
+  WalletTransferIntent.objects.filter(pk=a.pk).update(expires_at=timezone.now()-timedelta(seconds=1))
+  later=timezone.localdate()+timedelta(days=2)
+  with patch('apps.wallet.services.internal_transfer.timezone.localdate',return_value=later):
+   fresh=transfers.renew(self.owner,a.pk,a.digest,uuid.uuid4(),True)
+  self.assertEqual(fresh.purpose,original);self.assertFalse(fresh.consent_digest);self.assertFalse(fresh.confirmation_hash)
  def test_cannot_renew_live_or_executed_intents(self):
   a=self.prepare()
   with self.assertRaises(APIException):transfers.renew(self.owner,a.pk,a.digest,uuid.uuid4(),True)

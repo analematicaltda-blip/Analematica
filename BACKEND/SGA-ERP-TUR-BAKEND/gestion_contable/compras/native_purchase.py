@@ -166,8 +166,8 @@ def purchase_sources(*,actor,provider_id,after_id):
 
 def reversal_context(actor,provider_id,invoice_id):
     user,provider,company=context(actor,provider_id);row=invoice(provider,invoice_id);capture_for(company,row)
-    from .purchase_recovery import returns
-    if returns(company,row):raise AccountingError('Purchase has partial returns; do not reverse the full original twice.')
+    from .purchase_recovery import returns, RETURNED
+    if OutboxEvent.objects.filter(event_type=RETURNED,aggregate_root=str(company.pk),payload__body__invoice_id=row.pk).exists() and returns(company,row):raise AccountingError('Purchase has partial returns; do not reverse the full original twice.')
     state=purchase_state(actor=user,provider_id=provider.pk,invoice_id=row.pk)
     if state['posted'] is None:raise AccountingError('Posted native purchase required for reversal.')
     body=ledger.checked(ledger.latest(company.pk,document(company,row)),ledger.REVIEW,company.pk);binding=body.get('source_binding')
@@ -197,3 +197,44 @@ def supplier_sources(*,actor,provider_id,after_id):
     rows=list(query[:21])
     for record in rows:positive(record.pk)
     return {'company_id':str(company.pk),'provider_id':str(provider.pk),'read_only':True,'suppliers':[{'supplier_id':r.pk,'name':r.nombre,'identification':r.identificacion} for r in rows[:20]],'next_after_id':rows[19].pk if len(rows)>20 else None,'ledger_written':False,'documents_returned':False,'identity_verified':False}
+
+@transaction.atomic
+def purchase_history(*,actor,provider_id,after_id,search):
+    """Bounded owner-only read model; legacy rows never acquire invented evidence."""
+    user,provider,company=context(actor,provider_id)
+    if after_id is not None:positive(after_id)
+    if not isinstance(search,str) or len(search)>50 or search!=search.strip() or search and not re.fullmatch('[A-Z0-9][A-Z0-9/_-]{0,49}',search):raise AccountingError('Canonical invoice-number prefix required.')
+    query=FacturaCompra.objects.filter(perfil_id=provider.pk,proveedor__perfil_id=provider.pk).select_related('proveedor').order_by('pk')
+    if after_id is not None:query=query.filter(pk__gt=after_id)
+    if search:query=query.filter(number__startswith=search)
+    rows=list(query[:21]);items=[]
+    for row in rows[:20]:
+        positive(row.pk);key=uuid5(NS,'invoice-capture:'+str(company.pk)+':'+str(row.pk))
+        phase='LEGACY_UNRECONCILED';changed=None;journal=None;revision=0
+        if OutboxEvent.objects.filter(pk=key).exists():
+            capture=capture_for(company,row);state=purchase_state(actor=user,provider_id=provider.pk,invoice_id=row.pk)
+            changed=capture['captured_snapshot_digest']!=fingerprint(snapshot(row))
+            revision=state['review']['revision'] if state['review'] else 0
+            posted=state['posted'];journal=posted['journal_id'] if posted else None
+            phase='REVERSED' if posted and posted['reversed'] else 'POSTED' if posted else 'REVIEWED' if state['review'] else 'CAPTURED'
+        elif OutboxEvent.objects.filter(pk=source_bindings.reserved_id(company.pk,document(company,row))).exists() or OutboxEvent.objects.filter(event_type=POSTED,payload__company_id=str(company.pk),payload__invoice_id=row.pk).exists():
+            raise AccountingError('Native evidence missing; history cannot downgrade a reserved purchase to legacy.')
+        items.append({'invoice_id':row.pk,'supplier_id':row.proveedor_id,'number':row.number,'issue_date':row.issue_date.isoformat(),'subtotal':format(row.subtotal,'.2f'),'tax':format(row.impuestos,'.2f'),'gross':format(row.total,'.2f'),'state':row.estado,'accounting_phase':phase,'source_changed':changed,'journal_id':journal,'review_revision':revision})
+    return {'company_id':str(company.pk),'provider_id':str(provider.pk),'search':search,'after_id':after_id,'invoices':items,'next_after_id':rows[19].pk if len(rows)>20 else None,'read_only':True,'ledger_written':False,'money_transferred':False,'documents_returned':False,'confirmations_restored':False,'regulatory_verified':False}
+
+def review_return(**kwargs):
+    from .purchase_returns import review
+    return review(**kwargs)
+def post_return(**kwargs):
+    from .purchase_returns import post
+    return post(**kwargs)
+def return_state(**kwargs):
+    from .purchase_returns import state
+    return state(**kwargs)
+
+def review_return_void(**kwargs):
+    from .purchase_return_voids import review
+    return review(**kwargs)
+def post_return_void(**kwargs):
+    from .purchase_return_voids import post
+    return post(**kwargs)

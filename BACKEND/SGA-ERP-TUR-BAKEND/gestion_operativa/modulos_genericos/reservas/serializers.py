@@ -7,7 +7,11 @@ class PoliticaCancelacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PoliticaCancelacion
         fields = '__all__'
-        read_only_fields = ('perfil',)
+        read_only_fields = ('id','perfil_ref_id')
+
+    def validate(self,attrs):
+        if set(self.initial_data)-{'nombre','descripcion'}:raise serializers.ValidationError('Solo nombre/descripción para políticas heredadas; el porcentaje se gestiona mediante versiones del panel.')
+        return attrs
 
 class ReservaServicioAdicionalSerializer(serializers.ModelSerializer):
     servicio_id = serializers.UUIDField(source='servicio_ref_id')

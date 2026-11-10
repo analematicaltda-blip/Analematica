@@ -67,7 +67,8 @@ def crear_checkout_pago(pedido: CheckoutRequest):
 @router.get("/config")
 def obtener_configuracion_pasarela():
     return {
-        "pasarela_activa": "CustomCompanyPaymentGateway (Wompi/PSE/Stripe Plug-and-Play)",
-        "estado": "OPERATIVA",
-        "monedas_soportadas": ["COP", "USD"]
+        "pasarela_activa": "BOLD",
+        "estado": "COBROS_POR_CUALIFICAR",
+        "reembolsos": "BLOQUEADOS_HASTA_VERIFICAR_CONTRATO_Y_ACUSES",
+        "monedas_soportadas": ["COP"]
     }

@@ -48,6 +48,10 @@ def load(company,groups):
         journal=heads.get(UUID(identifier));claim=claims.get(uuid5(commercial.NS,'document:'+str(company.pk)+':'+body['fact']['document_digest']))
         commercial.validate_posted_snapshot(company,review,body,proof,journal,receipts.get(commercial.event_key(company.pk,body['document_id'])),claim,lines.get(journal.pk,[]) if journal else [])
         commercial_bodies[identifier]=body
+    for head in heads.values():
+        if head.financial_event_id and head.financial_event_id.startswith('purchase-return:'):
+            from apps.prestadores.mi_negocio.gestion_contable.compras.purchase_returns import register_body
+            commercial_bodies[str(head.pk)]=register_body(company,head)
     reservations={}
     for proof in reservation_proofs:
         p=proof.payload;review=reviews.get(p['review_id']);body=review.payload.get('review') if review else None

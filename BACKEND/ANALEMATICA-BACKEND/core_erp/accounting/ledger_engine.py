@@ -214,13 +214,15 @@ class LedgerEngine:
     @staticmethod
     @transaction.atomic
     def reverse_entry(journal_entry_id,reason='Reviewed reversal',*,tenant_id=None,actor=None):
-        tenant_id=scope(tenant_id);lock_company(tenant_id);user=current_actor(actor)
+        tenant_id=scope(tenant_id);company=lock_company(tenant_id);user=current_actor(actor)
         original=JournalEntry.plain_objects.select_for_update().get(pk=journal_entry_id,tenant_id=tenant_id)
         if not original.is_posted:raise AccountingError('Only posted journals can be reversed.')
         if original.is_reversal or JournalEntry.plain_objects.filter(tenant_id=tenant_id,reversed_entry_id=original.pk).exists():
             raise DuplicateReversalError('Journal already reversed or itself a reversal.')
         if original.hash_version=='v2' and original.system_hash!=LedgerEngine.calculate_hash(original):
             raise AccountingError('Original journal failed integrity verification.')
+        from .native_return_reversal import require as require_reviewed_return_reconciliation
+        require_reviewed_return_reconciliation(company,original,user.pk)
         # A receipt applied by any UI must first release its active recognition.
         # This runs under the same company lock as allocation and all postings.
         from apps.core_erp.outbox_models import OutboxEvent

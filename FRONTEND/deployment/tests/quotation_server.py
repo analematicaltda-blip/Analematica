@@ -53,8 +53,18 @@ if os.environ.get('LEDGER_BROWSER')=='1':
  from datetime import timedelta
  import uuid
  ledger['fixture']['fixture']['fixture']['fixture']['create'](Reservation)
+ if os.environ.get('CANCELLATION_POLICY_FIXTURE')=='1':
+  from django.db import connection
+  from apps.prestadores.mi_negocio.gestion_operativa.modulos_genericos.reservas.models import PoliticaCancelacion
+  if PoliticaCancelacion._meta.db_table not in connection.introspection.table_names():
+   with connection.schema_editor() as editor:editor.create_model(PoliticaCancelacion)
  billing_reservation=Reservation.plain_objects.create(tenant=case.tenant,customer_id=uuid.uuid4(),content_type=ContentType.objects.get_for_model(Reservation),object_id=uuid.uuid4(),start_date=timezone.now()-timedelta(days=2),end_date=timezone.now()-timedelta(days=1),total_price='100.00')
+ if os.environ.get('CANCELLATION_TIMING_FIXTURE')=='1':
+  Reservation.plain_objects.filter(pk=billing_reservation.pk).update(start_date=timezone.now()+timedelta(days=15),end_date=timezone.now()+timedelta(days=16));billing_reservation.refresh_from_db()
  DomainSargentoReservas.confirm_reservation(billing_reservation.pk,actor=case.user,provider_id=case.provider.pk)
+ if os.environ.get('WALLET_REFUND_LIFECYCLE_FIXTURE')=='1':
+  from wallet_lifecycle_fixture import apply
+  apply(case,billing_reservation,ledger['fixture']['fixture']['fixture']['fixture']['create'])
  recognition_receivable=Account.plain_objects.create(tenant=case.tenant,chart_of_accounts=case.chart,code='130505',name='Synthetic reviewed receivable',type='ASSET')
 
  if os.environ.get('LARGE_LEDGER_CATALOG')=='1':

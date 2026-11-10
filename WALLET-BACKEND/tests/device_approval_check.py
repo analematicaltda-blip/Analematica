@@ -15,7 +15,8 @@ from rest_framework.test import APIClient
 from api.models import CustomUser
 from apps.wallet.models import Wallet,WalletLimiteOperativo,WalletTransferIntent,WalletTransaccion,WalletMovimiento,WalletDeviceCredential,WalletDeviceChallenge
 from apps.wallet.services import internal_transfer as transfers,device_approvals as devices
-for model in [CustomUser,WalletDeviceChallenge,WalletLimiteOperativo,WalletMovimiento]:fixture['create'](model)
+from apps.core_erp.outbox_models import OutboxEvent
+for model in [OutboxEvent,CustomUser,WalletDeviceChallenge,WalletLimiteOperativo,WalletMovimiento]:fixture['create'](model)
 # Real audit table and in-memory channel layer make slow-request coverage deterministic.
 from apps.core_erp.models import EventAuditLog
 from django.conf import settings

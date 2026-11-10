@@ -1,3 +1,4 @@
+import os
 import hashlib
 import json
 import urllib.request
@@ -81,10 +82,29 @@ class BoldPaymentGateway(BasePaymentGatewayAdapter):
         }
 
     def validar_webhook_confirmacion(self, payload: Dict[str, Any], firma_seguridad: str) -> Dict[str, Any]:
-        return {"status": "APROBADA", "pasarela": "BOLD", "referencia": payload.get("reference")}
+        raise ValueError("Confirmación Bold bloqueada: falta un verificador cualificado de firma sobre el cuerpo HTTP original y su vínculo con el pago. Un payload declarado no acredita pago ni reembolso.")
 
-# Instancia activa con las llaves de Bold del comercio
-payment_gateway = BoldPaymentGateway(
-    identity_key="KHxJJBtS1iqqkE5YpwKdG5a45dcA_sb5acaVViPDfig",
-    secret_key="f1WrnY273KZ2rpa5hJE4hQ"
-)
+# Environment keys override the recovered, ignored local configuration as a pair.
+# No value is logged; a deployment without this local file must supply its secrets.
+def _bold_credentials():
+    identity=os.environ.get('BOLD_IDENTITY_KEY','');secret=os.environ.get('BOLD_SECRET_KEY','')
+    if identity or secret:
+        if not identity or not secret:raise ValueError('Configura ambas variables Bold del mismo comercio.')
+        return identity,secret
+    from pathlib import Path
+    import stat
+    path=Path(__file__).resolve().parents[4]/'.runtime/bold-test.env'
+    if not path.exists():return '', ''
+    info=path.lstat()
+    if path.is_symlink() or not stat.S_ISREG(info.st_mode) or info.st_mode & 0o077 or info.st_uid!=os.getuid() or info.st_size>4096:raise ValueError('Configuración Bold local requiere archivo privado del proceso.')
+    values={}
+    for line in path.read_text().splitlines():
+        key,value=line.split('=',1)
+        if key in values or key not in {'BOLD_IDENTITY_KEY','BOLD_SECRET_KEY'}:raise ValueError('Configuración Bold local inválida.')
+        values[key]=json.loads(value)
+    if set(values)!={'BOLD_IDENTITY_KEY','BOLD_SECRET_KEY'} or any(not isinstance(v,str) or not v for v in values.values()):raise ValueError('Par de claves Bold requerido.')
+    return values['BOLD_IDENTITY_KEY'],values['BOLD_SECRET_KEY']
+
+_bold_identity,_bold_secret=_bold_credentials()
+payment_gateway=BoldPaymentGateway(identity_key=_bold_identity,secret_key=_bold_secret)
+del _bold_identity,_bold_secret

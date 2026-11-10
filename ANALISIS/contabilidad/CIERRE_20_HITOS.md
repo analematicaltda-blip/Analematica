@@ -128,3 +128,64 @@ de formatos de tokens sin coincidencias, `update_progress.py --check` correcto,
 8 pruebas del registro aprobadas y `git diff --check` sin errores. No se ha
 ejecutado ni se acredita aquí una nueva regresión funcional de los originales
 archivados. El cierre de publicación se confirma comparando el SHA local y remoto.
+
+
+## Integración funcional de originales · 2026-11-10
+
+Esta sección actualiza el estado posterior a la preservación anterior: las
+fuentes y formularios recuperados ya se incorporaron a las carpetas canónicas;
+no se consideran integrados por estar dentro del TAR. Se compararon los 124
+originales contra main f4c6220fa: 84 están presentes/restaurados con el mismo
+contenido y 19 se integraron conservando compatibilidad. Nueve archivos de
+ADR/hotelería permanecen diferidos por instrucción del usuario, once instantáneas
+históricas de análisis se conservan en el paquete y la migración original 0005
+queda cubierta por 0005_consent_refund_lifecycle ya publicada, sin duplicarla.
+No se descartó ningún original. El inventario técnico detalla cada ruta.
+
+Cambios incorporados: formularios compartidos de historia de compras, devoluciones
+parciales, corrección de devoluciones y contrapartida final; agrupación bancaria
+y abonos parciales; reporte ESG con corte histórico/exportación; políticas de
+cancelación por anticipación y reembolso financiado a billetera con gestión de
+vigencia. Se preservan los contratos de la recuperación publicada mediante
+adaptadores y rutas compatibles. Las dos variantes de conciliación validan sus
+reservas cruzadas; los protocolos alternativos de devolución de una misma compra
+no se mezclan automáticamente. La liberación corporativa recuperada dispone de
+alias explícito v2, conservando el contrato anterior.
+
+La billetera mantiene acceso personal independiente del ERP. El consentimiento
+confiable del beneficiario se vincula al resumen exacto; la renovación invalida
+consentimiento/desafíos/autorizaciones anteriores y conserva la fecha económica
+y política originales. Las rutas genéricas de transferencia no pueden cancelar,
+renovar ni ejecutar un reembolso ligado al flujo contable. Se conserva la
+configuración opt-in deshabilitada por defecto: no se activaron pagos bancarios,
+retiros, DIAN, fondos reales ni servicios pagados. Las credenciales Bold se leen
+del entorno o archivo privado existente; no se publican en fuentes ni evidencias.
+
+Validación consolidada sobre fuentes estables: **1120 pruebas en 64 suites**,
+**100 comprobaciones de navegador** en recorridos ERP/Analemática y gestión de
+billetera, e instalación ERP-TUR desde SQLite vacío con comprobación de sistema
+sin incidencias y migraciones wallet hasta 0005. Se corrigió una dependencia
+local ausente de Playwright; la suite de firma repitió y aprobó 24 pruebas. El
+puente corporativo aprobó 127 pruebas en 302 segundos en ejecución independiente;
+el límite conjunto de 180 segundos fue insuficiente. La evidencia conserva ambos
+intentos y sus resultados sustitutorios, sin sumar pruebas repetidas. El script
+reproducible permite 600 segundos para ese puente. No se presenta como primer
+intento íntegramente aprobado ni como validación productiva.
+
+Evidencia única de esta integración:
+`../entregas/evidencias/recuperacion-originales-20261110/verificacion.json`,
+con inventario, hashes, resultados, límites y referencias a `pruebas.log`,
+`fuentes-verificadas.json` y `verificar_integracion.py` en la misma carpeta.
+El respaldo original anterior se conserva. Los documentos históricos no
+sustituyen este seguimiento ni conceden créditos adicionales.
+
+Los 44 ZIP/respaldos del Codespace siguen siendo un inventario distinto: la
+consulta a la API de Codespaces devolvió Forbidden y no permite afirmar que se
+inspeccionaron o publicaron. No se necesitan ni deben añadirse cachés/ZIP por su
+contador para integrar las fuentes recuperadas. Cierre de publicación: un único
+commit autorizado y push normal, verificando SHA remoto al finalizar.
+
+**Avance sin inflación: 66,67 % (48/72), aceptación completa 0/24 y producción
+no habilitada.** Permanecen la cualificación PostgreSQL/concurrencia, hardware,
+identidad/proveedores, DIAN/Bold, revisión profesional y los demás criterios
+externos registrados. Estos ensayos no acreditan un sistema terminado al 100 %.

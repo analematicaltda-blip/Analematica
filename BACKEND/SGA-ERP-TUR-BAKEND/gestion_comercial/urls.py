@@ -28,3 +28,6 @@ urlpatterns += [path('service-availability/',ServiceAvailability.as_view()),path
 
 from .quote_views import CompanyScopeOptions
 urlpatterns += [path('company-scopes/',CompanyScopeOptions.as_view())]
+
+from .cancellation_views import CancellationPolicyCommand
+urlpatterns += [path('cancellation-policies/<str:operation>/',CancellationPolicyCommand.as_view(),name='commercial-cancellation-policy')]

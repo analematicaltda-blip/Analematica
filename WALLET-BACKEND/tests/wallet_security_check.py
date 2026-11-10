@@ -18,7 +18,8 @@ from apps.wallet.models import Wallet,WalletMovimiento,WalletTransaccion,WalletT
 from apps.wallet.services import internal_transfer as engine
 from apps.wallet.services.wallet_service import WalletService
 from apps.wallet.views import WalletAccountViewSet,WalletTransactionViewSet,WalletTransferViewSet
-for model in [WalletMovimiento,WalletTransferIntent,WalletLimiteOperativo]:fixture['create'](model)
+from apps.core_erp.outbox_models import OutboxEvent
+for model in [OutboxEvent,WalletMovimiento,WalletTransferIntent,WalletLimiteOperativo]:fixture['create'](model)
 
 class WalletChecks(unittest.TestCase):
  def setUp(self):
