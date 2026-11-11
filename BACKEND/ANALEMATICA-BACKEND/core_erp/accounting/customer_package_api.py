@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 from django.db import DatabaseError
-from .customer_package_store import CustomerPackageStore,StorageConflict,initialize_customer_packages
+from .customer_package_store import CustomerPackageStore,StorageConflict,StorageOutcomeUnknown,package_receipt,initialize_customer_packages
 
 MAX=1500000
 
@@ -71,6 +71,7 @@ def build_app(store_factory,grant_path,*,allow_loopback_test_origins=False,clock
             with store_factory() as store:
                 if store.company_id!=g['company_id']:raise ValueError('Customer company binding mismatch.')
                 return operation(store)
+        except StorageOutcomeUnknown:raise HTTPException(503,{'code':'PACKAGE_WRITE_OUTCOME_UNKNOWN','action':'READ_EXACT_VERSION_THEN_RETRY_IDENTICAL_PACKAGE'}) from None
         except StorageConflict:raise HTTPException(409,'Versión o padre en conflicto; consulta el estado del cliente.') from None
         except LookupError:raise HTTPException(404,'Documento del cliente no disponible.') from None
         except ValueError:raise HTTPException(400,'Paquete o vínculo de cliente inválido.') from None
@@ -81,6 +82,10 @@ def build_app(store_factory,grant_path,*,allow_loopback_test_origins=False,clock
     @app.get('/v1/packages/{document_id}')
     async def retrieve(request:Request,document_id:str,revision:int|None=None):
         return await run_in_threadpool(work,request,'read',lambda store:store.get(document_id,revision))
+    @app.get('/v1/receipts/{document_id}')
+    async def receipt(request:Request,document_id:str,revision:int,package_digest:str):
+        if set(request.query_params)!={'revision','package_digest'} or any(len(request.query_params.getlist(k))!=1 for k in request.query_params) or request.query_params['revision']!=str(revision):raise HTTPException(422,'Versión y huella únicas y canónicas requeridas.')
+        return await run_in_threadpool(work,request,'read',lambda store:package_receipt(store,document_id,revision,package_digest))
     @app.post('/v1/packages')
     async def append(request:Request):
         authorize(request,'append')

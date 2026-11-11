@@ -51,8 +51,13 @@ def inspect_opening(company_id,cutoff=None):
     snapshot must not bypass the reconciliation guard. No repairs are performed.
     """
     company_id=UUID(str(company_id))
+    from . import chunked_opening
+    marker=OutboxEvent.objects.filter(pk=applied_id(company_id)).first()
+    if marker is not None and marker.event_type==chunked_opening.APPLIED:
+        from apps.core_erp.tenancy.models import Tenant
+        return chunked_opening.inspect(Tenant.objects.get(pk=company_id),cutoff)
     snapshot=source_snapshot(company_id)
-    proof=OutboxEvent.objects.filter(pk=applied_id(company_id),event_type=APPLIED,payload__company_id=str(company_id)).first()
+    proof=marker if marker is not None and marker.event_type==APPLIED and isinstance(marker.payload,dict) and marker.payload.get('company_id')==str(company_id) else None
     if proof is None:
         if snapshot:raise AccountingError('Legacy initial balances require a reviewed opening before reporting.')
         return None
@@ -79,6 +84,8 @@ def inspect_opening(company_id,cutoff=None):
 @transaction.atomic
 def review_opening(company_id,*,actor,entry_date,evidence_digest,expected_revision,confirmed,existing_journal_id=None):
     company=lock_company(company_id);user=current_actor(actor)
+    from . import chunked_opening
+    if chunked_opening.latest(company) is not None or OutboxEvent.objects.filter(event_type=chunked_opening.CHUNK,payload__company_id=str(company.pk)).exists():raise AccountingError('A chunked-source opening exists; use its reviewed workflow.')
     if confirmed is not True or type(expected_revision) is not int or expected_revision<0 or not isinstance(evidence_digest,str) or not re.fullmatch('[0-9a-f]{64}',evidence_digest):raise AccountingError('Explicit opening review and evidence required.')
     day=date.fromisoformat(entry_date)
     if day.isoformat()!=entry_date or day>timezone.localdate() or company.currency!='COP':raise AccountingError('Valid COP economic date required; no implicit FX.')
@@ -102,6 +109,8 @@ def review_opening(company_id,*,actor,entry_date,evidence_digest,expected_revisi
 @transaction.atomic
 def apply_opening(company_id,*,actor,review_id,confirmed):
     company=lock_company(company_id);user=current_actor(actor)
+    from . import chunked_opening
+    if chunked_opening.latest(company) is not None or OutboxEvent.objects.filter(event_type=chunked_opening.CHUNK,payload__company_id=str(company.pk)).exists():raise AccountingError('A chunked-source opening exists; use its reviewed workflow.')
     if confirmed is not True:raise AccountingError('Second opening confirmation required.')
     review=latest(company.pk)
     if review is None or str(review.pk)!=str(UUID(str(review_id))):raise AccountingError('Current opening review required.')
@@ -130,7 +139,11 @@ def apply_opening(company_id,*,actor,review_id,confirmed):
 
 @transaction.atomic
 def opening_state(company_id,*,actor):
-    company=lock_company(company_id);user=current_actor(actor);snapshot=source_snapshot(company.pk);row=latest(company.pk)
+    company=lock_company(company_id);user=current_actor(actor)
+    from . import chunked_opening
+    marker=OutboxEvent.objects.filter(pk=applied_id(company.pk)).first()
+    if (marker is not None and marker.event_type==chunked_opening.APPLIED) or chunked_opening.latest(company) is not None or (marker is None and Account.plain_objects.filter(tenant=company).exclude(initial_balance=0).count()>100):return chunked_opening.compatibility_state(company,user)
+    snapshot=source_snapshot(company.pk);row=latest(company.pk)
     review=None
     if row:
         body=row.payload.get('review')

@@ -21,6 +21,16 @@ class CorporateReservationPolicyChecks(unittest.TestCase):
   body={'reservation_id':self.credentials['reservation_id'],'review_id':review['review_id'],'confirmed':True};posted=self.command('post_recognition',body);self.assertEqual(posted.status_code,200,posted.text);result=posted.json()['data'];self.assertTrue(result['ledger_written']);self.assertFalse(result['fiscal_accepted']);self.assertFalse(result['money_transferred'])
   again=self.command('post_recognition',body);self.assertEqual(again.status_code,200,again.text);self.assertTrue(again.json()['data']['replayed']);self.assertEqual(result['journal_id'],again.json()['data']['journal_id'])
   report=self.client.get('/api/v1/workspace/corporate/accounting/report',params={'report':'trial_balance','until':self.day});self.assertEqual(report.status_code,200,report.text);self.assertEqual(report.json()['data']['total_debit'],report.json()['data']['total_credit'])
+ def test_reviewed_ubl_source_over_authenticated_http(self):
+  args=self.record_policy();review=self.command('review_reservation_policy',args);self.assertEqual(review.status_code,200,review.text)
+  params={'reservation_id':self.credentials['reservation_id'],'review_id':review.json()['data']['review_id']}
+  path='/api/v1/workspace/corporate/accounting/sources/ubl_source'
+  response=self.client.get(path,params=params);self.assertEqual(response.status_code,200,response.text)
+  source=response.json();self.assertEqual(source['snapshot']['totals']['gross'],'100.00');self.assertEqual(source['snapshot']['items'][0]['tax'],'15.97');self.assertFalse(source['fiscal_accepted']);self.assertTrue(source['read_only'])
+  self.assertEqual(self.client.get(path,params={**params,'company_id':str(uuid.uuid4())}).status_code,422)
+  self.assertEqual(self.client.get(path,params={'reservation_id':params['reservation_id']}).status_code,422)
+  second=self.command('review_reservation_policy',{**args,'expected_revision':1});self.assertEqual(second.status_code,200,second.text)
+  self.assertNotEqual(self.client.get(path,params=params).status_code,200)
  def test_withholding_missing_version_and_company_override_blocked(self):
   args=self.record_policy(withholding=True);self.assertEqual(self.command('review_reservation_policy',args).status_code,409)
   self.assertEqual(self.command('review_reservation_policy',{**args,'provider_id':str(uuid.uuid4())}).status_code,422)

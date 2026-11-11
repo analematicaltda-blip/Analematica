@@ -67,6 +67,14 @@ def validate(operation,data,payload,context):
     positive(data['invoice_id']);uuid(data['document_id'])
     if operation!='record_native_purchase' and data['invoice_id']!=payload['invoice_id']:raise ValueError('Different invoice returned.')
     if operation=='native_purchase_state':
+        inputs=data.get('review_inputs')
+        if data.get('review') is None:
+            if inputs is not None:raise ValueError('Concepts claim a missing review.')
+        else:
+            from app.services.purchase_concepts_contract import validate as concepts
+            if data['review']['preview'].get('company_id')!=context['tenant_id']:raise ValueError('Foreign recovered concept preview.')
+            concepts(inputs,data['review']['preview'],data['review']['revision'])
+        if data.get('posted') is not None and data.get('review') is None:raise ValueError('Posted native recovery requires its review inputs.')
         if data.get('read_only') is not True or data.get('confirmations_restored') is not False or data.get('native_source_verified') is not True or type(data.get('source_matches_review')) is not bool:raise ValueError('Recovery cannot restore confirmations.')
         if data.get('posted') is not None:
             posted=data['posted'];uuid(posted['journal_id'])
@@ -78,5 +86,10 @@ def validate(operation,data,payload,context):
     if data.get('native_source_verified') is not True or data.get('regulatory_verified') is not False or data.get('money_transferred') is not False:raise ValueError('Unverified native financial source.')
     posting=operation in {'post_native_purchase','reverse_native_purchase'}
     if data.get('ledger_written') is not posting:raise ValueError('Financial state mismatch.')
+    if operation=='review_native_purchase':
+        from app.services.purchase_concepts_contract import validate as concepts
+        if data['preview'].get('company_id')!=context['tenant_id']:raise ValueError('Foreign concept preview.')
+        inputs=concepts(data.get('review_inputs'),data['preview'],data['revision'])
+        if inputs['selection']!=payload['selection'] or inputs['settlement_account_id']!=payload['settlement_account_id'] or data['revision']!=payload['expected_revision']+1:raise ValueError('Concept review differs from requested form.')
     uuid(data['journal_id'] if posting else data['review_id'])
     if posting and (data.get('fiscal_document_created') is not False or type(data.get('replayed')) is not bool):raise ValueError('Invalid posting result.')

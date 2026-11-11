@@ -156,3 +156,42 @@ def history(*,actor,provider_id,invoice_id):
     corrections=[body for _,body in events(company,row.pk,CORRECTED)]
     return {'invoice_id':row.pk,'capture':capture,'corrections':corrections,'returns':returns(company,row),
         'state':native.purchase_state(actor=user,provider_id=provider.pk,invoice_id=row.pk),'read_only':True,'confirmations_restored':False}
+
+
+def register_body(company,journal):
+    """Attribute exact contra components to the immutable original purchase.
+
+    Revalidate proof chain, receipt and proportions. No fiscal acceptance, note
+    issuance or bank settlement is inferred from this internal register view.
+    """
+    from types import SimpleNamespace
+    from .purchase_returns import original as original_body
+    from apps.core_erp.accounting.models import AccountingEventReceipt
+    candidates=list(OutboxEvent.objects.filter(event_type=RETURNED,aggregate_root=str(company.pk),payload__body__company_id=str(company.pk),payload__body__journal_id=str(journal.pk))[:2])
+    if len(candidates)!=1:raise AccountingError('Unique proportional return origin required.')
+    posted=native.read_proof(candidates[0],RETURNED,company.pk)
+    document_id=str(native.uuid5(native.NS,'invoice:'+str(company.pk)+':'+str(posted['invoice_id'])))
+    source,state=original_body(company,document_id)
+    source_journal=JournalEntry.plain_objects.get(pk=state['journal_id'],tenant=company,is_posted=True)
+    history=returns(company,SimpleNamespace(pk=posted['invoice_id']))
+    if state['reversed']:raise AccountingError('Proportional return source was reversed.')
+    target=None
+    for index,item in enumerate(history,1):
+        review=native.read_proof(OutboxEvent.objects.filter(pk=item['review_id']).first(),RETURN_REVIEW,company.pk)
+        bps=review['return_bps']
+        if type(bps) is not int or not 1<=bps<=10000 or item['return_bps']!=bps or item['revision']!=index or review['invoice_id']!=posted['invoice_id'] or review['request_id']!=item['request_id'] or review['original_journal_id']!=state['journal_id'] or review['original_hash']!=source_journal.system_hash or review['prior_returns_digest']!=fingerprint(history[:index-1]):raise AccountingError('Proportional return chain or source changed.')
+        mapped=[]
+        for line in source['preview']['lines']:
+            debit=native._money(line['credit'])*bps;credit=native._money(line['debit'])*bps
+            if debit%10000 or credit%10000:raise AccountingError('Proportional register cannot silently round cents.')
+            if debit or credit:mapped.append({'account_id':line['account_id'],'kind':line['kind'],'debit':native._format_money(debit//10000),'credit':native._format_money(credit//10000)})
+        expected=sorted((x['account_id'],x['debit'],x['credit']) for x in mapped)
+        if expected!=sorted((x['account'],x['debit'],x['credit']) for x in review['lines']):raise AccountingError('Return attribution differs from original tax components.')
+        head=JournalEntry.plain_objects.filter(pk=item['journal_id'],tenant=company,is_posted=True).first()
+        event_id='purchase-return:'+item['review_id']
+        receipt=AccountingEventReceipt.objects.filter(tenant=company,event_id=event_id,journal=head).first() if head else None
+        contract={'schema':'manual-journal-v2','tenant_id':str(company.pk),'actor_id':int(review['actor_id']),'date':review['economic_date'],'description':'Reviewed native purchase return','period_id':None,'lines':review['lines']}
+        if head is None or head.financial_event_id!=event_id or head.created_by_id!=int(review['actor_id']) or head.date.isoformat()!=review['economic_date'] or receipt is None or receipt.payload_hash!=fingerprint(contract):raise AccountingError('Proportional return posting receipt changed.')
+        if head.pk==journal.pk:target=mapped
+    if sum(item['return_bps'] for item in history)>10000 or target is None:raise AccountingError('Return history exceeds original or lacks selected journal.')
+    return {'document_id':source['document_id'],'preview':{'lines':target}}

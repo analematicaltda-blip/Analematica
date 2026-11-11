@@ -20,18 +20,31 @@ if os.environ.get('LEDGER_BROWSER')=='1':
   from apps.core_erp.accounting import tax_policies
   from django.utils import timezone
   native_accounts={}
-  for role,code,kind in [('basis','510072','EXPENSE'),('input','135572','ASSET'),('retention','236572','LIABILITY'),('settlement','220572','LIABILITY')]:
+  for role,code,kind in [('basis','510072','EXPENSE'),('basis2','510073','EXPENSE'),('input','135572','ASSET'),('retention','236572','LIABILITY'),('settlement','220572','LIABILITY')]:
    native_accounts[role]=str(Account.plain_objects.create(tenant=case.tenant,chart_of_accounts=case.chart,code=code,name='Synthetic native UI '+role,type=kind).pk)
   native_day=timezone.localdate()
   native_policy={'code':'NATIVE_UI72','jurisdiction':'CO','currency':'COP','valid_from':native_day.replace(month=1,day=1).isoformat(),'valid_until':native_day.replace(month=12,day=31).isoformat(),'rounding':'PER_COMPONENT_HALF_UP','components':[{'code':'INPUT','kind':'INPUT_TAX','rate_bps':1900,'applies_to':['TAXABLE']},{'code':'RET','kind':'WITHHOLDING','rate_bps':250,'applies_to':['TAXABLE']}]}
   native_review=tax_policies.review_policy(case.tenant.pk,actor=case.user,policy=native_policy,evidence_digest='a'*64,expected_revision=0,confirmed=True)
   tax_policies.record_policy(case.tenant.pk,actor=case.user,review_id=native_review['review_id'],confirmed=True)
+  if os.environ.get('NATIVE_EXTRA_FIXTURE')=='1':
+   native_accounts['extra_input']=str(Account.plain_objects.create(tenant=case.tenant,chart_of_accounts=case.chart,code='135573',name='Synthetic additional tax',type='ASSET').pk)
+   import copy
+   extra_policy=copy.deepcopy(native_policy);extra_policy['code']='NATIVE_EXTRA';extra_policy['components'].append({'code':'EXTRA','kind':'INPUT_TAX','rate_bps':500,'applies_to':['TAXABLE']})
+   extra_review=tax_policies.review_policy(case.tenant.pk,actor=case.user,policy=extra_policy,evidence_digest='a'*64,expected_revision=0,confirmed=True)
+   tax_policies.record_policy(case.tenant.pk,actor=case.user,review_id=extra_review['review_id'],confirmed=True)
+
 
 
  if os.environ.get('OPENING_BROWSER')=='1':
   from apps.core_erp.accounting.models import Account
   Account.plain_objects.filter(pk=case.a.pk).update(initial_balance='100.00')
   opening_equity=Account.plain_objects.create(tenant=case.tenant,chart_of_accounts=case.chart,code='310505',name='Synthetic opening equity',type='EQUITY',initial_balance='100.00')
+  if os.environ.get('CHUNKED_OPENING_BROWSER')=='1':
+   from decimal import Decimal
+   accounts=[]
+   for i in range(124):
+    for kind,prefix,label in [('ASSET','150','activo'),('EQUITY','350','patrimonio')]:accounts.append(Account(tenant=case.tenant,chart_of_accounts=case.chart,code=prefix+str(i).zfill(4),name='Saldo histórico '+label+' '+str(i)+' · Bogotá',type=kind,initial_balance=Decimal('1.00')))
+   Account.plain_objects.bulk_create(accounts)
   if os.environ.get('OPENING_LINK_BROWSER')=='1':
    from django.utils import timezone
    from apps.core_erp.accounting.ledger_engine import LedgerEngine
@@ -46,6 +59,9 @@ if os.environ.get('LEDGER_BROWSER')=='1':
  if os.environ.get('OPENING_BROWSER')!='1':
   LedgerEngine.post_lines(tenant_id=case.tenant.pk,entry_date=timezone.localdate(),description='Synthetic liquidity funding',
    lines_data=[{'account':case.a,'debit':'5.00'},{'account':liability,'credit':'5.00'}],actor=case.user,idempotency_key='browser-liquidity')
+ if os.environ.get('BANK_HISTORY_FIXTURE')=='1':
+  from bank_history_fixture import seed
+  seed(case)
  fixture=ledger['fixture']['fixture']['fixture']
  from apps.domain_business.operativa.models import Reservation
  from apps.domain_business.operativa.sargentos import DomainSargentoReservas
@@ -108,11 +124,51 @@ owner=fixture['F'].owner;password=secrets.token_urlsafe(24);owner.set_password(p
 credential_file=args.assets/'fixture-credentials.json'
 credentials={'username':owner.username,'password':password}
 if os.environ.get('NATIVE_PURCHASE_FIXTURE')=='1':credentials['native_template']=native_accounts
+if os.environ.get('FX_BROWSER')=='1':
+ from apps.core_erp.fx.models import Currency
+ from apps.core_erp.accounting.journal_service import JournalService
+ from apps.core_erp.accounting.models import LedgerEntry
+ for fxcode in ['USD','EUR','COP']:Currency.objects.update_or_create(code=fxcode,defaults={'name':'Synthetic '+fxcode,'symbol':fxcode,'is_active':True})
+ fxentry=JournalService.create_entry(str(case.tenant.pk),timezone.localdate(),'Synthetic FX browser draft',[{'account':case.a,'debit':'10.00'},{'account':case.b,'credit':'10.00'}],created_by=case.user,currency='USD')
+ LedgerEntry.plain_objects.filter(journal_entry=fxentry).update(currency='USD')
+ credentials['fx']={'entry_id':str(fxentry.pk),'day':fxentry.date.isoformat()}
+if os.environ.get('FX_REVALUATION_BROWSER')=='1':
+ from apps.core_erp.fx.models import Currency
+ from apps.core_erp.accounting.models import Account
+ from apps.core_erp.accounting.journal_service import JournalService
+ from apps.core_erp.accounting import reviewed_fx
+ for fxcode in ['USD','COP']:Currency.objects.update_or_create(code=fxcode,defaults={'name':'Synthetic '+fxcode,'symbol':fxcode,'is_active':True})
+ monetary=Account.plain_objects.create(tenant=case.tenant,chart_of_accounts=case.chart,code='111099',name='Synthetic dedicated USD monetary',type='ASSET')
+ loss=Account.plain_objects.create(tenant=case.tenant,chart_of_accounts=case.chart,code='530599',name='Synthetic declared FX loss',type='EXPENSE')
+ opening=JournalService.create_entry(str(case.tenant.pk),timezone.localdate(),'Synthetic monetary FX opening',[{'account':monetary,'debit':'10.00'},{'account':case.b,'credit':'10.00'}],created_by=case.user,currency='USD')
+ day=timezone.localdate().isoformat();terms={'base_currency':'USD','target_currency':'COP','rate':'4000.000000','source_reference':'synthetic-opening:fx','source_version':'1','observed_at':timezone.now().isoformat(),'valid_from':day,'valid_until':day,'evidence_digest':'a'*64}
+ reviewed=reviewed_fx.review(case.tenant.pk,actor=case.user,entry_id=str(opening.pk),terms=terms,expected_revision=0,confirmed=True);reviewed_fx.confirm(case.tenant.pk,actor=case.user,entry_id=str(opening.pk),review_id=reviewed['review_id'],confirmed=True)
+ credentials['fx_revaluation']={'account_id':str(monetary.pk),'gain_account_id':str(case.b.pk),'loss_account_id':str(loss.pk),'day':day}
+if os.environ.get('FX_SETTLEMENT_BROWSER')=='1':
+ from apps.core_erp.accounting.models import Account,LedgerEntry
+ from apps.core_erp.accounting.ledger_engine import LedgerEngine
+ clearing=Account.plain_objects.create(tenant=case.tenant,chart_of_accounts=case.chart,code='240599',name='Synthetic recorded receipt clearing',type='LIABILITY')
+ cash_journal=LedgerEngine.post_lines(tenant_id=case.tenant.pk,entry_date=timezone.localdate(),description='Synthetic existing COP receipt',actor=case.user,idempotency_key='synthetic-fx-settlement-cash',lines_data=[{'account':case.a,'debit':'17200.00'},{'account':clearing,'credit':'17200.00'}]);cash_line=LedgerEntry.plain_objects.get(journal_entry=cash_journal,account=case.a)
+ credentials['fx_settlement']={**credentials['fx_revaluation'],'cash_line_id':str(cash_line.pk),'clearing_account_id':str(clearing.pk),'cash_journal_id':str(cash_journal.pk),'cash_journal_hash':cash_journal.system_hash}
 if os.environ.get('LEDGER_BROWSER')=='1':credentials.update(ledger_date=timezone.localdate().isoformat(),provider_id=str(case.provider.pk),reservation_id=str(billing_reservation.pk),recognition_receivable_id=str(recognition_receivable.pk),recognition_revenue_id=str(case.b.pk))
 if os.environ.get('OPENING_LINK_BROWSER')=='1':credentials.update(opening_existing_journal_id=str(opening_existing.pk),opening_existing_hash=opening_existing.system_hash)
 if os.environ.get('PAYROLL_BROWSER')=='1':
  helper=runpy.run_path(str(ROOT/'BACKEND/deployment/tests/payroll_fixture.py'))
  credentials['payroll']=helper['install'](case,fixture['fixture']['create'])
+if os.environ.get('NATIVE_PAYROLL_SOURCE_FIXTURE')=='1':
+ from apps.prestadores.mi_negocio.gestion_contable.nomina.models import ConceptoNomina
+ for code,kind in [('INT_BONUS','DEVENGADO'),('INT_COMM','DEVENGADO'),('INT_DED','DEDUCCION')]:
+  ConceptoNomina.objects.create(codigo=code,descripcion='Synthetic native '+code,tipo=kind)
+if os.environ.get('PAYROLL_NOVELTY_FIXTURE')=='1':
+ from apps.prestadores.mi_negocio.gestion_contable.nomina.models import NovedadNomina,ConceptoNomina
+ concept=ConceptoNomina.objects.create(codigo='SOURCE-DED',descripcion='Synthetic source deduction',tipo='DEDUCCION')
+ source_worker=credentials['payroll']['workers'][0]['employee_id']
+ NovedadNomina.objects.create(empleado_id=source_worker,concepto=concept,fecha_evento=timezone.localdate(),valor='25.00',cantidad='1.00',descripcion='PRIVATE-NOVELTY-SOURCE-TEXT')
+if os.environ.get('PAYROLL_SOURCE_EARNINGS_FIXTURE')=='1':
+ from apps.prestadores.mi_negocio.gestion_contable.nomina.models import NovedadNomina,ConceptoNomina
+ for code,amount in [('BONUS_SRC','50.00'),('COMM_SRC','30.00')]:
+  concept=ConceptoNomina.objects.create(codigo=code,descripcion='Synthetic source '+code,tipo='DEVENGADO')
+  NovedadNomina.objects.create(empleado_id=credentials['payroll']['workers'][0]['employee_id'],concepto=concept,fecha_evento=timezone.localdate(),valor=amount,cantidad='1.00',descripcion='PRIVATE-NOVELTY-SOURCE-TEXT')
 if os.environ.get('OPERATIONAL_COST_FIXTURE')=='1':
  helper=runpy.run_path(str(ROOT/'BACKEND/deployment/tests/operational_cost_fixture.py'))
  credentials['payroll_cost']=helper['install'](case,fixture['fixture']['create'],credentials['payroll'])

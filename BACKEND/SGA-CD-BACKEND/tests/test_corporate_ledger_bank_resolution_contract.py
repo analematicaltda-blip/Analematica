@@ -40,4 +40,17 @@ class BankResolutionContractTests(unittest.TestCase):
  def test_unrequested_period_cannot_claim_balances(self):
   d=self.data();d.update(period_reconciled=True)
   with self.assertRaises(ValueError):result(d)
+
+ def test_large_history_boundary_and_false_coverage_rejected(self):
+  from app.services.bank_resolution_contract import period
+  a=self.assessment();a['ledger_history_rows']=20000;period(a,a['terms'])
+  for value in [20001,True,-1,1.5]:
+   a['ledger_history_rows']=value
+   with self.assertRaises(ValueError):period(a,a['terms'])
+
+ def test_period_cannot_exceed_verified_history(self):
+  from app.services.bank_resolution_contract import period
+  a=self.assessment();a['ledger_history_rows']=0
+  with self.assertRaises(ValueError):period(a,a['terms'])
+
 if __name__=='__main__':unittest.main()

@@ -58,6 +58,17 @@ terminar el trabajo final y cuando lo indique. Conservar avances en la rama y
 archivos actuales; documentar diferencias frente a main sin obligar a aplicar
 parches parciales. Consultar INTEGRACIONES/plan-maestro/VERIFICACION_MAIN.md.
 
+## Umbral vigente para la siguiente entrega Git
+
+El usuario indicó que el siguiente commit consolidado ("Summit") se realizará
+cuando el avance verificable sea estrictamente superior al 70 %. No hacer
+commits parciales ni push antes de ese umbral. Conservar código y evidencias
+locales y no aumentar porcentajes para habilitar una entrega.
+
+El2026-11-11 el usuario autorizó expresamente una excepción para un único commit
+consolidado y la integración de los avances actuales en main, aunque el indicador
+siga en66,67%. Esta excepción no autoriza commits parciales posteriores.
+
 ## Identidad visual obligatoria
 
 Replicar la identidad de SGA-CD en Analemática, ERP, Turismo y billetera: azul

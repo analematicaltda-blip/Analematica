@@ -101,7 +101,7 @@
   "items": [
     {
       "task": "Validación monetaria exacta y aislamiento de cuentas",
-      "remaining": "9 pruebas ORM aisladas; no certifica posteo completo ni PostgreSQL",
+      "remaining": "Los9 casos ORM originales se complementan con posteo/replay/contrapartidas y escenarios PostgreSQL de laboratorio. La aceptación integral sigue sin acreditarse; no se infiere del número acumulado de pruebas.",
       "id": "ACC-001",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -125,7 +125,7 @@
     },
     {
       "task": "Periodos, concurrencia y contrapartidas",
-      "remaining": "Reversión neutra y diagnóstico de conciliación probados; faltan conciliación real de legados, aperturas/ajustes aprobados, snapshot e interfaz y fuentes FX/diferencias según alcance.",
+      "remaining": "Reversión neutra y diagnóstico de conciliación probados; faltan conciliación real de legados, aperturas/ajustes aprobados, snapshot e interfaz y fuentes FX/diferencias según alcance. Apertura ampliada2026-11-11: primer libro COP con2..250 cuentas preservadas, revisión paginada y un asiento atómico, probado en ambos paneles y PostgreSQL desechable. No acredita migración de libros existentes/descuadrados, lotes mayores, fuente auténtica ni aceptación profesional/productiva.",
       "id": "ACC-004",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -141,7 +141,7 @@
     },
     {
       "task": "Monedas, FX y valoración",
-      "remaining": "Corte principal bajo bloqueo de empresa y moneda histórica incompatible rechazados. No ofrece snapshot histórico de publicación ni valoración/revaluación y fuentes FX reales; conciliación y aperturas aprobadas pendientes.",
+      "remaining": "Valoración inicial revisada, revaluación incremental y liquidación parcial/total USD/EUR-COP contra caja ya registrada operan en ambos paneles; incluyen contrapartida, resto exacto y concurrencia. Pendientes legados/lotes no cubiertos, cargos/comisiones/división/transitorios y otros consumos, snapshots históricos, legitimidad de fuentes/tasas y clasificación profesional, migración/roles/carga y aceptación productiva.",
       "id": "ACC-006",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -165,7 +165,7 @@
     },
     {
       "task": "XML, representación y firma fiscal",
-      "remaining": "Borrador UBL COP y representación en memoria en ambos paneles, cuatro documentos sintéticos válidos contra XSD UBL2.1 CS1 de referencia. Faltan anexo DIAN vigente, campos completos, CRM/solicitud y política revisada, PDF-A3, cifrado/custodia, firma XAdES, acuses auténticos y habilitación profesional/productiva. Implementación63 añade firma XAdES local de laboratorio con salida cifrada; no acredita certificado/política DIAN, PKIX/revocación/TSA, custodia hardware ni habilitación fiscal real. Implementación66 inicia H09 con verificación XMLDSig de acuses explícitamente de laboratorio y diario local de reintentos; no habilita transmisión ni estados oficiales, numeración o aceptación DIAN.",
+      "remaining": "Borrador UBL COP y representación en memoria en ambos paneles, cuatro documentos sintéticos válidos contra XSD UBL2.1 CS1 de referencia. Faltan anexo DIAN vigente, campos completos, CRM/solicitud y política revisada, PDF-A3, cifrado/custodia, firma XAdES, acuses auténticos y habilitación profesional/productiva. Implementación63 añade firma XAdES local de laboratorio con salida cifrada; no acredita certificado/política DIAN, PKIX/revocación/TSA, custodia hardware ni habilitación fiscal real. Implementación66 inicia H09 con verificación XMLDSig de acuses explícitamente de laboratorio y diario local de reintentos; no habilita transmisión ni estados oficiales, numeración o aceptación DIAN. R04 2026-11-10 conecta fuente comercial revisada a borrador COP en ambos paneles y rechaza alteraciones/obsolescencia; no acredita identidad tributaria, perfil DIAN, representación fiscal, firma o aceptación externa.",
       "id": "ACC-009",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -173,7 +173,7 @@
     },
     {
       "task": "Envelope encryption cliente y recuperación",
-      "remaining": "SDK y paquete cliente recuperable/rotable con HMAC/contexto/versiones, ambos paneles y rechazo de manipulación verificados. Faltan custodia/recuperación hardware o cliente cualificados, referencias/publicación BYOS y última versión/ramas, medios/backup reales, representación y validación física/productiva; sin revocación de copias anteriores.",
+      "remaining": "SDK y paquete cliente recuperable/rotable con HMAC/contexto/versiones, ambos paneles y rechazo de manipulación verificados. Faltan custodia/recuperación hardware o cliente cualificados, referencias/publicación BYOS y última versión/ramas, medios/backup reales, representación y validación física/productiva; sin revocación de copias anteriores. Confirmaciones BYOS inciertas ahora se recuperan por versión/huella exactas y reintento idéntico, con API/SDK y ambos paneles, pruebas PostgreSQL y TLS de laboratorio. Pendientes titularidad/destino/TLS/grants reales, política de custodia/retención, recuperación física y aceptación productiva.",
       "id": "ACC-010",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -181,7 +181,7 @@
     },
     {
       "task": "Conectores BYOS y OAuth mínimos",
-      "remaining": "API independiente/cliente HTTPS y paquetes versionados PostgreSQL probados con rol mínimo, revocación, concurrencia y restore aislados. Pendientes propiedad/dominio/TLS/credenciales/perfiles y ambos paneles provisionados reales, operación/retención/RPO/RTO/commit incierto y escritores privilegiados; sin acreditar OAuth/alternativas no implementadas, propiedad legal, HMAC servidor ni custodia real.",
+      "remaining": "API independiente/cliente HTTPS y paquetes versionados PostgreSQL probados con rol mínimo, revocación, concurrencia y restore aislados. Pendientes propiedad/dominio/TLS/credenciales/perfiles y ambos paneles provisionados reales, operación/retención/RPO/RTO/commit incierto y escritores privilegiados; sin acreditar OAuth/alternativas no implementadas, propiedad legal, HMAC servidor ni custodia real. Confirmaciones BYOS inciertas ahora se recuperan por versión/huella exactas y reintento idéntico, con API/SDK y ambos paneles, pruebas PostgreSQL y TLS de laboratorio. Pendientes titularidad/destino/TLS/grants reales, política de custodia/retención, recuperación física y aceptación productiva.",
       "id": "ACC-011",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -197,7 +197,7 @@
     },
     {
       "task": "Reglas de nómina, costos y provisiones",
-      "remaining": "Suplementos por minutos/tasas/divisor y bases declarados operables con16 pruebas ORM nuevas y ambos paneles. Pendientes clasificación laboral oficial por horarios/festivos, enlace individual de minutos a jornadas, otras novedades/ausencias/viáticos, nómina electrónica, datos legítimos y cualificación productiva.",
+      "remaining": "Suplementos por minutos/tasas/divisor y bases declarados operables con16 pruebas ORM nuevas y ambos paneles. Pendientes clasificación laboral oficial por horarios/festivos, enlace individual de minutos a jornadas, otras novedades/ausencias/viáticos, nómina electrónica, datos legítimos y cualificación productiva. Corte2026-11-10: deducción fija declarada por trabajador enlazada al neto/pasivo y recuperación/costos en ambos paneles, sin acreditar consentimiento/eligibilidad/caps legales. Pendientes otras novedades, ausencias, incapacidades, viáticos, DIAN y aceptación profesional/productiva. Corte posterior: deducciones fijas desde NovedadNomina con consumo único y rollback verificadas en ambos paneles y PostgreSQL16 de laboratorio. Sustituye el pendiente de ese subtipo de novedad; otras novedades, ausencias/incapacidades/viáticos, corrección de fuentes consumidas, aceptación profesional y DIAN siguen pendientes. Devengados registrados2026-11-10: bonificaciones/comisiones declaradas enlazadas a planilla, detalle, aportes/bases, neto, asiento y costos en ambos paneles, con consumo único PostgreSQL16 de laboratorio. Sustituye el pendiente de ese subtipo; no acredita clasificación legal automática ni otras novedades, ausencias/incapacidades/viáticos, DIAN o aceptación productiva. Captura nativa2026-11-10: creación desde ambos paneles y recuperación por referencia hasta posteo/costos verificadas, sin novedades precargadas. Sustituye pendiente de captura de ese subtipo. Aún faltan corrección/retiro, custodia de originales automatizada, otras novedades, revisión laboral, DIAN y cualificación productiva. Corrección nativa2026-11-10: sustituido el pendiente de corrección de fecha/importe/soportes para fuentes nativas aún pendientes en planilla BORRADOR; ambos paneles, revisión invalidada, posteo/costos y concurrencia comprobados. Permanecen retiro, ajustes de fuentes consumidas/legado, otras novedades y aceptación externa.",
       "id": "ACC-013",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -205,7 +205,7 @@
     },
     {
       "task": "Impuestos y conciliación continua",
-      "remaining": "Implementación70 añade hecho comercial declarado/revisado: compras/ventas, IVA descontable/generado y retenciones con cuentas por componente, asiento canónico y contrapartida, dos confirmaciones y recuperación. Pendientes fuentes nativas/documentales, deduplicación entre rutas, conciliación fiscal unificada, devoluciones parciales, interfaz, SQL/concurrencia PostgreSQL y revisión normativa/profesional. Las reservas conservan sus restricciones de retención/múltiples impuestos. No hay aceptación oficial, pagos ni emisión fiscal. Implementación71 atribuye reservas/hechos comerciales y contrapartidas en un registro integrado de activos/pasivos visible en ambos paneles; valida sumas y evidencia en lote. No completa normativa, fuentes nativas ni aceptación profesional. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva. Recuperación2026-11-10: historial, correcciones previas a revisión/posteo y devoluciones proporcionales acumuladas con dos confirmaciones y asiento compensatorio local. Conserva fuentes originales; no emite nota fiscal ni ejecuta reembolso. Pendientes retorno por concepto, atribución tributaria de los nuevos ajustes en el registro unificado, normativa e interfaces completas.",
+      "remaining": "Implementación70 añade hecho comercial declarado/revisado: compras/ventas, IVA descontable/generado y retenciones con cuentas por componente, asiento canónico y contrapartida, dos confirmaciones y recuperación. Pendientes fuentes nativas/documentales, deduplicación entre rutas, conciliación fiscal unificada, devoluciones parciales, interfaz, SQL/concurrencia PostgreSQL y revisión normativa/profesional. Las reservas conservan sus restricciones de retención/múltiples impuestos. No hay aceptación oficial, pagos ni emisión fiscal. Implementación71 atribuye reservas/hechos comerciales y contrapartidas en un registro integrado de activos/pasivos visible en ambos paneles; valida sumas y evidencia en lote. No completa normativa, fuentes nativas ni aceptación profesional. Implementación72 conecta proveedores/facturas nativos con captura idempotente, fuente/huella reservadas, dos confirmaciones y contrapartida en ambos paneles. UI de un concepto; pendientes historia sin captura, cambios controlados, devoluciones parciales, fiscalidad completa y cualificación profesional/productiva. Recuperación2026-11-10: historial, correcciones previas a revisión/posteo y devoluciones proporcionales acumuladas con dos confirmaciones y asiento compensatorio local. Conserva fuentes originales; no emite nota fiscal ni ejecuta reembolso. Pendientes retorno por concepto, atribución tributaria de los nuevos ajustes en el registro unificado, normativa e interfaces completas. Registro interno de devoluciones proporcionales recuperadas corregido y probado: IVA/retenciones, cadena, recibo e idempotencia. Continúan notas fiscales, múltiples conceptos, contraste DIAN y revisión profesional. Compras múltiples 2026-11-10: interfaz/recuperación exacta de conceptos y mapas tributarios en ambos paneles, políticas mixtas y tributos adicionales con cotejo del registro integral y contrapartida completa verificados localmente. Pendientes devoluciones por concepto, notas fiscales, lotes extensos, fuentes/reglas profesionales y cualificación productiva; no acredita aceptación completa. Corte posterior: devoluciones por concepto nativas y correcciones con atribución tributaria verificadas localmente en ambos paneles; el pendiente anterior de ese incremento queda implementado. No sustituye nota fiscal ni revisión profesional, PostgreSQL/concurrencia o aceptación completa. PostgreSQL16: concurrencia del flujo de devoluciones por concepto y correcciones verificada con rol restringido de laboratorio. Permisos, migraciones, carga y aceptación productivos siguen pendientes; descarga de historial no sustituye documento fiscal.",
       "id": "ACC-014",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -213,7 +213,7 @@
     },
     {
       "task": "Legacy bridge y open banking",
-      "remaining": "Cotejo de saldos y cobertura de período declarado COP, filas únicas/seleccionadas, diferencias y reservas locales en ambos paneles. Pendientes fuente bancaria auténtica, períodos sin movimientos, snapshots/grandes volúmenes, importes divididos/agrupados, FX, consentimiento y cualificación productiva. Recuperación2026-11-10: agrupación muchos-a-muchos y asignación parcial explícita de libro con remanente, reservas exclusivas compartidas con v1/v2, estado y liberación con dos confirmaciones, ORM y HTTP corporativo. La línea parcial queda reservada completa hasta liberar/revisar; no hay consumo incremental entre lotes ni conciliación de período agrupado, FX, banco auténtico o aceptación productiva.",
+      "remaining": "Conciliación COP por filas/período, períodos vacíos, agrupación/asignación parcial acumulada, consolidación de lotes e historia hasta20k ejercitados en ambos paneles. Falta autenticidad/consentimiento del origen bancario, FX/instrumentos/otros formatos y tránsito, snapshots/carga/archivo/migración y aceptación profesional/productiva.",
       "id": "ACC-015",
       "completed_milestones": 2,
       "total_milestones": 3,

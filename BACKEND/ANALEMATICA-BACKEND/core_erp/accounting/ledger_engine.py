@@ -124,6 +124,12 @@ class LedgerEngine:
         lock_company(tenant_id);user=current_actor(actor)
         if not isinstance(idempotency_key,str) or not 1<=len(idempotency_key)<=255:
             raise AccountingError('A stable idempotency key is required for manual creation/posting.')
+        if idempotency_key.startswith('fx-settlement:'):
+            from .fx_settlement import authorize
+            authorize(tenant_id,user.pk,idempotency_key)
+        if idempotency_key.startswith('opening-chunks:'):
+            from .chunked_opening import authorize
+            authorize(tenant_id,user.pk,idempotency_key)
         normalized=validate_lines(lines_data)
         contract={'schema':'manual-journal-v2','tenant_id':str(tenant_id),'actor_id':user.pk,
                   'date':entry_date.isoformat(),'description':description,'period_id':str(period_id) if period_id else None,
@@ -144,13 +150,37 @@ class LedgerEngine:
 
     @staticmethod
     @transaction.atomic
-    def post_entry(entry_id,*,tenant_id=None,actor=None):
+    def post_entry(entry_id,*,tenant_id=None,actor=None,fx_review_id=None):
         tenant_id=scope(tenant_id);company=lock_company(tenant_id);user=current_actor(actor)
         identifier=getattr(entry_id,'pk',entry_id)
         hint=JournalEntry.plain_objects.get(pk=identifier,tenant_id=tenant_id)
         period=FiscalPeriod.plain_objects.select_for_update().get(pk=hint.period_id)
         entry=JournalEntry.plain_objects.select_for_update().get(pk=identifier,tenant_id=tenant_id)
+        from . import reviewed_fx
+        fx_reserved=bool(entry.financial_event_id and entry.financial_event_id.startswith('reviewed-fx-pending:'))
+        fx_review=reviewed_fx.latest(company,str(entry.pk)) if entry.currency!=entry.base_currency or fx_reserved else None
+        if not entry.is_posted and (fx_reserved or fx_review is not None) and fx_review_id is None:
+            raise AccountingError('Pending reviewed FX draft requires its explicit second confirmation.')
+        if fx_review_id is not None and (entry.currency==entry.base_currency or entry.is_reversal):
+            raise AccountingError('Reviewed FX is only for initial foreign-currency posting.')
+        if not entry.is_posted and entry.financial_event_id and entry.financial_event_id.startswith('fx-settlement:'):
+            from .fx_settlement import authorize
+            authorize(company.pk,user.pk,entry.financial_event_id)
+        if not entry.is_posted and entry.financial_event_id and entry.financial_event_id.startswith('opening-chunks:'):
+            from .chunked_opening import authorize
+            authorize(company.pk,user.pk,entry.financial_event_id)
         if entry.is_posted:
+            if entry.financial_event_id and entry.financial_event_id.startswith('opening-chunks:'):
+                from .chunked_opening import verify_posted_origin
+                verify_posted_origin(company,entry)
+            if entry.financial_event_id and entry.financial_event_id.startswith('fx-settlement:'):
+                from .fx_settlement import proof as verify_fx_settlement_origin
+                verify_fx_settlement_origin(company,entry)
+            if entry.financial_event_id and entry.financial_event_id.startswith('fx-revaluation:'):
+                from .fx_revaluation import proof as verify_fx_balance_origin
+                verify_fx_balance_origin(company,entry)
+            if entry.financial_event_id and entry.financial_event_id.startswith('reviewed-fx:'):
+                reviewed_fx.verify_posted_origin(company,user,entry)
             if entry.hash_version=='v2' and entry.system_hash!=LedgerEngine.calculate_hash(entry):
                 raise AccountingError('Posted journal failed integrity verification.')
             return entry
@@ -174,6 +204,8 @@ class LedgerEngine:
         if entry.currency!=entry.base_currency and entry.is_reversal:
             rate,historical_values=historical_reversal_valuation(entry,lines)
             if entry.exchange_rate!=rate:raise AccountingError('Reversal must retain the recorded original rate.')
+        elif entry.currency!=entry.base_currency and fx_review_id is not None:
+            rate=reviewed_fx.rate_for_post(company,user,entry,fx_review_id)
         elif entry.currency!=entry.base_currency:
             moment=timezone.make_aware(datetime.combine(entry.date,time.max))
             try:rate=FXEngine.get_rate(entry.currency,entry.base_currency,as_of=min(timezone.now(),moment))
@@ -216,6 +248,20 @@ class LedgerEngine:
     def reverse_entry(journal_entry_id,reason='Reviewed reversal',*,tenant_id=None,actor=None):
         tenant_id=scope(tenant_id);company=lock_company(tenant_id);user=current_actor(actor)
         original=JournalEntry.plain_objects.select_for_update().get(pk=journal_entry_id,tenant_id=tenant_id)
+        if original.financial_event_id and original.financial_event_id.startswith('fx-revaluation:'):
+            from .fx_revaluation import proof as verify_fx_balance_origin
+            verify_fx_balance_origin(company,original)
+        if original.financial_event_id and original.financial_event_id.startswith('reviewed-fx:'):
+            from .reviewed_fx import verify_posted_origin
+            verify_posted_origin(company,user,original)
+        if original.financial_event_id and original.financial_event_id.startswith('fx-settlement:'):
+            from .fx_settlement import proof as verify_fx_settlement_origin
+            verify_fx_settlement_origin(company,original)
+        from .fx_settlement import protect_cash_reversal
+        protect_cash_reversal(company,original)
+        if original.financial_event_id and original.financial_event_id.startswith('opening-chunks:'):
+            from .chunked_opening import verify_posted_origin
+            verify_posted_origin(company,original)
         if not original.is_posted:raise AccountingError('Only posted journals can be reversed.')
         if original.is_reversal or JournalEntry.plain_objects.filter(tenant_id=tenant_id,reversed_entry_id=original.pk).exists():
             raise DuplicateReversalError('Journal already reversed or itself a reversal.')

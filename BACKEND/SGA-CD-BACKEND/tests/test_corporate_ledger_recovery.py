@@ -14,6 +14,9 @@ class CorporateRecoveryChecks(native.CorporateNativePurchaseChecks):
   r=self.command('review_purchase_return',{'invoice_id':invoice,'request_id':str(uuid.uuid4()),'return_bps':4000,'economic_date':self.day,'reason_code':'PARTIAL_RETURN','evidence_digest':'e'*64,'confirmed':True});self.assertEqual(r.status_code,200,r.text)
   args={'invoice_id':invoice,'review_id':r.json()['data']['review_id'],'confirmed':True};r=self.command('confirm_purchase_return',args);self.assertEqual(r.status_code,200,r.text);journal=r.json()['data']['journal_id']
   r=self.command('confirm_purchase_return',args);self.assertEqual(r.status_code,200,r.text);self.assertEqual(r.json()['data']['journal_id'],journal);self.assertTrue(r.json()['data']['replayed'])
+  for component,kind,total in [('INPUT','INPUT_TAX','11.40'),('RET','WITHHOLDING','1.50')]:
+   report=self.client.get('/api/v1/workspace/corporate/accounting/report',params={'report':'tax_register','account_id':fact['items'][0]['tax_accounts'][component],'since':self.day,'until':self.day});self.assertEqual(report.status_code,200,report.text);data=report.json()['data'];self.assertEqual(data['tax_by_kind'][kind],total);self.assertEqual(data['unattributed_normal_movement'],'0.00');self.assertFalse(data['dian_compared']);self.assertFalse(data['fiscal_accepted'])
+
  def test_esg_draft_real_http_preserves_source_and_correction(self):
   factor={'id':'fixture-http-factor','version':'declared-v1','unit':'vehicle_km','kg_co2e_per_unit':'0.2','valid_from':self.day[:4]+'-01-01','valid_until':self.day[:4]+'-12-31','source_digest':'a'*64,'geography':'CO','boundary':'direct_combustion'}
   activity={'id':'http-observation','date':self.day,'quantity':'100','unit':'vehicle_km','factor_id':factor['id'],'passengers':None}

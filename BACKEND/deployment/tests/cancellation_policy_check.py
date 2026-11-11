@@ -26,6 +26,14 @@ class CancellationPolicyChecks(unittest.TestCase):
  def review(self,**kw):
   args={'reservation_id':str(self.booking.pk),'request_id':str(uuid.uuid4()),'requested_refund':'100.00','reason_code':'STANDARD_CANCELLATION','evidence_digest':'b'*64,'expected_revision':0,'confirmed':True};args.update(kw);return service.review_case(**self.scope,**args)
  def confirm(self,r,**kw):return service.confirm_case(**self.scope,reservation_id=str(self.booking.pk),review_id=r['review_id'],confirmed=kw.get('confirmed',True))
+ def test_acceptance_validity_uses_colombia_day_across_utc_midnight(self):
+  from datetime import datetime,timezone as dt_timezone
+  from unittest.mock import patch
+  instant=datetime(2027,1,12,0,30,tzinfo=dt_timezone.utc)
+  with timezone.override('America/Bogota'),patch.object(timezone,'now',return_value=instant),patch.object(service,'context',return_value=(self.user,self.provider,self.company)):
+   self.config.update(valid_from='2027-01-11',valid_until='2027-01-11')
+   published=self.publish();accepted=self.bind(published)
+   self.assertIsNotNone(accepted)
  def test_ten_percent_retention_and_net_refund_proposal(self):
   p=self.publish();self.bind(p);r=self.review();self.assertEqual(r['preview']['calculation']['fee_amount'],'10.00');self.assertEqual(r['preview']['calculation']['refund_net'],'90.00');a=self.confirm(r);self.assertTrue(a['proposal_only']);self.assertFalse(a['tax_withholding']);self.assertFalse(a['money_transferred']);self.booking.refresh_from_db();self.assertEqual(self.booking.status,'CONFIRMED')
  def test_percentage_changes_do_not_change_existing_acceptance(self):

@@ -67,6 +67,113 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         self.get_object()
         raise ValidationError('Conserva el catálogo histórico; desactiva la cuenta en lugar de eliminarla.')
 
+    def _opening_chunks(self,request,operation,required,optional):
+        from apps.core_erp.accounting import chunked_opening
+        from apps.core_erp.accounting.exceptions import AccountingError
+        company=self.company()
+        if not isinstance(request.data,dict) or not required<=set(request.data) or set(request.data)-required-optional:raise ValidationError('Contrato de apertura ampliada inválido.')
+        with transaction.atomic():
+            lock_company(company.pk)
+            if self.company().pk!=company.pk:raise PermissionDenied('La identidad empresarial cambió.')
+            try:result=getattr(chunked_opening,operation)(company.pk,actor=request.user,**request.data)
+            except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa todas las cuentas de origen, integridad de páginas, saldos, período, revisión vigente y confirmaciones. No se modifica el legado.') from None
+        return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='fuentes-apertura-ampliada',parser_classes=[AccountingQueryJSONParser])
+    def opening_chunks_sources(self,request):return self._opening_chunks(request,'sources',set(),{'after_id'})
+
+    @action(detail=False,methods=['post'],url_path='revisar-apertura-ampliada',parser_classes=[AccountingQueryJSONParser])
+    def review_opening_chunks(self,request):return self._opening_chunks(request,'review',{'confirmed', 'entry_date', 'evidence_digest', 'expected_revision', 'source_root_digest'},set())
+
+    @action(detail=False,methods=['post'],url_path='aplicar-apertura-ampliada',parser_classes=[AccountingQueryJSONParser])
+    def apply_opening_chunks(self,request):return self._opening_chunks(request,'apply',{'review_id', 'confirmed'},set())
+
+    @action(detail=False,methods=['post'],url_path='estado-apertura-ampliada',parser_classes=[AccountingQueryJSONParser])
+    def opening_chunks_state(self,request):return self._opening_chunks(request,'state',set(),set())
+
+    def _fx_settlement(self,request,operation,fields):
+        from apps.core_erp.accounting import fx_settlement
+        from apps.core_erp.accounting.exceptions import AccountingError
+        company=self.company()
+        if not isinstance(request.data,dict) or set(request.data)!=fields:raise ValidationError('Contrato de liquidación FX inválido.')
+        with transaction.atomic():
+            lock_company(company.pk)
+            if self.company().pk!=company.pk:raise PermissionDenied('La identidad empresarial cambió.')
+            try:result=getattr(fx_settlement,operation)(company.pk,actor=request.user,**request.data)
+            except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa saldo en divisa, abono/cargo COP registrado, cuenta puente, tasa, soporte, período y confirmaciones.') from None
+        return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='catalogo-liquidacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def fx_settlement_catalog(self,request):return self._fx_settlement(request,'catalog',set())
+
+    @action(detail=False,methods=['post'],url_path='revisar-liquidacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def review_fx_settlement(self,request):return self._fx_settlement(request,'review',{'monetary_classification', 'currency', 'account_id', 'request_id', 'clearing_account_id', 'loss_account_id', 'confirmed', 'evidence_digest', 'as_of', 'quantity', 'terms', 'cash_line_id', 'gain_account_id'})
+
+    @action(detail=False,methods=['post'],url_path='contabilizar-liquidacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def post_fx_settlement(self,request):return self._fx_settlement(request,'confirm',{'review_id', 'confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='estado-liquidacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def fx_settlement_state(self,request):return self._fx_settlement(request,'state',{'review_id'})
+
+    @action(detail=False,methods=['post'],url_path='consultar-solicitud-liquidacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def fx_settlement_request_state(self,request):return self._fx_settlement(request,'request_state',{'request_id'})
+
+    def _fx_revaluation(self,request,operation,fields):
+        from apps.core_erp.accounting import fx_revaluation
+        from apps.core_erp.accounting.exceptions import AccountingError
+        company=self.company()
+        if not isinstance(request.data,dict) or set(request.data)!=fields:raise ValidationError('Contrato de revaluación FX inválido.')
+        with transaction.atomic():
+            lock_company(company.pk)
+            if self.company().pk!=company.pk:raise PermissionDenied('La identidad empresarial cambió.')
+            try:result=getattr(fx_revaluation,operation)(company.pk,actor=request.user,**request.data)
+            except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa origen monetario, cuentas, tasa, período y autorizaciones. No se infieren saldos legados.') from None
+        return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='catalogo-revaluacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def fx_revaluation_catalog(self,request):
+        return self._fx_revaluation(request,'catalog',set())
+
+    @action(detail=False,methods=['post'],url_path='revisar-revaluacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def review_fx_revaluation(self,request):
+        return self._fx_revaluation(request,'review',{'request_id','account_id','currency','as_of','terms','gain_account_id','loss_account_id','monetary_classification','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='contabilizar-revaluacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def post_fx_revaluation(self,request):
+        return self._fx_revaluation(request,'confirm',{'review_id','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='estado-revaluacion-divisas',parser_classes=[AccountingQueryJSONParser])
+    def fx_revaluation_state(self,request):
+        return self._fx_revaluation(request,'state',{'review_id'})
+
+    def _reviewed_fx(self,request,operation,fields):
+        from apps.core_erp.accounting import reviewed_fx
+        from apps.core_erp.accounting.exceptions import AccountingError
+        company=self.company()
+        if not isinstance(request.data,dict) or set(request.data)!=fields:raise ValidationError('Contrato de valoración FX inválido.')
+        with transaction.atomic():
+            lock_company(company.pk)
+            if self.company().pk!=company.pk:raise PermissionDenied('La identidad empresarial cambió.')
+            try:result=getattr(reviewed_fx,operation)(company.pk,actor=request.user,**request.data)
+            except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa borrador, soporte, tasa, vigencia y autorizaciones FX.') from None
+        return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='borradores-asiento-divisas',parser_classes=[AccountingQueryJSONParser])
+    def foreign_journal_sources(self,request):
+        return self._reviewed_fx(request,'sources',{'after_id'})
+
+    @action(detail=False,methods=['post'],url_path='revisar-asiento-divisas',parser_classes=[AccountingQueryJSONParser])
+    def review_foreign_journal(self,request):
+        return self._reviewed_fx(request,'review',{'entry_id','terms','expected_revision','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='contabilizar-asiento-divisas',parser_classes=[AccountingQueryJSONParser])
+    def post_foreign_journal(self,request):
+        return self._reviewed_fx(request,'confirm',{'entry_id','review_id','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='estado-asiento-divisas',parser_classes=[AccountingQueryJSONParser])
+    def foreign_journal_state(self,request):
+        return self._reviewed_fx(request,'state',{'entry_id'})
+
     @action(detail=False,methods=['get'],url_path='identidad-contable')
     def accounting_identity(self,request):
         company=self.company()
@@ -296,6 +403,18 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except (AccountingError,ValueError,TypeError):raise ValidationError('Revisa fuente laboral, días, vigencia, cuentas, período y revisión persistida. No se presume validación normativa.') from None
         return Response(result)
 
+    @action(detail=False,methods=['post'],url_path='registrar-novedad-nativa',parser_classes=[AccountingQueryJSONParser])
+    def record_native_payroll_novelty(self,request):
+        return self._payroll_command(request,'record_native_payroll_novelty',{'payroll_id','request_id','employee_id','concept_id','event_date','amount','source_reference','evidence_digest','authorization_digest','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='corregir-novedad-nativa',parser_classes=[AccountingQueryJSONParser])
+    def correct_native_payroll_novelty(self,request):
+        return self._payroll_command(request,'correct_native_payroll_novelty',{'payroll_id','novelty_id','request_id','expected_revision','event_date','amount','reason_code','evidence_digest','authorization_digest','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='consultar-novedad-nativa',parser_classes=[AccountingQueryJSONParser])
+    def lookup_native_payroll_novelty(self,request):
+        return self._payroll_command(request,'lookup_native_payroll_novelty',{'payroll_id','source_reference'})
+
     @action(detail=False,methods=['post'],url_path='revisar-nomina',parser_classes=[AccountingQueryJSONParser])
     def review_payroll(self,request):
         return self._payroll_command(request,'review_payroll',{'payroll_id','policy','workers','account_mapping','evidence_digest','expected_revision','confirmed'})
@@ -321,6 +440,26 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         try:result=purchase_catalog(self.company(),paged=request.query_params.get('paged'),after=request.query_params.get('despues_id'),search=request.query_params.get('buscar'))
         except (AccountingError,ValueError,TypeError):raise ValidationError('Catálogo de cuentas de compra no disponible.') from None
         return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='revisar-devolucion-conceptos',parser_classes=[AccountingQueryJSONParser])
+    def review_purchase_item_return(self,request):
+        return self._native_purchase_command(request,'review_item_return',{'invoice_id','return_id','selection','entry_date','document_digest','evidence_digest','expected_revision','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='contabilizar-devolucion-conceptos',parser_classes=[AccountingQueryJSONParser])
+    def post_purchase_item_return(self,request):
+        return self._native_purchase_command(request,'post_item_return',{'invoice_id','review_id','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='estado-devolucion-conceptos',parser_classes=[AccountingQueryJSONParser])
+    def purchase_item_return_state(self,request):
+        return self._native_purchase_command(request,'item_return_state',{'invoice_id'})
+
+    @action(detail=False,methods=['post'],url_path='revisar-correccion-devolucion-conceptos',parser_classes=[AccountingQueryJSONParser])
+    def review_purchase_item_return_void(self,request):
+        return self._native_purchase_command(request,'review_item_return_void',{'invoice_id','return_id','request_id','entry_date','reason_code','evidence_digest','expected_revision','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='corregir-devolucion-conceptos',parser_classes=[AccountingQueryJSONParser])
+    def void_purchase_item_return(self,request):
+        return self._native_purchase_command(request,'post_item_return_void',{'invoice_id','review_id','confirmed'})
 
     @action(detail=False,methods=['post'],url_path='revisar-devolucion-compra',parser_classes=[AccountingQueryJSONParser])
     def review_purchase_return(self,request):
@@ -522,13 +661,56 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
     def apply_opening(self,request):
         return self._opening_command(request,'apply_opening',{'review_id','confirmed'})
 
+    def _empty_bank_period_command(self,request,operation,fields):
+        from apps.core_erp.accounting import bank_empty_period
+        from apps.core_erp.accounting.exceptions import AccountingError
+        if set(request.query_params)!={'provider_id'} or len(request.query_params.getlist('provider_id'))!=1 or not isinstance(request.data,dict) or set(request.data)!=fields:raise ValidationError('Contrato de período sin movimientos inválido.')
+        with transaction.atomic():
+            company=self.company();lock_company(company.pk)
+            if self.company().pk!=company.pk:raise PermissionDenied('La empresa cambió.')
+            try:result=getattr(bank_empty_period,operation)(company.pk,actor=request.user,**request.data)
+            except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa fechas, saldos, ausencia de movimientos, soporte y dos confirmaciones separadas.') from None
+            return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='revisar-periodo-bancario-vacio',parser_classes=[AccountingQueryJSONParser])
+    def review_empty_bank_period(self,request):return self._empty_bank_period_command(request,'review',{'request_id','account_id','period','no_bank_movements','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='confirmar-periodo-bancario-vacio',parser_classes=[AccountingQueryJSONParser])
+    def confirm_empty_bank_period(self,request):return self._empty_bank_period_command(request,'confirm',{'review_id','confirmed'})
+
+    @action(detail=False,methods=['post'],url_path='estado-periodo-bancario-vacio',parser_classes=[AccountingQueryJSONParser])
+    def empty_bank_period_state(self,request):return self._empty_bank_period_command(request,'state',{'review_id'})
+
+    def _bank_rollup_command(self,request,operation,fields):
+        from apps.core_erp.accounting import bank_period_rollup
+        from apps.core_erp.accounting.exceptions import AccountingError
+        with transaction.atomic():
+            company=self.company();lock_company(company.pk)
+            if self.company().pk!=company.pk:raise PermissionDenied('La empresa cambió.')
+            if not isinstance(request.data,dict) or set(request.data)!=fields:raise ValidationError('Contrato de consolidación bancaria inválido.')
+            try:result=getattr(bank_period_rollup,operation)(company.pk,actor=request.user,**request.data)
+            except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa cuenta, lotes activos, cobertura completa, saldos, período y confirmaciones.') from None
+            return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='fuentes-consolidacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def bank_rollup_sources(self,request):return self._bank_rollup_command(request,'sources',{'account_id'})
+
+    @action(detail=False,methods=['post'],url_path='revisar-consolidacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def review_bank_rollup(self,request):return self._bank_rollup_command(request,'review',{'period', 'account_id', 'confirmed', 'expected_revision', 'reconciliation_ids'})
+
+    @action(detail=False,methods=['post'],url_path='confirmar-consolidacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def confirm_bank_rollup(self,request):return self._bank_rollup_command(request,'confirm',{'confirmed', 'review_id'})
+
+    @action(detail=False,methods=['post'],url_path='estado-consolidacion-bancaria',parser_classes=[AccountingQueryJSONParser])
+    def bank_rollup_state(self,request):return self._bank_rollup_command(request,'state',{'account_id', 'since', 'until'})
+
     def _bank_group_command(self,request,operation,fields):
         from apps.core_erp.accounting import bank_grouped
         from apps.core_erp.accounting.exceptions import AccountingError
         with transaction.atomic():
             company=self.company();lock_company(company.pk)
             if self.company().pk!=company.pk:raise PermissionDenied('La empresa cambió.')
-            optional={'ledger_since'} if operation in {'sources','review'} else set()
+            optional=({'ledger_since','period'} if operation=='review' else {'ledger_since'} if operation=='sources' else set())
             if not isinstance(request.data,dict) or not fields<=set(request.data) or set(request.data)-fields-optional:raise ValidationError('Contrato de agrupación bancaria inválido.')
             try:result=getattr(bank_grouped,operation)(company.pk,actor=request.user,**request.data)
             except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa grupos, importes, fecha, cuenta, reservas activas y autorizaciones.') from None
@@ -654,6 +836,21 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
     @action(detail=False,methods=['post'],url_path='contrapartida-reserva',parser_classes=[AccountingQueryJSONParser])
     def reverse_reservation_recognition(self,request):
         return self._recognition_command(request,'reverse_recognition',{'reservation_id','review_id','confirmed'})
+
+    @action(detail=False,methods=['get'],url_path='fuente-borrador-ubl')
+    def reviewed_ubl_source(self,request):
+        from apps.domain_business.comercial.services.reservation_fiscal import reviewed_ubl_source
+        from apps.core_erp.accounting.exceptions import AccountingError
+        self.company()
+        fields={'provider_id','reservation_id','review_id'}
+        if set(request.query_params)!=fields or any(len(request.query_params.getlist(k))!=1 for k in fields):
+            raise ValidationError('Consulta de fuente UBL inválida.')
+        try:
+            result=reviewed_ubl_source(actor=request.user,provider_id=owned_provider(request).pk,
+                reservation_id=request.query_params['reservation_id'],review_id=request.query_params['review_id'])
+        except (ValueError,TypeError,AccountingError):
+            raise ValidationError('Fuente UBL no válida o desactualizada.') from None
+        return Response(result)
 
     @action(detail=False,methods=['get'],url_path='fuentes-reserva-fiscal')
     def reservation_fiscal_sources(self,request):

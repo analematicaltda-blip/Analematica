@@ -8,6 +8,29 @@ from uuid import UUID
 from .fiscal_envelope import inspect_envelope,decode,MAX_WIRE_BYTES
 from .customer_postgres_store import CustomerPostgresStore,StorageConflict,initialize_customer_store
 
+class StorageOutcomeUnknown(Exception):
+    """Commit was attempted but its acknowledgement was lost; query exact version."""
+
+
+def discard(connection):
+    try:connection.close()
+    except Exception:pass
+
+
+def reset_connection(connection):
+    try:connection.set_autocommit(True)
+    except Exception:discard(connection)
+
+
+def package_receipt(store,document_id,revision,package_digest):
+    document=str(UUID(str(document_id)))
+    if type(revision) is not int or not 1<=revision<=1000000 or not isinstance(package_digest,str) or not re.fullmatch('[0-9a-f]{64}',package_digest):raise ValueError('Exact expected version and SHA256 required.')
+    value=store.get(document,revision)
+    report,_=inspect_package(value,store.company_id)
+    if report['document_id']!=document or report['revision']!=revision or report['package_digest']!=package_digest:raise StorageConflict('A different opaque package occupies the requested version.')
+    return {**report,'schema':'sgacd-customer-package-receipt-v1','stored':True,'verified_by':'EXACT_VERSION_READ','destination':'explicit_customer_postgresql','authenticated_ciphertext_verified':False,'ownership_independently_verified':False,'fiscal_accepted':False,'ledger_written':False}
+
+
 def inspect_package(value,company_id):
     keys={'schema','revision','previous_digest','key_descriptor','envelope','auth_tag','package_digest'}
     if not isinstance(value,dict) or set(value)!=keys or value['schema']!='sgacd-fiscal-package-v1':raise ValueError('Invalid customer package.')
@@ -74,10 +97,21 @@ class CustomerPackageStore:
                     cursor.execute('INSERT INTO public.customer_fiscal_packages(company_id,document_id,revision,package_digest,previous_digest,package_bytes) VALUES (%s,%s,%s,%s,%s,%s)',[self.company_id,report['document_id'],report['revision'],report['package_digest'],report['previous_digest'],encoded]);replayed=False
                     cursor.execute('SELECT package_digest,package_bytes FROM public.customer_fiscal_packages WHERE company_id=%s AND document_id=%s AND revision=%s',[self.company_id,report['document_id'],report['revision']]);written=cursor.fetchone()
                     if not written or written[0]!=report['package_digest'] or bytes(written[1])!=encoded:raise ValueError('Customer write did not preserve opaque package bytes.')
-            connection.commit()
         except BaseException:
-            connection.rollback();raise
-        finally:connection.set_autocommit(True)
+            try:connection.rollback()
+            except Exception:discard(connection)
+            else:reset_connection(connection)
+            raise
+        try:
+            connection.commit()
+        except Exception:
+            # Neither rollback nor a new version can establish whether COMMIT ran.
+            discard(connection)
+            raise StorageOutcomeUnknown('Read the exact document version before retrying the identical package.') from None
+        except BaseException:
+            discard(connection)
+            raise
+        reset_connection(connection)
         return {**report,'stored':True,'replayed':replayed,'destination':'explicit_customer_postgresql','authenticated_ciphertext_verified':False,'ownership_independently_verified':False,'fiscal_accepted':False,'ledger_written':False}
     def get(self,document_id,revision=None):
         self.check();document=str(UUID(str(document_id)))

@@ -131,7 +131,7 @@ def bind_policy(*,actor,provider_id,reservation_id,policy_id,policy_revision,acc
     user,provider,company=context(actor,provider_id);r=reservation(company,reservation_id);row=policy(provider,policy_id);head=current(company,provider,row);digest(consent_digest)
     if confirmed is not True or consent_kind not in {'NEW_CONTRACT','ACCEPTED_AMENDMENT'} or type(policy_revision) is not int or r.status not in {'PENDING','CONFIRMED'}:raise AccountingError('Explicit customer acceptance declaration and open reservation required.')
     published,b=version(company,provider,policy_id,policy_revision);accepted=datetime.fromisoformat(accepted_at)
-    if accepted.tzinfo is None or accepted.utcoffset().total_seconds()!=0 or accepted>timezone.now() or accepted<published.created_at or not b['config']['valid_from']<=accepted.date().isoformat()<=b['config']['valid_until']:raise AccountingError('Acceptance must follow publication and match offer validity.')
+    if accepted.tzinfo is None or accepted.utcoffset().total_seconds()!=0 or accepted>timezone.now() or accepted<published.created_at or not b['config']['valid_from']<=timezone.localdate(accepted).isoformat()<=b['config']['valid_until']:raise AccountingError('Acceptance must follow publication and match offer validity.')
     content={'reservation_id':reservation_id,'policy_id':policy_id,'policy_revision':policy_revision,'policy_digest':fingerprint(b),'reservation_snapshot_digest':fingerprint(snapshot(r)),'accepted_at':accepted_at,'consent_kind':consent_kind,'consent_digest':consent_digest,'declared_by':str(user.pk)}
     old=OutboxEvent.objects.filter(pk=key(BOUND,company,reservation_id)).first()
     if old:

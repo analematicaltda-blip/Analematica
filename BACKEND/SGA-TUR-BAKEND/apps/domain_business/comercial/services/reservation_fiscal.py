@@ -117,3 +117,20 @@ def list_reservation_sources(*,actor,provider_id,after=None):
             'review_id':str(row.review_id) if row.review_id else None,'revision':int(row.review_revision or 0),
             'request_created':row.request_created,'recognition_revision':int(row.recognition_revision or 0),'recognition_journal_id':row.recognition_journal_id,'recognition_reversed':row.recognition_reversed} for row in rows[:20]],
         'next_after':str(rows[19].pk) if len(rows)>20 else None}
+
+
+@transaction.atomic
+def reviewed_ubl_source(*,actor,provider_id,reservation_id,review_id):
+    """Read a current owner-reviewed snapshot; never create a fiscal artifact."""
+    user,company,source,fingerprint=locked_source(actor,provider_id,reservation_id)
+    row=latest_review(company,source)
+    if row is None or str(row.pk)!=str(UUID(str(review_id))):
+        raise ValidationError('Debe usarse la última revisión de esta reserva.')
+    payload,intent=validated_review(row,company,source,fingerprint)
+    if payload.get('reviewed_by')!=str(user.pk):
+        raise ValidationError('La revisión pertenece a otro titular.')
+    return {'schema':'sgacd-reviewed-ubl-source-v1','company_id':str(company.pk),
+        'review_id':str(row.pk),'source_fingerprint':fingerprint,
+        'intent_digest':intent['payload_digest'],'snapshot':intent['payload'],
+        'read_only':True,'ledger_written':False,'fiscal_accepted':False,
+        'legal_tax_policy_verified':False,'identity_independently_verified':False}

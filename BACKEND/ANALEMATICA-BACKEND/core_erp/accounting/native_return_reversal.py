@@ -7,17 +7,22 @@ from .exceptions import AccountingError
 from .models import JournalEntry,AccountingEventReceipt
 from apps.core_erp.outbox_models import OutboxEvent
 _SCOPE=ContextVar('reviewed_native_return_reversal',default=None)
-KINDS=('accounting.native-return.posted.v1','accounting.native-return.voided.v1')
+KINDS=('accounting.native-return.posted.v1','accounting.native-return.voided.v1','accounting.native-item-return.posted.v1','accounting.native-item-return.voided.v1')
 
 def has_history(company,original_id):
     prefix='purchase-return:'+str(original_id)+':'
     return (JournalEntry.plain_objects.filter(tenant=company,is_posted=True,financial_event_id__startswith=prefix).exists()
+        or JournalEntry.plain_objects.filter(tenant=company,is_posted=True,financial_event_id__startswith='purchase-item-return:'+str(original_id)+':').exists()
+        or AccountingEventReceipt.objects.filter(tenant=company,event_id__startswith='purchase-item-return:'+str(original_id)+':').exists()
         or AccountingEventReceipt.objects.filter(tenant=company,event_id__startswith=prefix).exists()
         or OutboxEvent.objects.filter(event_type__in=KINDS,payload__body__company_id=str(company.pk),payload__body__original_journal_id=str(original_id)).exists())
 
 def snapshot(company,body,state):
     if not has_history(company,state['journal_id']):return None
-    from apps.prestadores.mi_negocio.gestion_contable.compras import purchase_returns as returns
+    if len(body['fact']['items'])>1:
+        from apps.prestadores.mi_negocio.gestion_contable.compras import purchase_item_returns as returns
+    else:
+        from apps.prestadores.mi_negocio.gestion_contable.compras import purchase_returns as returns
     original,verified=returns.original(company,body['document_id'])
     identity=original['source_binding']['identity']
     entries,used,head=returns.history(company,identity['invoice_id'],original,verified)
@@ -34,8 +39,9 @@ def _permit(company,original_id,actor_id,verified_snapshot):
     finally:_SCOPE.reset(token)
 
 def require(company,original,actor_id):
-    if (original.financial_event_id and original.financial_event_id.startswith('purchase-return:')
+    if (original.financial_event_id and original.financial_event_id.startswith(('purchase-return:','purchase-item-return:'))
             or AccountingEventReceipt.objects.filter(tenant=company,journal_id=original.pk,event_id__startswith='purchase-return:').exists()
+            or AccountingEventReceipt.objects.filter(tenant=company,journal_id=original.pk,event_id__startswith='purchase-item-return:').exists()
             or OutboxEvent.objects.filter(event_type__in=KINDS,payload__body__company_id=str(company.pk),payload__body__journal_id=str(original.pk)).exists()):raise AccountingError('Return/correction journals require their dedicated reviewed flow.')
     if not has_history(company,original.pk):return
     permit=_SCOPE.get()

@@ -49,8 +49,14 @@ def load(company,groups):
         commercial.validate_posted_snapshot(company,review,body,proof,journal,receipts.get(commercial.event_key(company.pk,body['document_id'])),claim,lines.get(journal.pk,[]) if journal else [])
         commercial_bodies[identifier]=body
     for head in heads.values():
+        if head.financial_event_id and head.financial_event_id.startswith('purchase-item-return:'):
+            from apps.prestadores.mi_negocio.gestion_contable.compras.purchase_item_returns import register_body
+            commercial_bodies[str(head.pk)]=register_body(company,head)
         if head.financial_event_id and head.financial_event_id.startswith('purchase-return:'):
-            from apps.prestadores.mi_negocio.gestion_contable.compras.purchase_returns import register_body
+            if len(head.financial_event_id.split(':'))==2:
+                from apps.prestadores.mi_negocio.gestion_contable.compras.purchase_recovery import register_body
+            else:
+                from apps.prestadores.mi_negocio.gestion_contable.compras.purchase_returns import register_body
             commercial_bodies[str(head.pk)]=register_body(company,head)
     reservations={}
     for proof in reservation_proofs:

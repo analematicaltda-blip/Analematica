@@ -4,6 +4,7 @@ Metadata only; no payment, invoice settlement, FX, inferred dates or ledger writ
 from uuid import UUID,uuid5
 from datetime import date
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 from . import bank_reconciliation as legacy
 from .bank_statement import compare_statement,cash_account
 from .models import LedgerEntry,JournalEntry
@@ -125,17 +126,29 @@ def conflicts(company,body):
     for row in balances(company,body['ledger_lines']):
         if _money(body['allocation_totals'][row['ledger_line_id']])>_money(row['available_amount']):raise AccountingError('Capacity changed after review; the original line cannot be overallocated.')
 
+def period_assessment(company,body,terms):
+    from .bank_period import assess
+    assessment=assess(company,body['account_id'],terms,body['bank_rows'],[],matched_line_ids=[line['ledger_line_id'] for line in body['ledger_lines']])
+    # Selecting a line does not mean allocating its whole original amount.
+    complete=all(_money(body['allocation_totals'][line['ledger_line_id']])==_money(line['amount']) for line in body['ledger_lines']) if 'allocation_totals' in body else True
+    return {**assessment,'group_allocations_complete':complete,'eligible_for_period_reconciliation':assessment['eligible_for_period_reconciliation'] and complete}
+
 def result(company,proof,replayed):
     body=origin(company,proof);freed=released(company,proof);valid=False
     if not freed:
         try:validate_lines(company,body,False);valid=True
-        except AccountingError:pass
+        except (AccountingError,ObjectDoesNotExist):pass
     from .bank_capacity import balances
     current=balances(company,body['ledger_lines']) if valid else None
-    return {'line_balances':current,'allocation_totals':body.get('allocation_totals'),'schema':'sgacd-bank-group-result-v1','company_id':str(company.pk),'account_id':body['account_id'],'source_digest':body['source_digest'],'statement_id':body['statement_id'],'reconciliation_id':str(proof.pk),'review_id':proof.payload['review_id'],'group_count':len(body['groups']),'bank_row_count':len(body['bank_rows']),'ledger_line_count':len(body['ledger_lines']),'groups_confirmed':valid,'requires_review':not freed and not valid,'released':freed,'replayed':replayed,'period_reconciled':False,'ledger_written':False,'money_transferred':False,'bank_verified':False,'confirmations_restored':False}
+    assessment=body.get('period_assessment');period_current=None
+    if assessment is not None:
+        try:period_current=period_assessment(company,body,assessment['terms'])==assessment
+        except (AccountingError,ObjectDoesNotExist,ValueError,TypeError):period_current=False
+    qualified=bool(valid and period_current and assessment['eligible_for_period_reconciliation'])
+    return {'period_requires_review':bool(assessment and not freed and period_current is False),'period_assessment':assessment,'period_source_current':period_current,'line_balances':current,'allocation_totals':body.get('allocation_totals'),'schema':'sgacd-bank-group-result-v1','company_id':str(company.pk),'account_id':body['account_id'],'source_digest':body['source_digest'],'statement_id':body['statement_id'],'reconciliation_id':str(proof.pk),'review_id':proof.payload['review_id'],'group_count':len(body['groups']),'bank_row_count':len(body['bank_rows']),'ledger_line_count':len(body['ledger_lines']),'groups_confirmed':valid,'requires_review':not freed and not valid,'released':freed,'replayed':replayed,'period_reconciled':qualified,'ledger_written':False,'money_transferred':False,'bank_verified':False,'confirmations_restored':False}
 
 @transaction.atomic
-def review(company_id,*,actor,account_id,csv_text,groups,evidence_digest,expected_revision,confirmed,ledger_since=None):
+def review(company_id,*,actor,account_id,csv_text,groups,evidence_digest,expected_revision,confirmed,ledger_since=None,period=None):
     company,user=legacy._context(company_id,actor)
     if confirmed is not True or type(expected_revision) is not int or expected_revision<0:raise AccountingError('Explicit first confirmation and revision required.')
     legacy.digest(evidence_digest);source=sources_locked(company,account_id,csv_text,ledger_since);selected,lines=selection(source,groups);statement=str(legacy.statement_id(company.pk,source['account_id'],source['source_digest']));old=latest(company,statement);revision=checked(old,company)['revision'] if old else 0
@@ -148,6 +161,7 @@ def review(company_id,*,actor,account_id,csv_text,groups,evidence_digest,expecte
     if 'ledger_allocations' in selected[0]:
         from .bank_capacity import totals
         body['allocation_totals']=totals(selected,lines)
+    if period is not None:body['period_assessment']=period_assessment(company,body,period)
     conflicts(company,body);row=OutboxEvent.objects.create(id=uuid5(NS,'review:'+statement+':'+str(revision+1)),event_type=REVIEW,domain='accounting',aggregate_root=statement,payload={'company_id':str(company.pk),'revision':revision+1,'review':body,'review_digest':fingerprint(body)},version=1)
     return {'company_id':str(company.pk),'statement_id':statement,'review_id':str(row.pk),'preview':body,'ledger_written':False,'money_transferred':False,'bank_verified':False}
 
@@ -157,6 +171,7 @@ def confirm(company_id,*,actor,statement_id,review_id,confirmed):
     if confirmed is not True or str(row.pk)!=ident(review_id) or body['reviewed_by']!=str(user.pk):raise AccountingError('Second confirmation of the current review by the same owner required.')
     identifier=uuid5(NS,'applied:'+str(row.pk));existing=OutboxEvent.objects.filter(pk=identifier).first()
     if existing:return result(company,existing,True)
+    if body.get('period_assessment') is not None and period_assessment(company,body,body['period_assessment']['terms'])!=body['period_assessment']:raise AccountingError('Grouped period changed after review; review balances and coverage again.')
     validate_lines(company,body,True);conflicts(company,body);payload={'company_id':str(company.pk),'statement_id':body['statement_id'],'revision':body['revision'],'review_id':str(row.pk),'review_digest':fingerprint(body)};proof=OutboxEvent(id=identifier,event_type=APPLIED,payload=payload)
     for key,value in claims(proof,body):OutboxEvent.objects.create(id=key,event_type=legacy.CLAIM,domain='accounting',aggregate_root=body['statement_id'],payload=value,version=1)
     proof=OutboxEvent.objects.create(id=identifier,event_type=APPLIED,domain='accounting',aggregate_root=body['statement_id'],payload=payload,version=1);return result(company,proof,False)

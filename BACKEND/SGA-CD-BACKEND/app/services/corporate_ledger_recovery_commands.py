@@ -52,6 +52,22 @@ COMMANDS={
  'confirm_bank_reconciliation':('confirmar-conciliacion-bancaria/',{'statement_id','review_id','confirmed'},set()),
  'review_bank_release':('revisar-liberacion-bancaria/',{'reconciliation_id','reason_code','evidence_digest','confirmed'},set()),
  'confirm_bank_release':('confirmar-liberacion-bancaria/',{'review_id','confirmed'},set()),
+ 'opening_chunks_sources':('fuentes-apertura-ampliada/',set(),{'after_id'}),
+ 'review_opening_chunks':('revisar-apertura-ampliada/',{'confirmed', 'entry_date', 'evidence_digest', 'expected_revision', 'source_root_digest'},set()),
+ 'apply_opening_chunks':('aplicar-apertura-ampliada/',{'review_id', 'confirmed'},set()),
+ 'opening_chunks_state':('estado-apertura-ampliada/',set(),set()),
+ 'fx_settlement_request_state':('consultar-solicitud-liquidacion-divisas/',{'request_id'},set()),
+ 'fx_settlement_catalog':('catalogo-liquidacion-divisas/',set(),set()),
+ 'review_fx_settlement':('revisar-liquidacion-divisas/',{'monetary_classification', 'currency', 'account_id', 'request_id', 'clearing_account_id', 'loss_account_id', 'confirmed', 'evidence_digest', 'as_of', 'quantity', 'terms', 'cash_line_id', 'gain_account_id'},set()),
+ 'post_fx_settlement':('contabilizar-liquidacion-divisas/',{'review_id', 'confirmed'},set()),
+ 'fx_settlement_state':('estado-liquidacion-divisas/',{'review_id'},set()),
+ 'bank_rollup_sources':('fuentes-consolidacion-bancaria/',{'account_id'},set()),
+ 'review_bank_rollup':('revisar-consolidacion-bancaria/',{'period', 'account_id', 'confirmed', 'expected_revision', 'reconciliation_ids'},set()),
+ 'confirm_bank_rollup':('confirmar-consolidacion-bancaria/',{'confirmed', 'review_id'},set()),
+ 'bank_rollup_state':('estado-consolidacion-bancaria/',{'account_id', 'since', 'until'},set()),
+ 'record_native_payroll_novelty':('registrar-novedad-nativa/',{'payroll_id','request_id','employee_id','concept_id','event_date','amount','source_reference','evidence_digest','authorization_digest','confirmed'},set()),
+ 'correct_native_payroll_novelty':('corregir-novedad-nativa/',{'payroll_id','novelty_id','request_id','expected_revision','event_date','amount','reason_code','evidence_digest','authorization_digest','confirmed'},set()),
+ 'lookup_native_payroll_novelty':('consultar-novedad-nativa/',{'payroll_id','source_reference'},set()),
  'review_payroll':('revisar-nomina/',{'payroll_id','policy','workers','account_mapping','evidence_digest','expected_revision','confirmed'},set()),
  'post_payroll':('contabilizar-nomina-revisada/',{'payroll_id','review_id','confirmed'},set()),
  'review_opening':('revisar-apertura/',{'entry_date','evidence_digest','expected_revision','confirmed'},{'existing_journal_id'}),
@@ -126,7 +142,7 @@ def read_sources(db,*,user,session_cookie,resource,parameters=None):
 def dispatch(db,*,user,session_cookie,operation,payload):
     if operation not in COMMANDS:raise HTTPException(422,'Operación contable no admitida.')
     path,required,optional=COMMANDS[operation]
-    if not isinstance(payload,dict) or not required<=set(payload) or set(payload)-required-optional or (operation not in {'query','quote_tax_policy','compare_bank_statement','estimate_environmental','commercial_tax_state','native_purchase_state','native_purchase_sources','native_supplier_sources','payroll_cost_sources','payroll_cost_state','operation_labor_costs','esg_report','purchase_history','bank_group_state'} and payload.get('confirmed') is not True):
+    if not isinstance(payload,dict) or not required<=set(payload) or set(payload)-required-optional or (operation not in {'opening_chunks_sources','opening_chunks_state','fx_settlement_request_state','fx_settlement_catalog','fx_settlement_state','bank_rollup_sources','bank_rollup_state','lookup_native_payroll_novelty','query','quote_tax_policy','compare_bank_statement','estimate_environmental','commercial_tax_state','native_purchase_state','native_purchase_sources','native_supplier_sources','payroll_cost_sources','payroll_cost_state','operation_labor_costs','esg_report','purchase_history','bank_group_state'} and payload.get('confirmed') is not True):
         raise HTTPException(422,'Contrato o confirmación contable inválidos.')
     selected=context(db,user,session_cookie);target=ledger.origin()
     try:
@@ -202,10 +218,34 @@ def dispatch(db,*,user,session_cookie,operation,payload):
     if operation=='quote_tax_policy' and (data.get('schema')!='sgacd-tax-quote-v1' or data.get('read_only') is not True or data.get('fiscal_document_created') is not False):raise HTTPException(503,'Cotización tributaria incompatible.')
     if operation in {'review_payroll','post_payroll','review_tax_policy','record_tax_policy','quote_tax_policy'} and data.get('regulatory_verified') is not False:raise HTTPException(503,'No se acredita validación normativa.')
     if operation in {'review_payroll','post_payroll','review_opening','apply_opening','review_tax_policy','record_tax_policy','quote_tax_policy'} and data.get('company_id')!=selected['tenant_id']:raise HTTPException(503,'Contexto de resultado incompatible.')
+    if operation in {'apply_opening_chunks', 'opening_chunks_state', 'opening_chunks_sources', 'review_opening_chunks'}:
+        from app.services.chunked_opening_contract import validate
+        try:validate(operation,data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Apertura ampliada incompatible; recupera el estado de la misma empresa.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
+    if operation in {'fx_settlement_request_state','fx_settlement_catalog', 'post_fx_settlement', 'fx_settlement_state', 'review_fx_settlement'}:
+        from app.services.fx_settlement_contract import validate
+        try:validate(operation,data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Liquidación FX incompatible; recupera la misma revisión.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
+    if operation in {'review_bank_rollup', 'bank_rollup_state', 'bank_rollup_sources', 'confirm_bank_rollup'}:
+        from app.services.bank_rollup_contract import validate
+        try:validate(operation,data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Consolidación bancaria incompatible; recupera el mismo período.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
+    if operation in {'record_native_payroll_novelty','lookup_native_payroll_novelty','correct_native_payroll_novelty'}:
+        from app.services.native_payroll_source_contract import validate
+        try:validate(operation,data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Registro de novedad incompatible; consulta la misma referencia.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
     if operation in {'review_payroll','post_payroll'}:
         try:payroll_id=str(UUID(str(payload['payroll_id'])))
         except (ValueError,TypeError):raise HTTPException(503,'Identidad de nómina incompatible.') from None
         if operation=='review_payroll' and (data.get('preview',{}).get('snapshot',{}).get('payroll_id')!=payroll_id or data.get('preview',{}).get('snapshot',{}).get('company_id')!=selected['tenant_id']):raise HTTPException(503,'La propuesta no corresponde a la nómina solicitada.')
+        if operation=='review_payroll':
+            from .payroll_deduction_contract import validate as validate_deductions
+            try:validate_deductions(data['preview']['snapshot'],payload)
+            except (ValueError,KeyError,TypeError):raise HTTPException(503,'Deducciones o neto de nómina incompatibles.') from None
         if operation=='post_payroll' and (data.get('payroll_id')!=payroll_id or data.get('money_transferred') is not False):raise HTTPException(503,'El resultado no corresponde a una causación de nómina sin pago.')
     if operation in {'compare_bank_statement','review_bank_reconciliation','confirm_bank_reconciliation','review_bank_release','confirm_bank_release'}:
         if data.get('company_id')!=selected['tenant_id'] or data.get('bank_verified') is not False or data.get('ledger_written') is not False or data.get('money_transferred') is not False:raise HTTPException(503,'Resultado bancario sin alcance verificable.')
@@ -249,7 +289,7 @@ def dispatch(db,*,user,session_cookie,operation,payload):
         status={'prepare_financial_rehearsal':'PREPARED','confirm_financial_rehearsal':'CONFIRMED_'+str(payload.get('step')),'simulate_financial_rehearsal':'SIMULATED_ONLY','cancel_financial_rehearsal':'CANCELLED'}[operation]
         if data.get('status')!=status:raise HTTPException(503,'Estado de simulación incompatible.')
     field='correction_id' if operation=='record_environmental_correction' else 'observation_id' if operation in {'record_hotel_capacity','record_environmental'} else 'reconciliation_id' if operation in {'confirm_bank_reconciliation','confirm_bank_release'} else 'policy_id' if operation in {'record_tax_policy','quote_tax_policy'} else 'review_id' if operation.startswith('review_') else 'request_id' if operation.endswith('_financial_rehearsal') else 'journal_id'
-    if operation not in {'query','compare_bank_statement','estimate_environmental'}:
+    if operation not in {'opening_chunks_sources','opening_chunks_state','fx_settlement_request_state','fx_settlement_catalog','fx_settlement_state','bank_rollup_sources','bank_rollup_state','lookup_native_payroll_novelty','query','compare_bank_statement','estimate_environmental'}:
         try:UUID(data[field])
         except (ValueError,KeyError,TypeError):raise HTTPException(503,'Falta evidencia del resultado; consulta la revisión original.') from None
     expected_write=operation in {'post_payroll','post_recognition','reverse_recognition','apply_opening','post_commercial_tax','reverse_commercial_tax'}

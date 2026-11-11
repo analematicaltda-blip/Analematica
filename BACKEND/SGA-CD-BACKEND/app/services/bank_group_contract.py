@@ -48,6 +48,8 @@ def validate(operation,data,payload,context):
         partial='allocation_totals' in data['preview']
         normalized=[{k:g[k] for k in ('group_id','bank_rows','ledger_allocations' if partial else 'ledger_line_ids')} for g in data['preview']['groups']]
         expected=[{**g,'bank_rows':sorted(g['bank_rows']),**({'ledger_allocations':sorted(g['ledger_allocations'],key=lambda a:a['ledger_line_id'])} if partial else {'ledger_line_ids':sorted(g['ledger_line_ids'])})} for g in payload['groups']]
+        if payload.get('period') is not None and data['preview'].get('period_assessment',{}).get('terms')!=payload['period']:raise ValueError('Declared period changed.')
+        if payload.get('period') is None and data['preview'].get('period_assessment') is not None:raise ValueError('Unrequested period assessment.')
         if payload.get('ledger_since') is not None and data['preview'].get('ledger_since')!=payload['ledger_since']:raise ValueError('Source window changed.')
         if sorted(normalized,key=lambda g:g['group_id'])!=sorted(expected,key=lambda g:g['group_id']) or data['preview']['source_digest']!=hashlib.sha256(payload['csv_text'].encode()).hexdigest() or data['preview']['account_id']!=payload['account_id'] or data['preview']['revision']!=payload['expected_revision']+1:raise ValueError('Returned groups differ from selection.')
         return
@@ -60,7 +62,14 @@ def validate(operation,data,payload,context):
     if operation=='review_bank_group_release':
         if data['reconciliation_id']!=payload['reconciliation_id']:raise ValueError('Different grouped release origin.')
         return
-    if data.get('schema')!='sgacd-bank-group-result-v1' or data.get('period_reconciled') is not False or data.get('confirmations_restored') is not False or any(type(data.get(k)) is not bool for k in ('groups_confirmed','requires_review','released','replayed')):raise ValueError('Invalid grouped financial state.')
+    if data.get('schema')!='sgacd-bank-group-result-v1' or type(data.get('period_reconciled')) is not bool or data.get('confirmations_restored') is not False or any(type(data.get(k)) is not bool for k in ('groups_confirmed','requires_review','released','replayed')):raise ValueError('Invalid grouped financial state.')
+    assessment=data.get('period_assessment');current=data.get('period_source_current')
+    if assessment is None:
+        if current is not None or data['period_reconciled']:raise ValueError('No period was assessed.')
+    else:
+        if type(current) is not bool or assessment.get('schema')!='sgacd-bank-period-assessment-v1' or assessment.get('source_independently_verified') is not False or type(assessment.get('eligible_for_period_reconciliation')) is not bool or type(assessment.get('group_allocations_complete')) is not bool:raise ValueError('Invalid period source.')
+        if assessment['eligible_for_period_reconciliation'] and (assessment.get('balances_match') is not True or assessment.get('unmatched_ledger_line_ids')!=[] or assessment.get('unresolved_bank_rows')!=0 or not assessment['group_allocations_complete']):raise ValueError('Incomplete allocation cannot qualify a period.')
+        if data['period_reconciled']!=(data['groups_confirmed'] and current and assessment['eligible_for_period_reconciliation']):raise ValueError('Stale or partial period cannot be qualified.')
     if data['groups_confirmed'] is not (not data['released'] and not data['requires_review']):raise ValueError('Stale/released group cannot remain confirmed.')
     if operation=='confirm_bank_groups' and data['statement_id']!=payload['statement_id']:raise ValueError('Different statement returned.')
     balances=data.get('line_balances')

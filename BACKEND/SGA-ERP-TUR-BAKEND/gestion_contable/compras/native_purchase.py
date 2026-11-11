@@ -111,6 +111,14 @@ def record_invoice(*,actor,provider_id,request_id,supplier_id,number,issue_date,
 
 def source_binding(provider,row):return {'identity':{'kind':'ERP_PURCHASE','provider_id':str(provider.pk),'invoice_id':row.pk},'snapshot_digest':fingerprint(snapshot(row))}
 
+def review_inputs(body):
+    """Authorized metadata for rebuilding the exact persisted concept form."""
+    from copy import deepcopy
+    if body is None:return None
+    return {'selection':deepcopy(body['fact']['items']),
+            'settlement_account_id':body['fact']['settlement_account_id'],
+            'revision':body['revision']}
+
 @transaction.atomic
 def review_purchase(*,actor,provider_id,invoice_id,selection,settlement_account_id,economic_fact,evidence_digest,expected_revision,confirmed):
     user,provider,company=context(actor,provider_id);row=invoice(provider,invoice_id);capture=capture_for(company,row)
@@ -122,7 +130,7 @@ def review_purchase(*,actor,provider_id,invoice_id,selection,settlement_account_
     if p['totals']['net']!=format(row.subtotal,'.2f') or p['totals']['tax']!=format(row.impuestos,'.2f') or p['totals']['gross']!=format(row.total,'.2f'):raise AccountingError('Policy breakdown does not match the stored invoice amounts.')
     with source_bindings._permit(company.pk,fact['document_id'],binding,user.pk,'REVIEW'):
         result=ledger.review_fact(company.pk,actor=user,fact=fact,evidence_digest=evidence_digest,expected_revision=expected_revision,confirmed=confirmed,source_binding=binding)
-    return {**result,'invoice_id':row.pk,'document_id':fact['document_id'],'native_source_verified':True,'economic_fact_independently_verified':False}
+    return {**result,'invoice_id':row.pk,'document_id':fact['document_id'],'native_source_verified':True,'economic_fact_independently_verified':False,'review_inputs':review_inputs(ledger.checked(ledger.latest(company.pk,fact['document_id']),ledger.REVIEW,company.pk))}
 
 @transaction.atomic
 def post_purchase(*,actor,provider_id,invoice_id,review_id,confirmed):
@@ -152,7 +160,7 @@ def purchase_state(*,actor,provider_id,invoice_id):
         native_proof=OutboxEvent.objects.filter(pk=uuid5(NS,'posted:'+str(company.pk)+':'+str(row.pk))).first()
         expected={'company_id':str(company.pk),'provider_id':str(provider.pk),'invoice_id':row.pk,'review_id':str(review.pk),'binding_digest':fingerprint(body['source_binding']),'journal_id':result['posted']['journal_id']}
         if native_proof is None or native_proof.event_type!=POSTED or native_proof.domain!='accounting' or native_proof.version!=1 or native_proof.aggregate_root!=str(company.pk) or native_proof.payload!=expected:raise AccountingError('Native origin proof missing or changed; no reconstructed recovery.')
-    return {**result,'invoice_id':row.pk,'native_source_verified':True,'source_matches_review':body is not None and body.get('source_binding')==source_binding(provider,row),'current_invoice_state':row.estado,'document_digest':captured['document_digest']}
+    return {**result,'invoice_id':row.pk,'native_source_verified':True,'source_matches_review':body is not None and body.get('source_binding')==source_binding(provider,row),'current_invoice_state':row.estado,'document_digest':captured['document_digest'],'review_inputs':review_inputs(body)}
 
 @transaction.atomic
 def purchase_sources(*,actor,provider_id,after_id):
@@ -238,3 +246,20 @@ def review_return_void(**kwargs):
 def post_return_void(**kwargs):
     from .purchase_return_voids import post
     return post(**kwargs)
+
+
+def review_item_return(**kwargs):
+    from .purchase_item_returns import review
+    return review(**kwargs)
+def post_item_return(**kwargs):
+    from .purchase_item_returns import post
+    return post(**kwargs)
+def item_return_state(**kwargs):
+    from .purchase_item_returns import state
+    return state(**kwargs)
+def review_item_return_void(**kwargs):
+    from .purchase_item_returns import review_void
+    return review_void(**kwargs)
+def post_item_return_void(**kwargs):
+    from .purchase_item_returns import post_void
+    return post_void(**kwargs)

@@ -10,7 +10,10 @@ import {BankComparison} from './BankComparison';
 import {TaxReconciliation} from './TaxReconciliation';
 import {NativePurchases} from './NativePurchases';
 import {PayrollCosts} from './PayrollCosts';
+import {OpeningChunks} from './OpeningChunks';
+import {FxSettlements} from './FxSettlements';
 import {BankGroups} from './BankGroups';
+import {EmptyBankPeriod} from './EmptyBankPeriod';
 import {ESGReport} from './ESGReport';
 import {ReservationRecognition} from './ReservationRecognition';
 import {ReservationBilling} from './ReservationBilling';
@@ -54,6 +57,9 @@ export default function LedgerWorkspace(){
   <ReservationBilling key={'reservation-billing:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <AccountingQuery key={'accounting-query:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <ESGReport identity={identity} providerId={authorized?provider:''} request={session.request}/>
+  <EmptyBankPeriod identity={identity} providerId={authorized?provider:''} request={session.request}/>
+  <OpeningChunks identity={identity} providerId={authorized?provider:''} request={session.request} onPosted={()=>setRevisionSignal(n=>n+1)}/>
+  <FxSettlements identity={identity} providerId={authorized?provider:''} request={session.request} onPosted={()=>setRevisionSignal(n=>n+1)}/>
   <BankGroups identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <PayrollCosts identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <NativePurchases identity={identity} providerId={authorized?provider:''} request={session.request} onPosted={()=>setRevisionSignal(n=>n+1)}/>

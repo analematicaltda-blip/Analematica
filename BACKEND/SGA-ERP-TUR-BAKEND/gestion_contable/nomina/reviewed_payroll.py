@@ -17,7 +17,7 @@ from apps.core_erp.accounting.integrity import fingerprint
 from apps.core_erp.accounting.ledger_engine import LedgerEngine
 from apps.core_erp.accounting.models import Account, FiscalPeriod, JournalEntry, AccountingEventReceipt, LedgerEntry
 from apps.core_erp.outbox_models import OutboxEvent
-from .models import Planilla, Empleado, Contrato, NovedadNomina, DetalleLiquidacion, Ausencia, IncapacidadLaboral
+from .models import Planilla, Empleado, Contrato, NovedadNomina, ConceptoNomina, DetalleLiquidacion, Ausencia, IncapacidadLaboral
 
 NS = UUID('048a19d8-1857-46d1-aaea-a155d6245ae2')
 REVIEW = 'accounting.payroll.reviewed.v1'
@@ -50,7 +50,7 @@ def _context(actor, provider_id, payroll_id):
     return user,company,payroll
 
 def _policy(policy, payroll):
-    if not isinstance(policy,dict) or not {'code','revision','valid_from','valid_until','divisor_days','components','evidence_digest'}<=set(policy) or set(policy)-{'code','revision','valid_from','valid_until','divisor_days','components','evidence_digest','earning_rules'}:
+    if not isinstance(policy,dict) or not {'code','revision','valid_from','valid_until','divisor_days','components','evidence_digest'}<=set(policy) or set(policy)-{'code','revision','valid_from','valid_until','divisor_days','components','evidence_digest','earning_rules','fixed_deduction_rules','novelty_mode','source_earning_rules'}:
         raise AccountingError('Explicit bounded payroll policy required.')
     if not isinstance(policy['code'],str) or not re.fullmatch('[A-Z0-9][A-Z0-9_-]{0,39}',policy['code']) or type(policy['revision']) is not int or not 1<=policy['revision']<=10**9:
         raise AccountingError('Explicit policy identity/version required.')
@@ -58,10 +58,15 @@ def _policy(policy, payroll):
     if start.isoformat()!=policy['valid_from'] or end.isoformat()!=policy['valid_until'] or not start<=payroll.periodo_inicio<=payroll.periodo_fin<=end or (end-start).days>3660:
         raise AccountingError('Policy must cover the whole payroll period.')
     if type(policy['divisor_days']) is not int or not 1<=policy['divisor_days']<=31:raise AccountingError('Explicit day divisor from1 to31 required.')
+    if 'novelty_mode' in policy and (policy['novelty_mode'] not in {'FIXED_LIABILITY_FROM_SOURCE','COMPENSATION_FROM_SOURCE'} or 'fixed_deduction_rules' in policy):raise AccountingError('Explicit source novelty mode required; do not mix manual fixed deductions.')
+    if policy.get('novelty_mode')=='COMPENSATION_FROM_SOURCE':
+        from .reviewed_novelties import earning_rules as source_rules
+        policy={**policy,'source_earning_rules':source_rules(policy.get('source_earning_rules'))}
+    elif 'source_earning_rules' in policy:raise AccountingError('Source earning classification requires compensation mode.')
     _digest(policy['evidence_digest']);components=policy['components']
     if not isinstance(components,list) or not 1<=len(components)<=8:raise AccountingError('One to8 explicit policy components required.')
-    supplemental='earning_rules' in policy
-    if supplemental:
+    supplemental='earning_rules' in policy or policy.get('novelty_mode')=='COMPENSATION_FROM_SOURCE'
+    if 'earning_rules' in policy:
         from .declared_earnings import rules
         policy={**policy,'earning_rules':rules(policy['earning_rules'])}
     seen=set();normalized=[]
@@ -70,6 +75,9 @@ def _policy(policy, payroll):
             raise AccountingError('Unique component with explicit kind and integer basis-point rate required.')
         if supplemental and component['basis'] not in {'BASE','GROSS'}:raise AccountingError('Explicit contribution basis BASE or GROSS required.')
         seen.add(component['code']);normalized.append(component)
+    if 'fixed_deduction_rules' in policy:
+        from .declared_deductions import rules as deduction_rules
+        policy={**policy,'fixed_deduction_rules':deduction_rules(policy['fixed_deduction_rules'],normalized)}
     return {**policy,'components':sorted(normalized,key=lambda row:row['code'])}
 
 def _accounts(company,mapping):
@@ -96,7 +104,7 @@ def _calculation(company,payroll,policy,workers,mapping):
     if len(period)!=1:raise AccountingError('Exactly one open accounting period must cover payroll.')
     rows=[];seen=set();sums={key:0 for key in ['gross','net','deductions','employer','provisions']}
     for requested in sorted(workers,key=lambda row:str(row.get('employee_id','')) if isinstance(row,dict) else ''):
-        if not isinstance(requested,dict) or set(requested)!=({'employee_id','contract_id','worked_days','earnings'} if 'earning_rules' in policy else {'employee_id','contract_id','worked_days'}) or type(requested['worked_days']) is not int or not 1<=requested['worked_days']<=min(policy['divisor_days'],(payroll.periodo_fin-payroll.periodo_inicio).days+1):
+        if not isinstance(requested,dict) or set(requested)!=({'employee_id','contract_id','worked_days'}|({'earnings'} if 'earning_rules' in policy else set())|({'fixed_deductions'} if 'fixed_deduction_rules' in policy else set())|({'novelty_items'} if policy.get('novelty_mode')=='COMPENSATION_FROM_SOURCE' else {'novelty_deductions'} if 'novelty_mode' in policy else set())) or type(requested['worked_days']) is not int or not 1<=requested['worked_days']<=min(policy['divisor_days'],(payroll.periodo_fin-payroll.periodo_inicio).days+1):
             raise AccountingError('Explicit employee/contract and positive worked days within divisor required.')
         employee_id=UUID(str(requested['employee_id']));contract_id=UUID(str(requested['contract_id']))
         if employee_id in seen:raise AccountingError('Employee repeated in payroll proposal.')
@@ -111,7 +119,7 @@ def _calculation(company,payroll,policy,workers,mapping):
             raise AccountingError('Overlapping payroll allocation requires reconciliation; do not accrue twice.')
         if Ausencia.objects.filter(empleado=employee,fecha_inicio__date__lte=payroll.periodo_fin,fecha_fin__date__gte=payroll.periodo_inicio).exists() or IncapacidadLaboral.objects.filter(empleado=employee,fecha_inicio__lte=payroll.periodo_fin,fecha_fin__gte=payroll.periodo_inicio).exists():
             raise AccountingError('Absence/incapacity requires a reviewed allocation; base-pay mode cannot ignore it.')
-        if NovedadNomina.objects.filter(empleado=employee,planilla=payroll).exists() or NovedadNomina.objects.filter(empleado=employee,planilla__isnull=True).exists():
+        if 'novelty_mode' not in policy and (NovedadNomina.objects.filter(empleado=employee,planilla=payroll).exists() or NovedadNomina.objects.filter(empleado=employee,planilla__isnull=True).exists()):
             raise AccountingError('Payroll with novelties requires reviewed allocation; base-pay mode cannot silently omit them.')
         # This route accrues base salary, not a supplemental/adjustment payroll.
         # Company lock serializes posting, so a second reviewed draft must recheck.
@@ -126,11 +134,29 @@ def _calculation(company,payroll,policy,workers,mapping):
             from .declared_earnings import calculate
             earning_rows,earning_parts=calculate(requested['earnings'],policy['earning_rules'],salary,(payroll.periodo_fin-payroll.periodo_inicio).days+1,_digest)
             gross+=sum(earning_parts.values())
+        source_rows=[];source_deductions=0;source_totals={'bonificaciones':0,'comisiones':0}
+        if policy.get('novelty_mode')=='COMPENSATION_FROM_SOURCE':
+            from .reviewed_novelties import calculate as calculate_sources
+            source_rows,source_deductions=calculate_sources(company,payroll,employee,requested['novelty_items'],_digest,earning_rules=policy['source_earning_rules'])
+            for item in source_rows:
+                if 'earning_field' in item:source_totals[item['earning_field']]+=_money(item['amount'])
+            gross+=sum(source_totals.values())
         components=[];parts={kind:0 for kind in KINDS}
         for rule in policy['components']:
             basis=gross if rule.get('basis')=='GROSS' else base
             cents=(basis*rule['rate_bps']+5000)//10000;parts[rule['kind']]+=cents
             components.append({**rule,**({'calculation_basis':rule['basis']} if 'basis' in rule else {}),'basis':_format_money(basis),'amount':_format_money(cents)})
+        fixed_rows=[];fixed_total=0;percentage_deductions=parts['EMPLOYEE_DEDUCTION']
+        if 'fixed_deduction_rules' in policy:
+            from .declared_deductions import calculate as fixed_deductions
+            fixed_rows,fixed_total=fixed_deductions(requested['fixed_deductions'],policy['fixed_deduction_rules'],_digest)
+            parts['EMPLOYEE_DEDUCTION']+=fixed_total
+        novelty_rows=[];novelty_total=0
+        if policy.get('novelty_mode')=='FIXED_LIABILITY_FROM_SOURCE':
+            from .reviewed_novelties import calculate as calculate_novelties
+            novelty_rows,novelty_total=calculate_novelties(company,payroll,employee,requested['novelty_deductions'],_digest)
+            parts['EMPLOYEE_DEDUCTION']+=novelty_total
+        parts['EMPLOYEE_DEDUCTION']+=source_deductions
         net=gross-parts['EMPLOYEE_DEDUCTION']
         if net<0:raise AccountingError('Deductions exceed declared base pay.')
         row={'employee_id':str(employee.pk),'contract_id':str(contract.pk),'worked_days':days,'contract_salary':_format_money(salary),
@@ -138,8 +164,14 @@ def _calculation(company,payroll,policy,workers,mapping):
              'cost_center':employee.centro_costo,'base':_format_money(base),'net':_format_money(net),'deductions':_format_money(parts['EMPLOYEE_DEDUCTION']),
              'employer':_format_money(parts['EMPLOYER_CONTRIBUTION']),'provisions':_format_money(parts['PROVISION']),'components':components}
         if 'earning_rules' in policy:row.update(gross=_format_money(gross),earnings=earning_rows,earning_totals={k:_format_money(v) for k,v in earning_parts.items()})
+        if 'fixed_deduction_rules' in policy:row.update(fixed_deductions=fixed_rows,fixed_deductions_total=_format_money(fixed_total),percentage_deductions=_format_money(percentage_deductions))
+        if policy.get('novelty_mode')=='FIXED_LIABILITY_FROM_SOURCE':row.update(novelty_deductions=novelty_rows,novelty_deductions_total=_format_money(novelty_total),percentage_deductions=_format_money(percentage_deductions))
+        if policy.get('novelty_mode')=='COMPENSATION_FROM_SOURCE':row.update(gross=_format_money(gross),novelty_items=source_rows,novelty_deductions_total=_format_money(source_deductions),novelty_earnings_total=_format_money(sum(source_totals.values())),source_earning_totals={k:_format_money(v) for k,v in source_totals.items()},percentage_deductions=_format_money(percentage_deductions))
         rows.append(row)
         for key,value in [('gross',gross),('net',net),('deductions',parts['EMPLOYEE_DEDUCTION']),('employer',parts['EMPLOYER_CONTRIBUTION']),('provisions',parts['PROVISION'])]:sums[key]+=value
+    if 'novelty_mode' in policy:
+        from .reviewed_novelties import coverage
+        coverage(payroll,rows)
     totals={key:_format_money(value) for key,value in sums.items()}
     # Bound both the financial values and the canonical event size explicitly.
     for value in totals.values():_money(value)
@@ -201,15 +233,21 @@ def _verified_applied(company,payroll,review):
             for field,value in row['earning_totals'].items():
                 if format(getattr(detail,field),'.2f')!=value:raise AccountingError('Supplemental payroll detail changed.')
                 known.add(field)
+        for field,value in row.get('source_earning_totals',{}).items():
+            if format(getattr(detail,field),'.2f')!=value:raise AccountingError('Source payroll earnings projection changed.')
+            known.add(field)
         if any(getattr(detail,field.name)!=0 for field in detail._meta.fields if field.get_internal_type()=='DecimalField' and field.name not in known):
             raise AccountingError('Unexpected statutory/detail amounts in a base-only projection.')
 
+    if 'novelty_mode' in snapshot['policy']:
+        from .reviewed_novelties import verify
+        verify(company,payroll,review,journal,snapshot['workers'])
     policy=snapshot['policy'];identifier=uuid5(NS,'policy:'+str(company.pk)+':'+policy['code']+':'+str(policy['revision']))
     declared=OutboxEvent.objects.filter(pk=identifier,event_type=POLICY,payload__company_id=str(company.pk)).first()
     if declared is None or declared.payload.get('terms')!=policy or declared.payload.get('digest')!=fingerprint(policy):raise AccountingError('Payroll policy evidence missing or changed.')
     return {'company_id':str(company.pk),'journal_id':str(journal.pk),'payroll_id':str(payroll.pk),'ledger_written':True,'replayed':True,
             'reversed':JournalEntry.plain_objects.filter(tenant=company,is_posted=True,reversed_entry_id=journal.pk).exists(),
-            'money_transferred':False,'regulatory_verified':False,'details_projection':'DECLARED_EARNINGS_TOTALS' if 'earning_rules' in snapshot['policy'] else 'BASE_TOTALS_ONLY'}
+            'money_transferred':False,'regulatory_verified':False,'details_projection':'DECLARED_SOURCE_EARNINGS_TOTALS' if snapshot['policy'].get('novelty_mode')=='COMPENSATION_FROM_SOURCE' else 'DECLARED_EARNINGS_TOTALS' if 'earning_rules' in snapshot['policy'] else 'BASE_TOTALS_ONLY'}
 
 @transaction.atomic
 def post_payroll(*,actor,provider_id,payroll_id,review_id,confirmed):
@@ -225,6 +263,12 @@ def post_payroll(*,actor,provider_id,payroll_id,review_id,confirmed):
     snapshot=body['snapshot'];workers=[{k:row[k] for k in ['employee_id','contract_id','worked_days']} for row in snapshot['workers']]
     if 'earning_rules' in snapshot['policy']:
         for requested,row in zip(workers,snapshot['workers']):requested['earnings']=[{k:e[k] for k in ('code','minutes','evidence_digest')} for e in row['earnings']]
+    if 'fixed_deduction_rules' in snapshot['policy']:
+        for requested,row in zip(workers,snapshot['workers']):requested['fixed_deductions']=[{k:d[k] for k in ('code','amount','evidence_digest','authorization_digest')} for d in row['fixed_deductions']]
+    if 'novelty_mode' in snapshot['policy']:
+        for requested,row in zip(workers,snapshot['workers']):
+            field='novelty_items' if snapshot['policy']['novelty_mode']=='COMPENSATION_FROM_SOURCE' else 'novelty_deductions'
+            requested[field]=[{k:d[k] for k in ('novelty_id','evidence_digest','authorization_digest')} for d in row[field]]
     current=_calculation(company,payroll,snapshot['policy'],workers,snapshot['mapping'])
     if current!=snapshot:raise AccountingError('Payroll source changed after review.')
     policy_id=uuid5(NS,'policy:'+str(company.pk)+':'+snapshot['policy']['code']+':'+str(snapshot['policy']['revision']))
@@ -235,9 +279,12 @@ def post_payroll(*,actor,provider_id,payroll_id,review_id,confirmed):
         if _money(value)>0:lines.append({'account':accounts[key],side:value})
     journal=LedgerEngine.post_lines(tenant_id=company.pk,entry_date=payroll.periodo_fin,description='Reviewed declared payroll with supplements' if 'earning_rules' in snapshot['policy'] else 'Reviewed declared base-pay accrual',lines_data=lines,actor=user,idempotency_key=_key(payroll),period_id=snapshot['period_id'])
     for row in snapshot['workers']:
-        DetalleLiquidacion.objects.create(planilla=payroll,empleado_id=row['employee_id'],salario_base=row['contract_salary'],dias_trabajados=row['worked_days'],basico=row['base'],total_devengado=row.get('gross',row['base']),**row.get('earning_totals',{}),total_deduccion=row['deductions'],otras_deducciones=row['deductions'],total_neto=row['net'])
+        DetalleLiquidacion.objects.create(planilla=payroll,empleado_id=row['employee_id'],salario_base=row['contract_salary'],dias_trabajados=row['worked_days'],basico=row['base'],total_devengado=row.get('gross',row['base']),**row.get('earning_totals',{}),**row.get('source_earning_totals',{}),total_deduccion=row['deductions'],otras_deducciones=row['deductions'],total_neto=row['net'])
     payroll.total_devengado=totals['gross'];payroll.total_deduccion=totals['deductions'];payroll.total_neto=totals['net'];payroll.asiento_contable_ref_id=journal.pk;payroll.estado='CONTABILIZADA'
     payroll.save(update_fields=['total_devengado','total_deduccion','total_neto','asiento_contable_ref_id','estado'])
+    if 'novelty_mode' in snapshot['policy']:
+        from .reviewed_novelties import consume
+        consume(company,payroll,review,journal,snapshot['workers'])
     OutboxEvent.objects.create(id=_proof_id(payroll),event_type=APPLIED,domain='accounting',aggregate_root=str(payroll.pk),payload={'company_id':str(company.pk),'payroll_id':str(payroll.pk),'review_id':str(review.pk),'review_digest':fingerprint(body),'journal_id':str(journal.pk),'journal_hash':journal.system_hash},version=1)
     payroll.refresh_from_db()
     result=_verified_applied(company,payroll,review);result['replayed']=False
@@ -268,9 +315,28 @@ def payroll_sources(*,actor,provider_id):
     payrolls=list(Planilla.objects.filter(perfil_id=provider.pk).order_by('-periodo_fin','pk')[:21])
     contracts=list(Contrato.objects.filter(empleado__perfil_id=provider.pk,empleado__estado='ACTIVO',activo=True).select_related('empleado').order_by('pk')[:101])
     accounts=list(Account.plain_objects.filter(tenant=company,chart_of_accounts__tenant=company,is_active=True,type__in=['EXPENSE','LIABILITY']).order_by('code','pk')[:201])
+    concepts=list(ConceptoNomina.objects.filter(tipo__in=['DEVENGADO','DEDUCCION']).order_by('codigo','pk')[:101])
+    from .native_novelty import catalog as native_catalog
+    novelties=list(NovedadNomina.objects.filter(empleado__perfil_id=provider.pk,procesada=False).filter(Q(planilla__isnull=True)|Q(planilla__perfil_id=provider.pk)).select_related('concepto').order_by('pk')[:101])
     return {'company_id':str(company.pk),'read_only':True,
+            'concepts':[{'id':c.pk,'code':c.codigo,'name':c.descripcion,'kind':c.tipo} for c in concepts[:100]],
+            'novelties':[{'id':row.pk,'employee_id':str(row.empleado_id),'payroll_id':str(row.planilla_id) if row.planilla_id else None,'date':row.fecha_evento.isoformat() if row.fecha_evento else None,'concept_id':row.concepto_id,'concept_code':row.concepto.codigo,'concept_kind':row.concepto.tipo,'amount':format(row.valor,'.2f'),'quantity':format(row.cantidad,'.2f'),**native_catalog(company,row)} for row in novelties[:100]],
             'payrolls':[{'id':str(row.pk),'since':row.periodo_inicio.isoformat(),'until':row.periodo_fin.isoformat(),'state':row.estado} for row in payrolls[:20]],
             'contracts':[{'id':str(row.pk),'employee_id':str(row.empleado_id),'label':row.empleado.nombre+' '+row.empleado.apellido+' · '+row.cargo,'salary':format(row.salario,'.2f')} for row in contracts[:100]],
             'accounts':[{'id':str(row.pk),'code':row.code,'name':row.name,'type':row.type} for row in accounts[:200]],
-            'truncated':len(payrolls)>20 or len(contracts)>100 or len(accounts)>200,
-            'limits':{'payrolls':20,'contracts':100,'accounts':200},'regulatory_verified':False}
+            'truncated':len(payrolls)>20 or len(contracts)>100 or len(accounts)>200 or len(novelties)>100 or len(concepts)>100,
+            'limits':{'payrolls':20,'contracts':100,'accounts':200,'novelties':100,'concepts':100},'regulatory_verified':False}
+
+
+def record_native_payroll_novelty(**kwargs):
+    from .native_novelty import record
+    return record(**kwargs)
+
+def lookup_native_payroll_novelty(**kwargs):
+    from .native_novelty import lookup
+    return lookup(**kwargs)
+
+
+def correct_native_payroll_novelty(**kwargs):
+    from .native_novelty import correct
+    return correct(**kwargs)

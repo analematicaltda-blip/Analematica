@@ -43,8 +43,9 @@ def period(data,terms):
     if not isinstance(ids,list) or len(ids)>200 or len(set(ids))!=len(ids):raise ValueError('Bounded unique unmatched lines required.')
     for value in ids:
         if not isinstance(value,str) or str(UUID(value))!=value:raise ValueError('Invalid unmatched cash line.')
-    for key,limit in [('ledger_history_rows',2000),('ledger_period_rows',200),('unresolved_bank_rows',30)]:
+    for key,limit in [('ledger_history_rows',20000),('ledger_period_rows',200),('unresolved_bank_rows',30)]:
         if type(data.get(key)) is not int or not 0<=data[key]<=limit:raise ValueError('Invalid period coverage.')
+    if data['ledger_period_rows']>data['ledger_history_rows'] or len(ids)>data['ledger_period_rows']:raise ValueError('Period coverage exceeds verified history.')
     equal=opening==book_open and closing==book_close
     if data.get('balances_match') is not equal or data.get('eligible_for_period_reconciliation') is not (equal and not ids and not data['unresolved_bank_rows']):raise ValueError('False period qualification.')
 

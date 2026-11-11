@@ -60,6 +60,10 @@ def validated_advance(company,source,allocation,day):
     journal=JournalEntry.plain_objects.select_for_update().filter(pk=UUID(str(allocation['journal_id'])),tenant=company,is_posted=True,is_reversal=False,hash_version='v2',base_currency='COP').first()
     if journal is None or journal.date>day or journal.compute_hash()!=journal.system_hash or JournalEntry.plain_objects.filter(tenant=company,reversed_entry_id=journal.pk,is_posted=True).exists():
         raise ValidationError('El anticipo requiere un asiento íntegro, vigente y anterior al reconocimiento.')
+    from apps.core_erp.accounting.fx_settlement import protect_cash_reversal
+    from apps.core_erp.accounting.exceptions import AccountingError
+    try:protect_cash_reversal(company,journal)
+    except AccountingError:raise ValidationError('El recibo tiene una liquidación FX activa o evidencia incompatible; no puede aplicarse dos veces.') from None
     lines=list(LedgerEntry.plain_objects.filter(journal_entry=journal,tenant=company).select_related('account__chart_of_accounts'))
     if len(lines)!=2:raise ValidationError('Solo se admite un recibo simple completo, sin fraccionar ni inferir saldos.')
     credits=[line for line in lines if line.credit_amount==source.deposit_paid and line.debit_amount==0 and line.account.type=='LIABILITY' and str(line.account_id)==str(allocation['liability_account_id'])]
