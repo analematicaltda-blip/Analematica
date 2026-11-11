@@ -1,6 +1,8 @@
-# SGA-CD · Ecosistema Analemática y Turismo
+# Analematica · Ecosistema integrado
 
-El plan de integración y su evidencia están en [INTEGRACIONES/plan-maestro](INTEGRACIONES/plan-maestro/README.md). Este repositorio conserva las plataformas Analemática, SGA-ERP-TUR y SGA-TUR junto con sus integraciones.
+El plan de integración y su evidencia están en [INTEGRACIONES/plan-maestro](INTEGRACIONES/plan-maestro/README.md). Analemática es el sistema líder. Este repositorio conserva SGA-CD, Analemática, SGA-ERP-TUR y SGA-TUR junto con sus integraciones. Turismo Nacional conserva su naturaleza institucional.
+
+Los proyectos completos de Jarvi, Neko y SOUP están en `BACKEND/ANALEMATICA-BACKEND/agents/OpenJarvis`, `BACKEND/ANALEMATICA-BACKEND/agents/N.E.K.O` y `BACKEND/ANALEMATICA-BACKEND/agents/Soup`. Jarvi dirige la operación, Neko la conversación y SOUP la optimización; los adaptadores de cada sistema conservan sus permisos y ámbitos propios.
 
 ## Billetera organizada
 

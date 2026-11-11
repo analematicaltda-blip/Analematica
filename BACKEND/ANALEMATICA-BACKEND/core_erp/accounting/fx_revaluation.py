@@ -2,7 +2,7 @@
 Dedicated USD/EUR monetary accounts only. Unknown COP/legacy balances fail closed.
 """
 from datetime import date
-from decimal import Decimal,ROUND_HALF_UP,localcontext
+from decimal import Context, Decimal,ROUND_HALF_UP,localcontext
 from uuid import UUID,uuid5
 from django.db import transaction
 from django.utils import timezone
@@ -23,7 +23,7 @@ def account(company,identifier,kinds):
     return row
 
 def calculation(snapshot,terms,gain_id,loss_id):
-    with localcontext() as ctx:
+    with localcontext(Context(prec=50)) as ctx:
         ctx.prec=38
         desired=(Decimal(snapshot['foreign_balance'])*Decimal(terms['rate'])).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP)
         delta=desired-Decimal(snapshot['carrying_cop']);money(abs(desired));money(abs(delta))
@@ -68,7 +68,7 @@ def source(company,account_id,currency,as_of,exclude_journal=None,allow_zero=Fal
     rows=list(query.select_related('journal_entry').order_by('pk')[:51])
     if not rows or len(rows)>50:raise AccountingError('One to50 posted monetary lines supported; reviewed archival/batches required above that limit.')
     foreign=carrying=Decimal('0.00');records=[];validated=set()
-    with localcontext() as ctx:
+    with localcontext(Context(prec=50)) as ctx:
         ctx.prec=38
         for line in rows:
             settlement_record={}

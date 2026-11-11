@@ -7,7 +7,7 @@ from .exceptions import AccountingError
 from functools import wraps
 from inspect import signature
 from datetime import date
-from decimal import localcontext
+from decimal import localcontext,Context
 from django.db import transaction
 from .validation import lock_company
 from .models import JournalEntry
@@ -19,7 +19,7 @@ def financial_snapshot(function):
         params=contract.bind(*args,**kwargs).arguments
         cutoff=params.get('cutoff_date',params.get('end_date'));start=params.get('start_date')
         if type(cutoff) is not date or (start is not None and (type(start) is not date or start>cutoff)):raise AccountingError('Invalid economic-date interval.')
-        with transaction.atomic(),localcontext() as ctx:
+        with transaction.atomic(),localcontext(Context(prec=38)) as ctx:
             ctx.prec=38
             company=lock_company(params['tenant_id'])
             headers=JournalEntry.plain_objects.filter(tenant=company,is_posted=True,date__lte=cutoff)
@@ -79,6 +79,22 @@ class ReportsEngine:
             lines.append({'account_code':row['account__code'],'account_name':row['account__name'],'debit':debit,'credit':credit,'balance':balance})
         return {'tenant_id':tenant_id,'cutoff_date':cutoff_date,'lines':lines,
                 'total_debit':sum((r['debit'] for r in lines),ZERO),'total_credit':sum((r['credit'] for r in lines),ZERO),
+                'valuation':'base_currency','posted_only':True}
+
+    @staticmethod
+    @financial_snapshot
+    def get_account_balances(tenant_id,cutoff_date):
+        """UUID catalog hydration from posted primary/base-currency amounts only."""
+        totals={row['account_id']:row for row in ReportsEngine._totals(tenant_id,cutoff_date,database='default')}
+        lines=[]
+        for account in Account.plain_objects.filter(tenant_id=tenant_id).order_by('code','pk'):
+            row=totals.get(account.pk,{})
+            debit=(row.get('debit') or ZERO).quantize(Decimal('0.01'))
+            credit=(row.get('credit') or ZERO).quantize(Decimal('0.01'))
+            left=account.type in {'ASSET','EXPENSE','COST_OF_SALES','PRODUCTION_COST','DEBTOR_ORDER'}
+            lines.append({'account_id':str(account.pk),'account_code':account.code,'account_name':account.name,
+                          'debit':debit,'credit':credit,'balance':debit-credit if left else credit-debit})
+        return {'tenant_id':str(tenant_id),'cutoff_date':cutoff_date,'lines':lines,
                 'valuation':'base_currency','posted_only':True}
 
     @staticmethod

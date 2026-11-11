@@ -179,6 +179,53 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         company=self.company()
         return Response({'company_id':str(company.pk),'provider_id':str(owned_provider(request).pk),'actor_id':str(request.user.pk),'read_only':True})
 
+    @action(detail=False,methods=['get'],url_path='contexto-contable')
+    def accounting_context(self,request):
+        if not isinstance(request.successful_authenticator,ErpSessionAuthentication) or request.session.get('erp_web_session') is not True:
+            raise PermissionDenied('Se requiere sesión web ERP vigente.')
+        if set(request.query_params)!={'provider_id'} or len(request.query_params.getlist('provider_id'))!=1:
+            raise ValidationError('Contexto empresarial explícito requerido.')
+        company=self.company()
+        from django.middleware.csrf import get_token
+        return Response({'schema':'sgacd-accounting-context-v1','company_id':str(company.pk),'provider_id':str(owned_provider(request).pk),'actor_id':str(request.user.pk),'authenticated':True,'read_only':True,'csrf_token':get_token(request._request)})
+
+    @action(detail=False,methods=['get'],url_path='lectura-contable')
+    def accounting_read_context(self,request):
+        if not isinstance(request.successful_authenticator,ErpSessionAuthentication) or request.session.get('erp_web_session') is not True:
+            raise PermissionDenied('Se requiere sesión web ERP vigente.')
+        kind=request.query_params.get('report');fields={'provider_id','report'}
+        if kind in {'trial_balance','quick_ratio'}:fields|={'fecha_corte'}
+        elif kind in {'profitability','tax_reconciliation','tax_register'}:fields|={'desde','hasta'}
+        else:raise ValidationError('Reporte no admitido.')
+        if kind in {'tax_reconciliation','tax_register'}:fields|={'cuenta_id'}
+        if set(request.query_params)!=fields or any(len(request.query_params.getlist(k))!=1 for k in fields):raise ValidationError('Consulta empresarial explícita requerida.')
+        from datetime import date
+        from apps.core_erp.accounting.exceptions import AccountingError
+        from apps.core_erp.accounting.reports_engine import ReportsEngine
+        from apps.core_erp.accounting.query_assistant import _day
+        company=self.company()
+        try:
+            end=_day(request.query_params.get('fecha_corte',request.query_params.get('hasta')))
+            start=_day(request.query_params['desde']) if 'desde' in fields else None
+            if start and (start>end or (end-start).days>366):raise ValueError()
+            if kind=='trial_balance':
+                data=ReportsEngine.get_trial_balance(company.pk,end)
+                for line in data['lines']:
+                    for key in ('debit','credit','balance'):line[key]=format(line[key],'.2f')
+                for key in ('total_debit','total_credit'):data[key]=format(data[key],'.2f')
+            elif kind=='profitability':data=ReportsEngine.get_profitability(company.pk,start,end)
+            elif kind=='quick_ratio':
+                from apps.core_erp.accounting.ratios import quick_ratio
+                data=quick_ratio(company.pk,end)
+            elif kind=='tax_reconciliation':
+                from apps.core_erp.accounting.tax_reconciliation import reconcile_tax_account
+                data=reconcile_tax_account(company.pk,account_id=request.query_params['cuenta_id'],since=start.isoformat(),until=end.isoformat())
+            else:
+                from apps.core_erp.accounting.tax_register import reconcile_tax_register
+                data=reconcile_tax_register(company.pk,account_id=request.query_params['cuenta_id'],since=start.isoformat(),until=end.isoformat())
+        except (ValueError,TypeError,AccountingError):raise ValidationError('Reporte no disponible para este ámbito.') from None
+        return Response({'schema':'sgacd-accounting-read-context-v1','report':kind,'context':{'company_id':str(company.pk),'provider_id':str(owned_provider(request).pk),'actor_id':str(request.user.pk),'read_only':True},'data':data})
+
     @action(detail=False,methods=['get'],url_path='conciliacion-tributaria')
     def tax_reconciliation(self,request):
         from apps.core_erp.accounting.tax_reconciliation import reconcile_tax_account
@@ -641,6 +688,10 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
     def cancel_financial_rehearsal(self,request):
         return self._financial_rehearsal_command(request,'cancel',{'request_id','plan_digest','confirmed'})
 
+    @action(detail=False,methods=['post'],url_path='estado-simulacion-financiera',parser_classes=[AccountingQueryJSONParser])
+    def state_financial_rehearsal(self,request):
+        return self._financial_rehearsal_command(request,'state',{'request_id'})
+
     def _opening_command(self,request,operation,fields):
         from apps.core_erp.accounting import opening_balances
         from apps.core_erp.accounting.exceptions import AccountingError
@@ -852,6 +903,17 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
             raise ValidationError('Fuente UBL no válida o desactualizada.') from None
         return Response(result)
 
+    @action(detail=False,methods=['get'],url_path='fuente-borrador-ubl-crm')
+    def reviewed_crm_ubl_source(self,request):
+        from apps.domain_business.comercial.services.crm_fiscal import reviewed_crm_ubl_source
+        from apps.core_erp.accounting.exceptions import AccountingError
+        self.company()
+        fields={'provider_id','opportunity_id','review_id'}
+        if set(request.query_params)!=fields or any(len(request.query_params.getlist(k))!=1 for k in fields):raise ValidationError('Consulta CRM UBL inválida.')
+        try:result=reviewed_crm_ubl_source(actor=request.user,provider_id=owned_provider(request).pk,opportunity_id=request.query_params['opportunity_id'],review_id=request.query_params['review_id'])
+        except (ValueError,TypeError,AccountingError):raise ValidationError('Fuente CRM no válida o desactualizada.') from None
+        return Response(result)
+
     @action(detail=False,methods=['get'],url_path='fuentes-reserva-fiscal')
     def reservation_fiscal_sources(self,request):
         from apps.domain_business.comercial.services.reservation_fiscal import list_reservation_sources
@@ -892,6 +954,26 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except (ValueError,TypeError,AccountingError):raise ValidationError('Solicitud no válida para esta reserva.') from None
         return Response(result,status=200 if result['replayed'] else 201)
 
+    @action(detail=False,methods=['post'],url_path='revisar-oportunidad-fiscal',parser_classes=[AccountingQueryJSONParser])
+    def review_crm_invoice(self,request):
+        from apps.domain_business.comercial.services.crm_fiscal import review_crm_invoice
+        from apps.core_erp.accounting.exceptions import AccountingError
+        self.company()
+        if not isinstance(request.data,dict) or set(request.data)!={'opportunity_id','items','evidence_digest','confirmed','expected_revision'}:raise ValidationError('Contrato de revisión CRM inválido.')
+        try:result=review_crm_invoice(actor=request.user,provider_id=owned_provider(request).pk,**request.data)
+        except (ValueError,TypeError,AccountingError):raise ValidationError('Revisión CRM no válida para esta empresa.') from None
+        return Response(result)
+
+    @action(detail=False,methods=['post'],url_path='solicitar-factura-oportunidad',parser_classes=[AccountingQueryJSONParser])
+    def request_crm_invoice(self,request):
+        from apps.domain_business.comercial.services.crm_fiscal import request_crm_invoice
+        from apps.core_erp.accounting.exceptions import AccountingError
+        self.company()
+        if not isinstance(request.data,dict) or set(request.data)!={'opportunity_id','review_id','confirmed'}:raise ValidationError('Contrato de solicitud CRM inválido.')
+        try:result=request_crm_invoice(actor=request.user,provider_id=owned_provider(request).pk,**request.data)
+        except (ValueError,TypeError,AccountingError):raise ValidationError('Solicitud CRM no válida para esta empresa.') from None
+        return Response(result)
+
     @action(detail=False,methods=['post'],url_path='consulta-contable',parser_classes=[AccountingQueryJSONParser])
     def accounting_query(self,request):
         from apps.core_erp.accounting.query_assistant import answer_query
@@ -899,7 +981,7 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         company=self.company()
         try:result=answer_query(company.pk,request.data)
         except (ValueError,TypeError,AccountingError):
-            raise ValidationError('Consulta no disponible: usa una pregunta soportada y un intervalo válido para rentabilidad.') from None
+            raise ValidationError('Consulta no disponible: usa una pregunta soportada, intervalo de rentabilidad o corte explícito de liquidez.') from None
         return Response(result)
 
     @action(detail=False,methods=['get'],url_path='estado-cola-comercial')
@@ -964,7 +1046,9 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
             return Response(inspect_company(company.pk,after_id=request.query_params.get('despues_id'),limit=int(raw)))
         except (ValueError,AccountingError):raise ValidationError('Cursor, límite o empresa no válidos para el diagnóstico.') from None
 
-    @action(detail=False,methods=['post'],url_path='simulacion-caja')
+    from apps.core_erp.accounting.query_parser import AccountingScenarioJSONParser
+
+    @action(detail=False,methods=['post'],url_path='simulacion-caja',parser_classes=[AccountingScenarioJSONParser])
     def cash_simulation(self,request):
         from apps.core_erp.intelligence.cash_simulation import simulate
         company=self.company()
@@ -972,7 +1056,7 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except ValueError as exc:raise ValidationError(str(exc)) from None
         return Response({**result,'tenant_id':str(company.pk),'currency':company.currency})
 
-    @action(detail=False,methods=['post'],url_path='backtest-caja')
+    @action(detail=False,methods=['post'],url_path='backtest-caja',parser_classes=[AccountingScenarioJSONParser])
     def cash_backtest(self,request):
         from apps.core_erp.intelligence.cash_simulation import backtest
         company=self.company()
@@ -980,7 +1064,7 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except ValueError as exc:raise ValidationError(str(exc)) from None
         return Response({**result,'tenant_id':str(company.pk),'currency':company.currency})
 
-    @action(detail=False,methods=['post'],url_path='backtest-ventanas-caja')
+    @action(detail=False,methods=['post'],url_path='backtest-ventanas-caja',parser_classes=[AccountingScenarioJSONParser])
     def cash_backtest_windows(self,request):
         from apps.core_erp.intelligence.cash_simulation import backtest_windows
         company=self.company()
@@ -988,7 +1072,7 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
         except ValueError as exc:raise ValidationError(str(exc)) from None
         return Response({**result,'tenant_id':str(company.pk),'currency':company.currency})
 
-    @action(detail=False,methods=['post'],url_path='sensibilidad-caja')
+    @action(detail=False,methods=['post'],url_path='sensibilidad-caja',parser_classes=[AccountingScenarioJSONParser])
     def cash_sensitivity(self,request):
         from apps.core_erp.intelligence.cash_simulation import sensitivity
         company=self.company()

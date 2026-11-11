@@ -10,9 +10,9 @@ def describe_profile():
     from apps.core_erp.fx.models import Currency,FXRateTable
     from apps.core_erp.outbox_models import OutboxEvent
     specs=[]
-    for model in (Tenant,Account,FiscalPeriod):
+    for model in (Tenant,Account,FiscalPeriod,Currency,ChartOfAccounts):
         specs.append({'table':model._meta.db_table,'privileges':['SELECT'],'update_columns':['id']})
-    for model in (get_user_model(),ChartOfAccounts,Currency,FXRateTable):
+    for model in (get_user_model(),FXRateTable):
         specs.append({'table':model._meta.db_table,'privileges':['SELECT'],'update_columns':[]})
     for model in (JournalEntry,LedgerEntry,AccountingDelivery,AccountingDailyBalance):
         specs.append({'table':model._meta.db_table,'privileges':['SELECT','INSERT','UPDATE'],'update_columns':[]})

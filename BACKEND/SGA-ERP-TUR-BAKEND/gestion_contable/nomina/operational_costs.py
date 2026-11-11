@@ -87,6 +87,13 @@ def calculate(user,company,payroll,capacities,operation_centers):
         if str(UUID(key))!=key or not isinstance(code,str) or not re.fullmatch('[A-Z0-9][A-Z0-9_.-]{0,39}',code):raise AccountingError('Canonical operation and explicit center code required.')
     orders={str(r.pk):r for r in OrdenOperativa.objects.filter(provider_id=payroll.perfil_id,pk__in=operation_ids)}
     if set(orders)!=operation_ids:raise AccountingError('An operation is foreign or unavailable.')
+    # Version 2 binds the business reference and operation window, not just its UUID.
+    # These references are declared contract/package links, never proof of a sale.
+    operation_sources=[{'operation_id':str(order.pk),'commercial_reference_id':str(order.contrato_ref_id),
+        'planned_start':order.fecha_inicio.isoformat(),'planned_end':order.fecha_fin_estimada.isoformat(),
+        'description_digest':fingerprint(order.descripcion_servicio),'active':order.is_active}
+        for _,order in sorted(orders.items())]
+    if any(not row['active'] for row in operation_sources):raise AccountingError('Inactive operation cannot support current costs.')
     provider=payroll_engine.TourismProvider.objects.select_related('owner').get(pk=payroll.perfil_id)
     intervals={key:[] for key in workers};weights={key:{} for key in workers};source=[]
     for record in records:
@@ -115,7 +122,7 @@ def calculate(user,company,payroll,capacities,operation_centers):
             row={'employee_id':identifier,'operation_id':None if operation=='UNALLOCATED' else operation,'center_code':None if operation=='UNALLOCATED' else operation_centers[operation],'allocation_weight_us':op_weights[operation],'amounts':{kind:_format_money(value[operation]) for kind,value in parts.items()}}
             row['total_cost']=_format_money(sum(value[operation] for value in parts.values()))
             (unallocated if operation=='UNALLOCATED' else allocations).append(row)
-    return {'schema':'sgacd-payroll-operation-cost-v1','company_id':str(company.pk),'provider_id':str(payroll.perfil_id),'payroll_id':str(payroll.pk),'payroll_review_id':str(review.pk),'payroll_review_digest':review.payload['review_digest'],'journal_id':applied['journal_id'],'since':snapshot['since'],'until':snapshot['until'],'timezone':'America/Bogota','allocation_basis':'OWNER_DECLARED_PAID_CAPACITY_US','rounding':'LARGEST_REMAINDER_UUID_UNALLOCATED_LAST','capacities':sorted(capacities,key=lambda r:r['employee_id']),'operation_centers':operation_centers,'work_source':source,'coverage':coverage,'allocations':allocations,'unallocated':unallocated,'posted_cost':{kind:_format_money(value) for kind,value in totals.items()},'posted_total_cost':_format_money(sum(totals.values())),'source_independently_verified':False,'statutory_payroll_rules_verified':False}
+    return {'schema':'sgacd-payroll-operation-cost-v2','company_id':str(company.pk),'provider_id':str(payroll.perfil_id),'payroll_id':str(payroll.pk),'payroll_review_id':str(review.pk),'payroll_review_digest':review.payload['review_digest'],'journal_id':applied['journal_id'],'since':snapshot['since'],'until':snapshot['until'],'timezone':'America/Bogota','allocation_basis':'OWNER_DECLARED_PAID_CAPACITY_US','rounding':'LARGEST_REMAINDER_UUID_UNALLOCATED_LAST','capacities':sorted(capacities,key=lambda r:r['employee_id']),'operation_centers':operation_centers,'operation_sources':operation_sources,'work_source':source,'coverage':coverage,'allocations':allocations,'unallocated':unallocated,'posted_cost':{kind:_format_money(value) for kind,value in totals.items()},'posted_total_cost':_format_money(sum(totals.values())),'source_independently_verified':False,'statutory_payroll_rules_verified':False}
 
 @transaction.atomic
 def review_costs(*,actor,provider_id,payroll_id,capacities,operation_centers,evidence_digest,reason_code,expected_revision,confirmed):

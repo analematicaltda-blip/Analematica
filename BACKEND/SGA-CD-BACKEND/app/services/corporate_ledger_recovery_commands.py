@@ -168,6 +168,7 @@ def dispatch(db,*,user,session_cookie,operation,payload):
             raw=json.loads(b''.join(chunks));data=raw['data'] if isinstance(raw,dict) and raw.get('success') is True else raw
     except (ledger.httpx.HTTPError,ValueError):raise HTTPException(503,'Resultado no confirmado. Reintenta con la misma revisión persistida para evitar duplicados.') from None
     if not isinstance(data,dict):raise HTTPException(503,'Resultado contable incompatible; consulta la revisión original.')
+    ledger.verify_dispatch_result(recheck,db,user,selected)
     if operation in RECOVERY_COMMANDS:
         from app.services.recovery_contract import validate
         try:validate(operation,data,payload,selected)

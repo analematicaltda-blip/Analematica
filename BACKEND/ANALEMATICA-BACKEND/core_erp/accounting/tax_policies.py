@@ -25,9 +25,9 @@ def normalize(policy):
     seen=set();components=[]
     for row in policy['components']:
         if not isinstance(row,dict) or set(row)!={'code','kind','rate_bps','applies_to'}:raise AccountingError('Invalid component contract.')
-        if not isinstance(row['code'],str) or not re.fullmatch('[A-Z0-9][A-Z0-9_-]{0,29}',row['code']) or row['code'] in seen or row['kind'] not in {'OUTPUT_TAX','INPUT_TAX','WITHHOLDING'} or type(row['rate_bps']) is not int or not 0<=row['rate_bps']<=10000:raise AccountingError('Unique component and integer rate from0 to10000 basis points required.')
+        if not isinstance(row['code'],str) or not re.fullmatch('[A-Z0-9][A-Z0-9_-]{0,29}',row['code']) or row['code'] in seen or not isinstance(row['kind'],str) or row['kind'] not in {'OUTPUT_TAX','INPUT_TAX','WITHHOLDING'} or type(row['rate_bps']) is not int or not 0<=row['rate_bps']<=10000:raise AccountingError('Unique component and integer rate from0 to10000 basis points required.')
         categories=row['applies_to']
-        if not isinstance(categories,list) or not categories or len(categories)!=len(set(categories)) or not all(c in CATEGORIES for c in categories):raise AccountingError('Explicit nonduplicated tax categories required.')
+        if not isinstance(categories,list) or not categories or any(not isinstance(c,str) for c in categories) or len(categories)!=len(set(categories)) or not all(c in CATEGORIES for c in categories):raise AccountingError('Explicit nonduplicated tax categories required.')
         if row['kind'] in {'OUTPUT_TAX','INPUT_TAX'} and row['rate_bps']>0 and any(c in {'EXEMPT','EXCLUDED'} for c in categories):raise AccountingError('Do not charge output tax to exempt/excluded components.')
         seen.add(row['code']);components.append({**row,'applies_to':sorted(categories)})
     return {**policy,'components':sorted(components,key=lambda r:r['code'])}

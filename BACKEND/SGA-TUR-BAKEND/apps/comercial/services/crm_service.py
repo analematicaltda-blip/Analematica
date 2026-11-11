@@ -1,7 +1,8 @@
 import logging
 from ..models import Lead
 from ..engines.lead_scoring_engine import LeadScoringEngine
-from ..engines.funnel_engine import FunnelEngine
+from ..engines.funnel_engine import FunnelEngine,crm_amount
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +12,7 @@ class CRMService:
     """
 
     @staticmethod
+    @transaction.atomic
     def register_new_lead(data: dict) -> Lead:
         lead = Lead.objects.create(
             name=data['name'],
@@ -19,14 +21,14 @@ class CRMService:
             source=data.get('source', 'organic'),
             industry=data.get('industry', ''),
             company_size=data.get('company_size', 'SMALL'),
-            estimated_value=data.get('estimated_value', 0)
+            estimated_value=crm_amount(data.get('estimated_value', 0))
         )
         LeadScoringEngine.update_lead(lead)
         if lead.score >= 75:
             FunnelEngine.create_opportunity(
                 lead=lead,
                 expected_plan=data.get('target_plan', 'BASIC'),
-                estimated_revenue=float(lead.estimated_value)
+                estimated_revenue=lead.estimated_value
             )
         return lead
 

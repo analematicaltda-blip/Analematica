@@ -1,7 +1,7 @@
 """Validate analytical payroll-cost results without granting financial authority."""
 import re
 from uuid import UUID
-from datetime import date
+from datetime import date,datetime
 
 def identifier(value):
     if not isinstance(value,str) or str(UUID(value))!=value:raise ValueError('Canonical identifier required.')
@@ -14,7 +14,7 @@ def false_flags(data,*names):
     if any(data.get(k) is not False for k in names):raise ValueError('Analytical action cannot claim financial authority.')
 
 def preview(data,payroll,context):
-    if data.get('schema')!='sgacd-payroll-operation-cost-v1' or data.get('company_id')!=context['tenant_id'] or data.get('provider_id')!=context['provider_id'] or data.get('payroll_id')!=payroll:raise ValueError('Preview scope mismatch.')
+    if data.get('schema') not in {'sgacd-payroll-operation-cost-v1','sgacd-payroll-operation-cost-v2'} or data.get('company_id')!=context['tenant_id'] or data.get('provider_id')!=context['provider_id'] or data.get('payroll_id')!=payroll:raise ValueError('Preview scope mismatch.')
     false_flags(data,'source_independently_verified','statutory_payroll_rules_verified')
     identifier(data['journal_id']);identifier(data['payroll_review_id'])
     if not re.fullmatch('[0-9a-f]{64}',data.get('payroll_review_digest','')):raise ValueError('Missing source digest.')
@@ -30,6 +30,17 @@ def preview(data,payroll,context):
     for key,value in centers.items():
         identifier(key)
         if not isinstance(value,str) or not re.fullmatch('[A-Z0-9][A-Z0-9_.-]{0,39}',value):raise ValueError('Invalid center.')
+    if data['schema']=='sgacd-payroll-operation-cost-v2':
+        sources=data.get('operation_sources');bound=set()
+        if not isinstance(sources,list) or not 1<=len(sources)<=20:raise ValueError('Explicit operation provenance required.')
+        for source in sources:
+            if not isinstance(source,dict) or set(source)!={'operation_id','commercial_reference_id','planned_start','planned_end','description_digest','active'}:raise ValueError('Unexpected business provenance fields.')
+            identifier(source['operation_id']);identifier(source['commercial_reference_id'])
+            if source['operation_id'] not in centers or source['operation_id'] in bound or source['active'] is not True:raise ValueError('Ambiguous or inactive business provenance.')
+            begin=datetime.fromisoformat(source['planned_start']);end=datetime.fromisoformat(source['planned_end'])
+            if begin.tzinfo is None or end.tzinfo is None or begin>=end or not isinstance(source['description_digest'],str) or not re.fullmatch('[0-9a-f]{64}',source['description_digest']):raise ValueError('Invalid operation evidence window.')
+            bound.add(source['operation_id'])
+        if bound!=set(centers):raise ValueError('Missing business operation provenance.')
     work=data['work_source']
     if not isinstance(work,list) or len(work)>100:raise ValueError('Bounded work provenance required.')
     for row in work:

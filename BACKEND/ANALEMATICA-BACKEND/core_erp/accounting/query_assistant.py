@@ -6,6 +6,12 @@ import unicodedata
 
 QUESTIONS = {
     'rentabilidad': 'profitability',
+    'muestra la rentabilidad': 'profitability',
+    'cual es el resultado neto de mi empresa': 'profitability',
+    'liquidez': 'quick_ratio',
+    'liquidez acida': 'quick_ratio',
+    'cual es mi liquidez acida': 'quick_ratio',
+    'consulta mi liquidez acida': 'quick_ratio',
     'cual es la rentabilidad de mi empresa': 'profitability',
     'cual es mi rentabilidad': 'profitability',
     'estado de la cola de facturacion': 'commercial_queue',
@@ -22,7 +28,7 @@ def resolve_question(question):
     normalized = ' '.join(normalized.strip(' ¿?¡!.,\t\r\n').split())
     intent = QUESTIONS.get(normalized)
     if intent is None:
-        raise ValueError('Pregunta no soportada; consulta rentabilidad o estado de la cola de facturación.')
+        raise ValueError('Pregunta no soportada; consulta rentabilidad, liquidez ácida o estado de la cola de facturación.')
     return intent
 
 
@@ -49,6 +55,13 @@ def answer_query(company_id, payload):
         from .reports_engine import ReportsEngine
         data = ReportsEngine.get_profitability(company_id, since, until)
         source = 'ReportsEngine.get_profitability'
+    elif intent == 'quick_ratio':
+        if set(payload) != {'question','until'}:
+            raise ValueError('La liquidez requiere solo el corte until explícito.')
+        cutoff = _day(payload['until'])
+        from .ratios import quick_ratio
+        data = quick_ratio(company_id, cutoff)
+        source = 'ratios.quick_ratio'
     else:
         if set(payload) != {'question'}:
             raise ValueError('La cola no admite un filtro de fechas no implementado.')

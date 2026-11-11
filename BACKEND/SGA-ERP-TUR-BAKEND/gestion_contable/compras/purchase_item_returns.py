@@ -235,4 +235,4 @@ def register_body(company,journal):
     events=list(OutboxEvent.objects.filter(event_type__in=[POSTED,VOIDED],payload__body__company_id=str(company.pk),payload__body__journal_id=str(journal.pk))[:2])
     if len(events)!=1:raise AccountingError('Unique concept return tax origin required.')
     event=events[0];p=read(event,event.event_type,company);r=read(OutboxEvent.objects.filter(pk=p['review_id']).first(),VOID_REVIEW if event.event_type==VOIDED else REVIEW,company);body,source=original(company,r['document_id']);history(company,p['invoice_id'],body,source)
-    return {'document_id':body['document_id'],'preview':{'lines':r['lines']}}
+    return {'document_id':body['document_id'],'tax_source':body,'preview':{'lines':r['lines']}}

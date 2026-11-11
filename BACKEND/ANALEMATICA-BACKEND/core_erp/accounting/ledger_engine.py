@@ -235,11 +235,9 @@ class LedgerEngine:
         elif entry.currency!=entry.base_currency and fx_review_id is not None:
             rate=reviewed_fx.rate_for_post(company,user,entry,fx_review_id)
         elif entry.currency!=entry.base_currency:
-            moment=timezone.make_aware(datetime.combine(entry.date,time.max))
-            try:rate=FXEngine.get_rate(entry.currency,entry.base_currency,as_of=min(timezone.now(),moment))
-            except ValueError:raise AccountingError('A valid recorded FX rate is required; no fallback to 1.0.') from None
-            if entry.exchange_rate!=Decimal('1') and entry.exchange_rate!=rate:
-                raise AccountingError('Draft rate differs from the applicable recorded rate.')
+            # Legacy global rows have no documentary source/expiry. They remain
+            # readable history, never authorization for a new monetary posting.
+            raise AccountingError('An explicit reviewed FX quote with source, validity and second confirmation is required; no global-rate fallback.')
         elif entry.exchange_rate!=Decimal('1'):
             raise AccountingError('Same-currency entries require a unit rate.')
         if not rate.is_finite() or rate<=0:raise AccountingError('Invalid FX rate.')

@@ -70,6 +70,8 @@ def review_groups(company_id, *, actor, account_id, csv_text, groups, difference
     if confirmed is not True or not isinstance(groups,list) or not 1<=len(groups)<=30 or not isinstance(differences,list):
         raise AccountingError('First confirmation and explicit bounded groups required.')
     comparison=compare_statement(company.pk,account_id=account_id,csv_text=csv_text)
+    from .bank_statement import require_booked
+    require_booked(comparison)
     if len(comparison['rows'])>30: raise AccountingError('At most thirty statement rows per group review.')
     account,policy=bank.cash_account(company,account_id)
     rows=[{k:r[k] for k in ['row','transaction_ref_digest','date','direction','amount']} for r in comparison['rows']]

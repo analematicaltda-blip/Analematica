@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-11-10",
+  "updated": "2026-11-11",
   "production_enabled": false,
   "items": [
     {
@@ -10,7 +10,7 @@
       "owner": "Seguridad",
       "status": "PENDIENTE",
       "acceptance": "Aprobar raíces oficiales, paquete, firmantes y parches; verificar cadena y rechazos en dispositivos reales.",
-      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio. Auditoría ACC-001–024: fixture de cancelaciones/consentimiento actualizada y28 pruebas criptográficas sintéticas; no acreditan dispositivo, raíces ni feed reales. Registro: ANALISIS/contabilidad/CIERRE_20_HITOS.md."
     },
     {
       "id": "WAL-002",
@@ -19,7 +19,7 @@
       "owner": "Seguridad",
       "status": "PENDIENTE",
       "acceptance": "Probar actualización atómica, frescura, revocación y caída del feed sin aceptar datos inventados.",
-      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio."
+      "evidence": "No acreditado en producción; consultar cortes de pruebas del repositorio. Auditoría ACC-001–024: fixture de cancelaciones/consentimiento actualizada y28 pruebas criptográficas sintéticas; no acreditan dispositivo, raíces ni feed reales. Registro: ANALISIS/contabilidad/CIERRE_20_HITOS.md."
     },
     {
       "id": "WAL-003",

@@ -13,7 +13,7 @@ from django.db import transaction
 from .models import Account,JournalEntry
 from .ratio_models import AccountingRatioPolicy
 from .reports_engine import ReportsEngine
-from .validation import lock_company,current_actor
+from .validation import lock_company,current_actor,exact_arithmetic
 from .exceptions import AccountingError
 
 ROLES={'cash_equivalents':'ASSET','temporary_investments':'ASSET',
@@ -84,6 +84,7 @@ def configure(company_id,*,actor,mapping,evidence_digest,expected_revision,confi
 
 
 @transaction.atomic
+@exact_arithmetic
 def quick_ratio(company_id,cutoff,*,policy_revision=None):
     if type(cutoff) is not date:raise AccountingError('An economic cutoff date is required.')
     company=lock_company(company_id)
@@ -93,8 +94,10 @@ def quick_ratio(company_id,cutoff,*,policy_revision=None):
             if policy_revision is not None else latest(company.pk))
     if policy_revision is not None and policy is None:
         raise AccountingError('The requested company policy revision is unavailable.')
+    tail=JournalEntry.plain_objects.filter(tenant=company,is_posted=True).order_by('-posted_at','-pk').first()
+    snapshot={'database':'primary','consistency':'company_lock_shared_with_posting','ledger_tail_id':str(tail.pk) if tail else None,'ledger_tail_hash':tail.system_hash if tail else None,'historical_publication_snapshot':False}
     base={'tenant_id':str(company.pk),'currency':company.currency,'cutoff_date':cutoff.isoformat(),
-          'unit':'times','formula':'(cash_equivalents+temporary_investments+immediate_receivables)/current_liabilities',
+          'read_only':True,'posted_only':True,'valuation':'base_currency','ledger_written':False,'money_transferred':False,'snapshot':snapshot,'unit':'times','formula':'(cash_equivalents+temporary_investments+immediate_receivables)/current_liabilities',
           'source':'primary_posted_ledger','policy':describe(policy),'value':None,
           'classification_scope':'selected_accounts_reviewed_by_owner_not_independently_certified',
           'historical_policy':'explicit_reviewed_revision_applied_to_cutoff' if policy_revision is not None else 'latest_reviewed_classification_applied_to_cutoff',

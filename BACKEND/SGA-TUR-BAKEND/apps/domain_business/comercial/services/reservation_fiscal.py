@@ -38,7 +38,10 @@ def latest_review(company,source):
 
 def validated_review(row,company,source,fingerprint,recognition_date=None):
     if row is None:raise ValidationError('Falta revisión fiscal persistida.')
+    if row.event_type!=REVIEW_EVENT or row.domain!='commercial' or row.aggregate_root!=str(source.pk) or row.version!=1:raise ValidationError('Sobre de revisión fiscal incompatible.')
     p=row.payload
+    fields={'company_id','review_revision','reviewed_by','source_fingerprint','snapshot','intent_digest','evidence_digest','legal_tax_policy_verified'}
+    if not isinstance(p,dict) or set(p)!=fields or p.get('company_id')!=str(company.pk) or p.get('legal_tax_policy_verified') is not False or type(p.get('review_revision')) is not int or not isinstance(p.get('reviewed_by'),str) or not re.fullmatch('[1-9][0-9]*',p['reviewed_by']) or not isinstance(p.get('evidence_digest'),str) or not re.fullmatch('[0-9a-f]{64}',p['evidence_digest']):raise ValidationError('Contrato de revisión fiscal alterado.')
     if not isinstance(p,dict) or p.get('source_fingerprint')!=fingerprint:raise ValidationError('La reserva cambió; requiere nueva revisión.')
     intent=prepare_invoice_intent(p.get('snapshot'),str(company.pk))
     snapshot=p['snapshot']
@@ -76,7 +79,7 @@ def review_reservation(*,actor,provider_id,reservation_id,items,evidence_digest,
              'evidence_digest':evidence_digest,'legal_tax_policy_verified':False}
     row=OutboxEvent.objects.create(id=uuid5(NAMESPACE,':'.join([str(company.pk),str(source.pk),str(revision)])),
         event_type=REVIEW_EVENT,domain='commercial',aggregate_root=str(source.pk),payload=payload,version=1)
-    return {'review_id':str(row.pk),'revision':revision,'request_created':False,'fiscal_accepted':False,'ledger_written':False}
+    return {'schema':'sgacd-commercial-request-result-v1','review_id':str(row.pk),'revision':revision,'request_created':False,'fiscal_accepted':False,'ledger_written':False,'company_id':str(company.pk),'source_id':str(source.pk),'source_type':'reservation','status':'REVIEWED','money_transferred':False,'payment_verified':False,'published':False}
 
 @transaction.atomic
 def request_reservation_invoice(*,actor,provider_id,reservation_id,review_id,confirmed):
@@ -89,8 +92,8 @@ def request_reservation_invoice(*,actor,provider_id,reservation_id,review_id,con
     result=enqueue_invoice_intent(payload['snapshot'],company_id=company.pk,actor=user,source_review={
         'review_id':str(row.pk),'intent_digest':payload['intent_digest'],'source_fingerprint':fingerprint,
         'evidence_digest':payload['evidence_digest']})
-    return {**result,'review_id':str(row.pk),'revision':payload['review_revision'],'source_authority_verified':True,
-            'legal_tax_policy_verified':False}
+    return {**result,'schema':'sgacd-commercial-request-result-v1','review_id':str(row.pk),'revision':payload['review_revision'],'source_authority_verified':True,
+            'legal_tax_policy_verified':False,'company_id':str(company.pk),'source_id':str(source.pk),'source_type':'reservation','status':'REQUEST_ONLY','money_transferred':False,'payment_verified':False,'published':False}
 
 
 def list_reservation_sources(*,actor,provider_id,after=None):
@@ -100,7 +103,7 @@ def list_reservation_sources(*,actor,provider_id,after=None):
     user=current_actor(actor);link=resolve_company(user,provider_id)
     reviews=OutboxEvent.objects.annotate(source_key=Replace('aggregate_root',Value('-'),Value(''))).filter(event_type=REVIEW_EVENT,domain='commercial',
         source_key=Replace(Cast(OuterRef('pk'),CharField()),Value('-'),Value('')),payload__company_id=str(link.tenant_id)).order_by('-payload__review_revision')
-    requests=OutboxEvent.objects.annotate(source_key=Replace('aggregate_root',Value('-'),Value(''))).filter(event_type=EVENT_TYPE,source_key=Replace(Cast(OuterRef('pk'),CharField()),Value('-'),Value('')),payload__company_id=str(link.tenant_id))
+    requests=OutboxEvent.objects.annotate(source_key=Replace('aggregate_root',Value('-'),Value(''))).filter(event_type=EVENT_TYPE,domain='commercial',version=1,source_key=Replace(Cast(OuterRef('pk'),CharField()),Value('-'),Value('')),payload__company_id=str(link.tenant_id))
     recognition_base=OutboxEvent.objects.annotate(source_key=Replace('aggregate_root',Value('-'),Value(''))).filter(
         source_key=Replace(Cast(OuterRef('pk'),CharField()),Value('-'),Value('')),payload__company_id=str(link.tenant_id))
     recognition_reviews=recognition_base.filter(event_type='accounting.reservation.recognition-reviewed.v1').order_by('-payload__revision')

@@ -115,6 +115,9 @@ class FreshDatabaseChecks(unittest.TestCase):
                 self.assertEqual(first.status_code,200,first.content)
                 source.refresh_from_db();self.assertEqual(source.saldo_disponible,Decimal('100'))
                 confirmation={'digest':intent['digest'],'confirmation':first.json()['data']['confirmation']}
+                denied=client.post(detail+'execute/',confirmation,format='json');self.assertEqual(denied.status_code,409,denied.content)
+                recipient_client=APIClient(HTTP_HOST='localhost');recipient_client.force_authenticate(other)
+                consent=recipient_client.post(detail+'consent/',{'digest':intent['digest'],'confirmed':True},format='json');self.assertEqual(consent.status_code,200,consent.content)
                 second=client.post(detail+'execute/',confirmation,format='json');self.assertEqual(second.status_code,200,second.content)
                 repeated=client.post(detail+'execute/',confirmation,format='json');self.assertEqual(repeated.status_code,200,repeated.content)
                 self.assertEqual(second.json()['data']['transaction'],repeated.json()['data']['transaction'])
@@ -154,6 +157,7 @@ class FreshDatabaseChecks(unittest.TestCase):
                 def signed(phase):
                     challenge,message=device_approvals.issue(owner,intent.pk,device.pk,phase)
                     return {'challenge':challenge.pk,'signature':base64.b64encode(key.sign(message,ec.ECDSA(hashes.SHA256()))).decode()}
+                internal_transfer.consent(recipient,intent.pk,intent.digest,True)
                 intent,token=internal_transfer.review(owner,intent.pk,intent.digest,signed('REVIEW'))
                 result=internal_transfer.execute(owner,intent.pk,intent.digest,token,signed('EXECUTE'))
                 self.assertEqual(result.state,'EXECUTED')
@@ -203,8 +207,14 @@ class FreshDatabaseChecks(unittest.TestCase):
             finally:
                 transaction.set_rollback(True)
 
-    @unittest.skipUnless(args.service=='erp-tur','The ERP session routes are not exposed by Turismo.')
     def test_11_totp_session_on_migrated_database(self):
+        if args.service=='turismo':
+            # An absent ERP session endpoint is a verified isolation contract,
+            # not a skipped authentication test or a reason to expose it here.
+            client=Client(HTTP_HOST='localhost')
+            self.assertEqual(client.get('/api/v1/erp-session/').status_code,404)
+            self.assertEqual(client.post('/api/v1/erp-session/login/',{}).status_code,404)
+            return
         import secrets,time,uuid
         from unittest.mock import patch
         from django.db import transaction

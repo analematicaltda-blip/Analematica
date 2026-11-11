@@ -21,8 +21,8 @@ services:
   # 2. Backend RESTful FastAPI
   fastapi-backend:
     build:
-      context: ./BACKEND/SGA-CD-BACKEND
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: BACKEND/SGA-CD-BACKEND/Dockerfile
     container_name: sgacd_backend
     init: true
     restart: always

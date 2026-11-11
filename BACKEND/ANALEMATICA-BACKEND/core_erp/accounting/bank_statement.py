@@ -15,22 +15,37 @@ from . import ratios
 from .reports_engine import ReportsEngine
 
 COLUMNS=['transaction_id','date','direction','amount','currency']
+STATE_COLUMNS=COLUMNS+['bank_id','status']
+BANK_STATES={'BOOKED','PENDING','REVERSED'}
+
+def require_booked(comparison):
+    if any(row.get('declared_bank_state','BOOKED')!='BOOKED' for row in comparison['rows']):
+        raise AccountingError('Pending or externally reversed transactions cannot be reconciled, grouped or resolved manually.')
 
 def parse_statement(text):
     if not isinstance(text,str) or not 1<=len(text.encode('utf-8'))<=5000:raise AccountingError('CSV must contain at most 5000 UTF-8 bytes.')
     try:
         reader=csv.reader(io.StringIO(text),strict=True)
-        if next(reader,None)!=COLUMNS:raise AccountingError('Use the exact neutral CSV header.')
+        header=next(reader,None)
+        if header not in (COLUMNS,STATE_COLUMNS):raise AccountingError('Use an exact neutral CSV header, optionally with bank_id,status.')
+        explicit=header==STATE_COLUMNS;bank_id=None
         rows=[];seen=set()
         for cells in reader:
-            if len(cells)!=5 or len(rows)>=100:raise AccountingError('At most 100 complete CSV rows required.')
-            identifier,day,direction,amount,currency=cells
+            if len(cells)!=len(header) or len(rows)>=100:raise AccountingError('At most 100 complete CSV rows required.')
+            identifier,day,direction,amount,currency=cells[:5]
+            state=None
+            if explicit:
+                code,state=cells[5:]
+                if not re.fullmatch('[A-Z0-9][A-Z0-9_-]{1,29}',code) or state not in BANK_STATES or bank_id is not None and bank_id!=code:raise AccountingError('One explicit bank identifier and supported declared state per statement required.')
+                bank_id=code
             if not re.fullmatch('[A-Za-z0-9][A-Za-z0-9._:-]{0,79}',identifier) or identifier in seen:raise AccountingError('Invalid or duplicated statement transaction reference.')
             parsed=date.fromisoformat(day)
             if parsed.isoformat()!=day or parsed>timezone.localdate():raise AccountingError('Canonical nonfuture statement date required.')
             cents=_money(amount)
             if cents<=0 or direction not in ('IN','OUT') or currency!='COP':raise AccountingError('Positive exact COP amount and IN/OUT direction required.')
-            seen.add(identifier);rows.append({'id':identifier,'date':parsed,'direction':direction,'amount':cents})
+            seen.add(identifier);row={'id':identifier,'date':parsed,'direction':direction,'amount':cents}
+            if explicit:row.update(bank_id=bank_id,bank_state=state)
+            rows.append(row)
     except (csv.Error,ValueError) as exc:raise AccountingError('Invalid neutral bank statement CSV.') from None
     if not rows or (max(r['date'] for r in rows)-min(r['date'] for r in rows)).days>366:raise AccountingError('Use one to 100 rows within an interval of at most 366 days.')
     return rows
@@ -67,9 +82,12 @@ def compare_statement(company_id,*,account_id,csv_text):
         index.setdefault((journal.date,direction,amount),[]).append({'ledger_line_id':str(line.pk),'journal_id':str(journal.pk),'journal_hash':journal.system_hash})
     result=[]
     for number,row in enumerate(rows,1):
-        matches=index.get((row['date'],row['direction'],row['amount']),[])
-        ref=hashlib.sha256((str(company.pk)+':'+str(account.pk)+':'+row['id']).encode()).hexdigest()
-        result.append({'row':number,'transaction_ref_digest':ref,'date':row['date'].isoformat(),'direction':row['direction'],'amount':_format_money(row['amount']),'status':'UNIQUE_CANDIDATE' if len(matches)==1 else 'AMBIGUOUS' if matches else 'UNMATCHED','candidate_count':len(matches),'candidates':matches[:10]})
+        matches=index.get((row['date'],row['direction'],row['amount']),[]) if row.get('bank_state','BOOKED')=='BOOKED' else []
+        scope=str(company.pk)+':'+str(account.pk)+':'
+        if 'bank_id' in row:scope+='explicit-bank:'+row['bank_id']+':'
+        ref=hashlib.sha256((scope+row['id']).encode()).hexdigest()
+        result.append({'row':number,'transaction_ref_digest':ref,'date':row['date'].isoformat(),'direction':row['direction'],'amount':_format_money(row['amount']),'status':('EXTERNAL_'+row['bank_state']) if row.get('bank_state','BOOKED')!='BOOKED' else 'UNIQUE_CANDIDATE' if len(matches)==1 else 'AMBIGUOUS' if matches else 'UNMATCHED','candidate_count':len(matches),'candidates':matches[:10]})
+        if 'bank_state' in row:result[-1].update(bank_id=row['bank_id'],declared_bank_state=row['bank_state'])
     # Two imported transactions pointing at the same ledger line are ambiguous,
     # even when each individual amount/date lookup has only one candidate.
     usages={}
@@ -78,4 +96,4 @@ def compare_statement(company_id,*,account_id,csv_text):
             line=row['candidates'][0]['ledger_line_id'];usages[line]=usages.get(line,0)+1
     for row in result:
         if row['status']=='UNIQUE_CANDIDATE' and usages[row['candidates'][0]['ledger_line_id']]>1:row['status']='AMBIGUOUS_REUSED_LEDGER_LINE'
-    return {'schema':'sgacd-bank-comparison-v1','company_id':str(company.pk),'account_id':str(account.pk),'currency':'COP','read_only':True,'source_digest':hashlib.sha256(csv_text.encode()).hexdigest(),'policy_revision':policy['revision'],'snapshot':snapshot,'rows':result,'summary':{status:sum(row['status']==status for row in result) for status in ('UNIQUE_CANDIDATE','AMBIGUOUS','UNMATCHED','AMBIGUOUS_REUSED_LEDGER_LINE')},'bank_connected':False,'bank_verified':False,'reconciliation_confirmed':False,'raw_statement_stored':False,'ledger_written':False,'money_transferred':False}
+    return {'schema':'sgacd-bank-comparison-v1','company_id':str(company.pk),'account_id':str(account.pk),'currency':'COP','read_only':True,'source_digest':hashlib.sha256(csv_text.encode()).hexdigest(),'policy_revision':policy['revision'],'snapshot':snapshot,'rows':result,'summary':{status:sum(row['status']==status for row in result) for status in ('UNIQUE_CANDIDATE','AMBIGUOUS','UNMATCHED','AMBIGUOUS_REUSED_LEDGER_LINE','EXTERNAL_PENDING','EXTERNAL_REVERSED')},'bank_connected':False,'bank_verified':False,'reconciliation_confirmed':False,'raw_statement_stored':False,'ledger_written':False,'money_transferred':False}

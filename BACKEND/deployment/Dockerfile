@@ -16,6 +16,8 @@ EXPOSE 8000
 CMD ["uvicorn", "deployment.api:app", "--host", "0.0.0.0", "--port", "8000"]
 
 FROM common AS sgacd
+COPY --chown=10001:10001 BACKEND/ANALEMATICA-BACKEND/agents/legacy_command_staff.py /srv/BACKEND/ANALEMATICA-BACKEND/agents/legacy_command_staff.py
+COPY --chown=10001:10001 BACKEND/ANALEMATICA-BACKEND/agents/contracts /srv/BACKEND/ANALEMATICA-BACKEND/agents/contracts
 COPY --chown=10001:10001 BACKEND/SGA-CD-BACKEND /srv/BACKEND/SGA-CD-BACKEND
 COPY --chown=10001:10001 DB/SGA-CD-DB.git /srv/DB/SGA-CD-DB.git
 COPY --chown=10001:10001 BACKEND/deployment/sgacd_entrypoint.py /srv/entrypoint.py
@@ -47,3 +49,9 @@ WORKDIR /state
 USER 10001:10001
 EXPOSE 8000
 CMD ["python", "/srv/BACKEND/deployment/tourism_entrypoint.py"]
+
+# Opt-in independent native Analemática army. The existing gateway stays intact.
+FROM tourism AS analematica-army
+ENV BACKEND_SERVICE=analematica PYTHONPATH=/srv/BACKEND/ANALEMATICA-BACKEND:/srv/BACKEND/SGA-TUR-BAKEND:/srv/BACKEND/deployment
+WORKDIR /srv/BACKEND/ANALEMATICA-BACKEND
+CMD ["gunicorn", "deployment.army_wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--access-logfile", "-"]

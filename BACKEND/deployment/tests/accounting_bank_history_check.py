@@ -68,10 +68,11 @@ class HistoryChecks(unittest.TestCase):
   with transaction.atomic(),CaptureQueriesContext(connection) as queries:
    rows=list(engine.verified_history(self.company,self.case.a,self.day))
   self.assertEqual(len(rows),129);self.assertLessEqual(len(queries),12)
- def test_source_account_metadata_changed_after_review_is_rejected(self):
+ def test_source_account_metadata_change_is_rejected_before_history_read(self):
   self.seed(2);from apps.core_erp.accounting.models import Account
-  Account.plain_objects.filter(pk=self.case.b.pk).update(code='CHANGED-HISTORICAL-ACCOUNT')
-  with self.assertRaises(AccountingError):self.assess('2.00')
+  original=Account.plain_objects.get(pk=self.case.b.pk).code
+  with self.assertRaises(AccountingError):Account.plain_objects.filter(pk=self.case.b.pk).update(code='CHANGED-HISTORICAL-ACCOUNT')
+  self.assertEqual(Account.plain_objects.get(pk=self.case.b.pk).code,original);self.assertTrue(self.assess('2.00')['eligible_for_period_reconciliation'])
  def test_foreign_chart_on_noncash_counterpart_is_rejected_even_with_valid_hash(self):
   from apps.core_erp.accounting.models import ChartOfAccounts,Account
   from apps.core_erp.tenancy.models import Tenant

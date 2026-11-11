@@ -27,6 +27,8 @@ def latest(company,statement):return OutboxEvent.objects.filter(event_type=REVIE
 
 def sources_locked(company,account_id,csv_text,ledger_since=None):
     compared=compare_statement(company.pk,account_id=account_id,csv_text=csv_text)
+    from .bank_statement import require_booked
+    require_booked(compared)
     if len(compared['rows'])>30:raise AccountingError('At most30 bank rows per grouped reconciliation.')
     account,policy=cash_account(company,account_id);start=min(r['date'] for r in compared['rows']);end=max(r['date'] for r in compared['rows'])
     if ledger_since is not None:

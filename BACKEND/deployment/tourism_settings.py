@@ -61,3 +61,4 @@ ACCOUNTING_ENFORCE_DB_PRIVILEGES=os.environ.get('ACCOUNTING_ENFORCE_DB_PRIVILEGE
 # No dispatch profile or clinical grants are fabricated at startup.
 from worker_dispatch_policy import load as load_worker_dispatch_policies
 OPERATIONAL_DISPATCH_POLICIES=load_worker_dispatch_policies(os.environ.get('OPERATIONAL_DISPATCH_POLICY_FILE'))
+OPERATIONAL_RISK_ASSESSMENTS=load_worker_dispatch_policies(os.environ.get('OPERATIONAL_RISK_ASSESSMENT_FILE'))

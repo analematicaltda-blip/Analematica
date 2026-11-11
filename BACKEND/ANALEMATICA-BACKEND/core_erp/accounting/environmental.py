@@ -5,10 +5,12 @@ endorsed, defaulted or persisted. Decimal arithmetic retains exact products befo
 rounding the aggregate; passenger allocation never changes total emissions.
 """
 from datetime import date
-from decimal import Decimal, localcontext, ROUND_HALF_UP
+from decimal import Decimal, localcontext, Context, ROUND_HALF_UP
 import re
 from .exceptions import AccountingError
 from .integrity import fingerprint
+from .validation import exact_arithmetic
+from uuid import UUID
 
 UNITS={'vehicle_km','passenger_km','litre_fuel','kwh'}
 BOUNDARIES={'direct_combustion','electricity_location_based','lifecycle'}
@@ -35,6 +37,7 @@ def _amount(value):
     if parsed>Decimal('1000000000'):raise AccountingError('Environmental quantity exceeds supported bound.')
     return parsed
 
+@exact_arithmetic
 def estimate(*,company_id,activities,factors):
     if not isinstance(factors,list) or not 1<=len(factors)<=10 or not isinstance(activities,list) or not 1<=len(activities)<=30:raise AccountingError('Bounded factors and activities required.')
     catalog={};canonical_factors=[]
@@ -48,12 +51,22 @@ def estimate(*,company_id,activities,factors):
         if not isinstance(factor['source_digest'],str) or not re.fullmatch('[0-9a-f]{64}',factor['source_digest']):raise AccountingError('Declared factor source digest required.')
         amount=_amount(factor['kg_co2e_per_unit'])
         catalog[key]=(factor,amount,start,end);canonical_factors.append(dict(factor))
-    ids=set();used=set();rows=[];groups={}
-    with localcontext() as ctx:
+    ids=set();used=set();rows=[];groups={};source_segments=set()
+    with localcontext(Context(prec=60)) as ctx:
         ctx.prec=60
         total=Decimal(0)
         for activity in activities:
-            _fields(activity,{'id','date','quantity','unit','factor_id','passengers'})
+            base_fields={'id','date','quantity','unit','factor_id','passengers'}
+            if not isinstance(activity,dict) or set(activity) not in (base_fields,base_fields|{'source_reference','source_segment'}):raise AccountingError('Explicit environmental activity contract required.')
+            if 'source_reference' in activity:
+                reference=activity['source_reference'];segment=activity['source_segment']
+                try:
+                    if not isinstance(reference,str) or str(UUID(reference))!=reference:raise ValueError()
+                except (ValueError,TypeError,AttributeError):raise AccountingError('Canonical operational source reference required.') from None
+                _code(segment)
+                if segment!=segment.upper():raise AccountingError('Canonical uppercase source segment required.')
+                if (reference,segment) in source_segments:raise AccountingError('A source segment cannot be measured twice in one assessment.')
+                source_segments.add((reference,segment))
             key=_code(activity['id']);factor_key=_code(activity['factor_id'])
             if key in ids or factor_key not in catalog:raise AccountingError('Duplicate activity or missing explicit factor.')
             ids.add(key);used.add(factor_key);factor,rate,start,end=catalog[factor_key];day=_date(activity['date'])

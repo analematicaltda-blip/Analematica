@@ -162,6 +162,8 @@ def worker():
         from apps.core_erp.accounting.sql_guard_hardening import install as harden_guards
         from apps.core_erp.accounting.sql_guard_health import inspect_guards
         harden_guards(connection)
+        from apps.core_erp.accounting.sql_identity_guards import install as identity_guards
+        identity_guards(connection)
         assert inspect_guards(connection)['ready']
         FiscalPeriod.plain_objects.create(tenant=tenant,period_start=date(2026,1,1),period_end=date(2026,12,31),status='open')
         protected=LedgerEngine.post_lines(tenant_id=tenant.pk,entry_date=timezone.localdate(),description='Protected fixture',
@@ -208,7 +210,11 @@ def worker():
         FXRateTable.objects.create(base_currency=usd,target_currency=cop,rate=Decimal('4500'),effective_from=timezone.now(),version=2)
         foreign_draft=JournalService.create_entry(str(tenant.pk),timezone.localdate()-timedelta(days=2),'Foreign race fixture',
             [{'account':asset,'debit':'10.00'},{'account':liability,'credit':'10.00'}],created_by=user,currency='USD',base_currency='COP')
-        foreign_posted=LedgerEngine.post_entry(foreign_draft.pk,tenant_id=tenant.pk,actor=user)
+        from apps.core_erp.accounting import reviewed_fx
+        fx_day=foreign_draft.date.isoformat();terms={'base_currency':'USD','target_currency':'COP','rate':'4000.000000','source_reference':'synthetic-pg-reviewed','source_version':'historical-v1','observed_at':timezone.now().isoformat(),'valid_from':fx_day,'valid_until':fx_day,'evidence_digest':'a'*64}
+        fx_review=reviewed_fx.review(tenant.pk,actor=user,entry_id=str(foreign_draft.pk),terms=terms,expected_revision=0,confirmed=True)
+        reviewed_fx.confirm(tenant.pk,actor=user,entry_id=str(foreign_draft.pk),review_id=fx_review['review_id'],confirmed=True)
+        foreign_posted=JournalEntry.plain_objects.get(pk=foreign_draft.pk)
         assert foreign_posted.exchange_rate==Decimal('4000')
         connections.close_all();barrier=Barrier(2)
         def reverse_foreign(index):
@@ -235,6 +241,7 @@ def worker():
                 cursor.execute('GRANT USAGE ON SCHEMA public TO '+role_q)
                 cursor.execute('GRANT SELECT,INSERT,UPDATE ON core_erp_journalentry,core_erp_ledgerentry TO '+role_q)
                 cursor.execute('GRANT SELECT,INSERT ON core_erp_accountingratiopolicy TO '+role_q)
+                cursor.execute('GRANT SELECT ON core_erp_account TO '+role_q)
             runtime_connection=connection.copy(alias='accounting_runtime_probe')
             runtime_connection.settings_dict.update(USER=runtime_role,PASSWORD=runtime_password)
             assert inspect_privileges(runtime_connection)['ready']
@@ -319,6 +326,16 @@ def runtime_worker():
         from apps.core_erp.accounting import delivery
         from apps.core_erp.accounting.models import Account
         case=json.loads(os.environ['LEDGER_RUNTIME_CASE']);assert inspect_privileges(connection)['ready']
+        # UPDATE(id) permits row locks, never editing currency/chart attributes.
+        for table in ('core_erp_currency','core_erp_chartofaccounts'):
+            try:
+                with transaction.atomic():
+                    with connection.cursor() as cursor:
+                        cursor.execute('UPDATE '+table+' SET name=name WHERE FALSE')
+            except DatabaseError as exc:
+                assert getattr(exc.__cause__,'pgcode',None)=='42501'
+            else:
+                raise AssertionError('Restricted role must not administer reference catalogs.')
         actor=get_user_model().objects.get(pk=case['user_id'])
         asset=Account.plain_objects.get(pk=case['asset_id']);liability=Account.plain_objects.get(pk=case['liability_id'])
         args={'tenant_id':case['tenant_id'],'entry_date':timezone.localdate(),'description':'Restricted runtime fixture',
@@ -331,7 +348,18 @@ def runtime_worker():
         from datetime import timedelta
         foreign_draft=JournalService.create_entry(case['tenant_id'],timezone.localdate()-timedelta(days=2),'Restricted USD fixture',
             [{'account':asset,'debit':'10.00'},{'account':liability,'credit':'10.00'}],created_by=actor,currency='USD',base_currency='COP')
-        foreign=LedgerEngine.post_entry(foreign_draft.pk,tenant_id=case['tenant_id'],actor=actor)
+        from apps.core_erp.accounting import reviewed_fx
+        fx_day=foreign_draft.date.isoformat()
+        terms={'base_currency':'USD','target_currency':'COP','rate':'4000.000000',
+               'source_reference':'synthetic-restricted-reviewed','source_version':'historical-v1',
+               'observed_at':timezone.now().isoformat(),'valid_from':fx_day,'valid_until':fx_day,
+               'evidence_digest':'b'*64}
+        reviewed=reviewed_fx.review(case['tenant_id'],actor=actor,entry_id=str(foreign_draft.pk),
+                                   terms=terms,expected_revision=0,confirmed=True)
+        reviewed_fx.confirm(case['tenant_id'],actor=actor,entry_id=str(foreign_draft.pk),
+                            review_id=reviewed['review_id'],confirmed=True)
+        from apps.core_erp.accounting.models import JournalEntry
+        foreign=JournalEntry.plain_objects.get(pk=foreign_draft.pk)
         assert foreign.exchange_rate==Decimal('4000')
         neutral=LedgerEngine.reverse_entry(foreign.pk,'Restricted neutral correction',tenant_id=case['tenant_id'],actor=actor)
         assert neutral.exchange_rate==Decimal('4000')

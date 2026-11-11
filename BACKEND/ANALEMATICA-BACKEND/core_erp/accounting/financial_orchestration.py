@@ -59,18 +59,18 @@ def read(company, request, step):
         raise AccountingError('Persisted rehearsal identity conflicts.')
     return row
 
-def load(company, user, request_id, plan_digest):
+def load(company, user, request_id, plan_digest, *, allow_cancelled=False):
     request = str(UUID(str(request_id)))
     row = read(company.pk, request, 'prepared')
     if row is None:
         raise AccountingError('Scoped rehearsal unavailable.')
     body = row.payload
     if (not isinstance(body, dict) or set(body) != {'intent', 'plan_digest', 'actor_id', 'expires_at'}
-            or body['actor_id'] != str(user.pk)
+            or body['actor_id'] != str(user.pk) or not isinstance(body['intent'],dict) or body['intent'].get('request_id') != request
             or normalize(body['intent'], company) != body['intent']
             or fingerprint(body['intent']) != body['plan_digest'] or plan_digest != body['plan_digest']):
         raise AccountingError('Actor or reviewed intent changed.')
-    if read(company.pk, request, 'cancelled'):
+    if read(company.pk, request, 'cancelled') and not allow_cancelled:
         raise AccountingError('Rehearsal cancelled; approvals cannot be reused.')
     return request, body
 
@@ -160,7 +160,40 @@ def cancel(company_id, *, actor, provider_id, request_id, plan_digest, confirmed
     company, user = authority(company_id, actor, provider_id)
     if confirmed is not True:
         raise AccountingError('Explicit cancellation required.')
-    request, body = load(company, user, request_id, plan_digest)
+    request, body = load(company, user, request_id, plan_digest, allow_cancelled=True)
+    old = read(company.pk, request, 'cancelled')
+    expected = {'company_id': str(company.pk), 'actor_id': str(user.pk), 'request_id': request, 'plan_digest': body['plan_digest']}
+    if old:
+        if old.payload != expected:raise AccountingError('Stored cancellation changed.')
+        return result(company, request, plan_digest, 'CANCELLED', True)
     write(company.pk, request, 'cancelled', {'company_id': str(company.pk),
         'actor_id': str(user.pk), 'request_id': request, 'plan_digest': body['plan_digest']})
     return result(company, request, plan_digest, 'CANCELLED')
+
+
+@transaction.atomic
+def state(company_id, *, actor, provider_id, request_id):
+    """Recover evidence without replaying approvals, money or desktop work."""
+    company,user=authority(company_id,actor,provider_id)
+    request=str(UUID(str(request_id)));prepared=read(company.pk,request,'prepared')
+    if prepared is None:raise AccountingError('Scoped rehearsal unavailable.')
+    if not isinstance(prepared.payload,dict):raise AccountingError('Invalid prepared evidence.')
+    request,body=load(company,user,request,prepared.payload.get('plan_digest'),allow_cancelled=True)
+    from django.utils.dateparse import parse_datetime
+    expires=parse_datetime(body['expires_at'])
+    if expires is None or timezone.is_naive(expires):raise AccountingError('Invalid rehearsal expiry.')
+    first=read(company.pk,request,'confirmation1');second=read(company.pk,request,'confirmation2')
+    if first:approval(company,request,body,'confirmation1')
+    if second:
+        if first is None:raise AccountingError('Orphan second confirmation.')
+        approval(company,request,body,'confirmation2')
+    simulated=read(company.pk,request,'simulated');cancelled=read(company.pk,request,'cancelled')
+    expected={'company_id':str(company.pk),'actor_id':str(user.pk),'request_id':request,'plan_digest':body['plan_digest']}
+    if simulated and (second is None or simulated.payload!={**expected,'status':'SIMULATED_ONLY'}):raise AccountingError('Simulation evidence changed.')
+    if cancelled and cancelled.payload!=expected:raise AccountingError('Cancellation evidence changed.')
+    expired=timezone.now()>=expires
+    status='CANCELLED' if cancelled else 'SIMULATED_ONLY' if simulated else 'EXPIRED' if expired else 'CONFIRMED_2' if second else 'CONFIRMED_1' if first else 'PREPARED'
+    return {**result(company,request,body['plan_digest'],status),'intent':body['intent'],'expires_at':body['expires_at'],
+            'read_only':True,'confirmations_restored':False,'recorded_confirmations':int(bool(first))+int(bool(second)),
+            'next_step':1 if status=='PREPARED' else 2 if status=='CONFIRMED_1' else None,
+            'can_simulate':status=='CONFIRMED_2','can_cancel':status!='CANCELLED'}

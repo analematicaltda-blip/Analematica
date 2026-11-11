@@ -54,6 +54,11 @@ def credentials():
             private_file(target, item['username'] + ':' + bcrypt.hashpw(item['password'].encode(), bcrypt.gensalt(rounds=12)).decode() + '\n')
     return result
 
+def offline_capture(destination):
+    spec=importlib.util.spec_from_file_location('offline_capture_assets',HERE/'accounting_offline_assets.py')
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    return module.install_assets(destination)
+
 def public_assets():
     site = RUNTIME / 'sites'
     for name in ['sgacd', 'analematica']:
@@ -83,6 +88,8 @@ def public_assets():
         target = site / 'analematica' / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
+    offline_capture(site/'analematica/contabilidad-offline')
+    offline_capture(site/'erp-capture/contabilidad-offline')
     # One canonical assistance UI is served under each site's own authenticated origin.
     for name in ['platform.html','js/platform.js','resources.html','js/resources.js','assistance.html','js/assistance.js','css/assistance.css','control.html','js/control.js','content.html','js/content.js','css/content.css']:
         path = ROOT / 'FRONTEND/ANALEMATICA-FRONTEND' / name
@@ -101,6 +108,7 @@ def next_projects(dependencies=None, systems=('erp','turismo')):
                 shutil.rmtree(dest / folder)
             shutil.copytree(source / folder, dest / folder)
         if name == 'erp':
+            offline_capture(dest/'public/contabilidad-offline')
             target = dest / 'src/app/dashboard/prestador/mi-negocio'
             if target.exists():
                 shutil.rmtree(target)
@@ -196,6 +204,12 @@ http {
             text += '  location /api/ { default_type application/json; return 503 \'{"detail":"Ruta ERP pendiente de validación."}\'; }\n'
         else:
             text += '  location /api/ { default_type application/json; return 503 \'{"detail":"Backend turístico pendiente de corregir; no se simula autenticación."}\'; }\n'
+        if name in ['analematica','erp']:
+            capture_root='/sites/analematica' if name=='analematica' else '/sites/erp-capture'
+            text += '  location = /contabilidad-offline/ { auth_basic off; absolute_redirect off; return 302 /contabilidad-offline/index.html; }\n'
+            for asset in ['index.html','editor.js','editor.css','vault.js','worker.js']:
+                text += '  location = /contabilidad-offline/'+asset+' { auth_basic off; root '+capture_root+'; try_files $uri =404; }\n'
+            text += '  location ^~ /contabilidad-offline/ { return 404; }\n'
         text += f'  location / {{ limit_req zone=views burst=100 nodelay; auth_basic "Vista local {name}"; auth_basic_user_file /private/{name}.htpasswd;\n'
         if name in ['sgacd','analematica']:
             text += f'    root /sites/{name}; index index.html; autoindex off; try_files $uri $uri/ =404;\n'

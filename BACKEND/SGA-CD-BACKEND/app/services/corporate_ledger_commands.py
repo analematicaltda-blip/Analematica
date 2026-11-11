@@ -11,10 +11,16 @@ from sqlalchemy.orm import Session
 from app.models.user import Usuario
 from app.services import corporate_ledger as ledger
 
-READS={'ubl_source':'fuente-borrador-ubl/','purchase_accounts':'cuentas-compras-nativas/','environmental_corrections':'historia-correccion-ambiental/','environmental_state':'estado-medicion-ambiental/','hotel_sources':'fuentes-indicadores-hoteleros/','hotel_metrics':'indicadores-hoteleros/','bank_sources':'fuentes-conciliacion-bancaria/','bank_reconciliation_state':'estado-conciliacion-bancaria/','payroll_sources':'fuentes-nomina-revisada/','payroll_status':'estado-nomina-revisada/','opening':'estado-apertura/','tax_policy_history':'politicas-tributarias/','status':'estado-reconocimiento/','dian':'diagnostico-dian/','sources':'fuentes-reserva-fiscal/','accounts':'cuentas-reconocimiento/'}
+READS={'crm_ubl_source':'fuente-borrador-ubl-crm/','ubl_source':'fuente-borrador-ubl/','purchase_accounts':'cuentas-compras-nativas/','environmental_corrections':'historia-correccion-ambiental/','environmental_state':'estado-medicion-ambiental/','hotel_sources':'fuentes-indicadores-hoteleros/','hotel_metrics':'indicadores-hoteleros/','bank_sources':'fuentes-conciliacion-bancaria/','bank_reconciliation_state':'estado-conciliacion-bancaria/','payroll_sources':'fuentes-nomina-revisada/','payroll_status':'estado-nomina-revisada/','opening':'estado-apertura/','tax_policy_history':'politicas-tributarias/','status':'estado-reconocimiento/','dian':'diagnostico-dian/','sources':'fuentes-reserva-fiscal/','accounts':'cuentas-reconocimiento/'}
+INVOICE_SOURCE_COMMANDS={'review_crm_invoice','request_crm_invoice','review_reservation_invoice','request_reservation_invoice'}
 COST_COMMANDS={'operation_labor_costs', 'payroll_cost_state', 'record_payroll_costs', 'payroll_cost_sources', 'review_payroll_costs'}
 GROUP_COMMANDS={'bank_group_state', 'confirm_bank_group_release', 'review_bank_group_release', 'review_bank_groups', 'bank_group_sources', 'confirm_bank_groups'}
 COMMANDS={
+ 'backtest_cash_windows':('backtest-ventanas-caja/',{'windows'},set()),
+ 'review_crm_invoice':('revisar-oportunidad-fiscal/',{'opportunity_id','items','evidence_digest','expected_revision','confirmed'},set()),
+ 'request_crm_invoice':('solicitar-factura-oportunidad/',{'opportunity_id','review_id','confirmed'},set()),
+ 'review_reservation_invoice':('revisar-reserva-fiscal/',{'reservation_id','items','evidence_digest','expected_revision','confirmed'},set()),
+ 'request_reservation_invoice':('solicitar-factura-reserva/',{'reservation_id','review_id','confirmed'},set()),
  'review_purchase_item_return':('revisar-devolucion-conceptos/',{'invoice_id','return_id','selection','entry_date','document_digest','evidence_digest','expected_revision','confirmed'},set()),
  'post_purchase_item_return':('contabilizar-devolucion-conceptos/',{'invoice_id','review_id','confirmed'},set()),
  'purchase_item_return_state':('estado-devolucion-conceptos/',{'invoice_id'},set()),
@@ -69,6 +75,7 @@ COMMANDS={
  'review_reservation_policy':('revisar-reserva-con-politica/',{'reservation_id','selection','economic_date','evidence_digest','confirmed','expected_revision'},set()),
  'review_environmental_correction':('revisar-correccion-ambiental/',{'observation_id','expected_revision','activities','factors','evidence_digest','reason_code','confirmed'},set()),
  'record_environmental_correction':('registrar-correccion-ambiental/',{'observation_id','review_id','confirmed'},set()),
+ 'state_financial_rehearsal':('estado-simulacion-financiera/',{'request_id'},set()),
  'prepare_financial_rehearsal':('preparar-simulacion-financiera/',{'intent','confirmed'},set()),
  'confirm_financial_rehearsal':('confirmar-simulacion-financiera/',{'request_id','plan_digest','step','confirmed'},set()),
  'simulate_financial_rehearsal':('simular-orden-financiera/',{'request_id','plan_digest','impact_confirmation','confirmed'},set()),
@@ -135,8 +142,9 @@ def identity(transport,target,cookie,selected):
 def read_sources(db,*,user,session_cookie,resource,parameters=None):
     if resource not in READS:raise HTTPException(422,'Consulta contable no admitida.')
     parameters=parameters or {}
-    allowed={'reservation_id','review_id'} if resource=='ubl_source' else {'observation_id'} if resource=='environmental_corrections' else {'review_id'} if resource=='environmental_state' else {'since','until','as_of'} if resource=='hotel_metrics' else {'account_id','source_digest'} if resource=='bank_reconciliation_state' else {'payroll_id'} if resource=='payroll_status' else {'code','before_revision'} if resource=='tax_policy_history' else {'reservation_id','before_revision'} if resource=='status' else ({'despues_id'} if resource=='sources' else {'paged','despues_id','buscar'} if resource in {'accounts','purchase_accounts'} else set())
+    allowed={'opportunity_id','review_id'} if resource=='crm_ubl_source' else {'reservation_id','review_id'} if resource=='ubl_source' else {'observation_id'} if resource=='environmental_corrections' else {'review_id'} if resource=='environmental_state' else {'since','until','as_of'} if resource=='hotel_metrics' else {'account_id','source_digest'} if resource=='bank_reconciliation_state' else {'payroll_id'} if resource=='payroll_status' else {'code','before_revision'} if resource=='tax_policy_history' else {'reservation_id','before_revision'} if resource=='status' else ({'despues_id'} if resource=='sources' else {'paged','despues_id','buscar'} if resource in {'accounts','purchase_accounts'} else set())
     if (resource=='environmental_corrections' and set(parameters)!={'observation_id'}) or (resource=='environmental_state' and set(parameters)!={'review_id'}) or (resource=='hotel_metrics' and not {'since','until'}<=set(parameters)) or (resource=='bank_reconciliation_state' and set(parameters)!={'account_id','source_digest'}) or set(parameters)-allowed or (resource=='status' and 'reservation_id' not in parameters) or (resource=='payroll_status' and 'payroll_id' not in parameters):raise HTTPException(422,'Parámetros de fuente inválidos.')
+    if resource=='crm_ubl_source' and set(parameters)!={'opportunity_id','review_id'}:raise HTTPException(422,'Referencia CRM UBL requerida.')
     if resource=='ubl_source' and set(parameters)!={'reservation_id','review_id'}:raise HTTPException(422,'Referencia de fuente UBL requerida.')
     selected=context(db,user,session_cookie);target=ledger.origin()
     try:
@@ -146,7 +154,7 @@ def read_sources(db,*,user,session_cookie,resource,parameters=None):
     except ledger.httpx.HTTPError:raise HTTPException(503,'No se pudo consultar la fuente contable.') from None
     recheck(db,user,selected)
     if not isinstance(data,dict) or data.get('company_id')!=selected['tenant_id'] or data.get('read_only') is not True:raise HTTPException(503,'Fuente contable incompatible.')
-    if resource=='ubl_source':
+    if resource in {'ubl_source','crm_ubl_source'}:
         from app.services.ubl_source_contract import validate
         try:validate(data,selected['tenant_id'],parameters)
         except (ValueError,TypeError,KeyError):raise HTTPException(503,'Fuente UBL incompatible.') from None
@@ -176,23 +184,31 @@ def dispatch(db,*,user,session_cookie,operation,payload):
         return recovery.dispatch(db,user=user,session_cookie=session_cookie,operation=operation,payload=payload)
     if operation not in COMMANDS:raise HTTPException(422,'Operación contable no admitida.')
     path,required,optional=COMMANDS[operation]
-    if not isinstance(payload,dict) or not required<=set(payload) or set(payload)-required-optional or (operation not in {'opening_chunks_sources','opening_chunks_state','fx_settlement_request_state','fx_settlement_catalog','fx_settlement_state','bank_rollup_sources','bank_rollup_state','lookup_native_payroll_novelty','purchase_item_return_state','fx_revaluation_catalog','fx_revaluation_state','foreign_journal_sources','foreign_journal_state','empty_bank_period_state','purchase_return_state','esg_report','query','quote_tax_policy','compare_bank_statement','estimate_environmental','commercial_tax_state','native_purchase_state','native_purchase_history','native_purchase_sources','native_supplier_sources','payroll_cost_sources','payroll_cost_state','operation_labor_costs','bank_group_sources','bank_group_state'} and payload.get('confirmed') is not True):
+    if not isinstance(payload,dict) or not required<=set(payload) or set(payload)-required-optional or (operation not in {'state_financial_rehearsal','backtest_cash_windows','opening_chunks_sources','opening_chunks_state','fx_settlement_request_state','fx_settlement_catalog','fx_settlement_state','bank_rollup_sources','bank_rollup_state','lookup_native_payroll_novelty','purchase_item_return_state','fx_revaluation_catalog','fx_revaluation_state','foreign_journal_sources','foreign_journal_state','empty_bank_period_state','purchase_return_state','esg_report','query','quote_tax_policy','compare_bank_statement','estimate_environmental','commercial_tax_state','native_purchase_state','native_purchase_history','native_purchase_sources','native_supplier_sources','payroll_cost_sources','payroll_cost_state','operation_labor_costs','bank_group_sources','bank_group_state'} and payload.get('confirmed') is not True):
         raise HTTPException(422,'Contrato o confirmación contable inválidos.')
     selected=context(db,user,session_cookie);target=ledger.origin()
     try:
         with ledger.client() as transport:
-            identity(transport,target,session_cookie,selected)
-            # CSRF is obtained only from the fixed ERP origin; never from callers.
-            session=ledger.fetch(transport,target+'/api/v1/erp-session/',session_cookie,{})
-            if not isinstance(session,dict) or session.get('authenticated') is not True or str((session.get('user') or {}).get('id'))!=selected['ledger_actor_id'] or not re.fullmatch('[a-zA-Z0-9]{64}',session.get('csrf_token','')):
-                raise HTTPException(403,'La sesión contable requiere autenticación vigente.')
+            # Opt-in coalesces two live checks in one owner-scoped ERP request.
+            # Both paths obtain CSRF only from the fixed origin and recheck before POST.
+            if ledger.os.environ.get('CORPORATE_LEDGER_COMBINED_CONTEXT_ENABLED')=='1':
+                session=ledger.fetch(transport,target+ledger.BASE+'contexto-contable/',session_cookie,{'provider_id':selected['provider_id']})
+                fields={'schema','company_id','provider_id','actor_id','authenticated','read_only','csrf_token'}
+                if not isinstance(session,dict) or set(session)!=fields or session['schema']!='sgacd-accounting-context-v1' or session['authenticated'] is not True or session['read_only'] is not True or any(str(session[k])!=selected[v] for k,v in [('company_id','tenant_id'),('provider_id','provider_id'),('actor_id','ledger_actor_id')]) or not re.fullmatch('[a-zA-Z0-9]{64}',str(session['csrf_token'])):
+                    raise HTTPException(403,'Contexto contable no vigente o incompatible.')
+            else:
+                identity(transport,target,session_cookie,selected)
+                session=ledger.fetch(transport,target+'/api/v1/erp-session/',session_cookie,{})
+                if not isinstance(session,dict) or session.get('authenticated') is not True or str((session.get('user') or {}).get('id'))!=selected['ledger_actor_id'] or not re.fullmatch('[a-zA-Z0-9]{64}',session.get('csrf_token','')):
+                    raise HTTPException(403,'La sesión contable requiere autenticación vigente.')
             csrf_cookie=transport.cookies.get('sgacd_erp_tur_csrf')
             if not isinstance(csrf_cookie,str) or not re.fullmatch('[a-zA-Z0-9]{32}',csrf_cookie):raise HTTPException(503,'No se pudo verificar la protección CSRF del ERP.')
             recheck(db,user,selected)
             headers={'Cookie':ledger.COOKIE+'='+session_cookie+'; sgacd_erp_tur_csrf='+csrf_cookie,'X-CSRFToken':session['csrf_token'],'Origin':target,'Referer':target+'/','Accept-Encoding':'identity'}
             with transport.stream('POST',target+ledger.BASE+path,params={'provider_id':selected['provider_id']},json=payload,headers=headers) as response:
+                ledger.reject_upstream_throttle(response)
                 if response.status_code in (400,401,403,409,422):raise HTTPException(409,'El ERP rechazó la operación. Revisa fuente, identidad, periodo y aprobaciones.')
-                if response.status_code!=200:raise HTTPException(503,'Resultado no confirmado. Consulta y reintenta la misma revisión; no crees otra operación.')
+                if response.status_code!=200 and not(operation in INVOICE_SOURCE_COMMANDS and response.status_code==201):raise HTTPException(503,'Resultado no confirmado. Consulta y reintenta la misma revisión; no crees otra operación.')
                 if response.headers.get('content-encoding','identity')!='identity':raise HTTPException(503,'Resultado no verificable; consulta la revisión original.')
                 chunks=[];size=0
                 for chunk in response.iter_bytes(chunk_size=8192):
@@ -202,6 +218,17 @@ def dispatch(db,*,user,session_cookie,operation,payload):
             raw=json.loads(b''.join(chunks));data=raw['data'] if isinstance(raw,dict) and raw.get('success') is True else raw
     except (ledger.httpx.HTTPError,ValueError):raise HTTPException(503,'Resultado no confirmado. Reintenta con la misma revisión persistida para evitar duplicados.') from None
     if not isinstance(data,dict):raise HTTPException(503,'Resultado contable incompatible; consulta la revisión original.')
+    ledger.verify_dispatch_result(recheck,db,user,selected)
+    if operation=='backtest_cash_windows':
+        from app.services.cash_windows_contract import validate
+        try:validate(data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Evaluación de escenarios incompatible.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
+    if operation in INVOICE_SOURCE_COMMANDS:
+        from app.services.invoice_source_contract import validate
+        try:validate(operation,data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Solicitud comercial incompatible: no se acredita cobro, confirmación externa ni factura aceptada.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
     if operation in {'review_purchase_item_return','post_purchase_item_return','purchase_item_return_state','review_purchase_item_return_void','void_purchase_item_return'}:
         from app.services.purchase_item_return_contract import validate
         try:validate(operation,data,payload,selected)
@@ -277,7 +304,9 @@ def dispatch(db,*,user,session_cookie,operation,payload):
             if snapshot.get('company_id')!=selected['tenant_id'] or snapshot.get('activities')!=sorted(payload['activities'],key=lambda a:a['id']) or snapshot.get('factors')!=sorted(payload['factors'],key=lambda f:f['id']) or digest!=data['assessment_digest']:raise ValueError('Environmental source mismatch')
         except (KeyError,TypeError,ValueError,AttributeError):raise HTTPException(503,'La estimación no corresponde a las fuentes solicitadas.') from None
     if operation=='query':
-        if data.get('schema')!='sgacd-accounting-query-v1' or data.get('company_id')!=selected['tenant_id'] or data.get('read_only') is not True or any(data.get(k) is not False for k in ['generated_sql','external_model_used','financial_action_authorized','ledger_written']):raise HTTPException(503,'Consulta sin alcance verificable.')
+        from app.services.accounting_query_contract import validate
+        try:validate(data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Consulta sin fuentes y alcance verificables.') from None
     if operation=='quote_tax_policy' and (data.get('schema')!='sgacd-tax-quote-v1' or data.get('read_only') is not True or data.get('fiscal_document_created') is not False):raise HTTPException(503,'Cotización tributaria incompatible.')
     if operation in {'review_payroll','post_payroll','review_tax_policy','record_tax_policy','quote_tax_policy'} and data.get('regulatory_verified') is not False:raise HTTPException(503,'No se acredita validación normativa.')
     if operation in {'review_payroll','post_payroll','review_opening','apply_opening','review_tax_policy','record_tax_policy','quote_tax_policy'} and data.get('company_id')!=selected['tenant_id']:raise HTTPException(503,'Contexto de resultado incompatible.')
@@ -341,6 +370,11 @@ def dispatch(db,*,user,session_cookie,operation,payload):
                 raise HTTPException(503,'Corrección de fuentes distintas a las revisadas.')
         elif data.get('review_id')!=payload['review_id'] or data.get('original_preserved') is not True:
             raise HTTPException(503,'Registro de corrección incompatible.')
+    if operation=='state_financial_rehearsal':
+        from app.services.financial_rehearsal_contract import validate_state
+        try:validate_state(data,payload,selected)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Estado financiero de ensayo incompatible.') from None
+        return {'schema':'sgacd-corporate-ledger-command-v1','company_id':selected['tenant_id'],'operation':operation,'source':'authenticated_shared_ledger','data':data,'dispatch_authorized':True,'cross_database_atomic':False}
     if operation.endswith('_financial_rehearsal'):
         flags=['payment_executed','bank_destination_verified','source_independently_verified',
                'network_called','desktop_job_created','ledger_written','usable_as_payment_authorization']
@@ -356,7 +390,7 @@ def dispatch(db,*,user,session_cookie,operation,payload):
         status={'prepare_financial_rehearsal':'PREPARED','confirm_financial_rehearsal':'CONFIRMED_'+str(payload.get('step')),'simulate_financial_rehearsal':'SIMULATED_ONLY','cancel_financial_rehearsal':'CANCELLED'}[operation]
         if data.get('status')!=status:raise HTTPException(503,'Estado de simulación incompatible.')
     field='correction_id' if operation=='record_environmental_correction' else 'observation_id' if operation in {'record_hotel_capacity','record_hotel_sales','record_environmental'} else 'reconciliation_id' if operation in {'confirm_bank_reconciliation','confirm_bank_release'} else 'policy_id' if operation in {'record_tax_policy','quote_tax_policy'} else 'review_id' if operation.startswith('review_') else 'request_id' if operation.endswith('_financial_rehearsal') else 'journal_id'
-    if operation not in {'opening_chunks_sources','opening_chunks_state','fx_settlement_request_state','fx_settlement_catalog','fx_settlement_state','bank_rollup_sources','bank_rollup_state','lookup_native_payroll_novelty','purchase_item_return_state','fx_revaluation_catalog','fx_revaluation_state','foreign_journal_sources','foreign_journal_state','empty_bank_period_state','purchase_return_state','esg_report','query','compare_bank_statement','estimate_environmental'}:
+    if operation not in {'state_financial_rehearsal','backtest_cash_windows','opening_chunks_sources','opening_chunks_state','fx_settlement_request_state','fx_settlement_catalog','fx_settlement_state','bank_rollup_sources','bank_rollup_state','lookup_native_payroll_novelty','purchase_item_return_state','fx_revaluation_catalog','fx_revaluation_state','foreign_journal_sources','foreign_journal_state','empty_bank_period_state','purchase_return_state','esg_report','query','compare_bank_statement','estimate_environmental'}:
         try:UUID(data[field])
         except (ValueError,KeyError,TypeError):raise HTTPException(503,'Falta evidencia del resultado; consulta la revisión original.') from None
     expected_write=operation in {'post_foreign_journal','post_payroll','post_recognition','reverse_recognition','apply_opening','post_commercial_tax','reverse_commercial_tax'}

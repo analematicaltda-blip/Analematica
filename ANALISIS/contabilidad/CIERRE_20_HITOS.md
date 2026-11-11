@@ -4,7 +4,7 @@ Actualización:2026-11-11. Este archivo concentra desde ahora las novedades, hal
 
 ## Estado real
 
-**70,83% (51/72 hitos de la matriz original). Aceptación completa3/24 tareas. Producción no habilitada.** El plan restante tiene 2 hitos verificados localmente, 10 en ejecución y 8 pendientes; ninguno acredita cierre integral de todo el alcance. La existencia de código o una prueba sintética no sustituye aceptación profesional, de proveedor o física.
+**79,17% (57/72 hitos de la matriz original). Aceptación completa9/24 tareas (ACC-001 aACC-008 yACC-010;ACC-009 abierta). Producción no habilitada.** Las24 tareas tienen incrementos verificados;15 conservan alcance pendiente. Los cortesR01–R20 anteriores son históricos y no sustituyen la matriz actual de24 tareas. La existencia de código o una prueba sintética no sustituye aceptación profesional, de proveedor o física.
 
 ## Recuperación verificada · 2026-11-10
 
@@ -64,7 +64,7 @@ Evidencias históricas: `evidencias/implementacion-77.json`, `../entregas/eviden
 | R16 · Completar orquestación supervisada del motor | Pendiente | Conectar tareas al motor agent-desktop/Open Duet mediante permisos mínimos, dos autorizaciones separadas del mismo solicitante y revisión adicional de impacto. | Beneficiario/cuenta/proveedor/recibos legítimos y autorización explícita de cada acción real; no pagar por predicción, ubicación o simulación. |
 | R17 · Completar operación offline y sincronización nativa | Pendiente | Implementar captura y cola cifrada por dominio, arranque sin red, conflictos visibles, sincronización idempotente y almacenamiento nativo requerido. | Dispositivos Android/iOS/escritorio y herramientas de compilación/hardware para pruebas físicas. |
 | R18 · Completar recorridos e interfaces de ambos sistemas | En ejecución | Compras nativas compartidas en ambos paneles, soporte hash local sin subir archivos, confirmaciones separadas y recuperación tras recarga. Catálogo propio de compras con gastos, preservando ventas. Formulario de hasta veinte conceptos sujeto al límite de solicitud; conserva tributos adicionales al recuperar. No completa las otras interfaces pendientes. Entrega74: puente corporativo con contrato, formulario compartido ERP/Analemática y dos autorizaciones;12 nuevas pruebas HTTP/contrato y40 comprobaciones Chromium. Faltan reglas laborales completas, aceptación profesional y producción. Entrega75: cálculo exacto de horas extra/recargos declarados, bases explícitas de contribuciones, detalle y posteo canónicos en ambos paneles; bloqueo de segunda planilla de salario base superpuesta.16 casos ORM y un recorrido HTTP corporativo nuevos;68 comprobaciones Chromium (suplementos y regresión base). No cubre clasificación legal automática ni otras novedades/DIAN. Entrega76: selección de candidato ambiguo y diferencias explícitas por fila, conciliación parcial sin falsa completitud, reservas de referencias pendientes, recuperación/liberación y eventosv2;17 casos ORM/API,2 HTTP corporativos y6 de contrato nuevos. Pendientes saldos completos, pagos divididos/agrupados, FX y aceptación bancaria/profesional. Entrega77: cotejo de apertura/cierre y cobertura completa de libro para período declarado COP, con fuente revalidada, omisiones compensadas detectadas y ambos paneles.14 casos ORM,1 HTTP y4 de contrato nuevos. Pendientes banco auténtico, volúmenes/snapshots, períodos sin movimientos, importes divididos/agrupados y FX. | Aceptación de usuarios/roles reales cuando corresponda; no sustituirla por fixtures. |
-| R19 · Medir rendimiento y endurecer seguridad | En ejecución | Medición rehecha sobre las fuentes72:100 documentos sintéticos secuenciales, cuatro flujos, sin errores; máximo de consulta166.293ms. No acredita HTTP, concurrencia, carga productiva ni99.8% IA; clasificador no evaluado. | Hardware/carga objetivo, dataset autorizado y revisión de seguridad independiente para cualificación productiva. |
+| R19 · Medir rendimiento y endurecer seguridad | En ejecución | ACC-023: mediciones ORM/HTTP, propagación429 y contexto unificado opcional verificados;100 compras/400 operaciones ORM y240 intentos HTTP. Persisten muestras sobre250ms y clasificador no evaluado; no acreditaSLA ni99,8%. | Hardware/carga objetivo, dataset autorizado y revisión de seguridad independiente para cualificación productiva. |
 | R20 · Restauración integral y aceptación final | Pendiente | Restaurar datos/archivos/referencias con roles reales, comprobar RPO/RTO, reversión y operación; consolidar entregables y preparar publicación revisable. | Medios/llaves/grants reales, aceptación profesional y de proveedor; publicación/producción solo con la autorización correspondiente. |
 
 ## Bloqueos de cierre prioritarios
@@ -617,15 +617,15 @@ El usuario exige cerrar cada tarea al100% antes de pasar a la siguiente. Esta re
 | 1 | ACC-001 | Validación monetaria exacta y aislamiento de cuentas | CERRADA · 100% de sus criterios originales |
 | 2 | ACC-002 | UUID de alta y guardas de asientos/líneas | CERRADA · 100% de sus criterios originales |
 | 3 | ACC-003 | Idempotencia y outbox en una transacción | CERRADA · 100% de sus criterios originales |
-| 4 | ACC-004 | Periodos, concurrencia y contrapartidas | EN ESPERA · conservar implementación previa |
-| 5 | ACC-005 | Puente TourismProvider a Tenant y actor verificables | EN ESPERA · conservar implementación previa |
-| 6 | ACC-006 | Monedas, FX y valoración | EN ESPERA · conservar implementación previa |
-| 7 | ACC-007 | Hash canónico versionado y controles SQL | EN ESPERA · conservar implementación previa |
-| 8 | ACC-008 | Contrato CRM y reserva hacia facturación | EN ESPERA · conservar implementación previa |
-| 9 | ACC-009 | XML, representación y firma fiscal | EN ESPERA · conservar implementación previa |
-| 10 | ACC-010 | Envelope encryption cliente y recuperación | EN ESPERA · conservar implementación previa |
-| 11 | ACC-011 | Conectores BYOS y OAuth mínimos | EN ESPERA · conservar implementación previa |
-| 12 | ACC-012 | Órdenes, novedades y controles SG-SST | EN ESPERA · conservar implementación previa |
+| 4 | ACC-004 | Periodos, concurrencia y contrapartidas | CERRADA · 100% de sus criterios originales |
+| 5 | ACC-005 | Puente TourismProvider a Tenant y actor verificables | CERRADA · 100% de sus criterios originales |
+| 6 | ACC-006 | Monedas, FX y valoración | CERRADA · 100% de sus criterios originales |
+| 7 | ACC-007 | Hash canónico versionado y controles SQL | CERRADA · 100% de sus criterios originales |
+| 8 | ACC-008 | Contrato CRM y reserva hacia facturación | CERRADA · 100% de sus criterios originales |
+| 9 | ACC-009 | XML, representación y firma fiscal | EN EJECUCIÓN · requiere habilitación/custodia/acuses reales |
+| 10 | ACC-010 | Envelope encryption cliente y recuperación | CERRADA · 100% de sus criterios originales |
+| 11 | ACC-011 | Conectores BYOS y OAuth mínimos | EN EJECUCIÓN · conectores locales; permisos cloud reales pendientes |
+| 12 | ACC-012 | Órdenes, novedades y controles SG-SST | EN EJECUCIÓN · riesgo específico añadido; aceptación integral pendiente |
 | 13 | ACC-013 | Reglas de nómina, costos y provisiones | EN ESPERA · conservar implementación previa |
 | 14 | ACC-014 | Impuestos y conciliación continua | EN ESPERA · conservar implementación previa |
 | 15 | ACC-015 | Legacy bridge y open banking | EN ESPERA · conservar implementación previa |
@@ -681,3 +681,643 @@ Pruebas:8 nuevas de aceptación y regresiones16 entrega local,26 posteo,10ACC-00
 **Estado:ACC-003 CERRADA al100% de sus criterios originales.** ACC-001/002 conservan aceptación y pasan regresión. Solo se añade el tercer hito deACC-003:51/72=70,83%,3/24 tareas cerradas (12,50% de cierres integrales), producción deshabilitada. El corte50/72=69,44%,2/24 y los anteriores se conservan en evidencia y pruebas del generador. ACC-004 es la siguiente; no se inició su desarrollo.
 
 El cierre supera el umbral estricto70% establecido por el usuario para el siguienteSummit consolidado. Se prepara una sola entrega del acumulado local, con respaldo y comprobación del remoto, sin force ni descarte de trabajo ajeno. La publicación solo se da por confirmada al comparar elSHA local conrefs/heads/main después delpush; no se confunde publicación del código con despliegue productivo.
+
+
+## Cierre secuencial · ACC-004 al100% · 2026-11-11
+
+**Funcionalidad implementada y probada.** Los criterios originales se mantienen: carrerasPostgreSQL de cierre/posteo/reversión y cuentas con orden de bloqueo consistente. Se corrigió la configuración de períodos/cuentas, que no tomaba el bloqueo de empresa utilizado por el motor. save/delete de instancias y operaciones de sus managers ahora adquieren empresa antes de sus filas; conjuntos de empresas se bloquean porUUID ascendente, y el motor conserva cuentas porUUID ascendente. update/delete/bulk_update/bulk_create/update_or_create quedan serializados. Se rechazan reasignaciones de empresa y upserts masivos de estado para no mutar registros existentes sin revisión; el alta normal y la configuración durante provisión se conservan. El parámetro select_for_update en una actualización masiva no adelanta el bloqueo de filas a la consulta de propietarios. No son guardas contraSQL arbitrario o código privilegiado que adquiera deliberadamente bloqueos inversos.
+
+Un objeto cargado antes de un cierre/desactivación no puede guardar su estado antiguo para reabrir/reactivar silenciosamente. Se admite escribir de nuevo el mismo estado y, tras refresh_from_db, una modificación explícita del estado; no se añade una política jurídica de reapertura. UUID de empresa como texto oUUID son equivalentes. No cambia el esquema, los saldos ni el hash histórico. No se añadieron pantallas o rutas nuevas de cierre.
+
+PostgreSQL16 desechable con rol restringido verificó diez escenarios: cierre/posteo y cierre/contrapartida, cada uno simultáneo, cierre primero y operación primero; contrapartidas simultáneas con una sola aceptada; asientos con cuentas disjuntas y ordenSQL de bloqueos comprobado; desactivación/posteo y rollback de contrapartida antes del reintento. Si cierre obtiene el bloqueo primero, la operación queda rechazada sin borrador huérfano; si el asiento obtiene primero el bloqueo, termina antes de la marca temporal del cierre. Se comprobaron caminos de cierre/desactivación masivosORM además de save. Todos terminaron sin deadlock en esas ejecuciones; no es una promesa universal de ausencia de deadlocks bajo código o carga arbitrarios.
+
+Pruebas:11 específicas nuevas,26 posteo,46 adaptador,10ACC-001,8ACC-002,8ACC-003,20 apertura,4HTTP de ambos sistemas (compras/recuperación/devoluciones/contrapartidas),25FX y23 reembolsos:181 ejecuciones funcionales/regresión aprobadas.26 del runner aparte. Las específicas incluyen contrapartida de original histórico cerrado dentro del período actual abierto, original intacto, rechazo de una segunda contrapartida y rollback al fallar auditoría. No se acredita cobertura100% ni rendimiento productivo por estos conteos. Evidencias/comandos reproducibles/tests/hashes y criterios explícitos en followups.ACC004_full_acceptance del JSON existente.
+
+**Alcance pendiente deACC-004:** ninguno de sus criterios originales. **Requisitos externos de esos criterios:** ninguno; se ejecutaron sobre PostgreSQL real desechable. Política normativa/legal de cierre, roles/RLS/carga y despliegue productivos permanecen en sus frentes. Los pendientes históricos de reconstrucción de legados, lotes mayores y snapshots se conservan enR11/backlog global y no se dan por resueltos con este cierre.
+
+**Estado:ACC-004 CERRADA al100% de sus criterios originales.** ACC-001/002/003 conservan aceptación y aprobaron nuevamente sus pruebas. Solo se acredita el tercer hito deACC-004:52/72=72,22%,4/24 tareas cerradas (16,67% de cierres integrales), producción deshabilitada. El corte51/72=70,83%,3/24 y los anteriores se conservan en evidencia y en pruebas del generador. ACC-005 es la siguiente; no se desarrolló en esta entrega. Cambios locales y respaldados sobre main publicadoc745d0a58, sin nuevo commit/push: la entrega consolidada por superar70% ya se realizó y no autoriza commits parciales posteriores.
+
+
+## Cierre secuencial · ACC-005 al100% · 2026-11-11
+
+**Funcionalidad implementada y probada.** Criterios originales conservados: VerifiedCompanyLink vigente, sin equivalencia automática deUUID y actor/período coherentes. Se corrige el uso de credencialesORM cacheadas: usuario y revisor se consultan en la base al resolver o revisar, y la revisión importada por el propio administrador se rechaza. Se validan tipos/conciencia de zona horaria en la vigencia antes de compararla. La creación del vínculo tomaTenant antes deTourismProvider y vuelve a comprobar privilegios del operador, alineándose con las operaciones financieras. El puenteSQLAlchemy refresca titular y roles del revisor, conservando el dueño corporativo fijado y la sesión ERP coincidente.
+
+Ambos despachadores corporativos revalidan el vínculo después de recibir una respuesta del ERP. Si fue revocado durante la operación, no devuelven datos y explican que el resultado puede estar registrado y debe recuperarse con la solicitud/revisión original y acceso autorizado. No se afirma ni intenta rollback distribuido. La pruebaHTTP acredita que una revocación previa impide despacho y que una posterior a unPOST real de proveedor sintético retiene la respuesta, dejando exactamente un registro enERP, comprobado por suAPI autorizada. La variante de recuperación también descarta un reporte ante revocación posterior. No se envía un segundoPOST ni se inventa una contrapartida para ocultar el resultado.
+
+Verificación:8 pruebas específicas,27 de identidad,46 adaptador,10ACC-001,8ACC-002,8ACC-003,11ACC-004,23 corporativas (incluidos cuatro recorridosHTTP de revocación/sesión) y23 reembolsos:164 ejecuciones funcionales/regresión aprobadas;26 del runner aparte. Los períodos ajenos y actores distintos se rechazan antes de crear asiento; el válido conservaTenant, período ycreated_by correctos. PostgreSQL16 desechable con rol restringido comprueba tres escenarios: creación concurrente con un solo vínculo, actor/revisor revocados pese a objetos cacheados yUUID coincidentes que nunca sustituyen el vínculo explícito. Se admitenUUID coincidentes solo tras revisión real almacenada: no se exige diferencia artificial ni se infiere igualdad empresarial. Tests/comandos reproducibles/logs/hashes y criterios en followups.ACC005_full_acceptance del JSON existente.
+
+**Alcance pendiente deACC-005:** ninguno de sus criterios originales de puente interno. **Requisitos externos de esos criterios:** ninguno. Esto no valida identidad legal ante terceros niKYC/RNT; son registros y roles de laboratorio sobre motores/bases/HTTP ejecutables. Provisión/renovación/historial/SSO y administración de roles más amplios conservan sus pendientes del plan general, junto con migraciones/roles/aceptación reales. No se añadieron esos endpoints ni se acredita atomicidad entre las bases corporativa yERP. Las restricciones del puente se aplican al ámbito empresarial, sin cambiar el acceso personal a la billetera de cualquier persona registrada deColombia.
+
+**Estado:ACC-005 CERRADA al100% de sus criterios originales.** Las cuatro tareas anteriores conservan aceptación y regresión aprobada. Solo se añade el tercer hito deACC-005:53/72=73,61%,5/24 tareas cerradas (20,83% de cierres integrales), producción deshabilitada. El corte52/72=72,22%,4/24 y los anteriores se conservan en evidencia y pruebas del generador. ACC-006 es la siguiente; no se desarrolló en esta entrega. Cambios locales respaldados sobre main publicadoc745d0a58, sin nuevo commit/push.
+
+## Cierre secuencial · ACC-006 · 2026-11-11
+
+**Problema y solución implementada:** el posteo genérico admitía tasas del catálogo global sin soporte documental ni vencimiento. Ahora las nuevas contabilizaciones extranjeras requieren la revisión explícita existente con fuente, versión, hash de soporte, ventana válida para la fecha económica y segunda confirmación. Se bloquean monedas desactivadas durante la confirmación; el catálogo histórico no autoriza asientos. Las contrapartidas conservan la tasa original y no buscan una nueva. No se modificaron asientos históricos ni el esquema.
+
+La valoración, revaluación y liquidación usan contexto decimal aislado de precisión, redondeo y trampas del proceso. Se rechazan float, importes no finitos y tasas inválidas; una tasa explícita revisada de1 es distinta de un fallback implícito. El auxiliar de conversión valida monedas/importes/versiones y serializa versiones concurrentes, sin acreditar autenticidad externa por el indicador histórico is_official.
+
+**Implementado y probado:**181 pruebas funcionales/regresiones,26 del runner,96 comprobaciones de navegador en ambos paneles y6 escenarios PostgreSQL16 con rol restringido. Incluyen tasas sin revisión, vigencia, moneda inactiva, precisión hostil, confirmación concurrente, contrapartida histórica y versiones del catálogo. Las tareas1–5 y los reembolsos aprobaron sus regresiones. Tasas y soportes sintéticos; no se consultaron proveedores, bancos niDIAN reales. Evidencia, hashes y salidas en el registro técnico existente de recuperación.
+
+**Alcance pendiente:** ninguno de los criterios originales de validación interna deACC-006 en los pares soportados USD/EUR haciaCOP. **Requisitos externos y alcance global pendiente:** autenticidad de fuentes/tasas legítimas, revisión profesional/productiva, legados/lotes, comisiones, división/tránsito y otras monedas. La revisión del usuario no certifica una fuente de mercado: rate_independently_verified continúa falso. No se declara cierre de esos pendientes ni habilitación productiva.
+
+**Resultado:**ACC-006 cerrada al100% de sus criterios originales internos. Solo se añade su tercer hito:54/72=75,00%;6/24 tareas cerradas=25,00% de cierres. Base y cortes anteriores conservados; producción deshabilitada. ACC-007 no se inició. Cambios acumulados locales sobre main c745d0a58, sin nuevo commit/push, con respaldo y manifiesto verificables.
+
+## Reevaluación y corrección deACC-001 aACC-006 · 2026-11-11
+
+Se revisaron los criterios originales, rutas de creación/posteo/reversión, inmutabilidad, transacción/outbox, bloqueos, vínculo de empresa/actor, FX, reportes y migración. Se ejecutaron pruebas nuevas que fallaban antes de corregir; las regresiones anteriores por sí solas no detectaban estas fallas. No se declara inmunidad ni ausencia universal de defectos.
+
+| Tarea | Resultado de la revisión | Corrección o comprobación |
+|---|---|---|
+|ACC-001 · Exactitud/aislamiento|Criterios originales aprobados tras corrección|Validación de tasa antes de conversión ORM; rechazo de float/no finitos/exceso de precisión; contexto decimal de reportes aislado.|
+|ACC-002 · Inmutabilidad|Regresión aprobada|UUID, identidad, padre cacheado, guardas ORM/SQL verificadas; sin nueva falla encontrada en esos casos.|
+|ACC-003 · Idempotencia/outbox|Regresión aprobada|Repetición, contrato distinto, rollback/recepción/proyección y concurrencia verificados; sin nueva falla encontrada en esos casos.|
+|ACC-004 · Concurrencia|Aprobada tras corrección|Identidad de cuentas usadas (código/tipo/catálogo) protegida para no invalidar hashes; escrituras individuales/masivas y tres órdenes concurrentes de cambio/posteo probados.|
+|ACC-005 · Empresa/actor|Regresión aprobada|Vínculo vigente, titular/revisor, sesión y supresión de resultado al revocar verificados en ORM, HTTP corporativo y PostgreSQL.|
+|ACC-006 · FX|Regresión aprobada y entrada reforzada|Fuente/versión/vigencia/moneda, sin fallback global, valoración/revaluación/liquidación y reversión histórica; tasa de cabecera exacta desde el borrador.|
+
+**Hallazgos subsanados:**(1) modificar código/tipo/catálogo de cuenta utilizada rompía el hash histórico; ahora se bloquea bajo el mismo orden de locks del posteo. Nombre visible y activación siguen disponibles. (2) Tasa de cabecera float o con precisión sobrante atravesaba elORM; ahora se rechaza antes de guardar y el valor por defecto esDecimal. (3) El margen de rentabilidad heredaba trampas/redondeo del proceso; ahora usa contexto propio, con prueba del resultado66,6667% para2/3. (4) Dos pruebas de instalación omitían el consentimiento del destinatario; se actualizaron para verificar rechazo sin consentimiento y ejecución posterior con el destinatario real del caso. No se relajó seguridad de billetera.
+
+**Pruebas finales:**328 pruebas funcionales/integración en19 suites, más26 del runner y14 del registro de progreso;38 escenarios PostgreSQL16 con roles restringidos;186 comprobaciones de navegador, incluyendo ambos paneles y recorrido real con cookie/CSRF. Instalación nueva ERP: esquema listo, sin deriva de modelos, migración idempotente y respaldo/restauración aprobados. Las migraciones0007 de ambos árboles solo cambian el estado/default Python, con prueba de ceroSQL de ida/vuelta; no reescriben datos históricos. El primer ensayo se inició antes de crear la migración y marcó pendiente correctamente; se repitió desde cero con fuentes estables y fixtures corregidos. Evidencia, hashes, fallos reproducidos y resultados finales en el JSON/log técnico existente.
+
+**Pendiente y límites:** no se encontraron fallas restantes en los casos ejecutados de los criterios originales soportados. No es certificación de toda entrada o entorno. Las protecciones nuevas de identidad de cuenta cubrenORM, noSQL privilegiado. Conservan sus pendientes los roles/infraestructura productivos, migración histórica real, seguridad/carga independiente, tasas y soportes auténticos, aceptación contable/legal y proveedores/dispositivos reales. No se contactaron bancos/DIAN/proveedores reales ni se habilitó producción. Otras monedas, legados/lotes/comisiones y demás alcance global no se declaran resueltos.
+
+**Porcentaje sin inflación:**54/72=75,00%;6/24 tareas cerradas según criterios originales (25,00% de cierres). La reevaluación/corrección no añade hitos repetidos. ACC-007 no se inició. Cambios anteriores preservados; entrega local respaldada, sin commit/push nuevo.
+
+## Cierre secuencial · ACC-007 · 2026-11-11
+
+**Criterio original conservado:** «Detectar cambio de cualquier cuenta/línea/importe/moneda y proteger asientos SQL; conservar historia». Se acredita el contrato interno de hash versionado y las guardas DML instaladas, sin calificar una infraestructura productiva completa.
+
+**Problemas subsanados:** las guardas anteriores protegían cabeceras/líneas pero permitían editar porSQL la identidad de una cuenta utilizada, invalidando su hash. La presencia estructural de un disparador tampoco probaba que su cuerpo siguiera siendo el esperado. Se añade protecciónSQL para identidad de cuenta utilizada y diagnóstico de cuerpos, adjuntos, estado y configuración de funciones esperados. El auditor de privilegios incluye ahora las cuatro tablas protegidas; no confundeSET ROLE con una sesión productiva cualificada.
+
+**Código y pruebas:** nuevas guardasSQLite/PostgreSQL bloquean cambios deID/empresa/código/tipo/catálogo y eliminación de cuentas utilizadas. Se conserva la edición de nombre visible/activación, que no forman parte del hash financiero existente. Cabeceras/líneas contabilizadas siguen inmutables; se verifican cambios de importe, moneda y referencias, truncado y sombra temporal de tabla padre. El diagnóstico es de lectura: no repara ni reinstala guardas ante una alteración. Reinstalación conDDL transaccional: un fallo revierte la retirada previa. Migración0008 en ambos árboles, sin modificar versión/algoritmo de hash ni registros históricos.
+
+**Verificación final:**313 pruebas funcionales en19 suites, incluidas11 específicas de aceptación y regresiones deACC-001 aACC-006;26 del runner y15 del registro de progreso por separado.13 escenariosPostgreSQL16, con tres carreras de ediciónSQL/posteo dentro de un escenario;82 comprobaciones de navegador entre ambos paneles y recorrido web con sesión/CSRF. Instalación nuevaERP y sus13 pruebas aprobadas. Prueba reproducible adicional de migración de ida/vuelta sobreSQLite no vacío: cabeceras/líneas idénticas, hashes válidos y detección de guarda ausente durante la reversión explícita. Evidencia/comandos/rutas/hashes en elJSON/log técnico existente.
+
+**Alcance pendiente de los criterios internos originales:** ninguno encontrado en el alcance soportado probado. **Requisitos externos/producción pendientes:** roles/RLS/permisos reales completos, migración histórica del cliente, revisión de seguridad y firma/atestación independientes. Un dueño/superusuario puede sustituir/deshabilitar guardas; el diagnóstico compara contra código de aplicación confiable, no certifica un entorno comprometido. El rol de laboratorio sigue sin cualificación productiva y no se declara invulnerabilidad. No se contactaron bancos/DIAN/proveedores reales ni se habilitó producción.
+
+**Resultado:**ACC-007 cerrada al100% de sus criterios originales internos. Se acredita exclusivamente su tercer hito:55/72=76,39%;7/24 tareas cerradas (29,17% de cierres). Cortes previos y denominador conservados. ACC-008 no se inició. Avances anteriores preservados y respaldo local verificado; sin nuevo commit/push.
+
+## Cierre secuencial · ACC-008 · 2026-11-11
+
+**Criterio original:** «Estados y payload versionados; cobro/acuse/confirmación no se fabrican». Cierre del contrato de origen/solicitud, sin sustituir emisión fiscal ni aceptación externa.
+
+**Hallazgos y código:** el contrato puro admitíaCRM ganado, pero el modelo global no tenía pertenencia contable. Se añade vínculo persistido con revisión de operador independiente del titular, vigencia explícita y evidencia; no existe una ruta pública para apropiarse de un lead porUUID. No se mueve el registro legado ni se deduce empresa por coincidencia de identificadores. La API vuelve a comprobar fuente ganada, cliente, importe, vínculo, propietario y revisor antes de aceptar revisión/solicitud; se evita bloqueo cruzado de usuarios de empresas distintas.
+
+El productorCRM también estaba bloqueado: usaba campos/etapas ausentes y convertía importes a float. Se restauran industry/company_size, expected_plan/probability y etapasPROPOSAL/NEGOTIATION mediante migración aditiva0002 en ambos árboles; los datos históricos desconocidos quedan vacíos/null. Registro de prospecto y oportunidad atómicos, importe decimal exacto y transición desde estado persistido; no se reabre un cierre con un objeto desactualizado. Prueba real desdeCRMService hastaWON, revisión y solicitud, sin generar factura/cobro al ganar.
+
+Revisión fiscal persistida y segunda confirmación separadas, con contratos versionados. La cola comprueba que la referencia de revisión exista y coincida con empresa/actor/snapshot/evidencia; rechaza referencias inventadas y estados de entrega desconocidos. La reserva conserva su flujo y valida su sobre/versionado sin aceptar una supuesta aprobación legal. Se conserva el protocolo de intención/outboxv1 y sus identidades; no se reescriben solicitudes previas.
+
+**Integración:** nuevas rutasERP revisar-oportunidad-fiscal/solicitar-factura-oportunidad y cuatro comandos fijos del puente corporativo para revisión/solicitudCRM y reserva. Se mantienen sesión, CSRF, vínculo empresarial y comprobación posterior de permisos. El contrato de respuesta exige REQUEST_ONLY y rechaza supuestos cobros, acuses o aceptación fiscal. PROCESSED indica entrega de cola, nunca aceptaciónDIAN. Un timeout conserva resultado incierto; se reintenta la misma revisión, sin inventar confirmación ni atomicidad distribuida.
+
+**Verificación:**369 pruebas funcionales/regresiones en24 suites, incluidas21 específicas deACC-008 y5 del nuevo contrato/HTTP corporativo;26 del runner y16 del registro de progreso aparte.8 escenariosPostgreSQL16: vínculo/revisión/solicitud concurrentes, cambio de estado, fallo/reintento, entrega sin aceptación fiscal, revocación y revisión cruzada entre empresas sin deadlock.82 comprobaciones de navegador de recorridos existentes. Migración sobre filasCRM legadas sintéticas conservaID/cliente/estado/importe y deja desconocidos históricos sin fabricar; prueba reproducible de migración más13 comprobaciones sobre esquema local migrado, sin deriva. Evidencias/hashes/comandos en elJSON/log técnico existente.
+
+**Pendiente de los criterios internos originales:** ninguno en el alcance soportado probado. **Alcance más amplio y requisitos externos pendientes:** emisión/acuseDIAN auténticos, banco independiente, normativa y soportes reales, múltiples anticipos y otros ajustes/atribución tributaria, formulariosCRM completos, catálogo y recuperación/renovación del vínculo, aceptación profesional/productiva y migración histórica del cliente con respaldo/rollback revisados. Se conserva el texto previo de pendientes en la evidencia para no perderlos; siguen enR03/R04/R06/R12/R18/R20. La revisión documental del operador no se certifica con hashes sintéticos. No se ejecutó pago, emisión fiscal, publicación ni llamada a proveedor real.
+
+**Resultado:**ACC-008 cerrada al100% de sus criterios originales del contrato. Solo se añade su tercer hito:56/72=77,78%;8/24 tareas cerradas (33,33% de cierres). Producción deshabilitada; no se acredita el resto del ciclo fiscal/comercial. ACC-009 no se inició. Cambios acumulados locales, respaldados; sin nuevo commit/push.
+
+## ACC-009 · Incremento local y bloqueo de cierre · 2026-11-11
+
+**Estado:EN EJECUCIÓN, NO cerrada.** Criterio original conservado: «Documentos válidos y acuses reales en habilitación; certificado bajo custodia autorizada». No se puede acreditar con certificados/acuses de laboratorio ni validaciónXSD de referencia.
+
+**Implementado y probado:** fuenteCRM ganada/revisada consultada de forma autenticada, con permisos/vigencia/última revisión y cambios de origen comprobados. Nueva rutaERP fuente-borrador-ubl-crm y puente corporativo; contrato de fuente diferenciaCRM/WON de reserva/CONFIRMED sin acreditar identidad/fiscalidad externas. El panel compartido permite elegir origen, reconsulta antes de generar y limpia estado al cambiar origen o identidad. Se conserva azul metalizado/azul claro/texto blanco, estructura y modo reserva.
+
+**Falla real subsanada:** los borradores vinculados podían repetir la declaraciónXML al serializar elDocument reparsado. La pruebaXSD nueva falló antes de corregir. Ahora se serializa solo documentElement y se añade una sola cabecera. Dos documentosCRM generados en navegadores de ambos paneles pasan elXSD UBL2.1 CS1 de referencia local; no es cualificación del anexoDIAN vigente. Se verifica también parseo correcto del origen reserva. El diagnóstico de resolución usa fecha civilAmerica/Bogota y rechaza fechas no canónicas; nunca habilita transmisión por tener configuración pública válida.
+
+**Pruebas finales:**161 pruebas funcionales/integración en12 suites, incluidas8 nuevas locales y2 HTTP del puente real;26 del runner y16 del registro de progreso por separado. Tres suites de navegador aprobadas: CRM con generación/cifrado/recuperación en ambos paneles y2 XML validados contra14 archivosXSD de referencia íntegros, fuente reserva con rechazo de alteraciones y paquetes cifrados de reserva en ambos paneles.24 pruebas del firmador y24 de acuses/diario son explícitamente de laboratorio. Una prueba del firmador necesitó sockets locales fuera del sandbox; completó correctamente. No se presentan como firma/acuse reales.
+
+**Desarrollo todavía pendiente:** concretar formato fiscal del anexo/perfil aplicable (identidades/catálogos, numeración/CUFE/QR y representación fiscal/PDF-A3); integrar y cualificar firma real/cadena/política/revocación/reloj y custodia autorizada; implementar/verificar transporte del canal y validación de acuses auténticos/resultado incierto. El firmador sigue restringido aLABORATORY_ONLY y la transmisión no cualificada permanece bloqueada.
+
+**Requisitos externos:** definirDIAN directo o proveedor autorizado y perfil/anexo vigente; certificado legítimo con autorización/custodia del cliente, resolución/identidad, software/test set/acceso de habilitación configurados por canal seguro y documentos/acuses reales revisados. Se preguntó canal y disponibilidad de certificado/test set; no se presume respuesta por silencio. No enviar claves privadas/PIN/credenciales al chat. No hubo emisión, pago ni llamada aDIAN/proveedor real. No se acredita aceptación legal ni productiva.
+
+**Progreso sin crédito artificial:**77,78%=56/72;8/24 tareas cerradas;ACC-009 conserva2/3 hitos y sigue abierta. El incremento amplía implementación/pruebas ya acreditadas; no suma aceptación completa. ACC-010 no se inició. Pendientes/evidencias en este seguimiento y elJSON/log técnico existentes; cambios locales respaldados, sin nuevo commit/push.
+
+### Decisión del usuario · Canal DIAN directo
+
+El usuario confirmó integración directamente conDIAN y difirió expresamente ese trabajo para una etapa posterior. No se buscará ni contratará un proveedor intermediario como parte de esta decisión. El canal queda definido; certificado/custodia autorizada, configuración y set de habilitación, transporte y acuses auténticos continúan pendientes, sin afirmar disponibilidad. Se conserva el criterio original deACC-009 y su estado abierto, junto con el desarrollo fiscal restante ya enumerado. El aplazamiento no acredita aceptación completa, no aumenta77,78% ni autoriza el cierre o inicio automático de otra tarea.
+
+## Cierre · ACC-010 · 2026-11-11
+
+**Autorización/secuencia:** el usuario pidió expresamente desarrollarACC-010 después de aplazar la integración directa conDIAN. Se conservaACC-009 abierta y sus criterios íntegros; no recibe aceptación ni se oculta su bloqueo. Este cierre corresponde aACC-010.
+
+**Criterio original:** «DEK por documento; KEK cliente; AAD; no plaintext ERP; recuperación/rotación probadas». Se acredita la opción portátil de cifrado cliente, no custodia hardware ni despliegue productivo.
+
+**Implementado/subsanado:** antes se ignoraba una referencia de recuperación esperada desconocida por elSDK. Se añadió expected_reference opcional de versión/huella a recuperación/rotación y al clientePython; referencia incorrecta se rechaza antes de derivar/descifrar. La prueba de navegador falló antes de la corrección y pasa después. Referencia exacta no demuestra ser la última versión; sin ella se conserva la recuperación legítima de archivos históricos.
+
+Ambos paneles permiten indicar referencia confiable de respaldo al recuperar archivo oBYOS; evitan mostrar plaintext al fallar y mantienen el paquete cifrado anterior. ContraseñasUnicode malformadas se rechazan antes de una conversiónUTF-8 con pérdida;Unicode válido soportado. No cambia el protocolo cifrado/HMACv1. La rotación conserva ciphertext/IV y reenvuelve laDEK con la nuevaKEK, encadenando versión/huella; copias anteriores no quedan revocadas.
+
+**Pruebas finales:**142 pruebas funcionales en10 suites, incluidas9 específicas de aceptación;26 del runner y17 del registro de progreso por separado.136 comprobaciones de navegador entre4 suites y el navegador integrado del fixturePostgreSQL, con ambos paneles.6 escenariosPostgreSQL (2 de pérdida/ambigüedad de commit y4 de roles/cadena/reintento/competencia), servicioHTTPS local y paquetes sintéticos. Se comprobaronDEK distintas por cifrado mediante unwrap independiente, AAD de empresa/documento/dominio, recuperación serializada, clave/ámbito erróneos, referencias incorrectas, manipulación y exclusión de plaintext/llaves enERP. Runtime generado coincide conSDK canónico. Firmador/interop conserva24 pruebas de laboratorio, sin firma fiscal real. Evidencia/hashes/comandos y fallo inicial en elJSON/log técnico existente.
+
+**Alcance pendiente original portátil:** ninguno en los criterios soportados probados. **Límites y pendientes externos/globales:** no se recupera sin secreto/archivo; no se revocan copias antiguas ni se acredita última versión independiente. Custodia/recuperación física/hardware, titularidad/destino/TLS/grants reales, retención/backup, cliente/infraestructura confiables y aceptación productiva permanecen enR07/R08/R17/R20. Se conserva el texto previo de pendientes en evidencia. No se habilitó producción ni se ejecutó pago, firma fiscal real o integraciónDIAN.
+
+**Resultado:**ACC-010 cerrada al100% de sus criterios originales del cifrado portátil cliente. Solo se acredita su tercer hito:57/72=79,17%;9/24 cerradas (37,50% de cierres:1–8 y10). ACC-009 permanece abierta/aplazada. Cambios acumulados preservados y respaldados localmente; sin nuevo commit/push.
+
+## ACC-011 · Drive y OneDrive · 2026-11-11
+
+**Implementado y probado:** destinos elegidos por el usuario: Google Drive o OneDrive. Se añaden adaptadores locales en `DESKTOP/customer-cloud-store/`: OAuth para cliente nativo/público con PKCE S256, state de uso único/caducidad, callback loopback estricto y permisos acotados; tokens solo en memoria. Los adaptadores reciben paquetes ya cifrados del protocolo existente, vinculan empresa/cuenta/carpeta y requieren confirmación de carga. Un plan identifica bytes y destino; después de un resultado incierto se consulta ese mismo plan y se reintentan únicamente sus mismos bytes. Drive preasigna identidad de archivo; OneDrive solicita creación sin reemplazo. Solo se confirma almacenamiento tras leer exactamente los bytes cifrados. No hay fallback a un destino ajeno ni recepción de claves/documentos en claro por el ERP.
+
+La descarga preautorizada de OneDrive exige un host exacto revisado explícitamente; no reenvía bearer ni cookies y rechaza redirecciones. La URL temporal no se incorpora a planes ni recibos. `drive.file` y `Files.ReadWrite.AppFolder` permiten lectura/escritura dentro de su alcance: no se describen como permisos de escritura exclusiva. Los recibos distinguen almacenamiento de autenticación criptográfica, versión vigente, titularidad independiente, aceptación fiscal y cualificación real del proveedor: esas afirmaciones permanecen falsas.
+
+**Pruebas:** 17 pruebas nuevas de contrato con HTTP simulado para ambos proveedores; 15 regresiones de paquetes/API y 13 de recuperación existentes. Cubren PKCE, ámbito, state, caducidad, replay, revocación/403, límites de respuesta, caída tras escritura, recuperación sin segunda carga, colisiones, aislamiento, confirmación y descargas sin credenciales. Estas 45 pruebas no son permisos cloud auténticos. La regresión TestClient requirió IPC fuera del sandbox local; no realizó conexión a cuentas externas.
+
+**Desarrollo pendiente:** integrar el flujo OAuth nativo y los conectores con las interfaces de ambos sistemas; aprovisionar/seleccionar carpeta Drive accesible al scope; cualificar condiciones de creación y descargas reales; operación, retención y recuperación del cliente. Estos son adaptadores ejecutables por código, no una interfaz cloud ya desplegada.
+
+**Requisitos externos:** registrar la aplicación nativa en Google Cloud o Microsoft Entra, fijar redirect y perfil admitidos, autorizar una cuenta administrada por el cliente, comprobar permisos/revocación y resultado incierto con el proveedor real. Se solicitó disponibilidad sin pedir secretos por chat. La elección de plataforma no prueba que esas aplicaciones/cuentas estén preparadas.
+
+**Estado:** ACC-011 permanece parcial 2/3; no recibe el hito de aceptación completa exigente de permisos reales. Progreso conservado: **57/72 = 79,17%; 9/24 tareas cerradas**. ACC-009 continúa aplazada para integración directa DIAN. Producción no habilitada; cambios locales sin nuevo commit ni push. Evidencia añadida al JSON y log técnicos existentes.
+
+## ACC-012 · Controles previos al despacho · 2026-11-11
+
+**Hallazgo y solución codificada:** el despacho genérico existente comprobaba autorización profesional, EPP y descanso, pero carecía de una evaluación de riesgo explícita por orden. Se añade `sg_sst/dispatch_risk.py`: aprobación provisionada para empresa/orden, versión, revisor activo autorizado, vigencia para toda la operación, peligros con controles/soportes, clase de riesgo declarada por trabajador y EPP adicional requerido. Ausencia, revocación, peligro sin control, cobertura incompleta o EPP faltante bloquean el inicio. La huella de la evaluación se liga a la fuente revisada: un cambio entre confirmaciones invalida el despacho. Las constancias antiguas sin esta huella requieren nueva revisión, sin borrar datos ni reiniciar operaciones ya registradas. La consulta de operaciones terminadas conserva acceso aunque venza la evaluación; un cambio de fuente durante la ejecución conduce a incidencia en el flujo de cierre existente.
+
+El catálogo se carga mediante archivo privado `OPERATIONAL_RISK_ASSESSMENT_FILE`, con el lector existente que exige ruta absoluta, ausencia de enlaces, permisos privados, tamaño acotado y JSON sin duplicados. Estructura: UUID de empresa → UUID de orden → evaluación. No se acepta una evaluación enviada por el solicitante como política habilitante ni se habilita por defecto. La clase declarada no certifica afiliación ARL ni cumplimiento normativo. No se incluyen diagnósticos ni decisiones médicas en respuestas de despacho.
+
+**Otra falla corregida:** referencias EPP anidadas y UUID malformados podían producir excepciones antes de la validación de referencias. Ahora se rechazan explícitamente como errores de validación, sin escrituras ni suposiciones sobre aptitud.
+
+**Verificación ejecutada:** 14 nuevas pruebas de riesgo/referencias, 37 de datos laborales y despacho positivo, 22 de protección de transiciones y 14 de permisos/SG-SST: **87 pruebas aprobadas** con ORM/API y datos sintéticos. Se probaron riesgo ausente/ajeno, cambio entre confirmaciones, controles faltantes, clase inválida, EPP adicional, caducidad, revisor no provisionado, ruta positiva, privacidad y referencias inválidas. La evidencia técnica se añade al JSON/log existentes, con comandos y hashes.
+
+**Alcance pendiente:** formularios y recorridos completos, despacho especializado y conexión operacional de ambos sistemas, cualificación PostgreSQL/concurrencia y migración histórica. **Requisitos externos:** políticas laborales/SG-SST y profesionales legítimos, soportes autorizados y comprobación física de aptitud/EPP/descanso. Los datos de prueba no cumplen esos requisitos. No se modificaron reservas, RAT/ADR, pagos ni nómina.
+
+**Resultado:** ACC-012 permanece parcial 2/3; no se declara terminada ni se aumenta el porcentaje por reforzar pruebas. Se conserva **79,17% = 57/72 hitos; 9/24 tareas cerradas**, con ACC-009 aplazada y ACC-011 pendiente de OAuth/cuenta reales e integración de interfaces. Cambios locales, sin commit/push ni habilitación productiva.
+
+## Evaluación transversal ACC-001 a ACC-012 · 2026-11-11
+
+**Resultado de la revisión:** se contrastaron los criterios originales con las rutas y evidencias existentes y se ejecutaron pruebas focalizadas, PostgreSQL desechable, HTTP entre backends y Chromium. No es una certificación exhaustiva de producción. Los cierres internos de 1–8 y 10 se sostienen en las pruebas ejecutadas; 9, 11 y 12 conservan alcance pendiente.
+
+| Tarea | Evaluación verificada | Pendiente concreto |
+|---|---|---|
+| ACC-001 | Importes exactos, balance y aislamiento; regresión y PostgreSQL aprobados | Cualificación productiva del alcance global, sin reabrir criterios internos cumplidos |
+| ACC-002 | Identidad UUID y guardas ORM/SQL; regresión y PostgreSQL aprobados | Despliegue y roles productivos |
+| ACC-003 | Idempotencia y outbox atómicos; carreras PostgreSQL aprobadas | Kafka/consumidor externo no acreditados por atomicidad local |
+| ACC-004 | Períodos, reversión y orden de bloqueos; carreras PostgreSQL aprobadas | Carga productiva y legados del alcance global |
+| ACC-005 | Vínculo empresarial/actor vigente; PostgreSQL y puente HTTP aprobados | Aprovisionamiento/SSO/identidad legal externa |
+| ACC-006 | Tasas explícitas y sin fallback; casos monetarios y PostgreSQL aprobados | Autenticidad externa de tasas y otras monedas/legados |
+| ACC-007 | Hash y guardas de integridad; PostgreSQL aprobado | Migración histórica del cliente y roles productivos |
+| ACC-008 | Contrato CRM/reserva, fuente e idempotencia; PostgreSQL y HTTP aprobados | Interfaces CRM completas y aceptación fiscal/bancaria externa |
+| ACC-009 | Borradores locales y recorridos existentes aprobados | Perfil/documento fiscal completo, firma autorizada y DIAN directo aplazado por el usuario |
+| ACC-010 | Cifrado, recuperación y rotación; pruebas y ambos paneles aprobados | Custodia/hardware/recuperación física y operación productiva |
+| ACC-011 | Conectores locales, API de paquetes y recuperación BYOS probados | OAuth/cuenta reales no disponibles; integración cloud con interfaces y cualificación del proveedor |
+| ACC-012 | Datos laborales, controles previos y protección de evidencia probados | Despacho especializado, interfaces de ambos sistemas, PostgreSQL integral/concurrencia y legitimidad profesional/física |
+
+**Fallas encontradas y subsanadas:**
+
+1. El diagnóstico de guardas laborales PostgreSQL aceptaba un disparador con `WHEN (false)`. Se reprodujo el fallo antes de corregirlo. Ahora exige disparador sin condición, sin argumentos/columnas parciales y función del mismo esquema, además del cuerpo y tipo esperados.
+2. Las tablas laborales permitían `TRUNCATE` aunque bloquearan actualización/borrado por fila. Se añadió un disparador de sentencia y la migración aditiva `sg_sst/0002_prevent_evidence_truncate.py`. Se probaron bloqueo, detección de ausencia y subida/bajada/subida con filas conservadas. Los entornos existentes deben aplicar la migración antes de usar los servicios que exigen estas guardas; no se reparan automáticamente ni se modificaron bases reales.
+3. La configuración/grants BYOS usaba JSON permisivo y comprobaciones de ruta vulnerables a enlaces de directorios padre. Se cambió por apertura mediante descriptores de directorio sin seguimiento de enlaces, verificación del archivo abierto, lectura acotada y rechazo de claves duplicadas/no finitos. Se prueban también permisos públicos, FIFO, exceso de tamaño y ruta relativa.
+4. La prueba de trabajador ocupado podía pasar por ausencia de riesgo en la segunda orden, ocultando la condición que pretendía verificar. Ahora provisiona ambos riesgos y exige expresamente el rechazo por trabajador ya asignado.
+
+**Validación:** 283 casos Python funcionales (incluidos 33 HTTP corporativos y 7 nuevos de configuración), 17 pruebas adicionales del registro de progreso, 59 escenarios PostgreSQL contables, 6 laborales y 6 BYOS (2 de pérdida de respuesta y 4 existentes), más 118 comprobaciones de navegador. Las repeticiones tras corregir no se suman como nuevos casos. El navegador BYOS falló inicialmente al invocarlo sin su archivo de fixture; se ejecutó después mediante su arnés HTTPS/PostgreSQL requerido y pasó. Se conserva esta incidencia de ejecución en la evidencia, sin presentarla como falla de producto. La instalación ERP desde cero terminó con schema ready y sin incidencias del system check; la prueba de subida/bajada/subida de guardas contables conservó cabeceras y líneas contabilizadas. La primera invocación de esa prueba carecía de una base inicializada; se repitió después de crearla explícitamente, sin tocar datos previos.
+
+**Límites:** datos sintéticos y PostgreSQL local no prueban autenticidad DIAN, permisos cloud reales, legitimidad profesional/ARL, descanso físico, atestación de hardware ni preparación productiva. No se considera terminada la tarea 12 por endurecer guardas. **Progreso conservado: 79,17% (57/72), 9/24 tareas cerradas.** Sin nuevo commit/push. Evidencia y comandos en el JSON/log técnicos existentes; avances respaldados localmente.
+
+## ACC-013 · Nómina, provisiones y trazabilidad de costos · 2026-11-11
+
+**Hallazgo y solución:** el motor ya conservaba jornadas, centros y componentes de nómina contabilizada, pero una orden podía cambiar su referencia comercial sin invalidar la distribución. Se añade el contrato `sgacd-payroll-operation-cost-v2`: cada operación fija referencia comercial declarada, ventana planificada, estado activo y huella de descripción. La revisión/revalidación compara esa fuente completa; un cambio impide registrar la revisión pendiente y marca la distribución anterior como no vigente, sin afirmar un total completo. Revisión nueva y reintento siguen sin duplicar asiento, gasto ni provisión.
+
+El puente corporativo valida referencias canónicas, cobertura exacta de operaciones, vigencia estructural de ventanas y campos permitidos; rechaza referencias ajenas, duplicadas, ausencia de fuente y campos clínicos. El componente compartido presenta referencia comercial y ventana en ambos paneles, conservando azul metalizado/azul claro/texto blanco, permisos y confirmaciones separadas. El UUID es una referencia comercial declarada; no acredita por sí solo contrato auténtico ni paquete vendido. No se modifica el RAT, reservas ni ADR.
+
+**Compatibilidad:** los paquetes históricos v1 permanecen legibles e inalterados. Al no fijar esta fuente comercial, no reciben calificación de fuente actual por el cálculo v2; el usuario debe volver a revisar para registrar una versión nueva. La interfaz advierte de esa limitación histórica. No se ejecuta migración destructiva ni se recalcula dinero automáticamente.
+
+**Otra falla corregida:** códigos de devengados o tipos de regla recibidos como objetos/listas JSON podían disparar `TypeError` antes de la validación. Ahora producen un rechazo contable explícito; se añadió regresión para valores anidados y nulos.
+
+**Pruebas ejecutadas:** 147 casos en 10 suites de nómina/costos (incluidos 6 nuevos de trazabilidad y 1 de entradas malformadas), 14 de contrato/HTTP corporativo, 42 comprobaciones Chromium entre ERP y Analemática y 3 escenarios PostgreSQL16: reintento concurrente de la misma revisión, planillas competidoras por una novedad y fallo/rollback/reintento. Solo un consumo y un asiento por efecto; integridad contable conservada. Chromium comprueba visualización de trazabilidad, diseño móvil, texto blanco y limpieza por cierre/pérdida de identidad. La primera ejecución HTTP tenía una ruta Python incompleta; se repitió con el directorio backend explícito y pasó. Las repeticiones no se suman como casos adicionales. Comandos, conteos y hashes se registran en el JSON/log técnicos existentes.
+
+**Desarrollo pendiente:** enlace individual de cada minuto de suplemento a jornadas, clasificación por horarios/calendario/festivos con reglas revisadas, otras novedades/ausencias/incapacidades/viáticos, retiro/ajustes de fuentes consumidas y nómina electrónica. **Requisitos externos:** reglas laborales aplicables y soportes/datos legítimos revisados por un profesional; habilitación DIAN cuando corresponda. Las tasas declaradas y pruebas sintéticas no acreditan cumplimiento legal.
+
+**Estado real:** ACC-013 continúa parcial 2/3; este incremento no completa todos sus criterios ni recibe crédito adicional por pruebas. **79,17% (57/72), 9/24 tareas cerradas.** Las tareas 9, 11 y 12 conservan sus pendientes; no se alteraron criterios ni denominador. Cambios respaldados localmente; sin commit/push y sin producción habilitada.
+
+## ACC-014 · IVA, retenciones y políticas explicables · 2026-11-11
+
+**Implementado:** el registro integral de cuenta tributaria conserva la conciliación de IVA generado/descontable y retenciones con asientos reales. Se añade `sgacd-tax-register-v3`: cada línea comercial explica las políticas del documento original por concepto (identidad, código, versión, vigencia, huella, respaldo, categoría, dirección y fecha económica). Se revalida la versión persistida contra la huella y la vigencia original; una nueva versión futura no reclasifica movimientos históricos. El caché de políticas evita repetir consultas de la misma versión dentro del reporte; más de 500 referencias exige reducir el intervalo, sin truncar evidencia ni declarar completitud falsa.
+
+Devoluciones proporcionales, por importe/concepto y sus correcciones conservan el vínculo con la política del original, sin sustituir sus líneas compensatorias verificadas. Las referencias son de la política original, no importes de ajuste recalculados. Reservas u otras fuentes que no capturaron esa política se marcan `NOT_CAPTURED_IN_SOURCE`; no se inventa respaldo. No se modifican importes contables ni se presumen tasas legales, deducibilidad o aceptación fiscal.
+
+**Ambos sistemas:** el puente valida el contrato v3 y mantiene compatibilidad con v2; rechaza metadatos privados, duplicados, versiones inválidas, vigencias incoherentes o cobertura falsa. Los dos paneles muestran código/versión/categoría/vigencia/fecha original y advierten cuando falta política capturada. Se conserva estructura y diseño azul metalizado/azul claro con texto blanco. Las interfaces v2 siguen siendo legibles sin añadirles retrospectivamente una acreditación.
+
+**Fallas subsanadas:** tipos/categorías tributarios enviados como objetos o listas podían producir excepciones no controladas; ahora se rechazan como errores contables. La regresión de devolución por cambio de tipo de cuenta quedó ajustada al bloqueo temprano de identidad de cuentas ya contabilizadas: se demuestra que el cambio se rechaza, la cuenta permanece intacta y la devolución válida aún se puede contabilizar. No se debilitó la guarda para hacer pasar la prueba. La prueba de una segunda versión de política se corrigió para usar una vigencia no superpuesta, respetando la regla existente.
+
+**Pruebas ejecutadas:** 126 casos Python en 9 suites tributarias/compras (incluidos 5 nuevos de explicación), 12 de contrato/HTTP corporativo, 126 comprobaciones Chromium (74 de compras y políticas en ambos paneles, 52 del recorrido contable/tributario ERP) y 6 escenarios PostgreSQL16 de devoluciones/correcciones concurrentes y rollback/reintento. Chromium confirma visualmente la explicación de la política original y verifica importes, limpieza de sesión y diseño móvil. Los reintentos no se suman como nuevos casos. Comandos, logs/hashes y límites se añaden al registro técnico existente.
+
+**Desarrollo pendiente:** captura versionada de políticas en fuentes históricas/reservas que carezcan de ella, períodos declarativos, conciliación multicuenta y cobertura integral de tratamientos turísticos. **Requisitos externos:** marco normativo vigente y aplicabilidad revisados profesionalmente; contraste oficial DIAN/acuses y aceptación profesional/productiva. La integración DIAN continúa aplazada por el usuario; no se cerró con una simulación.
+
+**Estado real:** ACC-014 permanece parcial 2/3; este incremento no completa todos sus criterios. Progreso conservado **79,17% (57/72 hitos), 9/24 tareas cerradas**. No hay commit/push ni despliegue productivo; avances respaldados localmente.
+
+## ACC-015 · Importación multibanco y estados externos · 2026-11-11
+
+**Requisitos recibidos:** el usuario solicita todos los bancos de Colombia y más de 50 cuentas por usuario. Se conserva como objetivo de cobertura; no se interpreta como disponibilidad de APIs, credenciales, consentimiento ni acceso de pruebas. Bold sigue siendo la pasarela elegida; no se presenta como conexión universal de Open Banking. Cualquier persona conserva elegibilidad para la billetera, sin obligación de pertenecer a una empresa o al turismo.
+
+**Incremento codificado:** el CSV neutral admite, además del formato anterior de cinco columnas, el encabezado `transaction_id,date,direction,amount,currency,bank_id,status`. Exige un identificador de banco por extracto y estados explícitos `BOOKED`, `PENDING` o `REVERSED`. El banco es un identificador declarado, no un banco autenticado ni un catálogo oficial. Las referencias se separan por empresa, cuenta y banco; no se persisten identificadores de transacción en claro. `PENDING` y `REVERSED` se muestran sin candidatos y no pueden conciliarse, ni siquiera aportando una resolución manual o agrupando entre lotes. Se aplicó el control a los tres puntos de entrada de revisión; no basta con deshabilitar un botón.
+
+El formato legado conserva su identidad de referencias y permite recuperar revisiones anteriores; no acredita un estado externo verificado. Los importes positivos/COP, fechas no futuras, límite de 5000 bytes/100 filas y tamaño máximo del lote de revisión se mantienen. El estado declarado no constituye recibo bancario ni autorización financiera. No se añaden llamadas a endpoints inventados, depósitos, retiros o pagos simulados.
+
+**Interfaces:** ambos paneles muestran “Pendiente en origen: no conciliable” y “Revertido en origen: no conciliable”; la revisión no se habilita y tampoco se ofrece resolver esas filas como simples diferencias. El backend vuelve a comprobar el bloqueo aunque se eluda la interfaz. Se conservan azul metalizado/azul claro/texto blanco, navegación y dos confirmaciones del titular para movimientos aptos.
+
+**Más de 50 cuentas:** se verificó mediante ORM/API un catálogo de 120 cuentas contables empresariales clasificadas como efectivo, incluida selección de la última y rechazo de acceso ajeno. La clasificación existente soporta hasta 1000 referencias por grupo; esa cota técnica no es un cupo de 50 cuentas por usuario. Esta prueba NO acredita 120 cuentas bancarias personales registradas, números bancarios custodiados, consentimiento ni conexiones activas. El alta y la administración de cuentas personales independientes de empresa siguen siendo desarrollo pendiente y no deben confundirse con el catálogo contable.
+
+**Pruebas:** 162 casos en 11 suites bancarias (incluidos 10 de estados/multicuenta), 30 de contratos/HTTP corporativo, 34 comprobaciones Chromium en ambos paneles y 3 escenarios PostgreSQL16 de consolidación concurrente, liberación y fallo/rollback/reintento. La historia sintética de 20000 líneas conserva sus límites y verificación. La prueba de cambio de identidad de cuenta se ajustó para comprobar su bloqueo temprano y lectura posterior intacta; no se relajaron guardas. En la prueba multicuenta se corrigieron datos duplicados de la fixture y la expectativa del código HTTP de creación; no eran fallas de producto. Los reintentos no se suman al conteo. Evidencias/comandos/hashes en JSON/log existentes.
+
+**Desarrollo pendiente:** gestión de cuentas bancarias personales con custodia y consentimiento; catálogo y adaptadores oficiales por banco/agregador autorizado, sincronización de estados y revocación auténticas, FX, snapshots/carga y cualificación de operación. **Requisitos externos:** perfiles/API/condiciones de cada proveedor, titularidad/consentimiento, acceso autorizado de pruebas y fuentes/recibos legítimos. No hay conexión real a todos los bancos de Colombia ni se afirma que un código CSV habilite una API.
+
+**Estado:** ACC-015 parcial 2/3; no se declara terminada. **79,17% (57/72 hitos), 9/24 tareas cerradas.** Sin commit/push ni habilitación productiva; cambios locales respaldados.
+
+## ACC-016 · Liquidez exacta y consulta corporativa · 2026-11-11
+
+**Falla corregida:** el indicador de liquidez protegía la división final, pero los saldos/sumas previos heredaban el contexto decimal del llamador. Ahora toda la evaluación usa precisión propia mediante el decorador contable existente. Se prueba el mismo resultado con precisión 2, redondeo diferente y trampas de operaciones inexactas activadas. Los saldos, el numerador y el denominador se conservan; un pasivo no positivo produce valor nulo y motivo explícito, no un cero calculado ni infinito.
+
+**Incremento en ambos sistemas:** el resultado identifica moneda, corte económico, unidad “veces”, cuentas fuente, totales por clasificación, revisión de política y referencia del ledger primario bajo el bloqueo empresarial compartido con posteo. Esa referencia describe una lectura coherente actual, no un histórico de publicación inmutable ni una firma independiente. La nueva consulta `quick_ratio` del puente corporativo usa la sesión ERP y vínculo revisado existentes, vuelve a validar autorización y comprueba que el valor concilie con las cuentas y la fórmula. Rechaza fuentes duplicadas, totales alterados, campos privados, contexto incorrecto y falsas afirmaciones de certificación. Ambos backends devuelven el mismo resultado desde el ledger compartido; la revocación de sesión impide la consulta.
+
+La consola Analemática incorpora el selector de liquidez, valor, cuentas/totales, moneda/corte/unidad y advertencia de clasificación declarada. Conserva la estructura y paleta existente. El panel ERP continúa usando el mismo motor y sus controles de edición/historia. Durante Chromium se detectó una referencia de interfaz fuera de su ámbito añadida al integrar la opción; se corrigió y la regresión completa vuelve a exigir cero errores JavaScript.
+
+**Verificación:** 46 regresiones de adaptador/indicadores, 5 pruebas nuevas de precisión/corte/fuentes y ausencia de escritura, 24 regresiones del módulo turístico existente y 4 pruebas nuevas HTTP/contrato corporativo: **79 pruebas Python**. **83 comprobaciones Chromium**: 31 corporativas y 52 del recorrido ERP. Incluyen resultado 3.0000 entre sistemas, trazabilidad visible, denominador cero en API corporativa, rechazo de sesión revocada, diseño móvil y conservación de los flujos anteriores. Las repeticiones y los 17 chequeos del registro de progreso no se suman a las 79. No se modifica ni se desarrolla RAT, ocupación o ADR; la prueba turística preserva las funciones existentes con fixtures desechables.
+
+**Desarrollo pendiente:** cobertura financiera por paquete y sus dimensiones de costos, otros modelos y series/calibración. **Requisitos externos:** fuentes operativas legítimas/independientes y revisión profesional/productiva. RAT/ocupación/ADR permanecen diferidos según decisión previa del usuario. No se deduce exactitud productiva ni autenticidad de datos reales de los fixtures.
+
+**Resultado real:** ACC-016 sigue parcial 2/3; la mejora de liquidez no equivale al cierre de todo el alcance turístico. Se conserva **79,17% = 57/72 hitos, 9/24 tareas cerradas**. Evidencia/comandos/hashes en el JSON/log existentes. Sin commit/push ni habilitación productiva; avances respaldados localmente.
+
+## ACC-017 · Escenarios y evaluación cronológica multiventana · 2026-11-11
+
+**Codificado:** el motor bootstrap existente de 30/90/365 días conserva semilla local, supuestos IID explícitos, percentiles de escenarios y sensibilidad con sorteos comunes. Se aisló su aritmética decimal en entrada, cálculo y agregación: no hereda precisión, redondeo o trampas del llamador. Las pruebas bajo precisión 2 producen los mismos resultados que el contexto normal, sin alterar el generador aleatorio global ni los datos del solicitante.
+
+**Funciones completadas de interfaz:** componente compartido de evaluación de 2–4 ventanas en ERP y Analemática, con caja inicial por ventana, entrenamiento de7–366 días y365 resultados posteriores separados, semilla/trayectorias declaradas y resumen por horizonte. Muestra error terminal medio, conteo de ventanas con resultado dentro del intervalo y superposición; aclara dependencia entre ventanas y falta de calibración productiva. Editar datos invalida el resultado, la pérdida de identidad limpia series y el componente no guarda datos en localStorage. Se conserva el diseño azul metalizado/azul claro y texto blanco. No se incorporan datos ficticios al producto; las series sintéticas existen solo en pruebas.
+
+**Integración y fallas subsanadas:** nuevo comando corporativo de solo lectura, con identidad/CSRF/revalidación del vínculo existentes y contrato que coteja fuentes/fechas/horizontes, errores/medianas/resumen y ausencia de ejecución financiera. Dos ventanas no cabían en el límite genérico de8KB: las rutas analíticas ahora tienen máximo específico de256KB; las escrituras financieras mantienen8KB. Se aplica JSON estricto con rechazo de claves duplicadas/no finitos y profundidad acotada en las rutas analíticas ERP. La prueba demuestra que la ampliación no habilita una escritura financiera grande. Se alineó el proxy de pruebas con el límite real. Durante integración se corrigieron el registro del nuevo comando y una fixture de saltos de línea; las pruebas HTTP/navegador se repitieron con versiones corregidas. El cliente corporativo respeta la cancelación del componente además de su timeout.
+
+**Pruebas finales:**21 regresiones de simulación/sensibilidad/backtesting,4 nuevas de exactitud y cuatro ventanas,7 del parser existente y3 HTTP/contrato/límites: **35 pruebas Python**. **51 comprobaciones Chromium**:20 del nuevo recorrido en ambos paneles y31 de regresión corporativa. Cubren ausencia de filtración de resultados posteriores al entrenamiento, error cero en serie constante de prueba, agregado descriptivo, ventanas superpuestas, identidad, diseño móvil y conservación de lectura/escritura/reversión existentes. Repeticiones y chequeos de progreso no se suman como nuevos casos.
+
+**Rendimiento medido:** máximo técnico del motor con4 ventanas,366 días de entrenamiento,365 resultados posteriores y2000 trayectorias por ventana:2.920.000 sorteos;0,9854s en una ejecución local sintética. Cuerpo JSON compacto132689 bytes. No es p95, medición HTTP/concurrente, SLA productivo ni precisión predictiva. Se conserva el JSON técnico con parámetros/resultado en el registro de evidencia.
+
+**Bloqueo confirmado por el usuario:** no dispone de una serie diaria histórica autorizada de al menos379 días. Ese mínimo permite dos ventanas del formato actual con entrenamiento de7 días y orígenes separados7 días; no es suficiencia estadística para calibrar estacionalidad. Quedan pendientes series legítimas/conciliadas, calibración fuera de muestra, estacionalidad/modelos adicionales, recomendaciones revisadas profesionalmente y cualificación productiva. No se sustituyó el requisito con fixtures ni se afirmó precisión/calibración. Los percentiles no son intervalos de confianza calibrados y el resultado no sirve como autorización de pagos/inversiones.
+
+**Estado real:** ACC-017 continúa parcial2/3; funcionalidad ampliada y probada, aceptación integral pendiente. **79,17% (57/72 hitos),9/24 tareas cerradas.** Sin commit/push ni despliegue productivo. Evidencia y comandos en el JSON/log existentes; cambios locales respaldados.
+
+## ACC-018 · Medición ambiental vinculada a origen · 2026-11-11
+
+**Hallazgo y código:** la unicidad por identificador de actividad no impedía que otro nombre describiera el mismo segmento operativo. Se amplía el contrato con `source_reference` (UUID de orden) y `source_segment` (segmento canónico en mayúsculas), opcionales como pareja para preservar las fuentes históricas. Se valida orden propia/activa y fecha dentro de su ventana en hora Colombia; las órdenes se consultan en lote y se bloquean en orden estable. La segunda confirmación vuelve a comprobar el origen. Una reserva determinista de empresa/orden/segmento se escribe junto con factor, actividad y observación: renombrar actividad o cambiar factor no duplica ese origen y un fallo revierte las reservas nuevas. Reintentar conserva una única observación.
+
+Las correcciones mantienen identificador, fecha, unidad y vínculo de origen; pueden ajustar cantidad/factor mediante el flujo existente, sin reclamar otra vez el segmento. El total corregido sustituye al original. Recuperación/reporte detectan pérdida o alteración de la reserva de origen. Se reforzó la comprobación de dominio, versión y raíz de revisiones, observaciones y reservas, además de payload/huella: no se repara silenciosamente evidencia alterada. La estimación ahora usa un contexto decimal propio incluso para redondear el reparto por pasajero; precisión o trampas del llamador no cambian el cálculo.
+
+**Interfaces y offline:** ambos paneles permiten introducir y muestran orden/segmento; recuperación y corrección conservan esos campos. El borrador cifrado solo admite esa extensión explícita y canónica, conserva el vínculo cifrado y no restaura autorizaciones. Al reconectar, el servidor vuelve a validar la orden; guardar un borrador no acredita titularidad, ejecución física ni autorización financiera. Se conservaron diseño azul metalizado/azul claro/texto blanco y navegación. No se desarrollaron RAT, reservas ni ADR.
+
+**Verificación final:**78 pruebas en6 suites ambientales/ESG/origen y2 HTTP corporativas: **80 pruebas Python**. **118 comprobaciones Chromium/WebCrypto**:48 del recorrido ambiental en ambos paneles,46 offline y24 criptográficas. Cubren renombrado del mismo segmento, factor distinto, duplicado dentro de la evaluación, origen inexistente, cambio de vigencia/actividad entre confirmaciones, reserva eliminada/metadatos alterados, corrección de cantidad con una sola reserva, precisión decimal, recuperación sin repetir autorizaciones y conservación cifrada del origen. El ensayo offline se corrigió para usar una orden propia provisionada en la fixture al reconectar; no se relajó el rechazo de referencias inexistentes. Repeticiones y17 chequeos de progreso no se suman a esos80 casos.
+
+**Límites:** el vínculo es declarado y opcional. No resuelve automáticamente alias de segmentos ni duplicados semánticos de actividades históricas sin origen; requiere un catálogo de fuentes/segmentos legítimo y revisión. Las reservas evitan duplicar observaciones vinculadas, no prueban que una actividad haya ocurrido ni convierten emisiones en un crédito negociable. El registro detecta inconsistencias, sin acreditar resistencia frente a un administrador de base hostil ni cualificación PostgreSQL/concurrencia productiva completa.
+
+**Requisito externo confirmado:** el usuario indicó que no hay factores con fuente/versión/unidad documentadas ni política u obligación ambiental revisada por contador. Por ello no se reconocen pasivos o reservas financieras automáticas, no se emiten compensaciones/créditos ni se afirma certificación ESG. Permanecen pendientes autenticidad/aplicabilidad de factores, soportes, obligación/compensación legítimas y aceptación profesional/productiva.
+
+**Estado:** ACC-018 parcial2/3. Funcionalidad implementada/probada y requisitos externos separados; sin cierre integral ficticio. **79,17% (57/72 hitos),9/24 tareas cerradas.** Cambios respaldados localmente; sin commit/push ni producción habilitada. Evidencia/comandos/hashes en el JSON/log existentes.
+
+## Auditoría y subsanación transversal ACC-001–018 · 2026-11-11
+
+**Base revisada:** árbol de trabajo local de `codex/conectado-20261110`, sobre `c745d0a58523ab3cf5742480e2e7d45b169e705e`. Incluye avances locales posteriores; esta revisión no afirma que estén publicados en main. No se hicieron commits, push, migraciones de bases del cliente ni acciones en cuentas reales.
+
+**Fallas reproducidas y subsanadas:**
+
+1. **ACC-017, integridad del resultado analítico.** El contrato corporativo comprobaba formato y algunas sumas, pero aceptaba resultados que no correspondían a los importes de entrenamiento/resultados posteriores enviados, una trayectoria negativa falsa, fracciones de déficit incompatibles con su conteo y un promedio de error por ventana alterado. Cuatro pruebas de regresión fallaron antes de la corrección. Ahora se cotejan las huellas canónicas de ambas series, caja inicial/cierre, saldos realizados y trayectorias, proporciones y conteos acumulados por horizonte, y medias de error. No se vuelve a ejecutar Monte Carlo en el puente: el cotejo es lineal sobre las observaciones declaradas, sin añadir simulaciones ni autorizar operaciones financieras. Se preservan importes enteros válidos y cálculo independiente del contexto decimal del llamador. Nueve casos específicos y los recorridos HTTP/navegador cubren el contrato reforzado.
+2. **ACC-017/experiencia ERP, identidad de componentes.** `CashScenarios` y `CashWindows` tenían la misma clave de React entre hermanos. El recorrido completo reprodujo formularios duplicados y selectores ambiguos después de la actualización de la empresa. Cada componente tiene ahora una clave distinta que conserva usuario/empresa; se verifica que exista un único formulario de cada tipo y que cambiar de empresa borre los valores. Se preservan navegación, identidad azul metalizado/azul claro/texto blanco y adaptación móvil.
+
+La instalación/recuperación BYOS necesitó pruebas fuera del aislamiento IPC de TestClient. El primer intento aislado agotó tiempo sin concluir; se repitió con sockets locales autorizados. Ese intento no se contabiliza como aprobado ni como una falla del producto. La falla inicial del navegador sí era de producto y se conserva como evidencia anterior a la corrección.
+
+### Resultado por tarea, conservando los criterios originales
+
+| Tarea | Revisión técnica y pruebas ejecutadas | Estado y pendiente real |
+|---|---|---|
+| ACC-001 | Exactitud monetaria, balance, cuenta ajena/inactiva y período ambiguo; SQLite/PostgreSQL/HTTP. | 3/3 originales; producción no acreditada. |
+| ACC-002 | UUID, inmutabilidad ORM/SQL, padre cacheado y operaciones masivas. | 3/3 originales; no demuestra resistencia a dueño SQL hostil. |
+| ACC-003 | Idempotencia, payload distinto, rollback/reintento y outbox atómico, incluida concurrencia. | 3/3 originales; publicación Kafka/consumidor externo fuera de esta acreditación. |
+| ACC-004 | Cierre/posteo/reversión concurrentes y orden de bloqueo PostgreSQL. | 3/3 originales; legados/migración del cliente y carga productiva pendientes globales. |
+| ACC-005 | Vínculo explícito vigente, actor/empresa/período, rechazo entre identidades y revalidación del despacho. | 3/3 originales; SSO/provisión y legalidad de identidad externa no acreditados. |
+| ACC-006 | Moneda/tasa/fuente/vigencia declaradas, precisión y ausencia de fallback automático. | 3/3 originales internos; autenticidad externa de tasas y revisión profesional pendientes globales. |
+| ACC-007 | Hash, cambios de identidad/importe, guardas SQL y diagnóstico. | 3/3 originales internos; PostgreSQL desechable, sin certificar roles/migración productiva. |
+| ACC-008 | Estados y solicitudes CRM/reserva versionadas, idempotencia y ausencia de cobros/acuses inventados. | 3/3 originales; no acredita factura aceptada por DIAN. |
+| ACC-009 | Borrador fiscal, rutas corporativas, controles de laboratorio y preparación de documento. | 2/3. Faltan perfil/anexo vigente, representación fiscal, firma/custodia y transporte/acuses reales. Usuario aplazó integración directa DIAN. |
+| ACC-010 | Sobre cifrado cliente, recuperación/rotación y rechazo de texto claro; pruebas de ambos paneles y recuperación PostgreSQL/HTTPS local. | 3/3 del alcance portátil original; hardware y custodia física no acreditados. |
+| ACC-011 | Contratos OAuth/BYOS, configuración privada y recuperación/carga local. | 2/3. Faltan flujo nativo/UI completo y cuentas/apps OAuth/consentimientos, permisos y revocación reales de Drive/OneDrive; usuario confirmó que no están preparados. |
+| ACC-012 | Aptitud restringida, EPP, descanso, peligros/riesgo y despacho genérico; guardas/migración PostgreSQL desechable. | 2/3. Faltan procesos especializados/interfaces, legitimidad profesional/datos y cualificación completa de concurrencia/despliegue. |
+| ACC-013 | Nómina declarada, correcciones, novedades, trazabilidad y atribución de costos sin doble gasto/provisión. | 2/3. Faltan vínculo individual de minutos a jornadas, calendario/clasificación laboral completa, otras novedades y habilitación profesional/DIAN nómina. |
+| ACC-014 | IVA/retenciones internos, políticas originales, devoluciones/contrapartidas y registro explicable en ambos paneles. | 2/3. Faltan cobertura normativa/operacional completa, períodos/multicuenta, fuentes legítimas y contraste oficial DIAN. |
+| ACC-015 | Estados externos declarados, rechazo de pendientes/revertidos, agrupación/parciales/períodos/historia y aislamiento. | 2/3. No hay conexión a todos los bancos ni alta/custodia de más de50 cuentas bancarias personales; las120 cuentas del ensayo son cuentas contables empresariales. Faltan conectores/consentimientos y fuentes auténticas. |
+| ACC-016 | Ratio exacto con fuentes/moneda/corte/unidad, denominador no calculable y concordancia ERP/corporativo. | 2/3. Faltan dimensiones/ratios por paquete y aceptación de fuentes; RAT/ocupación/ADR siguen aplazados por el usuario. |
+| ACC-017 | Semillas/horizontes/sensibilidad, ventanas separadas, integridad reforzada y formularios sin duplicación. | 2/3. Usuario no dispone de serie histórica autorizada; faltan calibración/modelos adicionales y recomendaciones revisadas. |
+| ACC-018 | Factor/unidad/vigencia, reservas de origen, correcciones sin doble conteo, metadatos, interfaces y borrador cifrado. | 2/3. Usuario no dispone de factores documentados ni obligación revisada; faltan autenticidad/catálogo de segmentos y reconocimiento válido. Sin pasivos/créditos/compensaciones automáticos. |
+
+**Verificación final de esta auditoría:** 1030 pruebas Python en89 suites (60 funcionales,28 corporativas/HTTP y1 contrato nuevo),453 comprobaciones en11 suites Chromium/WebCrypto, y13 suites PostgreSQL desechables aprobadas. Los17 chequeos del registro de progreso se verifican aparte. Los conteos incluyen únicamente ejecuciones finales aprobadas, sin sumar reintentos ni resultados históricos. Bases y usuarios de prueba desechables; no sustituyen validaciones profesionales, bancarias, cloud o de dispositivos. Los comandos, resultados y hashes se agregan al JSON/log de evidencia ya existentes, bajo `audit_tasks_1_18`.
+
+**Estado conservado:** **79,17% (57/72 hitos);9/24 tareas aceptadas integralmente según la matriz original**. Dentro de las18 revisadas hay9 aceptadas y9 parciales. Repetir pruebas y corregir estas fallas no completa criterios externos ni genera crédito adicional. Producción no habilitada; avances locales respaldados y sin publicación Git en esta entrega.
+
+
+## ACC-019 · Trazabilidad de soportes y origen en reportes ESG · 2026-11-11
+
+**Desarrollo realizado:** el reporte por corte económico/de conocimiento ahora incluye la huella del soporte efectivo de la actividad y, cuando existe, la orden/segmento operativo original. Al corregir una cantidad, el soporte cambia con la revisión efectiva al corte: consultar el corte anterior conserva el soporte anterior. Orden/segmento permanecen inmutables. La pérdida o alteración de su reserva impide exportar; no se reconstruye evidencia automáticamente. Los formatos históricos sin vínculo siguen siendo legibles.
+
+Ambos paneles muestran y exportan esa trazabilidad enJSON/CSV, con la misma huella integral del reporte. El frontend rechaza campos inesperados, incluidos datos privados agregados a una actividad, y pares de origen incompletos, aunque un emisor recalcule una huella válida. Se conserva el descarte de datos al editar/cambiar identidad y la identidad azul metalizado/azul claro/texto blanco, sin rediseñar la navegación. Las rutas ESG anteriores mantienen compatibilidad.
+
+**Fallas subsanadas:** los reportes y contrato corporativo heredaban trampas/redondeo decimal del llamador; ahora calculan en un contexto propio, probado con una cantidad fraccionaria cuyo producto exige redondeo. Los valores anidados no válidos de marco/límite podían producir errores de tipo: se rechazan como errores de dominio. No se modificaron mediciones históricas ni se reconocieron obligaciones ambientales o movimientos financieros.
+
+**Verificación:**102 pruebas Python en10 suites (84 funcionales ambientales/ESG/origen y18 de contrato/HTTP/recuperación corporativa),52 comprobaciones Chromium de ambos paneles y17 chequeos de progreso aparte. Incluyen corte antes/después de corrección, soporte efectivo, origen, reserva eliminada, precisión/trampas decimales, mapeo inválido, exportación con huella verificable, campos privados/origen incompleto rechazados, resultados vacíos explícitos y vista móvil. Los reintentos no se suman al conteo. Pruebas con fuentes sintéticas locales, no certificación ambiental ni cualificación PostgreSQL/concurrencia productiva nueva. Comandos/hashes en el registro existente, entrada `acc019_effective_source_trace`.
+
+**Alcance pendiente:** catálogo legítimo de mediciones/segmentos, duplicados semánticos fuera del vínculo declarado y snapshots/volumen/concurrencia revisados. **Requisitos externos:** el usuario confirmó que no hay factores documentados ni política/obligación revisada por contador. La autenticidad de factores/soportes y la aplicabilidad de referencias GRI/SASB requieren evidencia y revisión profesional; no se infieren de una huella, un mapeo escrito o una prueba sintética. No se emiten créditos/compensaciones ni se afirma certificación ESG.
+
+**Estado real:** ACC-019 continúa **2/3, parcial**, con el incremento ampliado y probado; aceptación integral pendiente. Progreso global **79,17% (57/72 hitos),9/24 tareas aceptadas**. No hay crédito adicional por reforzar una tarea ya probada. Cambios respaldados localmente; sin commit/push ni producción habilitada.
+
+
+## ACC-020 · Consultas contables acotadas y verificables · 2026-11-11
+
+**Desarrollo:** se amplía el reconocedor determinista en español con liquidez ácida, además de rentabilidad y cola de facturación. Cada herramienta recibe la empresa resuelta por identidad/permisos del backend; el payload no admite elegir otro tenant, SQL ni acciones. Liquidez exige corte explícito; rentabilidad exige intervalo ordenado/acotado; la cola no acepta filtros de fecha sin implementar. Preguntas desconocidas, instrucciones de pago y combinaciones no soportadas se rechazan, sin intentar ejecutar código ni SQL generado.
+
+**Hallazgo subsanado:** el puente corporativo comprobaba banderas de lectura pero no cotejaba suficientemente intención, fuente y cifras. Ahora comprueba intención correspondiente a la pregunta, esquema acotado, empresa, fechas, origen primario y referencia del ledger; concilia cuentas/ingresos/gastos/resultado/margen con precisión propia. La liquidez utiliza su contrato de clasificación/fuentes/aritmética existente. La cola valida conteos y mantiene aceptación DIAN explícitamente no verificada: transporte no equivale a acuse fiscal. Campos privados inesperados o cambios de fuente, cifras o intervalo se rechazan.
+
+**Interfaces:** nueva consulta de liquidez en ERP y en el asistente corporativo; muestra fuente, moneda, corte y valor/no calculable. Ambas pantallas comprueban aritmética exacta del resultado neto antes de mostrarlo. Editar consulta/empresa invalida respuestas; el asistente corporativo borra también pregunta y fechas al cerrar sesión, cambiar token u ocultar/abandonar página. Se mantienen la paleta azul metalizado/azul claro/texto blanco y navegación; sin cambios en RAT/ADR ni permisos de la billetera.
+
+**Evaluación reproducible:** dataset técnico versionado de41 ejemplos sintéticos, con consultas soportadas, acentos/mayúsculas y entradas no admitidas/inyección. El verificador compara ambos reconocedores, exige igualdad de contratos y cobertura de los alias autorizados. Es regresión de un reconocedor determinista, no precisión de un modelo fundacional ni un ensayo con usuarios reales. No se consume una API de IA ni se envían datos contables a un modelo externo.
+
+**Pruebas finales:**78 pruebas Python (3 de evaluación/contrato,6 de consultas,7 de parser,46 del adaptador y16 HTTP de consulta/liquidez/integración);88 comprobaciones Chromium (54 ERP y34 corporativas), incluidos resultados alterados y borrado de entradas tras logout. Los41 ejemplos son parte de las3 pruebas de evaluación, no41 pruebas adicionales.17 chequeos de progreso verificados aparte. Todos los conteos corresponden a las ejecuciones finales aprobadas y no suman reintentos. Evidencia/comandos/hashes en `acc020_scoped_query_tools` del JSON/log existentes.
+
+**Pendiente y estado real:** aún no hay integración/evaluación de un modelo local o privado para esta función; el reconocedor y sus herramientas no lo sustituyen. Faltan dataset autorizado representativo y evaluación del modelo, voz, ampliación revisada de herramientas/roles y cualificación de privacidad/rendimiento/dispositivos. No se afirma99,8% de precisión, consulta libre universal ni aceptación integral. ACC-020 permanece **parcial2/3**; progreso global **79,17% (57/72 hitos),9/24 tareas aceptadas**. Cambios respaldados localmente, sin commit/push ni producción habilitada.
+
+
+## ACC-021 · Ensayo supervisado recuperable y cancelación idempotente · 2026-11-11
+
+**Desarrollo:** se añade consulta de estado por identificador UUID, sin volver a ejecutar confirmaciones ni la simulación. Revalida actor/vínculo vigente, empresa, metadatos de cada evento, intención/huella y evidencia de las etapas. Muestra estado preparado, primera/segunda confirmación, simulado, vencido o cancelado. Las confirmaciones existentes son evidencia histórica; `confirmations_restored=false` y `usable_as_payment_authorization=false` permanecen explícitos. El estado leído no es un permiso para pagar ni crear un trabajo de escritorio.
+
+**Hallazgos subsanados:** cancelar otra vez una referencia cancelada antes fallaba como operación cerrada; ahora el reintento valida el evento y devuelve el mismo resultado sin duplicarlo. Se puede recuperar/cancelar una referencia vencida sin habilitar nuevas confirmaciones. El cargador vincula también el UUID interno de la intención con la referencia del evento; cambiarlo incluso junto con una huella recalculada se rechaza. La lectura detecta segunda confirmación huérfana, metadatos cambiados y cancelación/simulación alteradas. El puente corporativo tiene contrato acotado para estos estados y no restaura confirmaciones.
+
+**Interfaces en ambos sistemas:** panel compartido azul metalizado/azul claro/texto blanco con contexto resuelto por backend, nueva referencia, intención/soporte declarados, revisión de preparación, dos botones de confirmación separados, frase exacta de importe/destinatario e impacto adicional. Editar la intención invalida la preparación y las casillas; recuperar tras recarga conserva evidencia del servidor, sin marcar impacto ni cancelación. Un resultado incierto exige recuperar la misma referencia antes de reintentar. La interfaz permite cancelar y descartar datos locales; no contiene un botón de pago real ni datos bancarios inventados. La referencia del beneficiario y huella del soporte son declaradas, no acreditación bancaria.
+
+**Verificación final:**75 pruebas Python (18 del flujo previo,6 de recuperación/alteración,46 del adaptador y5 HTTP corporativas),120 comprobaciones Chromium (32 del flujo nuevo en ambos sistemas y88 de regresión ERP/corporativa), más4 escenarios PostgreSQL16 desechables con rol sin DDL: preparación simultánea, segunda confirmación simultánea, carrera cancelar/simular y reintentos concurrentes de cancelación. Mantienen evidencia única, cancelación efectiva y ausencia de nuevos asientos/pagos.17 chequeos de progreso aparte. No se suman reintentos ni se presentan estos escenarios como cualificación de un ejecutor bancario/productivo. Comandos/hashes en `acc021_recoverable_supervised_rehearsal` del JSON/log existentes.
+
+**Pendiente:** implementar y validar el trabajador de ejecución con permisos mínimos e integración agent-desktop/Open Duet; proveedor/cuenta/beneficiario/soportes y consentimientos legítimos, autorizaciones resistentes a suplantación, recibos/acuse auténticos y recuperación de resultados inciertos. Faltan cualificación de carga/concurrencia de ejecución real, identidad/dispositivos e infraestructura objetivo y aceptación profesional/productiva. No se contactó a Bold/bancos ni se ejecutaron operaciones reales. El flujo existente de reembolso interno financiado se conserva; este ensayo no lo sustituye ni le concede permisos.
+
+**Estado real:** ACC-021 permanece **parcial2/3**. Progreso global **79,17% (57/72 hitos),9/24 tareas aceptadas**. Las pruebas nuevas refuerzan el incremento acreditado y no cierran la ejecución real. Cambios respaldados localmente; sin commit/push, trabajos de escritorio ni producción habilitada.
+
+
+## ACC-022 · Capturador ambiental con arranque offline y gestión cifrada · 2026-11-11
+
+**Desarrollo real:** capturador independiente en `/contabilidad-offline/`, enlazado desde ERP/Analemática y generado desde una sola fuente para ambos orígenes. Formulario de medición, factor, soporte y origen opcional; importación estructurada como opción técnica. Después de habilitarlo con conexión, arranca en frío sin red y permite guardar/desbloquear borradores. No es una copia offline de todas las pantallas del ERP. El UUID empresarial declarado no autentica titularidad offline; la revisión online existente vuelve a comprobar usuario, empresa y fuentes.
+
+**Caché restringida:** worker de alcance exclusivo a esa ruta. VerificaSHA-256, tipo/tamaño y carácter público de cuatro archivos estáticos antes de almacenarlos; sus descargas omiten credenciales y rechazan respuestas privadas/no-store, redirecciones e integridad alterada. No se cachean APIs, sesiones ni administración. Si falla la instalación, no se presenta como lista para operar offline ni se crea caché parcial. Los borradores permanecen cifrados enIndexedDB, separados de la caché pública.
+
+**Almacén:** catálogo de identificadores/versiones por empresa sin desbloquear contenido; eliminación con contraseña, versión esperada y comparación transaccional contra cambios de otra pestaña. Límites de100 borradores por empresa y500 totales por origen/navegador. Alcanzarlos rechaza altas sin eliminar datos; todavía permite actualizar borradores existentes. Exportación/restauración cifrada, rotación de contraseña y reanudación online supervisada se conservan. No hay evicción automática; el navegador sí puede desalojar almacenamiento y la interfaz indica conservar una copia cifrada y contraseña separadas. No se guardan contraseñas ni se restauran autorizaciones.
+
+**Bloqueos encontrados y corregidos:** el preview con autenticaciónHTTP impedía descargar archivos sin credenciales; se publican únicamente cinco rutas estáticas exactas del capturador, sin abrir panel/API ni archivos desconocidos. La redirección del directorio apuntaba al puerto interno del contenedor: ahora es relativa. Laumask restrictiva producía archivos públicos ilegibles para un usuario web distinto: el generador fija0644 en estos archivos de código público y0755 en su directorio, sin cambiar llaves ni directorios privados. Los despliegues web y el preparador corporativo incluyen el paquete.
+
+**Verificación final:**100 comprobaciones Chromium/WebCrypto (20 del capturador,34 de cifrado/catálogo/conflictos/cuotas y46 de los dos paneles con reconexión),4 pruebas Python de empaquetado y14 comprobaciones de aislamiento con Nginx real desechable. Incluyen arranque sin red, desbloqueo explícito, ausencia de contenido/contraseña en la copia cifrada, rechazo de recurso alterado/privado, carrera guardar/eliminar, cuotas sin pérdida de datos, conservación de autorizaciones no restauradas, formularios móviles y publicación sin abrir panel/API. Nginx prueba las rutas generadas en un gateway aislado con autenticación de prueba; no acredita el despliegue completo niTLS productivo.17 chequeos de progreso aparte. Evidencias/comandos/hashes en `acc022_cold_offline_capture` del JSON/log existentes; reintentos no sumados.
+
+**Pendientes:** más dominios de captura y colas/sincronización ampliadas, conflictos específicos por dominio y versiones/recuperación/retención operativa revisadas. No se aplica CRDT genérico a importes, autorizaciones o asientos. Faltan SQLite/custodia nativa y pruebas físicas Android/iOS/escritorio, además de carga, actualizaciones y recuperación en infraestructura objetivo. La captura web ambiental y la simulación de red de Chromium no cierran estos requisitos. No se preparan ni liquidan pagos offline.
+
+**Estado real:** ACC-022 continúa **parcial2/3**; progreso global **79,17% (57/72 hitos),9/24 tareas aceptadas**. Cambios respaldados localmente; sin commit/push ni producción habilitada.
+
+
+## ACC-023 · Medición HTTP y optimización de contexto con controles intactos · 2026-11-11
+
+**Código y fallas subsanadas:** estadísticas con contexto decimal propio y objetivo expresado como decimal exacto; no se aceptan booleanos/float/valores ilimitados como objetivo o duración. Se conservan latencias fallidas, colas, p50/p95/p99/máximo y conteos crudos fuera del objetivo, sin ocultarlos por redondeo. El evaluador distingue cobertura/abstenciones y exactitud sobre todas las muestras; predicciones suministradas no acreditan que se ejecutó un modelo. El benchmark ORM ahora conserva intentos fallidos, etapas omitidas e invariantes y escribe el informe antes de terminar con error; no pierde toda la evidencia al fallar una operación.
+
+**Hallazgo de carga:** el modo anterior agotó el límite del ERP en2 de80 solicitudes de prueba y lo presentaba como503. Ahora el puente conserva429 y unRetry-After numérico acotado, con mensaje propio y sin copiar el cuerpo del ERP. No hay reintentos financieros automáticos ni se desactivaron/aumentaron cuotas para aprobar pruebas.
+
+**Optimización implementada:** contexto opcional de sesión/actor/empresa/CSRF en una sola petición antes del comando, y lectura más identidad en una sola petición para reportes. Se mantienen comprobación de empresa y actor del vínculo, sesión web/MFA, CSRF, autorización antes del despacho y revocación después de obtener resultados. La lectura agrupada conserva importes como texto decimal y contratos originales; no sustituye por float las cifras del motor. Se probaron el modo anterior y el nuevo con consultas, compras/IVA, contabilización/contrapartida, resultado perdido, confirmaciones e identidad revocada.
+
+La opción es `CORPORATE_LEDGER_COMBINED_CONTEXT_ENABLED=1` en el backend corporativo, una vez disponibles los nuevos endpoints del ERP. Por defecto sigue el camino anterior; desactivar la variable permite regresar a él. Solo se habilitó en fixtures y benchmarks de esta entrega, sin cambiar configuración productiva ni credenciales. No se eliminan controles para ahorrar tiempo ni se cachean autorizaciones entre peticiones.
+
+**Medición final reproducible:**100 compras sintéticas,400 operaciones ORM; tres perfiles HTTP de20 intentos por cada uno de cuatro flujos:240 intentos HTTP en total. Las fuentes no cambiaron durante los perfiles y su hash coincide entre los cuatro informes. Se conservaron dos429 en el perfil anterior; los160 intentos de los perfiles unificados terminaron sin errores. Código de salida0 del recolector significa captura/invariantes correctas, no cumplimiento automático de250ms.
+
+| Flujo HTTP,20 intentos por perfil | p95 anterior,4 clientes (ms) | p95 unificado,4 clientes (ms) | Máximo unificado,4 clientes (ms) | p95 unificado,1 cliente (ms) |
+|---|---:|---:|---:|---:|
+| trial_balance | 266.799 | 213.257 | 214.684 | 60.092 |
+| profitability | 360.706 | 197.143 | 202.183 | 54.691 |
+| quick_ratio | 281.984 | 279.038 | 290.720 | 86.069 |
+| commercial_queue | 259.986 | 291.979 | 330.501 | 84.100 |
+
+El gateway de medición HTTP se serializa expresamente porque la fixture comparte sesión SQLAlchemy;4 clientes miden espera/contención ante ese servidor, no un pool ASGI/PostgreSQL productivo. El primer tramo usa HTTP loopback real, ASGI se procesa dentro de la fixture y el tramo hacia ERP usaHTTP/WSGI real. Se declaran por separado el informe previo de preparación, la provisión/login y el control anónimo, que no se contabilizan como intentos medidos. Se conservan duraciones en nanosegundos y estados HTTP por intento; estadísticas recalculadas contra esos datos. No se seleccionó un origen ni una base del cliente.
+
+**Objetivo todavía incumplido:** con4 clientes, liquidez y cola comercial conservan muestras superiores a250ms. En la última medición ORM el posteo tuvo máximo264.305ms (1 muestra fuera de objetivo) y el registro tributario máximo448.206ms (9 muestras fuera). No se eligió una repetición anterior más rápida para declarar éxito. Son mediciones sintéticas en hardware cloud compartido; no son latencia completa de un evento de negocio hasta el ledger ni unSLA independiente del equipo. El clasificador sigue `NOT_EVALUATED`: no hay precisión99,8% acreditada.
+
+**Verificación:**65 pruebas Python aprobadas (13 de métricas,4 del contrato de medición y48 de HTTP/seguridad/integración),34 comprobaciones Chromium del panel con la opción unificada y17 chequeos de progreso aparte. Los640 intentos de rendimiento se informan como observaciones, no como640 tests adicionales aprobados. Informes completos, comandos, muestras/hashes y resultado de cada perfil incorporados en `acc023_measured_context_optimization` del JSON/log existentes.
+
+**Pendientes y estado:** carga representativa, optimización/cualificación sostenida en infraestructura objetivo y PostgreSQL/pools, medición evento-a-ledger/dispositivos/proveedores y evaluación independiente; modelo real y dataset autorizado representativo para calidad/privacidad. ACC-023 continúa **parcial2/3**. Progreso global **79,17% (57/72 hitos),9/24 tareas aceptadas**. Avances respaldados localmente; sin commit/push ni producción habilitada.
+
+
+## ACC-024 · Recuperación y fronteras de archivos/permisos · 2026-11-11
+
+**Implementado y probado:** lectura de claves/archivos regulares limitada y sin seguir enlaces mediante descriptores POSIX, validación de permisos sobre el archivo abierto y rechazo de FIFO sin bloqueo. Creación exclusiva anclada al directorio, comprobación de sustitución del padre, sincronización de archivo/directorio y limpieza que conserva un archivo reemplazado por otro inode. Cabecera autenticada estricta: campos exactos, tipos sin booleanos como enteros, SHA-256, fecha UTC, sin duplicados ni números no finitos. Se conservan restauración a destino nuevo, fuente intacta, recuperación de WAL y exclusión deliberada de llaves de aplicación.
+
+**Hallazgos reales subsanados:** el rol limitado fallaba al bloquear monedas y el catálogo relacionado durante la revisión FX. El perfil declarativo incorpora únicamente UPDATE(id), además de SELECT, para estos bloqueos; no ejecuta GRANT automáticamente ni concede edición de atributos. El contrato PostgreSQL ahora verifica el rechazo de cambios de nombre en ambos catálogos. La prueba antigua necesitaba SELECT de cuentas y usaba un posteo FX directo que el motor rechaza correctamente; se actualizó a revisión y segunda confirmación, conservando los controles del motor.
+
+**Verificación reproducible:** `python -m unittest discover -s BACKEND/deployment/tests -p test_encrypted_backup.py -v`:20 pruebas; con PYTHONPATH de deployment/tests, `python -m unittest accounting_sql_check schema_readiness_check -v`:22 pruebas. `python BACKEND/deployment/tests/mfa_postgres_check.py`:PostgreSQL16 Docker desechable,52 escenarios contables, backup/restore a otra base y comparación de tablas/filas, secuencias, funciones, triggers, columnas, restricciones e índices; integridad, protecciones SQL y origen intacto verificados. Incluye restauración MFA con las llaves originales de la fixture, separadas del archivo. Las17 pruebas del registro son controles de coherencia adicionales, no hitos funcionales. Los intentos anteriores fallidos por permisos/fixture quedaron identificados; no cuentan como pruebas aprobadas. Evidencia y hashes en el registro técnico existente, clave `acc024_restore_and_file_boundaries`.
+
+**Alcance pendiente y requisitos externos:** no se acredita recuperación integral del cliente: faltan documentos y llaves/medios legítimos, todos los roles/rutas y funciones privilegiadas/RLS, aceptación independiente y mediciones RPO/RTO acordadas en infraestructura objetivo, despliegue y reversión reales. El CLI endurecido requiere POSIX; no se cualifica una variante Windows nativa. La instantánea SQLite viva todavía abre base/WAL por ruta: el directorio fuente debe ser privado y estable, no se declara resistente a sustitución hostil de esa fuente. El dump contable PostgreSQL de prueba es temporal y privado; no constituye una solución de custodia productiva cifrada.
+
+**Estado:** ACC-024 conserva2/3, sin aceptación integral. Total57/72=79,17%;9/24 tareas aceptadas. Producción deshabilitada. Cambios locales respaldados; sin commit ni push en esta entrega.
+
+
+## Evaluación integral ACC-001 aACC-024 · 2026-11-11
+
+**Resultado verificable:**24 tareas contrastadas con matriz/criterios/registros;9 aceptadas dentro del alcance original y15 parciales. Se mantiene57/72=79,17%; ninguna repetición de prueba o corrección documental añade crédito. El estado actual por tarea está en la tabla siguiente; los cortesR01–R20 anteriores conservan su contexto histórico. Producción sigue deshabilitada.
+
+**Fallas subsanadas en código:** las vistas contables antiguas ahora validan el vínculo vigente administrador/empresa, revalidan al terminar y rechazan contexto/cabecera discordantes. Interpretan fechas canónicas, rechazan duplicados/intervalos invertidos y devuelven errores sanitizados/no-store. Los saldos usan UUID, catálogo explícitamente acotado a empresa y movimientos contabilizados/valorados en la base principal; conservan cuentas sin movimiento y reemplazan el agregado por cuenta por una sola consulta agregada. Los ratios respetan el mes del corte, usan decimales exactos y muestran no calculable ante denominador no positivo. Flujo de caja no configurado responde501 explícito, sin ceros inventados. Se preservan rutas y estructura visual; no se cambió el RAT.
+
+**Fallas de verificación subsanadas:** el perfil contable omitía contratos nuevos; ahora incorpora todos los módulos contables y schema-readiness, con pruebas de cobertura del catálogo y ausencia de duplicados. La tanda corporativa única agotaba180s: ahora31 módulos tienen procesos, logs y límites independientes. La prueba de atestación no creaba OutboxEvent ni obtenía el consentimiento actual del destinatario; se corrigió su fixture y se comprueba rechazo sin consentimiento, aceptación con consentimiento y posterior rechazo por revocación, sin tocar los controles de producción. ESG figurabaPENDIENTE pese a2/3 hitos; se corrigió aPARCIAL, sin cierre ni crédito adicional.
+
+**Pruebas ejecutadas:**1778 pruebas de regresión contable/instalación en149 suites/pasos, todos aprobados sin skips; incluye los13 casos nuevos de presentación (antes fallaban11 casos originales).17 pruebas del runner,17 del progreso y4 del paquete offline adicionales.14 suites Chromium con563 comprobaciones declaradas,11 contratos PostgreSQL desechables y14 controles Nginx aprobados.12 suites transversales de seguridad completadas; su conteo incluye wrappers de pruebas ya cubiertas y no se suma como cobertura única. Dependencias:sin requisitos incompatibles según pip check. Instalaciones ERP/Turismo nuevas y sus controles completados; no migración de datos históricos de clientes.
+
+**Trazabilidad:** la pasada contable definitiva conservó un manifiesto estable y hashes verificados. Después cambiaron solo dos módulos de prueba: atestación y control de instalación. Se repitieron28+13+13 pruebas sobre los archivos persistidos y se comprobó que todas las fuentes de aplicación y los demás módulos permanecían idénticos. El primer control de instalación Turismo contenía una omisión explícita del caso ERP: se conserva ese resultado y se sustituye mediante una nueva prueba negativa404, no reinterpretando un skip como aprobado. La primera tanda con timeout, la pasada serial sustituida/cancelada y los intentos fallidos de diagnóstico no se presentan como aprobaciones finales. Informes, comandos, hashes, manifiesto y detalle de las24 tareas en el registro técnico existente, clave`audit_acc001_acc024`. No hay validación de hardware/DIAN/bancos/cloud reales ni prueba independiente de seguridad por estas fixtures.
+
+| Tarea | Estado en criterios originales | Implementado y contrastado | Desarrollo/requisitos pendientes |
+|---|---|---|---|
+| ACC-001 | Aceptada3/3 | Validación exacta y aislamiento; regresiones ORM/PostgreSQL. | Ninguno en el criterio original; cualificación productiva separada. |
+| ACC-002 | Aceptada3/3 | UUID y guardas ORM/SQL; intentos de mutación rechazados. | Ninguno en el criterio original; operadores privilegiados no quedan inmunizados. |
+| ACC-003 | Aceptada3/3 | Idempotencia, conflicto de payload y outbox atómicos. | Ninguno en el criterio original; transporte externo se evalúa en sus tareas. |
+| ACC-004 | Aceptada3/3 | Cierre/posteo/reversión y orden de bloqueos PostgreSQL. | Ninguno en el criterio original; carga productiva pendiente. |
+| ACC-005 | Aceptada3/3 | Vínculo empresa/actor vigente; vistas antiguas ahora lo verifican explícitamente. | Ninguno en el puente original; administración global/roles productivos no acreditados. |
+| ACC-006 | Aceptada3/3 | Cotización FX revisada, dos confirmaciones y bloqueo de fallback. | Ninguno en la validación interna original; autenticidad de fuentes FX pendiente. |
+| ACC-007 | Aceptada3/3 | Hashes y guardas SQL; detección de alteraciones y restauración. | Ninguno en los criterios originales; auditoría independiente/privilegios reales pendiente. |
+| ACC-008 | Aceptada3/3 | Contrato CRM/reserva y estados sin inventar cobro/acuse. | Ninguno en el contrato original; emisión DIAN pertenece aACC-009. |
+| ACC-009 | Parcial2/3 | Borradores y fuentes CRM/reserva, límites fiscales e interfaces probados. | Desarrollo fiscal/custodia/transporte; certificado, resolución, test set y acuses DIAN reales. Integración directa aplazada por el usuario. |
+| ACC-010 | Aceptada3/3 | Cifrado cliente, AAD, recuperación/rotación y rechazo de alteraciones. | Ninguno en el protocolo cliente original; custodia física y aceptación productiva separadas. |
+| ACC-011 | Parcial2/3 | Adaptadores BYOS/OAuth y fallos/reintentos locales. | Aplicación OAuth, cuenta/grants legítimos Drive/OneDrive, revocación/recuperación con proveedor real; no disponibles. |
+| ACC-012 | Parcial2/3 | Aptitud cifrada, EPP, descanso/riesgo por trabajador y guardas. | Completar procesos especializados, interfaces/conexión operacional y concurrencia/migración; evidencias profesionales y dispositivos reales. |
+| ACC-013 | Parcial2/3 | Nómina declarada, correcciones y trazabilidad de costos/jornadas. | Minutos por recargo/jornada, calendario/clasificación laboral, novedades adicionales y nómina DIAN; revisión profesional y personal legítimo. |
+| ACC-014 | Parcial2/3 | Impuestos internos versionados, fuentes, devoluciones y trazas. | Fuentes sin política, cobertura declarativa/multicuenta y contraste DIAN; normativa/tratamiento turístico revisados profesionalmente. |
+| ACC-015 | Parcial2/3 | Importación neutral, estados y conciliación;120 cuentas empresariales de prueba. | Conectores/catálogo bancario, consentimientos, cuentas personales, FX/carga. No acredita conexión a todos los bancos ni cuentas personales del usuario. |
+| ACC-016 | Parcial2/3 | Liquidez exacta/cortes y vistas antiguas corregidas. | Ratios por paquete/costos y fuentes operativas legítimas/calibración. RAT, ocupación y ADR diferidos por instrucción del usuario. |
+| ACC-017 | Parcial2/3 | Simulación30/90/365 y ventanas cronológicas en ambos paneles. | Estacionalidad/modelos/recomendaciones revisadas; serie auténtica diaria de379 días y validación fuera de muestra. Usuario no dispone de ella. |
+| ACC-018 | Parcial2/3 | Factores, unidades, fuentes y correcciones append-only. | Factores y evidencias auténticos, aplicabilidad/obligación revisadas; no reconocer pasivos/créditos ficticios. |
+| ACC-019 | Parcial2/3 | Reportes ESG con corrección efectiva y trazas; estado corregido aPARCIAL. | Aplicabilidad GRI/SASB, soportes/factores legítimos y revisión profesional; no hay certificación ambiental. |
+| ACC-020 | Parcial2/3 | Herramientas deterministas acotadas de lectura y fuentes. | Modelo privado/local evaluado, calidad/privacidad, dataset consentido y capacidades adicionales; no se ejecutó un LLM financiero. |
+| ACC-021 | Parcial2/3 | Ensayo durable, dos confirmaciones y revisión de impacto, cancelación y recuperación. | Executor real agent-desktop/Open Duet, bancos/cuentas/recibos/autorizaciones legítimos. Ensayo no paga ni crea autorización financiera. |
+| ACC-022 | Parcial2/3 | Captura ambiental web en frío, cifrado y conflictos; rutas Nginx exactas. | Más dominios, colas/sincronización, almacenamiento SQLite nativo y pruebas físicas Android/iOS/escritorio. No es ERP completo offline. |
+| ACC-023 | Parcial2/3 | Métricas exactas, muestras fallidas y contratos HTTP/optimización opcional. | Persisten picos sobre250ms en mediciones anteriores; infraestructura/carga objetivo y modelo/dataset real. No se revalida SLA midiendo durante esta regresión concurrente. |
+| ACC-024 | Parcial2/3 | Backups autenticados, permisos limitados, restauración PostgreSQL y dos instalaciones nuevas. | Roles/rutas/RLS y funciones privilegiadas completos; llaves/documentos/medios reales, RPO/RTO acordados, despliegue/reversión y aceptación independiente. |
+
+**Estado posterior del hallazgo legado:** subsanado localmente en la auditoríaH001–H072 inferior: importación, serialización y lecturas autorizadas reparadas, sin montar rutas ni habilitar escrituras. El diagnóstico original se conserva en el registro técnico. ACC-024 conserva los pendientes de aceptación integral.
+
+**Entrega:** cambios locales en la rama de trabajo, respaldo privado verificado del acumulado;sin commit,push,despliegue ni publicación. Se preservan los archivos originales y las evidencias históricas. Los pendientes reales de aplicaciones, profesionales, proveedores, datos, hardware y operación permanecen abiertos.
+
+
+## Auditoría explícita H001–H072 · 2026-11-11
+
+**Base y resultado:** se conservaron24 tareas, tres hitos por tarea y72 créditos posibles. La numeración corresponde a incremento, verificación y aceptación completa, en ese orden, paraACC-001 hastaACC-024. Resultado:57 acreditados y15 pendientes;79,17%;9/24 tareas con aceptación original completa. Incremento acreditado puede tener alcance parcial: no significa módulo íntegro ni habilitación productiva. Ningún documento o repetición de prueba añadió crédito.
+
+**Fallas corregidas:** el indicador dependía del contexto decimal del llamador y fallaba con trampas/precisión restrictivas; ahora calcula con contexto propio. Se añadieron numeración estableH001–H072, criterio/referencias/pendiente por hito y rechazo temprano de IDs de tarea fuera de la base. Invertir registro/matriz no altera números ni resultados. El adaptador legado de viewsets, antes inimportable por módulos/serializadores e imports inexistentes, ahora tiene serialización UUID de solo lectura, permisos por vínculo vigente y consultas explícitamente acotadas a empresa. Los asientos expuestos por ese adaptador son contabilizados; el borrador/UUID ajeno no se entrega. No se registraron rutas nuevas: las escrituras genéricas no se exponen y la contrapartida alternativa devuelve409 para remitir al flujo revisado, sin escribir el libro.
+
+**Pruebas y evidencia:**1.807 pruebas en148 suites/pasos de regresión contable, sin skips; manifiesto de fuentes estable y hashes verificados. Incluye21 pruebas del progreso y19 de presentación.18 pruebas adicionales del runner,4 del paquete offline y55 comprobaciones Chromium de cifrado/recuperación y borradores cifrados aprobadas. Los fallos previos(21 pruebas del progreso:1 fallo/3 errores;19 de presentación:6 errores) quedan registrados como diagnóstico, nunca como aprobación. Se conservaron las pruebas PostgreSQL, instalaciones y recorridos de la auditoría anterior sin sumarlos como reejecuciones actuales. No cambiaron migraciones, guardasSQL, transporte de proveedores ni interfaces montadas. Registro técnico existente:clave`audit_milestones_001_072`, con criterios y evaluación individual de los72 hitos.
+
+| Hito | Tarea | Etapa | Estado registrado | Referencias |
+|---|---|---|---|---:|
+| H001 | ACC-001 | Incremento | Acreditado | 3 |
+| H002 | ACC-001 | Pruebas | Acreditado | 6 |
+| H003 | ACC-001 | Aceptación | Acreditado | 1 |
+| H004 | ACC-002 | Incremento | Acreditado | 3 |
+| H005 | ACC-002 | Pruebas | Acreditado | 4 |
+| H006 | ACC-002 | Aceptación | Acreditado | 1 |
+| H007 | ACC-003 | Incremento | Acreditado | 2 |
+| H008 | ACC-003 | Pruebas | Acreditado | 4 |
+| H009 | ACC-003 | Aceptación | Acreditado | 1 |
+| H010 | ACC-004 | Incremento | Acreditado | 10 |
+| H011 | ACC-004 | Pruebas | Acreditado | 9 |
+| H012 | ACC-004 | Aceptación | Acreditado | 1 |
+| H013 | ACC-005 | Incremento | Acreditado | 6 |
+| H014 | ACC-005 | Pruebas | Acreditado | 7 |
+| H015 | ACC-005 | Aceptación | Acreditado | 1 |
+| H016 | ACC-006 | Incremento | Acreditado | 17 |
+| H017 | ACC-006 | Pruebas | Acreditado | 16 |
+| H018 | ACC-006 | Aceptación | Acreditado | 1 |
+| H019 | ACC-007 | Incremento | Acreditado | 11 |
+| H020 | ACC-007 | Pruebas | Acreditado | 6 |
+| H021 | ACC-007 | Aceptación | Acreditado | 1 |
+| H022 | ACC-008 | Incremento | Acreditado | 22 |
+| H023 | ACC-008 | Pruebas | Acreditado | 26 |
+| H024 | ACC-008 | Aceptación | Acreditado | 1 |
+| H025 | ACC-009 | Incremento | Acreditado | 12 |
+| H026 | ACC-009 | Pruebas | Acreditado | 16 |
+| H027 | ACC-009 | Aceptación | Pendiente | 0 |
+| H028 | ACC-010 | Incremento | Acreditado | 8 |
+| H029 | ACC-010 | Pruebas | Acreditado | 11 |
+| H030 | ACC-010 | Aceptación | Acreditado | 1 |
+| H031 | ACC-011 | Incremento | Acreditado | 6 |
+| H032 | ACC-011 | Pruebas | Acreditado | 11 |
+| H033 | ACC-011 | Aceptación | Pendiente | 0 |
+| H034 | ACC-012 | Incremento | Acreditado | 14 |
+| H035 | ACC-012 | Pruebas | Acreditado | 9 |
+| H036 | ACC-012 | Aceptación | Pendiente | 0 |
+| H037 | ACC-013 | Incremento | Acreditado | 16 |
+| H038 | ACC-013 | Pruebas | Acreditado | 19 |
+| H039 | ACC-013 | Aceptación | Pendiente | 0 |
+| H040 | ACC-014 | Incremento | Acreditado | 23 |
+| H041 | ACC-014 | Pruebas | Acreditado | 27 |
+| H042 | ACC-014 | Aceptación | Pendiente | 0 |
+| H043 | ACC-015 | Incremento | Acreditado | 14 |
+| H044 | ACC-015 | Pruebas | Acreditado | 20 |
+| H045 | ACC-015 | Aceptación | Pendiente | 0 |
+| H046 | ACC-016 | Incremento | Acreditado | 4 |
+| H047 | ACC-016 | Pruebas | Acreditado | 8 |
+| H048 | ACC-016 | Aceptación | Pendiente | 0 |
+| H049 | ACC-017 | Incremento | Acreditado | 4 |
+| H050 | ACC-017 | Pruebas | Acreditado | 5 |
+| H051 | ACC-017 | Aceptación | Pendiente | 0 |
+| H052 | ACC-018 | Incremento | Acreditado | 5 |
+| H053 | ACC-018 | Pruebas | Acreditado | 13 |
+| H054 | ACC-018 | Aceptación | Pendiente | 0 |
+| H055 | ACC-019 | Incremento | Acreditado | 4 |
+| H056 | ACC-019 | Pruebas | Acreditado | 8 |
+| H057 | ACC-019 | Aceptación | Pendiente | 0 |
+| H058 | ACC-020 | Incremento | Acreditado | 3 |
+| H059 | ACC-020 | Pruebas | Acreditado | 11 |
+| H060 | ACC-020 | Aceptación | Pendiente | 0 |
+| H061 | ACC-021 | Incremento | Acreditado | 6 |
+| H062 | ACC-021 | Pruebas | Acreditado | 10 |
+| H063 | ACC-021 | Aceptación | Pendiente | 0 |
+| H064 | ACC-022 | Incremento | Acreditado | 5 |
+| H065 | ACC-022 | Pruebas | Acreditado | 8 |
+| H066 | ACC-022 | Aceptación | Pendiente | 0 |
+| H067 | ACC-023 | Incremento | Acreditado | 5 |
+| H068 | ACC-023 | Pruebas | Acreditado | 5 |
+| H069 | ACC-023 | Aceptación | Pendiente | 0 |
+| H070 | ACC-024 | Incremento | Acreditado | 6 |
+| H071 | ACC-024 | Pruebas | Acreditado | 6 |
+| H072 | ACC-024 | Aceptación | Pendiente | 0 |
+
+### Pendientes discriminados de los15 hitos de aceptación
+
+| Hito pendiente | Desarrollo/verificación técnica restante | Requisito externo |
+|---|---|---|
+| H027 | Completar y cualificar documento/firma/transporte y ciclo fiscal. | DIAN directa aplazada; certificado, resolución, test set y acuses legítimos. |
+| H033 | Cualificar integración, revocación, caída y recuperación con el destino real elegido. | Drive/OneDrive: no existe aplicación OAuth registrada ni grants/cuenta autorizados disponibles. |
+| H036 | Procesos especializados, interfaces/conexión operacional, concurrencia y migración histórica. | Datos y autorización profesional legítimos de aptitud/EPP/descanso/riesgo y pruebas físicas. |
+| H039 | Minutos individuales por recargo/jornada, calendario legal, novedades adicionales y nómina DIAN. | Personal/soportes legítimos, reglas laborales revisadas y habilitación de nómina electrónica. |
+| H042 | Cobertura fiscal completa, fuentes sin política capturada, períodos declarativos y multicuenta. | Tratamiento tributario revisado y contraste oficial DIAN; no equivale a declaración aceptada. |
+| H045 | Catálogo/conectores bancarios, gestión personal de más de50 cuentas por usuario, FX y carga. | Consentimientos, fuentes/API bancarias auténticas o agregador autorizado;120 cuentas empresariales de laboratorio no prueban cuentas personales conectadas. |
+| H048 | Ratios por producto/paquete, dimensiones de costo y calibración con fuentes operativas. | Series y supuestos legítimos/revisión profesional. RAT/ocupación/ADR diferidos expresamente, sin desarrollarlos aquí. |
+| H051 | Modelos/estacionalidad y recomendaciones más amplias, calibración y validación fuera de muestra. | Serie diaria histórica autorizada de al menos379 días: usuario confirmó que no dispone de ella. |
+| H054 | Completar cualificación ambiental, deduplicación y tratamiento de obligaciones cuando corresponda. | Factores, soportes y política/obligación revisados; usuario no dispone de esa documentación. No reconocer pasivos ni créditos inventados. |
+| H057 | Completar cualificación de marcos y cobertura de reportes ESG. | Aplicabilidad GRI/SASB y soportes/factores verificados por profesionales; no certificación sintética. |
+| H060 | Conectar y evaluar un modelo local/privado y capacidades pendientes mediante herramientas acotadas. | Dataset consentido, equipo suficiente y evaluación independiente de calidad/privacidad. No afirmar99,8% sin medición. |
+| H063 | Executor financiero real agent-desktop/Open Duet con permisos mínimos y recibos verificables. | Cuentas/beneficiarios/proveedor legítimos y autorizaciones explícitas de cada operación real. El ensayo no ejecuta pagos. |
+| H066 | Más dominios, colas/sincronización y conflictos, almacenamiento nativo SQLite cifrado. | Android/iOS/escritorio físicos, herramientas de compilación y validación de actualización/recuperación. Web offline ambiental no es ERP completo sin red. |
+| H069 | Optimización/carga representativa y medición evento-a-ledger; evaluación real del clasificador. | Infraestructura/hardware y dataset autorizados. Mediciones anteriores aún tienen picos sobre250ms; no se acredita SLA ni99,8%. |
+| H072 | Rutas/permisos/RLS/funciones privilegiadas completos, restauración integral, despliegue y reversión. | Llaves/documentos/medios reales, RPO/RTO acordados, infraestructura objetivo y aceptación independiente. El adaptador legado ya fue reparado localmente. |
+
+**Seguimiento y entrega:** `PROGRESO.md` y `progreso.json` ahora muestran el índice completo; se regeneran desde el mismo registro. El hallazgo del adaptador legado señalado en el corte anterior queda subsanado localmente;ACC-024 yH072 siguen abiertos por su alcance restante. Producción no habilitada. Sin commit,push ni despliegue; acumulado preservado en respaldo privado verificado.
+
+
+## Ejércitos propios de Analemática y ERP turístico · 2026-11-11
+
+**Directriz aplicada:** SGA-CD se tomó como referencia estructural. La réplica vive en los backends propios de Analemática y del ERP de empresas turísticas; no importa agentes/servicios de SGA-CD ni requiere que ese backend esté levantado. Las funciones del ledger y la identidad empresarial ya existentes se reutilizan como biblioteca en cada proceso. Turismo Nacional es institucional, no ERP: no se añadió un ejército contable a ese sistema, y se verificó404 para las nuevas rutas empresariales y los prefijos heredados.
+
+**Los tres generales:** Jarvi es el General operativo; Neko es el General conversacional; SOUP es el General optimizador de procesos de los agentes. La voz fluida es una función separada, todavía sin nombre/proveedor confirmado ni audio en vivo integrado. Neko admite texto/transcripción acotados: prepara un borrador y no convierte la voz en aprobación financiera. El usuario confirma una misión y Jarvi delega realmente por Coroneles, Capitanes, Tenientes, Sargentos y Soldados. Hay29 agentes lógicos por backend(58 entre ambos), incluidos los tres generales; no son58 procesos LLM arrancados. Cada backend tiene estado mayor, jerarquía, política, API, adaptadores y namespace de auditoría propios.
+
+**Código canónico:**
+
+- `BACKEND/ANALEMATICA-BACKEND/gestion_contable/contabilidad/agent_army/`.
+- `BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/agent_army/`.
+- Primitivas comunes del motor: `core_erp/accounting/agent_army_runtime.py`, `agent_army_staff.py`, `agent_army_engines.py` y `agent_army_api.py`; ningún backend llama al servicio SGA-CD para ejecutar esas misiones.
+
+**Incremento operativo:** cinco tareas concretas con datos del ledger: balance de comprobación, rentabilidad, liquidez, diagnóstico de integridad acotado a20 asientos y estado actual de la cola comercial. La cola no certifica DIAN y la muestra no certifica toda la cadena. Los soldados consultan/verifican las fuentes; la traza refleja los rangos y herramientas que efectivamente se ejecutaron. Si falla el lector, no se afirma haber ejecutado el verificador. Los resultados incompletos exigen revisión, sin inventar cifras ni permisos. Las misiones se registran con scope/digest y request_id idempotente; su consulta/repetición vuelve a validar actor, empresa y vínculo, sin volver a ejecutar herramientas ni sustituir una instantánea anterior por cifras actuales.
+
+**Neko y SOUP:** Neko interpreta preguntas admitidas y devuelve un borrador con confirmed:false, sin ejecutar la misión ni aceptar roles/empresa del texto. SOUP evalúa muestras reales de tiempo por herramienta y estados bloqueados/pendientes, y produce recomendaciones. No ejecuta entrenamiento ni promociona modelos/procesos automáticamente; backend_72_tests_passed queda sin acreditar en su contrato, sin fabricar una aprobación de los72 hitos.
+
+**Motores:** Open Duet y agent-desktop tienen configuración propia por backend y asignación explícita a administrador/empresa; los ejemplos están deshabilitados. Open Duet acepta solo planificación con memoria desactivada y recibe nombres/estados de tareas, sin saldos/documentos/identidades. agent-desktop solo dispone de una sonda status con ejecutable fijado por SHA-256 y límites de salida/tiempo; no controla pagos ni interfaces financieras. Las llamadas a motores se hacen fuera de la transacción contable; se reserva su ejecución antes de llamar y se conserva resultado incierto sin reintento automático. Configuración real, equipos y proveedores siguen sin cualificar.
+
+**API nativa**, con autenticación nativa y un único provider_id autorizado en la consulta:
+
+- GET `/api/v1/accounting-army/`: catálogo/estructura y configuración declarada de motores.
+- POST `/api/v1/accounting-army/intake/`: Neko prepara una solicitud.
+- POST `/api/v1/accounting-army/missions/`: Jarvi ejecuta una misión confirmada.
+- GET `/api/v1/accounting-army/missions/<request_id>/`: informe persistido autorizado.
+- GET `/api/v1/accounting-army/missions/<request_id>/optimization/`: evaluación de SOUP.
+- POST `/api/v1/accounting-army/missions/<request_id>/engines/<engine>/`: plan/sonda explícitamente compartidos, sin acción financiera.
+
+El ERP publica su API en su proceso habitual. Analemática dispone de entrada nativa independiente `deployment.army_wsgi:application`, settings/URLs propios y target Docker `analematica-army`; necesita su configuración revisada de identidad/BD nativas. Su gateway anterior se conserva. El target está preparado y el arranque nativo de Django fue probado; no se construyó/publicó una imagen productiva ni se cambió el despliegue del usuario.
+
+**Validación final:**1.859 pruebas en151 suites/pasos aprobadas sin skips y con manifiesto de fuentes estable. Dentro de ese total hay52 pruebas específicas(30 de dominio/API,17 de estado mayor/motores y5 HTTP);19 pruebas del verificador de fuentes son adicionales. Los tres procesos HTTP de laboratorio usan ORM/JWT reales y datos sintéticos: ambos ejércitos funcionan sin SGA-CD y Turismo rechaza sus rutas. Open Duet se verificó con MockTransport; agent-desktop con un ejecutable temporal fijado por hash, sin acreditación de hardware. También se comprobó el arranque nativo de Analemática con un origen SGA-CD inalcanzable, sin módulos SGA-CD cargados. No se suman los intentos previos ni las repeticiones para inflar cobertura o porcentaje. Evidencia, hashes, manifiesto y límites en el registro técnico existente, clave`native_erp_analematica_agent_armies`.
+
+**Pendientes concretos:** configuración/roles/BD nativos y despliegue de Analemática; construcción/cualificación de imagen en infraestructura objetivo; motores reales por backend y permisos/directorios por instancia; concurrencia PostgreSQL/volúmenes, retención de auditoría y control de escritores privilegiados; audio/voz fluida; entrenamiento/evaluación/promoción supervisada de candidatos; herramientas adicionales de los servicios ERP e integración de paneles. Las operaciones financieras mantienen sus flujos existentes de consentimiento, dos autorizaciones y revisión de impacto cuando corresponda; el nuevo ejército consulta y diagnostica, sin contabilizar, pagar, retirar, firmar ni publicar por sí solo.
+
+**Estado y entrega:** la base original permanece57/72=79,17%, con9/24 tareas aceptadas. Estas mejoras no cierran por sí solas los requisitos restantes deACC-020/021/024 ni agregan hitos. Trabajo local respaldado; sin commit,push,activación de motores ni despliegue productivo.
+
+## Entrega consolidada y liderazgo de Analemática · 2026-11-11
+
+Directriz nueva: Analemática será el sistema líder; se autoriza un único commit
+consolidado del avance y el cambio de nombre del repositorio a Analematica.
+Se trasladaron íntegramente OpenJarvis, N.E.K.O y Soup desde
+BACKEND/SGA-CD-BACKEND/app/agents a BACKEND/ANALEMATICA-BACKEND/agents: 13.888
+archivos verificados byte a byte, incluidos enlaces simbólicos si existen.
+Manifestación técnica: evidencias/traslado-generales-20261111.json.
+También se centralizaron el estado mayor heredado y sus tres contratos; SGA-CD
+conserva exportaciones de compatibilidad para no romper sus endpoints. El ERP
+conserva adaptadores, aislamiento empresarial y estado propio sobre el núcleo
+canónico de Analemática. No se activa entrenamiento, voz ni acceso financiero.
+El indicador contable se mantiene en 79,17 % (57/72); mover fuentes y publicar
+código no acredita requisitos externos ni habilita producción.
+
+Verificación del consolidado: 1.859 pruebas en 151 suites/pasos sin fallos.
+El control global de estabilidad detectó el ajuste de BACKEND/deployment/Dockerfile
+durante esa ejecución; se comprobó que fue la única fuente del manifiesto que
+cambió. Se repitieron después las suites de dominio, estado mayor, HTTP y runner
+con fuentes finales estables (52 pruebas de agentes y 19 del runner). Se validaron
+los tres contratos centralizados, la ausencia de las tres carpetas anteriores,
+191 fuentes Python y las rutas/contexto de empaquetado Docker. No se construyeron
+imágenes ni se acreditó activación de los proyectos externos por moverlos.
+
+GitHub: main remoto comprobado en c745d0a antes de preparar la entrega, sin
+divergencia. La API rechazó el cambio de nombre solicitado con Forbidden;
+el token de gh tampoco autentica. El acceso Git admite la comprobación de push.
+No afirmar que el nombre remoto cambió ni modificar origin a una URL inexistente.
+La publicación se confirmará comparando el SHA remoto después del push normal.

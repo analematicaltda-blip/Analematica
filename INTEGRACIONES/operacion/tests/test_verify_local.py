@@ -83,6 +83,48 @@ class QualityContracts(unittest.TestCase):
             self.assertTrue(directory.is_relative_to(self.output))
             self.assertNotIn('git',argv);self.assertNotIn('docker',argv)
 
+    def test_accounting_profile_covers_all_current_contracts_once(self):
+        commands=quality.suites(['accounting'],sys.executable,None,self.output)
+        names=[row[0] for row in commands]
+        self.assertEqual(len(names),len(set(names)))
+        for path in (quality.ROOT/'BACKEND/deployment/tests').glob('accounting_*_check.py'):
+            self.assertIn(path.stem.removesuffix('_check'),names,path.name)
+        self.assertIn('schema_readiness',names)
+
+    def test_combined_core_accounting_does_not_duplicate_contracts(self):
+        commands=quality.suites(['core','accounting'],sys.executable,None,self.output)
+        names=[row[0] for row in commands]
+        self.assertEqual(len(names),len(set(names)))
+        self.assertIn('accounting_acc023_http',names)
+        self.assertIn('accounting_acc021_state',names)
+
+    def test_corporate_contracts_have_individual_processes_and_logs(self):
+        commands=quality.suites(['accounting'],sys.executable,None,self.output)
+        selected=[row for row in commands if row[0].startswith('corporate_')]
+        files=list((quality.ROOT/'BACKEND/SGA-CD-BACKEND/tests').glob('test_corporate_ledger*.py'))
+        self.assertEqual(len(selected),len(files))
+        self.assertEqual({row[1][row[1].index('-p')+1] for row in selected},{p.name for p in files})
+        self.assertTrue(all('*' not in row[1][row[1].index('-p')+1] for row in selected))
+        self.assertEqual(len({row[0] for row in selected}),len(files))
+
+    def test_accounting_profile_checks_all72_index_and_attestation(self):
+        names={row[0] for row in quality.suites(['accounting'],sys.executable,None,self.output)}
+        self.assertIn('wallet_attestation_security',names)
+        self.assertIn('accounting_progress_registry',names)
+        self.assertIn('accounting_progress_outputs',names)
+        self.assertIn('ANALISIS/contabilidad/tools',quality.SOURCE_DIRS)
+
+    def test_native_army_source_and_public_deployment_inputs_are_hashed(self):
+        package=self.output/'BACKEND/ANALEMATICA-BACKEND/gestion_contable/contabilidad/agent_army'
+        package.mkdir(parents=True);(package/'hierarchy.py').write_text('NATIVE=True')
+        (package/'environment.example').write_text('ANA_ACCOUNTING_ARMY_DUET_ENABLED=0')
+        directory=self.output/'BACKEND/deployment';directory.mkdir(parents=True)
+        (directory/'Dockerfile').write_text('FROM tourism AS analematica-army')
+        names={row['path'] for row in quality.source_manifest(self.output)}
+        self.assertIn('BACKEND/ANALEMATICA-BACKEND/gestion_contable/contabilidad/agent_army/hierarchy.py',names)
+        self.assertIn('BACKEND/ANALEMATICA-BACKEND/gestion_contable/contabilidad/agent_army/environment.example',names)
+        self.assertIn('BACKEND/deployment/Dockerfile',names)
+
     def evidence(self):
         source=[]
         quality.write_private(self.output/'source-manifest.json',b'[]')

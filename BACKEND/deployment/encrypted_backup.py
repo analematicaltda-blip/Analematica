@@ -1,14 +1,18 @@
 """Bounded, authenticated local SQLite backups; never overwrites a database or key.
 Application encryption/signing keys are deliberately not included in the archive.
+POSIX directory descriptors are required; this is not a live database replacement tool.
+Keep the source directory private: SQLite opens the live database/WAL by pathname.
 """
 import argparse
-from contextlib import closing
+from contextlib import closing, contextmanager
 from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
 import sqlite3
+import stat
+import re
 import struct
 import sys
 import time
@@ -31,14 +35,45 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
 
 
+@contextmanager
+def pinned_parent(path):
+    """Walk without following links; keep the parent descriptor for POSIX I/O."""
+    path = Path(os.path.abspath(path))
+    descriptor = None
+    try:
+        if os.name != 'posix':
+            raise BackupError('Esta herramienta endurecida requiere descriptores POSIX.')
+        descriptor = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
+        for part in path.parent.parts[1:]:
+            following = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                dir_fd=descriptor)
+            os.close(descriptor)
+            descriptor = following
+        yield descriptor, path.name
+    except OSError:
+        raise BackupError('No se pudo acceder a un archivo regular sin enlaces.') from None
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+
+
+def read_regular(path, limit, private=False):
+    with pinned_parent(path) as (parent, name):
+        descriptor = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+        with os.fdopen(descriptor, 'rb') as stream:
+            metadata = os.fstat(stream.fileno())
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > limit:
+                raise BackupError('Archivo no regular o demasiado grande.')
+            if private and metadata.st_mode & 0o077:
+                raise BackupError('La clave debe tener permisos 0600 o más restrictivos.')
+            result = stream.read(limit + 1)
+            if len(result) > limit:
+                raise BackupError('Archivo demasiado grande.')
+            return result
+
+
 def private_key(path):
-    path = Path(path)
-    if path.is_symlink() or not path.is_file():
-        raise BackupError('Se requiere un archivo de clave privado existente.')
-    if os.name == 'posix' and path.stat().st_mode & 0o077:
-        raise BackupError('La clave debe tener permisos 0600 o más restrictivos.')
-    with path.open('rb') as stream:
-        key = stream.read(33)
+    key = read_regular(path, 32, private=True)
     if len(key) != 32:
         raise BackupError('La clave de respaldo debe contener exactamente 32 bytes.')
     return key
@@ -61,16 +96,32 @@ def fresh_destination(path):
 
 def write_exclusive(path, data):
     path = fresh_destination(path)
-    created = False
-    try:
-        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        created = True
-        with os.fdopen(fd, 'wb') as stream:
-            stream.write(data); stream.flush(); os.fsync(stream.fileno())
-    except BaseException:
-        if created:
-            path.unlink(missing_ok=True)
-        raise
+    with pinned_parent(path) as (parent, name):
+        created = None
+        try:
+            descriptor = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                                 0o600, dir_fd=parent)
+            with os.fdopen(descriptor, 'wb') as stream:
+                metadata = os.fstat(stream.fileno())
+                created = (metadata.st_dev, metadata.st_ino)
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            # Do not report success if the visible parent was swapped meanwhile.
+            visible = path.parent.stat(follow_symlinks=False)
+            held = os.fstat(parent)
+            if (visible.st_dev, visible.st_ino) != (held.st_dev, held.st_ino):
+                raise BackupError('El directorio de destino cambió durante la escritura.')
+            os.fsync(parent)
+        except BaseException:
+            if created is not None:
+                try:
+                    current = os.stat(name, dir_fd=parent, follow_symlinks=False)
+                    if (current.st_dev, current.st_ino) == created:
+                        os.unlink(name, dir_fd=parent)
+                except FileNotFoundError:
+                    pass
+            raise
     return path
 
 
@@ -143,14 +194,41 @@ def backup(source, destination, key_file, service):
             'application_keys_included': False}
 
 
+def strict_pairs(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise BackupError('Cabecera con campos repetidos.')
+        result[key] = value
+    return result
+
+
+def reject_constant(value):
+    raise BackupError('Cabecera con número no finito.')
+
+
+def validate_header(header):
+    fields = {'schema', 'service', 'created_at', 'bytes', 'tables', 'sha256',
+              'application_keys_included'}
+    if not isinstance(header, dict) or set(header) != fields:
+        raise BackupError('Campos de cabecera inválidos.')
+    if (type(header['bytes']) is not int or not 0 < header['bytes'] <= MAX_DATABASE
+            or type(header['tables']) is not int or not 0 <= header['tables'] <= MAX_DATABASE
+            or not isinstance(header['sha256'], str)
+            or re.fullmatch(r'[0-9a-f]{64}', header['sha256']) is None):
+        raise BackupError('Tipos de cabecera inválidos.')
+    timestamp = header['created_at']
+    if not isinstance(timestamp, str) or len(timestamp) > 40:
+        raise BackupError('Fecha de cabecera inválida.')
+    parsed = datetime.fromisoformat(timestamp)
+    if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
+        raise BackupError('La fecha de respaldo debe incluir zona UTC.')
+
+
 def decrypt(archive, key_file, expected_service):
     if expected_service not in SERVICES:
         raise BackupError('Servicio no reconocido.')
-    path = Path(archive)
-    if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_ARCHIVE:
-        raise BackupError('Archivo de respaldo inexistente, enlazado o demasiado grande.')
-    with path.open('rb') as stream:
-        data = stream.read(MAX_ARCHIVE + 1)
+    data = read_regular(archive, MAX_ARCHIVE)
     if len(data) > MAX_ARCHIVE or not data.startswith(MAGIC):
         raise BackupError('Formato de respaldo inválido.')
     offset = len(MAGIC)
@@ -159,7 +237,9 @@ def decrypt(archive, key_file, expected_service):
         if length <= 0 or length > MAX_HEADER:
             raise BackupError('Cabecera de respaldo inválida.')
         start = offset + 4; end = start + length
-        header = json.loads(data[start:end])
+        header = json.loads(data[start:end], object_pairs_hook=strict_pairs,
+                            parse_constant=reject_constant)
+        validate_header(header)
         if (not isinstance(header, dict) or header.get('schema') != 'sgacd-sqlite-backup-v1'
                 or header.get('service') != expected_service
                 or header.get('application_keys_included') is not False):

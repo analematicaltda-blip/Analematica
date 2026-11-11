@@ -65,10 +65,11 @@ class PurchaseReturnChecks(unittest.TestCase):
   r=self.review();before=JournalEntry.plain_objects.count();engine.FiscalPeriod.plain_objects.filter(tenant=self.base.company).update(status='closed')
   with self.assertRaises(AccountingError):self.post(r)
   self.assertEqual(before,JournalEntry.plain_objects.count())
- def test_changed_account_role_blocks_post(self):
-  r=self.review();before=JournalEntry.plain_objects.count();engine.Account.plain_objects.filter(pk=self.base.case.input_tax.pk).update(type='LIABILITY')
-  with self.assertRaises(AccountingError):self.post(r)
-  self.assertEqual(before,JournalEntry.plain_objects.count())
+ def test_posted_account_role_change_is_blocked_before_return(self):
+  r=self.review();before=JournalEntry.plain_objects.count()
+  with self.assertRaises(AccountingError):engine.Account.plain_objects.filter(pk=self.base.case.input_tax.pk).update(type='LIABILITY')
+  account=engine.Account.plain_objects.get(pk=self.base.case.input_tax.pk);self.assertEqual(account.type,'ASSET');self.assertEqual(before,JournalEntry.plain_objects.count())
+  self.post(r);self.assertEqual(before+1,JournalEntry.plain_objects.count())
  def test_expired_return_review_requires_fresh_review(self):
   from unittest.mock import patch
   from datetime import timedelta

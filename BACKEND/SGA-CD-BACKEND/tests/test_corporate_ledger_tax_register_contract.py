@@ -41,4 +41,17 @@ class TaxRegisterContractChecks(unittest.TestCase):
  def test_unknown_tax_kind_is_not_accepted(self):
   self.report['tax_by_kind']['UNSUPPORTED']='1.00'
   with self.assertRaises(ValueError):self.check()
+ def v3(self):
+  report=copy.deepcopy(self.report);report['schema']='sgacd-tax-register-v3';line=report['lines'][0];line['policy_coverage']='ORIGINAL_VERSION_REFERENCED';line['policy_references']=[{'item_id':str(uuid.uuid4()),'policy_id':str(uuid.uuid4()),'code':'TAX_RULE','revision':1,'policy_digest':'a'*64,'valid_from':'2026-01-01','valid_until':'2026-12-31','evidence_digest':'b'*64,'tax_category':'TAXABLE','direction':'PURCHASE','economic_date':'2026-11-01','reference_basis':'ORIGINAL_DOCUMENT_POLICY_NOT_ADJUSTMENT_AMOUNT'}];return report
+ def test_v3_policy_provenance_and_legacy_v2_are_accepted(self):self.check(self.v3());self.check()
+ def test_v3_missing_duplicate_invalid_or_private_provenance_denied(self):
+  for case in ['missing','duplicate','revision','validity','private','coverage']:
+   report=self.v3();line=report['lines'][0];refs=line['policy_references']
+   if case=='missing':del line['policy_references']
+   if case=='duplicate':refs*=2
+   if case=='revision':refs[0]['revision']=True
+   if case=='validity':refs[0]['valid_until']='2026-01-01'
+   if case=='private':refs[0]['private_document']='not allowed'
+   if case=='coverage':line['policy_coverage']='NOT_CAPTURED_IN_SOURCE'
+   with self.assertRaises(ValueError):self.check(report)
 if __name__=='__main__':unittest.main()

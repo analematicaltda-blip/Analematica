@@ -20,11 +20,12 @@ def utc(value):return value.replace(tzinfo=timezone.utc) if value.tzinfo is None
 
 def review_binding(db,*,operator,owner_id,ledger_actor_id,provider_id,tenant_id,evidence_digest,valid_until,apply=False):
     operator=db.get(Usuario,getattr(operator,'id',None),populate_existing=True) if getattr(operator,'id',None) is not None else None
+    if operator is not None:db.expire(operator,['roles'])
     if operator is None or not operator.activo or 'admin_general' not in roles_of(operator) or operator.id==owner_id:raise HTTPException(403,'Se requiere revisión independiente autorizada.')
-    owner=db.get(Usuario,owner_id);binding=db.get(CorporateOwner,1)
+    owner=db.get(Usuario,owner_id,populate_existing=True);binding=db.get(CorporateOwner,1,populate_existing=True)
     if not owner or not owner.activo or not binding or binding.user_id!=owner_id:raise HTTPException(403,'Titular corporativo no vigente.')
     now=datetime.now(timezone.utc)
-    if valid_until.tzinfo is None or not now<valid_until<=now+timedelta(days=30):raise HTTPException(422,'Vigencia máxima de treinta días.')
+    if not isinstance(valid_until,datetime) or valid_until.tzinfo is None or not now<valid_until<=now+timedelta(days=30):raise HTTPException(422,'Vigencia máxima de treinta días.')
     if not isinstance(evidence_digest,str) or not re.fullmatch('[0-9a-f]{64}',evidence_digest):raise HTTPException(422,'Huella de revisión requerida.')
     if not isinstance(ledger_actor_id,str) or not re.fullmatch('[1-9][0-9]{0,18}',ledger_actor_id):raise HTTPException(422,'Actor contable inválido.')
     try:provider=str(UUID(str(provider_id)));tenant=str(UUID(str(tenant_id)))
@@ -35,6 +36,9 @@ def review_binding(db,*,operator,owner_id,ledger_actor_id,provider_id,tenant_id,
     return row
 
 def require_binding(db,user):
+    user=db.get(Usuario,getattr(user,'id',None),populate_existing=True)
+    if user is None:raise HTTPException(403,'Titular corporativo no vigente.')
+    db.expire(user,['roles'])
     db.get(CorporateOwner,1,populate_existing=True)
     require_owner(db,user)
     try:row=db.get(CorporateLedgerBinding,1)
@@ -46,6 +50,13 @@ def require_binding(db,user):
     if row.owner_id!=user.id or row.reviewer_id==user.id or not re.fullmatch('[0-9a-f]{64}',row.evidence_digest) or row.revoked_at or utc(row.valid_until)<=datetime.now(timezone.utc) or not reviewer or not reviewer.activo or 'admin_general' not in roles_of(reviewer):
         raise HTTPException(403,'El vínculo contable no está vigente.')
     return row
+
+def verify_dispatch_result(recheck,db,user,selected):
+    """Suppress stale-authority responses without claiming distributed rollback."""
+    try:recheck(db,user,selected)
+    except HTTPException as exc:
+        raise HTTPException(exc.status_code,'El acceso cambió durante la operación; el resultado puede estar registrado. No crees otra solicitud: recupera la revisión con acceso autorizado.') from None
+
 
 def origin():
     value=os.environ.get('CORPORATE_LEDGER_ORIGIN','')
@@ -61,8 +72,15 @@ def origin():
 
 def client():return httpx.Client(timeout=httpx.Timeout(8,connect=3),follow_redirects=False,trust_env=False)
 
+def reject_upstream_throttle(response):
+    if response.status_code==429:
+        raw=response.headers.get('Retry-After','')
+        seconds=min(3600,max(1,int(raw))) if isinstance(raw,str) and re.fullmatch('[0-9]{1,5}',raw) else 60
+        raise HTTPException(429,'Límite temporal del ERP. Espera y consulta el estado de la misma operación antes de reintentar.',headers={'Retry-After':str(seconds)})
+
 def fetch(client,url,cookie,params):
     with client.stream('GET',url,headers={'Cookie':COOKIE+'='+cookie,'Accept':'application/json','Accept-Encoding':'identity'},params=params) as response:
+        reject_upstream_throttle(response)
         if response.status_code in (401,403):raise HTTPException(403,'Inicia sesión con el titular autorizado en el acceso seguro del ERP.')
         if response.status_code!=200:raise HTTPException(503,'El libro mayor no está disponible para esta consulta.')
         if response.headers.get('content-encoding','identity').lower()!='identity':raise HTTPException(503,'Codificación de reporte no admitida.')
@@ -77,7 +95,7 @@ def fetch(client,url,cookie,params):
 def read_report(db,*,user,session_cookie,report,since=None,until=None,account_id=None):
     link=require_binding(db,user)
     if not isinstance(session_cookie,str) or not re.fullmatch('[a-z0-9]{32}',session_cookie):raise HTTPException(403,'Abre primero una sesión del ERP con el titular contable verificado.')
-    if report not in {'trial_balance','profitability','tax_reconciliation','tax_register'}:raise HTTPException(422,'Reporte no soportado.')
+    if report not in {'trial_balance','profitability','tax_reconciliation','tax_register','quick_ratio'}:raise HTTPException(422,'Reporte no soportado.')
     try:
         end=date.fromisoformat(until) if isinstance(until,str) and len(until)==10 else None
         if end is None or end.isoformat()!=until:raise ValueError()
@@ -94,13 +112,21 @@ def read_report(db,*,user,session_cookie,report,since=None,until=None,account_id
     params={'provider_id':link.provider_id};target=origin()
     try:
         with client() as transport:
-            identity=fetch(transport,target+BASE+'identidad-contable/',session_cookie,params)
-            if not isinstance(identity,dict) or identity.get('company_id')!=link.tenant_id or identity.get('provider_id')!=link.provider_id or str(identity.get('actor_id'))!=link.ledger_actor_id:
-                raise HTTPException(403,'Las identidades corporativa y contable no coinciden con el vínculo revisado.')
-            path={'trial_balance':'balance-prueba/','profitability':'rentabilidad/','tax_reconciliation':'conciliacion-tributaria/','tax_register':'conciliacion-tributaria-integral/'}[report]
-            query={**params,**({'fecha_corte':until} if report=='trial_balance' else {'desde':since,'hasta':until})}
+            combined=os.environ.get('CORPORATE_LEDGER_COMBINED_CONTEXT_ENABLED')=='1'
+            if not combined:
+                identity=fetch(transport,target+BASE+'identidad-contable/',session_cookie,params)
+                if not isinstance(identity,dict) or identity.get('company_id')!=link.tenant_id or identity.get('provider_id')!=link.provider_id or str(identity.get('actor_id'))!=link.ledger_actor_id:
+                    raise HTTPException(403,'Las identidades corporativa y contable no coinciden con el vínculo revisado.')
+            path={'quick_ratio':'liquidez-acida/','trial_balance':'balance-prueba/','profitability':'rentabilidad/','tax_reconciliation':'conciliacion-tributaria/','tax_register':'conciliacion-tributaria-integral/'}[report]
+            query={**params,**({'fecha_corte':until} if report in {'trial_balance','quick_ratio'} else {'desde':since,'hasta':until})}
             if report in {'tax_reconciliation','tax_register'}:query['cuenta_id']=account_id
-            data=fetch(transport,target+BASE+path,session_cookie,query)
+            if combined:
+                wrapped=fetch(transport,target+BASE+'lectura-contable/',session_cookie,{**query,'report':report})
+                if not isinstance(wrapped,dict) or set(wrapped)!={'schema','report','context','data'} or wrapped.get('schema')!='sgacd-accounting-read-context-v1' or wrapped.get('report')!=report:raise HTTPException(503,'Reporte agregado incompatible.')
+                context=wrapped['context']
+                if not isinstance(context,dict) or set(context)!={'company_id','provider_id','actor_id','read_only'} or context['read_only'] is not True or context['company_id']!=link.tenant_id or context['provider_id']!=link.provider_id or str(context['actor_id'])!=link.ledger_actor_id:raise HTTPException(403,'Identidad del reporte no vigente.')
+                data=wrapped['data']
+            else:data=fetch(transport,target+BASE+path,session_cookie,query)
     except (httpx.HTTPError,httpx.InvalidURL):raise HTTPException(503,'No se pudo consultar el ledger; no se modificó información.') from None
     # Independent read transaction: do not reuse the initial identity-map/snapshot.
     with Session(bind=db.get_bind(),autoflush=False) as final_db:
@@ -112,7 +138,11 @@ def read_report(db,*,user,session_cookie,report,since=None,until=None,account_id
     if not isinstance(data,dict) or data.get('tenant_id')!=current_tenant:raise HTTPException(503,'El reporte pertenece a un contexto incompatible.')
     if data.get('posted_only') is not True or data.get('valuation')!='base_currency':raise HTTPException(503,'Reporte sin alcance contable verificable.')
     money=lambda v:isinstance(v,str) and re.fullmatch(r'-?[0-9]{1,26}\.[0-9]{2}',v)
-    if report=='trial_balance':
+    if report=='quick_ratio':
+        from app.services.quick_ratio_contract import validate
+        try:validate(data,company_id=current_tenant,cutoff=until)
+        except (ValueError,TypeError,KeyError):raise HTTPException(503,'Indicador de liquidez incompatible.') from None
+    elif report=='trial_balance':
         if data.get('cutoff_date')!=until or not all(money(data.get(k)) for k in ['total_debit','total_credit']) or not isinstance(data.get('lines'),list):raise HTTPException(503,'Balance incompatible.')
     elif report=='tax_register':
         from app.services.tax_register_contract import validate

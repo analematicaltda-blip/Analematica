@@ -34,4 +34,19 @@ class PayrollCostContractChecks(unittest.TestCase):
  def test_private_employee_fields_not_allowed(self):
   r={'company_id':self.context['tenant_id'],'provider_id':self.context['provider_id'],'payroll_id':self.payroll,'read_only':True,'payroll_reversed':False,'ledger_written':False,'clinical_content_returned':False,'capacity_inferred':False,'journal_id':str(uuid.uuid4()),'workers':[{'employee_id':str(uuid.uuid4()),'name':'Synthetic','salary':'500.00','employer':'60.00','provisions':'40.00','reviewed_payroll_center':'ONE','medical_record':'PRIVATE'}],'work':[],'operations':[]}
   with self.assertRaises(ValueError):validate('payroll_cost_sources',r,self.scope,self.context)
+ def trace_preview(self):
+  employee=str(uuid.uuid4());return {'schema':'sgacd-payroll-operation-cost-v2','company_id':self.context['tenant_id'],'provider_id':self.context['provider_id'],'payroll_id':self.payroll,'source_independently_verified':False,'statutory_payroll_rules_verified':False,'journal_id':str(uuid.uuid4()),'payroll_review_id':str(uuid.uuid4()),'payroll_review_digest':'a'*64,'timezone':'America/Bogota','allocation_basis':'OWNER_DECLARED_PAID_CAPACITY_US','rounding':'LARGEST_REMAINDER_UUID_UNALLOCATED_LAST','capacities':[{'employee_id':employee,'capacity_seconds':3600}],'operation_centers':{self.operation:'CENTER'},'operation_sources':[{'operation_id':self.operation,'commercial_reference_id':str(uuid.uuid4()),'planned_start':'2026-11-01T09:00:00-05:00','planned_end':'2026-11-01T10:00:00-05:00','description_digest':'b'*64,'active':True}],'work_source':[],'allocations':[{'employee_id':employee,'operation_id':self.operation,'center_code':'CENTER','allocation_weight_us':3600000000,'amounts':{'salary':'10.00','employer':'0.00','provisions':'0.00'},'total_cost':'10.00'}],'unallocated':[],'posted_cost':{'salary':'10.00','employer':'0.00','provisions':'0.00'},'posted_total_cost':'10.00'}
+ def test_v2_trace_preview_is_accepted(self):
+  from app.services.payroll_cost_contract import preview
+  preview(self.trace_preview(),self.payroll,self.context)
+ def test_v2_missing_duplicate_or_foreign_trace_rejected(self):
+  from app.services.payroll_cost_contract import preview
+  for case in ['missing','duplicate','foreign','private','naive']:
+   p=self.trace_preview()
+   if case=='missing':p['operation_sources']=[]
+   if case=='duplicate':p['operation_sources']*=2
+   if case=='foreign':p['operation_sources'][0]['operation_id']=str(uuid.uuid4())
+   if case=='private':p['operation_sources'][0]['medical_record']='secret'
+   if case=='naive':p['operation_sources'][0]['planned_start']='2026-11-01T09:00:00'
+   with self.assertRaises(ValueError):preview(p,self.payroll,self.context)
 if __name__=='__main__':unittest.main()

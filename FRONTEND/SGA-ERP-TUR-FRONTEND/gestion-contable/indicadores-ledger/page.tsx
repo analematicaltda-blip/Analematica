@@ -5,6 +5,7 @@ import {LedgerIndicators} from './LedgerIndicators';
 import {LiquidityReview} from './LiquidityReview';
 import {LiquidityHistory} from './LiquidityHistory';
 import {CashScenarios} from './CashScenarios';
+import {CashWindows} from './CashWindows';
 import {RemediationPanel} from './RemediationPanel';
 import {BankComparison} from './BankComparison';
 import {TaxReconciliation} from './TaxReconciliation';
@@ -14,6 +15,7 @@ import {OpeningChunks} from './OpeningChunks';
 import {FxSettlements} from './FxSettlements';
 import {BankGroups} from './BankGroups';
 import {EmptyBankPeriod} from './EmptyBankPeriod';
+import {FinancialRehearsal} from './FinancialRehearsal';
 import {ESGReport} from './ESGReport';
 import {ReservationRecognition} from './ReservationRecognition';
 import {ReservationBilling} from './ReservationBilling';
@@ -40,6 +42,7 @@ export default function LedgerWorkspace(){
  const authorized=identity!==null&&companyIdentity===identity;
  return <main style={{background:'#0A1128',color:'#FFFFFF',minHeight:'100vh',padding:20}}>
   <h1>Consulta contable empresarial</h1>
+  <a style={{color:'#FFFFFF'}} href="/contabilidad-offline/" target="_blank" rel="noopener">Abrir capturador contable sin conexión</a>
   <a style={{color:'#FFFFFF'}} href="/dashboard/prestador/mi-negocio/gestion-comercial/politicas-devolucion">Administrar políticas de devolución comercial</a>
   {(session.user||session.logoutUnconfirmed)&&<div style={{display:'flex',gap:16,flexWrap:'wrap',alignItems:'center'}}>
    {session.user&&<p>Sesión: {session.user.username}</p>}
@@ -56,6 +59,7 @@ export default function LedgerWorkspace(){
   <ReservationRecognition key={'reservation-recognition:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request} onPosted={()=>setRevisionSignal(n=>n+1)}/>
   <ReservationBilling key={'reservation-billing:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <AccountingQuery key={'accounting-query:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
+  <FinancialRehearsal identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <ESGReport identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <EmptyBankPeriod identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <OpeningChunks identity={identity} providerId={authorized?provider:''} request={session.request} onPosted={()=>setRevisionSignal(n=>n+1)}/>
@@ -67,7 +71,7 @@ export default function LedgerWorkspace(){
   <LedgerIndicators identity={identity} providerId={authorized?provider:''} request={session.request} revisionSignal={revisionSignal}/>
   <LiquidityReview identity={identity} providerId={authorized?provider:''} request={session.request} onSaved={()=>setRevisionSignal(n=>n+1)}/>
   <LiquidityHistory identity={identity} providerId={authorized?provider:''} request={session.request} revisionSignal={revisionSignal}/>
-  <CashScenarios key={JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
+  <CashScenarios key={'cash-scenarios:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/><CashWindows key={'cash-windows:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
   <ReconciliationDiagnostic key={'reconciliation:'+JSON.stringify([identity,authorized?provider:''])} identity={identity} providerId={authorized?provider:''} request={session.request}/>
  </main>;
 }

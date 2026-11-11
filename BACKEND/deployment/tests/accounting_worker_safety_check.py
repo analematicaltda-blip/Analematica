@@ -32,7 +32,8 @@ class WorkerSafetyChecks(unittest.TestCase):
   self.base.transition();self.order.refresh_from_db();self.order.fecha_inicio=self.now-timedelta(minutes=5);self.order.fecha_fin_estimada=self.now+timedelta(minutes=55);self.order.save(update_fields=['fecha_inicio','fecha_fin_estimada'])
   self.clinician=get_user_model()(username='clinical-fixture-'+uuid.uuid4().hex,is_active=True);get_user_model().objects.bulk_create([self.clinician]);self.grant(self.clinician,'add')
   self.terms={'enabled':True,'version':'synthetic-reviewed-v1','reviewer_ids':[str(self.clinician.pk)],'required_ppe':['HELMET'],'max_shift_minutes':120,'min_rest_minutes':480,'review_ttl_seconds':180,'valid_from':(self.now-timedelta(days=2)).isoformat(),'valid_until':(self.now+timedelta(days=2)).isoformat(),'evidence_digest':'a'*64}
-  self.override=override_settings(OPERATIONAL_DISPATCH_POLICIES={str(self.provider.pk):self.terms});self.override.enable();self.addCleanup(self.override.disable)
+  self.risk={'approved':True,'version':'synthetic-risk-v1','reviewer_id':str(self.clinician.pk),'valid_from':self.terms['valid_from'],'valid_until':self.terms['valid_until'],'evidence_digest':'c'*64,'hazards':[{'code':'FALL','controlled':True,'evidence_digest':'d'*64}],'required_ppe':['HELMET'],'worker_risk_classes':{str(self.worker.pk):2}}
+  self.override=override_settings(OPERATIONAL_RISK_ASSESSMENTS={str(self.provider.pk):{str(self.order.pk):self.risk}},OPERATIONAL_DISPATCH_POLICIES={str(self.provider.pk):self.terms});self.override.enable();self.addCleanup(self.override.disable)
   self.scope={'provider_id':self.provider.pk,'employee_id':str(self.worker.pk),'request_id':str(uuid.uuid4()),'expected_revision':0,'evidence_digest':'b'*64,'confirmed':True}
  def grant(self,user,action):
   ct=ContentType.objects.get_for_model(SaludOcupacional);permission,_=Permission.objects.get_or_create(content_type=ct,codename=action+'_saludocupacional',defaults={'name':'Synthetic explicit grant'});user.user_permissions.add(permission)
@@ -121,8 +122,10 @@ class WorkerSafetyChecks(unittest.TestCase):
   from apps.prestadores.mi_negocio.gestion_operativa.models import OrdenOperativa
   other=OrdenOperativa.objects.create(provider=self.order.provider,contrato_ref_id=uuid.uuid4(),descripcion_servicio='Other synthetic job',fecha_inicio=self.order.fecha_inicio,fecha_fin_estimada=self.order.fecha_fin_estimada)
   state_service.transition(usuario_id=self.owner.pk,provider_id=self.provider.pk,kind='OrdenOperativa',operation_id=other.pk,expected_state='PENDIENTE',new_state='PREPARACION',reason='Planning',confirmed=True)
+  from django.conf import settings
+  settings.OPERATIONAL_RISK_ASSESSMENTS[str(self.provider.pk)][str(other.pk)]=copy.deepcopy(self.risk)
   engine.attest(actor_id=self.clinician.pk,provider_id=self.provider.pk,order_id=str(other.pk),crew=[refs],expected_revision=0,confirmed=True)
-  with self.assertRaises(ValidationError):engine.review_dispatch(actor_id=self.owner.pk,provider_id=self.provider.pk,order_id=str(other.pk),confirmed=True)
+  with self.assertRaisesRegex(ValidationError,'ya asignado'):engine.review_dispatch(actor_id=self.owner.pk,provider_id=self.provider.pk,order_id=str(other.pk),confirmed=True)
  def test_old_freeform_fitness_and_rest_boolean_are_refused(self):
   with self.assertRaises(ValidationError):self.attest(refs={'employee_id':str(self.worker.pk),'fitness':'FIT','ppe':[],'last_work_ended_at':self.now.isoformat(),'evidence_digest':'b'*64})
  def test_other_company_record_reference_is_refused(self):

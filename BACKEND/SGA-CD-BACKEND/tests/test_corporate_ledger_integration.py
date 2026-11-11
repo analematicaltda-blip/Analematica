@@ -109,7 +109,7 @@ class DualLedgerIntegration(unittest.TestCase):
   payload=self.prepare_recognition();original=bridge.fetch
   def revoke_after_session(*args,**kwargs):
    result=original(*args,**kwargs)
-   if args[1].endswith('/api/v1/erp-session/'):
+   if args[1].endswith(('/api/v1/erp-session/','/contexto-contable/')):
     with self.factory() as db:
      row=db.get(CorporateLedgerBinding,1);row.revoked_at=datetime.now(timezone.utc);db.commit()
    return result

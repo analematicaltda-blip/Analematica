@@ -21,7 +21,7 @@ def kinds(value):
 
 def validate(data,*,company_id,account_id,since,until):
     if not isinstance(data,dict) or set(data)!=TOP:raise ValueError('Unexpected financial response fields.')
-    if data['schema']!='sgacd-tax-register-v2' or data['company_id']!=company_id or data['tenant_id']!=company_id or data['account_id']!=account_id or data['since']!=since or data['until']!=until or data['currency']!='COP' or data['valuation']!='base_currency' or data['scope']!='SELECTED_ACCOUNT_MOVEMENTS_NOT_A_TAX_RETURN':raise ValueError('Financial response context mismatch.')
+    if data['schema'] not in {'sgacd-tax-register-v2','sgacd-tax-register-v3'} or data['company_id']!=company_id or data['tenant_id']!=company_id or data['account_id']!=account_id or data['since']!=since or data['until']!=until or data['currency']!='COP' or data['valuation']!='base_currency' or data['scope']!='SELECTED_ACCOUNT_MOVEMENTS_NOT_A_TAX_RETURN':raise ValueError('Financial response context mismatch.')
     uuid(data['company_id']);uuid(data['account_id'])
     if data['account_type'] not in {'ASSET','LIABILITY'} or data['normal_side']!=('DEBIT' if data['account_type']=='ASSET' else 'CREDIT') or not isinstance(data['account_code'],str) or not 1<=len(data['account_code'])<=64:raise ValueError('Account nature mismatch.')
     if any(data[k] is not True for k in ['read_only','posted_only']) or any(data[k] is not False for k in ['ledger_written','dian_compared','fiscal_accepted','regulatory_verified']):raise ValueError('Unsupported financial status.')
@@ -31,7 +31,22 @@ def validate(data,*,company_id,account_id,since,until):
         factor=Decimal(1) if data['normal_side']=='DEBIT' else Decimal(-1)
         totals={k:Decimal(0) for k in KINDS};left=right=unattributed=Decimal(0);seen=set();unknown=0
         for row in data['lines']:
-            if not isinstance(row,dict) or set(row)!=LINE:raise ValueError('Unexpected movement fields.')
+            expected_fields=LINE|({'policy_references','policy_coverage'} if data['schema']=='sgacd-tax-register-v3' else set())
+            if not isinstance(row,dict) or set(row)!=expected_fields:raise ValueError('Unexpected movement fields.')
+            if data['schema']=='sgacd-tax-register-v3':
+                refs=row['policy_references']
+                if not isinstance(refs,list) or len(refs)>20 or row['policy_coverage']!=('ORIGINAL_VERSION_REFERENCED' if refs else 'NOT_CAPTURED_IN_SOURCE'):raise ValueError('Explicit policy coverage required.')
+                seen_items=set()
+                for ref in refs:
+                    if not isinstance(ref,dict) or set(ref)!={'item_id','policy_id','code','revision','policy_digest','valid_from','valid_until','evidence_digest','tax_category','direction','economic_date','reference_basis'}:raise ValueError('Unexpected policy provenance fields.')
+                    uuid(ref['item_id']);uuid(ref['policy_id'])
+                    if ref['item_id'] in seen_items or type(ref['revision']) is not int or ref['revision']<1 or not isinstance(ref['code'],str) or not re.fullmatch('[A-Z0-9][A-Z0-9_-]{0,39}',ref['code']):raise ValueError('Invalid policy identity.')
+                    seen_items.add(ref['item_id'])
+                    for field in ['policy_digest','evidence_digest']:
+                        if not isinstance(ref[field],str) or not re.fullmatch('[0-9a-f]{64}',ref[field]):raise ValueError('Missing policy proof.')
+                    for field in ['valid_from','valid_until','economic_date']:
+                        if not isinstance(ref[field],str) or date.fromisoformat(ref[field]).isoformat()!=ref[field]:raise ValueError('Canonical policy dates required.')
+                    if not ref['valid_from']<=ref['economic_date']<=ref['valid_until'] or ref['direction'] not in {'SALE','PURCHASE'} or ref['tax_category'] not in {'TAXABLE','EXEMPT','EXCLUDED'} or ref['reference_basis']!='ORIGINAL_DOCUMENT_POLICY_NOT_ADJUSTMENT_AMOUNT':raise ValueError('Unsupported policy context.')
             uuid(row['journal_id'])
             if row['journal_id'] in seen or not isinstance(row['date'],str) or not since<=row['date']<=until or not isinstance(row['journal_hash'],str) or not re.fullmatch('[0-9a-f]{64}',row['journal_hash']) or type(row['is_reversal']) is not bool:raise ValueError('Movement identity/integrity mismatch.')
             if date.fromisoformat(row['date']).isoformat()!=row['date']:raise ValueError('Canonical movement date required.')

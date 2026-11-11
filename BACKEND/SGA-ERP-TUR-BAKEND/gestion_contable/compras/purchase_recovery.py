@@ -194,4 +194,4 @@ def register_body(company,journal):
         if head is None or head.financial_event_id!=event_id or head.created_by_id!=int(review['actor_id']) or head.date.isoformat()!=review['economic_date'] or receipt is None or receipt.payload_hash!=fingerprint(contract):raise AccountingError('Proportional return posting receipt changed.')
         if head.pk==journal.pk:target=mapped
     if sum(item['return_bps'] for item in history)>10000 or target is None:raise AccountingError('Return history exceeds original or lacks selected journal.')
-    return {'document_id':source['document_id'],'preview':{'lines':target}}
+    return {'document_id':source['document_id'],'tax_source':source,'preview':{'lines':target}}

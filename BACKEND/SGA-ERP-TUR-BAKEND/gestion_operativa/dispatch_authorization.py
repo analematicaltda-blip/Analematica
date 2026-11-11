@@ -76,8 +76,9 @@ def order_for(provider,order_id):
     return row
 
 def source(order):
+    from .sg_sst.dispatch_risk import digest
     return {'order_id':str(order.pk),'provider_id':str(order.provider_id),'contract_id':str(order.contrato_ref_id),
-        'start':order.fecha_inicio.isoformat(),'end':order.fecha_fin_estimada.isoformat(),
+        'risk_assessment_digest':digest(order),'start':order.fecha_inicio.isoformat(),'end':order.fecha_fin_estimada.isoformat(),
         'leader_id':str(order.responsable_lider_id) if order.responsable_lider_id else None,
         'projected_cost':format(order.costo_proyectado,'.2f'),'description_digest':fingerprint(order.descripcion_servicio),'active':order.is_active}
 
@@ -159,11 +160,13 @@ def check_attestation(provider,company,order,terms):
     begin,end=order.fecha_inicio,order.fecha_fin_estimada;now=timezone.now()
     if timezone.is_naive(begin) or timezone.is_naive(end) or not begin<=now<end or end>stamp(terms['valid_until']) or (end-begin).total_seconds()>terms['max_shift_minutes']*60:raise ValidationError('Ventana/jornada fuera de la política explícita.')
     from .sg_sst.worker_data_service import resolve_refs
+    from .sg_sst.dispatch_risk import evaluate
+    required_ppe=evaluate(order,terms,crew)
     for entry in crew:
         facts=resolve_refs(provider,entry)
         if not facts['fitness_fit'] or facts['fitness_from']>begin or facts['fitness_until']<end:raise ValidationError('Falta autorización profesional vigente para toda la operación.')
         equipment=facts['ppe']
-        if any(code not in equipment or equipment[code][0]>now or equipment[code][1]<end for code in terms['required_ppe']):raise ValidationError('Falta entrega EPP vigente requerida por política.')
+        if any(code not in equipment or equipment[code][0]>now or equipment[code][1]<end for code in required_ppe):raise ValidationError('Falta entrega EPP vigente requerida por política.')
         if facts['rest_end']<begin or facts['rest_end']-facts['rest_start']<timedelta(minutes=terms['min_rest_minutes']) or begin-facts['last_work_end']<timedelta(minutes=terms['min_rest_minutes']):raise ValidationError('Descanso registrado insuficiente o historia posterior incompatible.')
         claims=list(OutboxEvent.objects.filter(event_type=PREFIX+'claimed.v1',payload__body__provider_id=str(provider.pk),payload__body__employee_id=entry['employee_id']).order_by('-created_at')[:101])
         if len(claims)>100:raise ValidationError('Historial requiere conciliación explícita; no se trunca.')

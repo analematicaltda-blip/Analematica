@@ -58,7 +58,8 @@ class PostingTests(fixture['AccountingFoundation']):
   rate=FXRateTable.objects.create(base_currency=usd,target_currency=cop,rate=Decimal('4000'),effective_from=timezone.now()+timedelta(days=1),version=uuid.uuid4().int%1000000)
   with self.assertRaises(AccountingError):self.post(entry)
   rate.effective_from=timezone.now()-timedelta(days=1);rate.save()
-  posted=self.post(entry);self.assertEqual(posted.exchange_rate,Decimal('4000'))
+  with self.assertRaises(AccountingError):self.post(entry) # A global row is not a reviewed source.
+  posted=self.post_reviewed_foreign(entry);self.assertEqual(posted.exchange_rate,Decimal('4000'))
   self.assertEqual(LedgerEntry.plain_objects.filter(journal_entry=posted).first().amount_base,Decimal('40000'))
  def test_manual_idempotency_and_changed_contract(self):
   args=dict(tenant_id=self.tenant.pk,entry_date=timezone.localdate(),description='Manual fixture',lines_data=self.lines(),actor=self.user,period_id=self.period.pk,idempotency_key='manual-fixture')
@@ -129,12 +130,16 @@ class PostingTests(fixture['AccountingFoundation']):
   other.is_posted=True
   with self.assertRaises(PermissionError):other.save()
 
+ def post_reviewed_foreign(self,entry,rate='4000.000000'):
+  from apps.core_erp.accounting import reviewed_fx
+  day=entry.date.isoformat();terms={'base_currency':entry.currency,'target_currency':entry.base_currency,'rate':rate,'source_reference':'synthetic-posting-test','source_version':str(uuid.uuid4()),'observed_at':timezone.now().isoformat(),'valid_from':day,'valid_until':day,'evidence_digest':'a'*64}
+  review=reviewed_fx.review(self.tenant.pk,actor=self.user,entry_id=str(entry.pk),terms=terms,expected_revision=0,confirmed=True);reviewed_fx.confirm(self.tenant.pk,actor=self.user,entry_id=str(entry.pk),review_id=review['review_id'],confirmed=True);entry.refresh_from_db();return entry
  def foreign_original(self):
   usd,_=Currency.objects.get_or_create(code='USD',defaults={'name':'US dollar','symbol':'$'})
   cop,_=Currency.objects.get_or_create(code='COP',defaults={'name':'Colombian peso','symbol':'$'})
   rate=FXRateTable.objects.create(base_currency=usd,target_currency=cop,rate=Decimal('4000'),effective_from=timezone.now()-timedelta(microseconds=1),version=uuid.uuid4().int%1000000)
   entry=self.draft(currency='USD');LedgerEntry.plain_objects.filter(journal_entry=entry).update(currency='USD')
-  return self.post(entry),rate
+  return self.post_reviewed_foreign(entry),rate
  def test_z_foreign_reversal_keeps_original_rate_and_base_values(self):
   from apps.core_erp.accounting.reports_engine import ReportsEngine
   original,rate=self.foreign_original();before=original.system_hash

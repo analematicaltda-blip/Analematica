@@ -16,7 +16,7 @@
 **/*.db
 **/node_modules/
 **/staticfiles/
-BACKEND/SGA-CD-BACKEND/app/agents/Soup/
+BACKEND/ANALEMATICA-BACKEND/agents/Soup/
 BACKEND/SGA-CD-BACKEND/app/agents/Skill de videos/
 BACKEND/SGA-CD-BACKEND/app/agents/claude-email/
 BACKEND/SGA-CD-BACKEND/SGA-CD-WEB.git/
@@ -27,3 +27,6 @@ WALLET-BACKEND/**/build/
 WALLET-BACKEND/**/dist/
 WALLET-BACKEND/**/*.egg-info/
 WALLET-BACKEND/**/.runtime/
+
+BACKEND/ANALEMATICA-BACKEND/agents/OpenJarvis/
+BACKEND/ANALEMATICA-BACKEND/agents/N.E.K.O/

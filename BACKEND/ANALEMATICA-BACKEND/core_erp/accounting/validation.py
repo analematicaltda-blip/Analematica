@@ -35,6 +35,21 @@ def money(value):
 
 
 @exact_arithmetic
+def exchange_rate(value):
+    """Validate before ORM DecimalField conversion can round or hide a float."""
+    if isinstance(value,bool) or not isinstance(value,(str,int,Decimal)):
+        raise AccountingError('Use an exact decimal exchange rate, never float.')
+    try:
+        rate=Decimal(value)
+        if (not rate.is_finite() or rate<=0 or rate>Decimal('999999999999.999999')
+                or rate!=rate.quantize(Decimal('0.000001'))):
+            raise AccountingError('Rate must be positive, finite and fit six decimals exactly.')
+    except (InvalidOperation,ValueError,OverflowError):
+        raise AccountingError('Invalid exchange rate.') from None
+    return rate
+
+
+@exact_arithmetic
 def validate_lines(lines):
     if not isinstance(lines, (list, tuple)) or not 2 <= len(lines) <= 1000:
         raise UnbalancedEntryError('An entry requires 2 to 1000 explicit lines.')

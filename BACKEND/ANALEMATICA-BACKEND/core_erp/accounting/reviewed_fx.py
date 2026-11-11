@@ -2,7 +2,7 @@
 Rates are declared evidence, never labelled official or independently verified.
 """
 from datetime import date, datetime
-from decimal import Decimal, ROUND_HALF_UP, localcontext
+from decimal import Context, Decimal, ROUND_HALF_UP, localcontext
 import re
 from uuid import UUID, uuid5
 from django.db import transaction
@@ -29,7 +29,7 @@ def source(company,actor,entry_id):
     entry=JournalEntry.plain_objects.select_for_update().filter(pk=UUID(uid(entry_id)),tenant=company).first()
     if entry is None or entry.created_by_id!=actor.pk or entry.is_reversal or entry.currency not in {'USD','EUR'} or entry.base_currency!='COP' or company.currency!='COP':raise AccountingError('Own USD/EUR draft with COP base required.')
     from apps.core_erp.fx.models import Currency
-    if Currency.objects.filter(code__in=[entry.currency,'COP'],is_active=True).count()!=2:raise AccountingError('Active transaction and base currencies required.')
+    if len(list(Currency.objects.select_for_update().filter(code__in=[entry.currency,'COP'],is_active=True).order_by('pk')))!=2:raise AccountingError('Active transaction and base currencies required.')
     lines=list(LedgerEntry.plain_objects.select_for_update().filter(journal_entry=entry).select_related('account__chart_of_accounts').order_by('pk')[:101])
     if not 2<=len(lines)<=100:raise AccountingError('Between two and100 FX lines required.')
     from .ledger_engine import LedgerEngine
@@ -47,10 +47,12 @@ def quote(value,snapshot):
     for key in ('source_reference','source_version'):
         if not isinstance(value[key],str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}',value[key]):raise AccountingError('Bounded source reference/version required; no credentials.')
     if not isinstance(value['evidence_digest'],str) or not re.fullmatch('[0-9a-f]{64}',value['evidence_digest']):raise AccountingError('Source evidence digest required.')
-    start=date.fromisoformat(value['valid_from']);end=date.fromisoformat(value['valid_until']);day=date.fromisoformat(snapshot['date'])
+    if any(not isinstance(value[k],str) or len(value[k])!=10 for k in ['valid_from','valid_until']) or not isinstance(value['observed_at'],str) or len(value['observed_at'])>40:raise AccountingError('Canonical FX dates and bounded observed timestamp required.')
+    try:
+        start=date.fromisoformat(value['valid_from']);end=date.fromisoformat(value['valid_until']);day=date.fromisoformat(snapshot['date']);observed=datetime.fromisoformat(value['observed_at'])
+    except (ValueError,TypeError):raise AccountingError('Invalid FX dates or timestamp.') from None
     if start.isoformat()!=value['valid_from'] or end.isoformat()!=value['valid_until'] or not start<=day<=end or (end-start).days>366:raise AccountingError('Quote validity must cover the journal date within367 days.')
-    observed=datetime.fromisoformat(value['observed_at'])
-    if len(value['observed_at'])>40 or observed.tzinfo is None or observed>timezone.now():raise AccountingError('Explicit nonfuture observed timestamp required.')
+    if observed.tzinfo is None or observed>timezone.now():raise AccountingError('Explicit nonfuture observed timestamp required.')
     return dict(value)
 
 def quote_record(company,terms,create=False):
@@ -65,7 +67,7 @@ def quote_record(company,terms,create=False):
 
 def valuation(snapshot,terms):
     result=[];debit=credit=Decimal('0.00');rate=Decimal(terms['rate'])
-    with localcontext() as context:
+    with localcontext(Context(prec=50)) as context:
         context.prec=38
         for row in snapshot['lines']:
             left=money(row['debit']);right=money(row['credit']);amount=left or right

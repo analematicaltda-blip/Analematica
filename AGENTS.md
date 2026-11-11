@@ -120,3 +120,40 @@ evidencia necesaria; no saltar a otra tarea ni declarar100% local como cierre
 integral. Mantener alcance/criterios originales y separar implementado/probado,
 desarrollo pendiente y requisitos externos. La secuencia y su seguimiento viven
 en ANALISIS/contabilidad/CIERRE_20_HITOS.md; no crear otro plan narrativo.
+
+
+## Ejércitos propios de los ERP
+
+Directriz expresa del usuario: SGA-CD es referencia estructural, no dependencia
+operativa. Los ejércitos contables propios viven en
+`BACKEND/ANALEMATICA-BACKEND/gestion_contable/contabilidad/agent_army` y
+`BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/agent_army`.
+Comparten primitivas del ledger existente, conservando namespaces de misiones,
+configuración, estado mayor y APIs propios. No importar agentes/servicios de
+SGA-CD ni exigir que ese backend esté encendido.
+
+Jarvi es el General operativo; Neko es el General conversacional; SOUP es el
+General optimizador de procesos de los agentes. La cadena interna es Coronel,
+Capitán, Teniente, Sargento y Soldado. El agente de voz fluida es una función
+separada cuyo nombre/proveedor no fue identificado; no confundirlo con Neko.
+La transcripción no constituye una aprobación financiera.
+
+Turismo Nacional es institucional, no un ERP: no añadirle esta estructura
+contable ni habilitar acceso empresarial por jurisdicción o rol institucional.
+La integración inicial usa consultas/diagnósticos permitidos y auditoría; las
+acciones financieras conservan sus flujos de revisión, consentimientos y firmas.
+SOUP mide y propone: no entrenar/promover candidatos ni activar cambios sin
+validación. Los motores locales tienen configuración propia por backend,
+asignación explícita a administrador/empresa y están deshabilitados por defecto.
+
+## Liderazgo central de Analemática · directriz 2026-11-11
+
+El usuario autoriza una entrega consolidada y renombrar el repositorio GitHub a
+Analematica. Analemática es el sistema líder. Las fuentes completas OpenJarvis,
+N.E.K.O y Soup pertenecen a BACKEND/ANALEMATICA-BACKEND/agents, junto con los
+contratos canónicos y legacy_command_staff.py. SGA-CD conserva únicamente sus
+adaptadores de compatibilidad y sus divisiones propias. Los adaptadores ERP
+conservan su política empresarial, autenticación y namespaces; el núcleo común
+y el comportamiento de los generales pertenecen al backend de Analemática.
+La centralización de fuentes no habilita servicios ni comparte credenciales.
+No convertir Turismo Nacional en ERP. No cambiar porcentajes por este traslado.

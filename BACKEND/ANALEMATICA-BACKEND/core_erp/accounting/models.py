@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.conf import settings
 from decimal import Decimal
+from .state_query import StateManager,ScopedStateManager
 from apps.core_erp.base_models import (
     BaseErpModel, TenantAwareModel, LedgerAccount as BaseAccount,
     BaseJournalEntry, BaseJournalLine as BaseJournalLineBase,
@@ -23,6 +24,8 @@ class ChartOfAccounts(AccountingTenantModel):
         verbose_name = "Chart of Accounts"
 
 class Account(BaseAccount, AccountingTenantModel):
+    objects=ScopedStateManager()
+    plain_objects=StateManager()
     # BaseAccount has code, name, type, parent_account
     chart_of_accounts = models.ForeignKey(ChartOfAccounts, on_delete=models.CASCADE, related_name='accounts')
     initial_balance = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal("0.00"))
@@ -33,6 +36,33 @@ class Account(BaseAccount, AccountingTenantModel):
     consolidation_code = models.CharField(max_length=50, null=True, blank=True)
     is_consolidation_account = models.BooleanField(default=False)
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance=super().from_db(db,field_names,values)
+        loaded=dict(zip(field_names,values))
+        if 'is_active' in loaded:instance._loaded_active=loaded['is_active']
+        return instance
+
+    def refresh_from_db(self,*args,**kwargs):
+        super().refresh_from_db(*args,**kwargs)
+        if 'is_active' not in self.get_deferred_fields():self._loaded_active=self.is_active
+
+    @transaction.atomic
+    def save(self,*args,**kwargs):
+        from .state_lock import lock_state,reject_stale
+        stored=lock_state(self)
+        from .state_lock import protect_account_history
+        protect_account_history(self,stored,kwargs.get('update_fields',args[3] if len(args)>3 else None))
+        reject_stale(self,stored,'is_active','_loaded_active')
+        super().save(*args,**kwargs)
+        self._loaded_active=self.is_active
+
+    @transaction.atomic
+    def delete(self,*args,**kwargs):
+        from .state_lock import lock_state
+        lock_state(self)
+        return super().delete(*args,**kwargs)
+
     class Meta:
         app_label = 'core_erp'
         unique_together = ('chart_of_accounts', 'code')
@@ -41,11 +71,39 @@ class Account(BaseAccount, AccountingTenantModel):
         return f"{self.code} - {self.name}"
 
 class FiscalPeriod(BaseFinancialPeriod, AccountingTenantModel):
+    objects=ScopedStateManager()
+    plain_objects=StateManager()
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance=super().from_db(db,field_names,values)
+        loaded=dict(zip(field_names,values))
+        if 'status' in loaded:instance._loaded_period_status=loaded['status']
+        return instance
+
+    def refresh_from_db(self,*args,**kwargs):
+        super().refresh_from_db(*args,**kwargs)
+        if 'status' not in self.get_deferred_fields():self._loaded_period_status=self.status
+
+    @transaction.atomic
+    def save(self,*args,**kwargs):
+        from .state_lock import lock_state,reject_stale
+        stored=lock_state(self)
+        reject_stale(self,stored,'status','_loaded_period_status')
+        super().save(*args,**kwargs)
+        self._loaded_period_status=self.status
+
+    @transaction.atomic
+    def delete(self,*args,**kwargs):
+        from .state_lock import lock_state
+        lock_state(self)
+        return super().delete(*args,**kwargs)
+
     class Meta:
         app_label = 'core_erp'
         verbose_name = "Fiscal Period"
 
 class JournalEntry(BaseJournalEntry, AccountingTenantModel):
+    exchange_rate = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal("1.000000"))
     # BaseJournalEntry has date, reference, description, is_posted
     period = models.ForeignKey(FiscalPeriod, on_delete=models.PROTECT, related_name='entries')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
@@ -118,8 +176,9 @@ class JournalEntry(BaseJournalEntry, AccountingTenantModel):
 
     @transaction.atomic
     def save(self, *args, **kwargs):
-        from .validation import lock_company
+        from .validation import lock_company,exchange_rate
         from .exceptions import TenantMismatchError
+        self.exchange_rate=exchange_rate(self.exchange_rate)
         self._check_identity()
         lock_company(self.tenant_id)
         stored = JournalEntry.plain_objects.select_for_update().filter(pk=self.pk).first()

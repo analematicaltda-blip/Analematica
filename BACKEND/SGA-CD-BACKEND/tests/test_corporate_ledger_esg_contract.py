@@ -1,4 +1,5 @@
 import copy,hashlib,json,unittest,uuid
+from decimal import localcontext,Inexact,Rounded
 from app.services.esg_report_contract import validate,FLAGS
 class ESGContractChecks(unittest.TestCase):
  def setUp(self):
@@ -8,6 +9,19 @@ class ESGContractChecks(unittest.TestCase):
  def seal(self):self.data['report_digest']=hashlib.sha256(json.dumps({k:v for k,v in self.data.items() if k!='report_digest'},sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
  def check(self):self.seal();return validate(self.data,self.args,self.ctx)
  def test_valid_report(self):self.check()
+ def test_optional_operational_source_and_support(self):
+  self.row.update(source_reference=str(uuid.uuid4()),source_segment='OUTBOUND',activity_support_digest='c'*64);self.check()
+  del self.row['source_segment']
+  with self.assertRaises(ValueError):self.check()
+ def test_exact_under_hostile_decimal_context(self):
+  with localcontext() as ctx:
+   ctx.prec=2;ctx.traps[Inexact]=True;ctx.traps[Rounded]=True;self.check()
+ def test_unknown_activity_fields_not_exported(self):
+  self.row['plaintext_support']='private'
+  with self.assertRaises(ValueError):self.check()
+ def test_nested_framework_type_rejected(self):
+  self.args['mappings']={'direct_combustion':{'framework':[],'version':'2016','reference':'305-1','evidence_digest':'a'*64}}
+  with self.assertRaises(ValueError):self.check()
  def test_cannot_invent_certification_payment_or_liability(self):
   for key in FLAGS:
    self.data[key]=True

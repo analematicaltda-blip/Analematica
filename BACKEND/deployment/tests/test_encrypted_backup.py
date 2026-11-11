@@ -96,7 +96,7 @@ class EncryptedBackupTests(unittest.TestCase):
     def test_partial_write_is_removed_without_touching_source(self):
         before=self.source.read_bytes()
         with patch.object(backup.os,'fsync',side_effect=OSError('fixture disk failure')):
-            with self.assertRaises(OSError):self.seal()
+            with self.assertRaises(backup.BackupError):self.seal()
         self.assertFalse(self.archive.exists());self.assertEqual(self.source.read_bytes(),before)
     def test_snapshot_deadline_and_repository_destinations_rejected(self):
         with patch.object(backup.time,'monotonic',side_effect=[0,61]):
@@ -104,6 +104,68 @@ class EncryptedBackupTests(unittest.TestCase):
         self.assertFalse(self.archive.exists())
         with self.assertRaises(backup.BackupError):backup.keygen(backup.ROOT/'must-not-create-backup-key.key')
         self.assertFalse((backup.ROOT/'must-not-create-backup-key.key').exists())
+
+    def test_parent_symlinks_rejected_for_key_and_archive(self):
+        self.seal()
+        link=self.root/'linked';link.symlink_to(self.root,target_is_directory=True)
+        for operation in [lambda:backup.private_key(link/self.key.name),
+                          lambda:backup.verify(link/self.archive.name,self.key,'erp-tur')]:
+            with self.assertRaises(backup.BackupError):operation()
+
+    def test_fifo_is_rejected_without_blocking(self):
+        fifo=self.root/'pipe';os.mkfifo(fifo)
+        with self.assertRaises(backup.BackupError):backup.private_key(fifo)
+        with self.assertRaises(backup.BackupError):backup.verify(fifo,self.key,'erp-tur')
+
+    def test_leaf_swap_before_open_cannot_redirect_key_read(self):
+        original_open=os.open
+        target=self.root/'other.key';target.write_bytes(b'x'*32);target.chmod(0o600)
+        def swap(path,flags,*args,**kwargs):
+            if path==self.key.name:
+                self.key.unlink();self.key.symlink_to(target)
+            return original_open(path,flags,*args,**kwargs)
+        with patch.object(backup.os,'open',side_effect=swap):
+            with self.assertRaises(backup.BackupError):backup.private_key(self.key)
+
+    def test_parent_swap_does_not_redirect_write(self):
+        parent=self.root/'parent';parent.mkdir()
+        moved=self.root/'moved';outside=self.root/'outside';outside.mkdir()
+        original_open=os.open
+        def swap(path,flags,*args,**kwargs):
+            if flags & os.O_CREAT:
+                parent.rename(moved);parent.symlink_to(outside,target_is_directory=True)
+            return original_open(path,flags,*args,**kwargs)
+        with patch.object(backup.os,'open',side_effect=swap):
+            with self.assertRaises(backup.BackupError):backup.keygen(parent/'new.key')
+        self.assertFalse((outside/'new.key').exists())
+        self.assertFalse((moved/'new.key').exists())
+
+    def test_failure_cleanup_preserves_replacement_file(self):
+        def replace_then_fail(descriptor):
+            self.archive.unlink();self.archive.write_bytes(b'replacement')
+            raise OSError('fixture sync failure')
+        with patch.object(backup.os,'fsync',side_effect=replace_then_fail):
+            with self.assertRaises(backup.BackupError):self.seal()
+        self.assertEqual(self.archive.read_bytes(),b'replacement')
+
+    def test_authenticated_malformed_headers_rejected_before_restore(self):
+        self.seal()
+        payload,header,_=backup.decrypt(self.archive,self.key,'erp-tur')
+        import struct
+        invalid=[]
+        for key,value in [('bytes',True),('tables',True),('created_at','2026-11-11'),
+                          ('created_at','2026-11-11T01:00:00+01:00'),('sha256','x'*64),
+                          ('unknown',1)]:
+            altered=dict(header);altered[key]=value;invalid.append(backup.canonical(altered))
+        encoded=backup.canonical(header)
+        invalid.extend([encoded[:-1]+b',"tables":1}',
+                        encoded[:-1]+b',"unknown":NaN}'])
+        for encoded in invalid:
+            prefix=backup.MAGIC+struct.pack('>I',len(encoded))+encoded
+            nonce=os.urandom(12)
+            self.archive.write_bytes(prefix+nonce+backup.AESGCM(self.key.read_bytes()).encrypt(nonce,payload,prefix))
+            with self.assertRaises(backup.BackupError):backup.restore(self.archive,self.destination,self.key,'erp-tur')
+            self.assertFalse(self.destination.exists())
 
     def test_cli_does_not_print_secrets(self):
         self.seal();result=subprocess.run([sys.executable,str(Path(backup.__file__)),'verify','--key-file',str(self.key),'--archive',str(self.archive),'--service','erp-tur'],capture_output=True,text=True)

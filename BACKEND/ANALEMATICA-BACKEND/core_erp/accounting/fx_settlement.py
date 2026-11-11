@@ -3,7 +3,7 @@ No transfer, bank authentication, fee inference, or modification of original jou
 """
 from contextvars import ContextVar
 from datetime import date
-from decimal import Decimal,localcontext,ROUND_HALF_UP
+from decimal import Context, Decimal,localcontext,ROUND_HALF_UP
 from uuid import UUID,uuid5
 from django.db import transaction
 from apps.core_erp.outbox_models import OutboxEvent
@@ -47,7 +47,7 @@ def calculation(source,cash,quantity,terms,gain_id,loss_id):
     if not isinstance(quantity,str) or format(qty,'.2f')!=quantity:raise AccountingError('Canonical exact foreign quantity required.')
     foreign=Decimal(source['foreign_balance']);carrying=Decimal(source['carrying_cop'])
     if qty<=0 or not foreign or (foreign>0)!=(carrying>0) or qty>abs(foreign):raise AccountingError('Positive partial quantity not exceeding the signed monetary balance required.')
-    with localcontext() as ctx:
+    with localcontext(Context(prec=50)) as ctx:
         ctx.prec=38
         book=abs(carrying) if qty==abs(foreign) else (abs(carrying)*qty/abs(foreign)).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP)
         received=(qty*Decimal(terms['rate'])).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP)

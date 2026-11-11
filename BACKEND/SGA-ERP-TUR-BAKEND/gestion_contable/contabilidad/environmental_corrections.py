@@ -38,7 +38,7 @@ def _validate_assessment(company, original, assessment):
             activities=snapshot.get('activities'), factors=snapshot.get('factors')) != assessment:
         raise AccountingError('Correction no longer matches its explicit sources.')
     # Corrections may change values, not reclaim another activity or shift its date/unit.
-    identity = lambda value: sorted((a['id'], a['date'], a['unit']) for a in value['snapshot']['activities'])
+    identity = lambda value: sorted((a['id'], a['date'], a['unit'], a.get('source_reference'), a.get('source_segment')) for a in value['snapshot']['activities'])
     if identity(original) != identity(assessment):
         raise AccountingError('Activity identities, economic dates and units must be preserved.')
     if any(a['date'] > timezone.localdate().isoformat() for a in snapshot['activities']):

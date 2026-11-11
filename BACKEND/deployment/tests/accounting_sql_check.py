@@ -3,16 +3,16 @@ import copy,runpy,unittest,uuid
 from pathlib import Path
 fixture=runpy.run_path(str(Path(__file__).with_name('accounting_adapter_check.py')),run_name='sql_guard_fixture')
 from django.db import connection,transaction,DatabaseError
-from apps.core_erp.accounting import sql_guards
+from apps.core_erp.accounting import sql_guards,sql_guard_hardening,sql_identity_guards
 from apps.core_erp.accounting.models import JournalEntry,LedgerEntry
 from apps.core_erp.accounting.ratio_models import AccountingRatioPolicy
 from apps.core_erp.accounting.ledger_engine import LedgerEngine
 
 class SqlGuardTests(unittest.TestCase):
  def setUp(self):
-  self.case=fixture['AdapterTests']();self.case.setUp();sql_guards.install(connection)
+  self.case=fixture['AdapterTests']();self.case.setUp();sql_guards.install(connection);sql_guard_hardening.install(connection);sql_identity_guards.install(connection)
   self.entry=self.case.post();self.line=LedgerEntry.plain_objects.filter(journal_entry=self.entry).first()
- def tearDown(self):sql_guards.uninstall(connection)
+ def tearDown(self):sql_identity_guards.uninstall(connection);sql_guards.uninstall(connection)
  def rejected(self,action):
   with self.assertRaisesRegex(DatabaseError,'ACCOUNTING_'),transaction.atomic():action()
  def test_posted_header_cannot_be_changed_deleted_or_unposted(self):
@@ -82,6 +82,10 @@ class RuntimeProfileTests(unittest.TestCase):
   self.assertTrue(all(set(row['privileges'])<={'SELECT','INSERT','UPDATE'} for row in profile['tables']))
   locking=next(row for row in profile['tables'] if row['table']=='core_erp_tenant')
   self.assertEqual(locking['privileges'],['SELECT']);self.assertEqual(locking['update_columns'],['id'])
+  currency=next(row for row in profile['tables'] if row['table']=='core_erp_currency')
+  self.assertEqual(currency['privileges'],['SELECT']);self.assertEqual(currency['update_columns'],['id'])
+  chart=next(row for row in profile['tables'] if row['table']=='core_erp_chartofaccounts')
+  self.assertEqual(chart['privileges'],['SELECT']);self.assertEqual(chart['update_columns'],['id'])
 
 class ConstraintNormalizationTests(unittest.TestCase):
  def expression(self,casts):

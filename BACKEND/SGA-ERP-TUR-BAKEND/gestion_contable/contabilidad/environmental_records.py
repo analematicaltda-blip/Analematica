@@ -18,13 +18,17 @@ REVIEW='accounting.environmental.reviewed.v1'
 RECORDED='accounting.environmental.recorded.v1'
 ACTIVITY='accounting.environmental.activity-claimed.v1'
 FACTOR='accounting.environmental.factor-version.v1'
+SOURCE='accounting.environmental.source-segment.v1'
 
+
+def _metadata(row,kind,provider):
+    return row is not None and row.event_type==kind and row.domain=='accounting' and row.version==1 and row.aggregate_root==str(provider.pk)
 
 def _id(kind,company,key):return uuid5(NS,kind+':'+str(company.pk)+':'+key)
 def _write(identifier,kind,provider,payload):
     row=OutboxEvent.objects.using('default').filter(pk=identifier).first()
     if row:
-        if row.event_type!=kind or row.payload!=payload:raise AccountingError('Environmental identity already used by different evidence.')
+        if not _metadata(row,kind,provider) or row.payload!=payload:raise AccountingError('Environmental identity already used by different evidence.')
     else:row=OutboxEvent.objects.using('default').create(id=identifier,event_type=kind,domain='accounting',aggregate_root=str(provider.pk),payload=payload,version=1)
     return row
 
@@ -33,7 +37,7 @@ def _flags(company):return {'company_id':str(company.pk),'ledger_written':False,
 def _review(company,provider,review_id):
     row=OutboxEvent.objects.using('default').filter(pk=UUID(str(review_id)),event_type=REVIEW,payload__company_id=str(company.pk),payload__provider_id=str(provider.pk)).first()
     body=row.payload.get('review') if row and isinstance(row.payload,dict) else None
-    if not isinstance(body,dict) or set(body)!={'assessment','reviewed_by','evidence_digest'} or row.payload.get('review_digest')!=fingerprint(body) or row.pk!=_id('review',company,fingerprint(body)):raise AccountingError('Environmental review missing or inconsistent.')
+    if not _metadata(row,REVIEW,provider) or not isinstance(body,dict) or set(body)!={'assessment','reviewed_by','evidence_digest'} or row.payload.get('review_digest')!=fingerprint(body) or row.pk!=_id('review',company,fingerprint(body)):raise AccountingError('Environmental review missing or inconsistent.')
     assessment=body['assessment']
     if not isinstance(assessment,dict) or not isinstance(assessment.get('snapshot'),dict):raise AccountingError('Environmental assessment malformed.')
     snapshot=assessment['snapshot']
@@ -44,19 +48,42 @@ def _review(company,provider,review_id):
 def _claim_payload(company,provider,kind,key,content):
     return {'company_id':str(company.pk),'provider_id':str(provider.pk),'kind':kind,'key':key,'content':content,'content_digest':fingerprint(content)}
 
+def _source_key(activity):
+    return activity['source_reference']+':'+activity['source_segment'] if 'source_reference' in activity else None
+
+def _validate_sources(provider,activities):
+    from apps.prestadores.mi_negocio.gestion_operativa.models import OrdenOperativa
+    from zoneinfo import ZoneInfo
+    linked=[activity for activity in activities if _source_key(activity) is not None]
+    if not linked:return
+    identifiers={activity['source_reference'] for activity in linked}
+    # One scoped query and stable lock order for the whole bounded assessment.
+    orders={str(order.pk):order for order in OrdenOperativa.objects.select_for_update().filter(
+        pk__in=identifiers,provider_id=provider.pk,is_active=True).order_by('pk')}
+    if set(orders)!=identifiers:raise AccountingError('Own active operation required for environmental source.')
+    for activity in linked:
+        order=orders[activity['source_reference']]
+        start=order.fecha_inicio.astimezone(ZoneInfo('America/Bogota')).date().isoformat();end=order.fecha_fin_estimada.astimezone(ZoneInfo('America/Bogota')).date().isoformat()
+        if not start<=activity['date']<=end:raise AccountingError('Environmental source date outside declared operation window.')
+
+
 def _factor_key(factor):return factor['id']+':'+factor['version']
 
 def _verify_record(company,provider,record,review,body):
     payload=record.payload
     expected={'company_id':str(company.pk),'provider_id':str(provider.pk),'review_id':str(review.pk),'review_digest':fingerprint(body),'known_at':record.created_at.isoformat()}
-    if record.event_type!=RECORDED or record.pk!=_id('record',company,str(review.pk)) or payload!={**expected,'record_digest':fingerprint(expected)} or record.created_at<review.created_at:raise AccountingError('Environmental record evidence changed.')
+    if not _metadata(record,RECORDED,provider) or record.pk!=_id('record',company,str(review.pk)) or payload!={**expected,'record_digest':fingerprint(expected)} or record.created_at<review.created_at:raise AccountingError('Environmental record evidence changed.')
     assessment=body['assessment']
     for factor in assessment['snapshot']['factors']:
         key=_factor_key(factor);row=OutboxEvent.objects.using('default').filter(pk=_id('factor',company,key),event_type=FACTOR).first()
-        if row is None or row.payload!=_claim_payload(company,provider,'factor',key,factor):raise AccountingError('Environmental factor origin changed.')
+        if not _metadata(row,FACTOR,provider) or row.payload!=_claim_payload(company,provider,'factor',key,factor):raise AccountingError('Environmental factor origin changed.')
     for activity in assessment['snapshot']['activities']:
         key=activity['id'];content={'activity':activity,'observation_id':str(record.pk)};row=OutboxEvent.objects.using('default').filter(pk=_id('activity',company,key),event_type=ACTIVITY).first()
-        if row is None or row.payload!=_claim_payload(company,provider,'activity',key,content):raise AccountingError('Environmental activity claim changed.')
+        if not _metadata(row,ACTIVITY,provider) or row.payload!=_claim_payload(company,provider,'activity',key,content):raise AccountingError('Environmental activity claim changed.')
+        source=_source_key(activity)
+        if source is not None:
+            claim=OutboxEvent.objects.filter(pk=_id('source',company,source),event_type=SOURCE).first()
+            if not _metadata(claim,SOURCE,provider) or claim.payload!=_claim_payload(company,provider,'source',source,content):raise AccountingError('Environmental source segment claim changed.')
     return {'observation_id':str(record.pk),'known_at':record.created_at.isoformat(),'record_digest':payload['record_digest']}
 
 @transaction.atomic
@@ -65,6 +92,7 @@ def review_measurement(*,actor,provider_id,activities,factors,evidence_digest,co
     if confirmed is not True or not isinstance(evidence_digest,str) or not re.fullmatch('[0-9a-f]{64}',evidence_digest):raise AccountingError('First review and activity support digest required.')
     assessment=estimate(company_id=company.pk,activities=activities,factors=factors)
     if any(a['date']>timezone.localdate().isoformat() for a in assessment['snapshot']['activities']):raise AccountingError('Future activities may be estimated, not recorded as observed.')
+    _validate_sources(provider,assessment['snapshot']['activities'])
     body={'assessment':assessment,'reviewed_by':str(user.pk),'evidence_digest':evidence_digest};identifier=_id('review',company,fingerprint(body))
     payload={'company_id':str(company.pk),'provider_id':str(provider.pk),'review':body,'review_digest':fingerprint(body)}
     _write(identifier,REVIEW,provider,payload)
@@ -81,11 +109,14 @@ def record_measurement(*,actor,provider_id,review_id,confirmed):
         result=_verify_record(company,provider,existing,review,body)
         return {**_flags(company),**result,'review_id':str(review.pk),'replayed':True}
     assessment=body['assessment']
+    _validate_sources(provider,assessment['snapshot']['activities'])
     for factor in assessment['snapshot']['factors']:
         key=_factor_key(factor);_write(_id('factor',company,key),FACTOR,provider,_claim_payload(company,provider,'factor',key,factor))
     for activity in assessment['snapshot']['activities']:
         key=activity['id'];content={'activity':activity,'observation_id':str(identifier)}
         _write(_id('activity',company,key),ACTIVITY,provider,_claim_payload(company,provider,'activity',key,content))
+        source=_source_key(activity)
+        if source is not None:_write(_id('source',company,source),SOURCE,provider,_claim_payload(company,provider,'source',source,content))
     record=_write(identifier,RECORDED,provider,{'company_id':str(company.pk),'provider_id':str(provider.pk),'review_id':str(review.pk),'review_digest':fingerprint(body)})
     seal={**record.payload,'known_at':record.created_at.isoformat()};seal['record_digest']=fingerprint(seal)
     OutboxEvent.objects.using('default').filter(pk=record.pk).update(payload=seal);record.payload=seal

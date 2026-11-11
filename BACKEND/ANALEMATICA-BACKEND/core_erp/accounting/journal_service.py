@@ -3,7 +3,7 @@ from datetime import date
 from typing import List, Dict, Any
 from django.db import transaction
 from .models import JournalEntry, LedgerEntry, Account, FiscalPeriod
-from .validation import validate_lines, lock_company, current_actor, exact_arithmetic
+from .validation import validate_lines, lock_company, current_actor, exact_arithmetic, exchange_rate as validate_exchange_rate
 from .exceptions import AccountingError, TenantMismatchError, InactiveAccountError
 
 logger = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ class JournalService:
         """
         Creates a new journal entry with multiple lines.
         """
+        exchange_rate=validate_exchange_rate(exchange_rate)
         lock_company(tenant_id)
         normalized = validate_lines(lines_data)
         if created_by is not None: created_by=current_actor(created_by)

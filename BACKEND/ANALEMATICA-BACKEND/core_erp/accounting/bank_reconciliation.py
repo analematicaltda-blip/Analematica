@@ -137,6 +137,8 @@ def review_reconciliation(company_id,*,actor,account_id,csv_text,evidence_digest
     company,user=_context(company_id,actor)
     if confirmed is not True or type(expected_revision) is not int or expected_revision<0:raise AccountingError('First explicit review and revision required.')
     digest(evidence_digest);comparison=compare_statement(company.pk,account_id=account_id,csv_text=csv_text)
+    from .bank_statement import require_booked
+    require_booked(comparison)
     if not 1<=len(comparison['rows'])<=30 or resolutions is None and any(row['status']!='UNIQUE_CANDIDATE' for row in comparison['rows']):raise AccountingError('This reviewed batch requires1 to30 unique matched rows; resolve unmatched/ambiguous rows separately.')
     account,policy=cash_account(company,account_id);identifier=statement_id(company.pk,account.pk,comparison['source_digest'])
     old=_latest(company,identifier);previous=_review(old,company)['revision'] if old else 0

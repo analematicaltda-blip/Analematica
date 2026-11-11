@@ -10,6 +10,7 @@ from .validation import lock_company
 from .exceptions import AccountingError
 from .reports_engine import ReportsEngine
 from .tax_register_snapshot import load as load_snapshot
+from .tax_explanation import references as policy_references
 
 @transaction.atomic
 def reconcile_tax_register(company_id,*,account_id,since,until):
@@ -26,6 +27,7 @@ def reconcile_tax_register(company_id,*,account_id,since,until):
     if len(groups)>250:raise AccountingError('Narrow the interval; at most250 journals are supported.')
     heads,all_lines,commercial_bodies,reservations=load_snapshot(company,groups)
     result=[];debit=credit=attributed=Decimal('0.00');totals={k:Decimal('0.00') for k in ['INPUT_TAX','OUTPUT_TAX','WITHHOLDING']};unattributed_groups=0
+    policy_cache={};reference_count=0
     factor=Decimal(1) if account.type=='ASSET' else Decimal(-1)
     with localcontext() as context:
         context.prec=38
@@ -60,6 +62,9 @@ def reconcile_tax_register(company_id,*,account_id,since,until):
             if unattributed or classification=='UNATTRIBUTED_REQUIRES_REVIEW':unattributed_groups+=1
             attributed+=covered
             for kind,value in tax.items():totals[kind]+=value
-            result.append({'journal_id':str(journal.pk),'date':journal.date.isoformat(),'journal_hash':journal.system_hash,'is_reversal':journal.is_reversal,'debit':format(left,'.2f'),'credit':format(right,'.2f'),'normal_movement':format(normal,'.2f'),'tax_by_kind':{k:format(v,'.2f') for k,v in tax.items()},'unattributed_normal_movement':format(unattributed,'.2f'),'classification':classification,'document_id':document,'reservation_id':reservation})
+            refs=policy_references(company,body,policy_cache) if body else []
+            reference_count+=len(refs)
+            if reference_count>500:raise AccountingError('Narrow the interval; at most500 policy references are supported, never truncated.')
+            result.append({'journal_id':str(journal.pk),'date':journal.date.isoformat(),'journal_hash':journal.system_hash,'is_reversal':journal.is_reversal,'debit':format(left,'.2f'),'credit':format(right,'.2f'),'normal_movement':format(normal,'.2f'),'tax_by_kind':{k:format(v,'.2f') for k,v in tax.items()},'unattributed_normal_movement':format(unattributed,'.2f'),'classification':classification,'document_id':document,'reservation_id':reservation,'policy_references':refs,'policy_coverage':'ORIGINAL_VERSION_REFERENCED' if body and ('fact' in body or 'tax_source' in body) else 'NOT_CAPTURED_IN_SOURCE'})
         normal=(debit-credit)*factor
-        return {'schema':'sgacd-tax-register-v2','company_id':str(company.pk),'tenant_id':str(company.pk),'account_id':str(account.pk),'account_code':account.code,'account_type':account.type,'normal_side':'DEBIT' if account.type=='ASSET' else 'CREDIT','since':since,'until':until,'currency':'COP','read_only':True,'posted_only':True,'valuation':'base_currency','debit':format(debit,'.2f'),'credit':format(credit,'.2f'),'normal_movement':format(normal,'.2f'),'attributed_normal_movement':format(attributed,'.2f'),'tax_by_kind':{k:format(v,'.2f') for k,v in totals.items()},'unattributed_normal_movement':format(normal-attributed,'.2f'),'unattributed_journals':unattributed_groups,'lines':result,'ledger_written':False,'dian_compared':False,'fiscal_accepted':False,'regulatory_verified':False,'scope':'SELECTED_ACCOUNT_MOVEMENTS_NOT_A_TAX_RETURN'}
+        return {'schema':'sgacd-tax-register-v3','company_id':str(company.pk),'tenant_id':str(company.pk),'account_id':str(account.pk),'account_code':account.code,'account_type':account.type,'normal_side':'DEBIT' if account.type=='ASSET' else 'CREDIT','since':since,'until':until,'currency':'COP','read_only':True,'posted_only':True,'valuation':'base_currency','debit':format(debit,'.2f'),'credit':format(credit,'.2f'),'normal_movement':format(normal,'.2f'),'attributed_normal_movement':format(attributed,'.2f'),'tax_by_kind':{k:format(v,'.2f') for k,v in totals.items()},'unattributed_normal_movement':format(normal-attributed,'.2f'),'unattributed_journals':unattributed_groups,'lines':result,'ledger_written':False,'dian_compared':False,'fiscal_accepted':False,'regulatory_verified':False,'scope':'SELECTED_ACCOUNT_MOVEMENTS_NOT_A_TAX_RETURN'}

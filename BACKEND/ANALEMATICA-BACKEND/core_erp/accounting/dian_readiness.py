@@ -1,7 +1,8 @@
 """Fail-closed DIAN boundary and public, company-scoped readiness diagnosis.
 A hash is never a signature; local configuration is never fiscal acceptance.
 """
-from datetime import date
+from datetime import date,datetime
+from zoneinfo import ZoneInfo
 import re
 from uuid import UUID
 from .exceptions import AccountingError
@@ -13,7 +14,7 @@ def block_unverified_submission(*args,**kwargs):
     raise DianIntegrationUnavailable('DIAN no integrada: faltan firma XAdES verificada, custodia del cliente, transporte habilitado y validación auténtica del acuse. No se envió ni aceptó el documento.')
 
 def inspect_readiness(company_id,profile=None,*,today=None):
-    company=str(UUID(str(company_id)));today=today or date.today();issues=[]
+    company=str(UUID(str(company_id)));today=today if today is not None else datetime.now(ZoneInfo('America/Bogota')).date();issues=[]
     expected={'company_id','supplier_nit','resolution_number','prefix','range_start','range_end','next_number','valid_from','valid_until','environment','software_id','test_set_id'}
     profile_ok=isinstance(profile,dict) and set(profile)==expected and profile.get('company_id')==company
     if not profile_ok:issues.append('PUBLIC_PROFILE_MISSING_OR_INCOMPATIBLE')
@@ -25,6 +26,7 @@ def inspect_readiness(company_id,profile=None,*,today=None):
         if not all(type(v) is int and 0<v<=999999999999 for v in values) or not values[0]<=values[2]<=values[1]:issues.append('RESOLUTION_RANGE_EXHAUSTED_OR_INVALID')
         try:
             begin=date.fromisoformat(profile['valid_from']);end=date.fromisoformat(profile['valid_until'])
+            if begin.isoformat()!=profile['valid_from'] or end.isoformat()!=profile['valid_until']:raise ValueError('Canonical dates required.')
             if not begin<=today<=end:issues.append('RESOLUTION_NOT_CURRENT')
         except (TypeError,ValueError):issues.append('RESOLUTION_DATES_INVALID')
         try:UUID(profile['software_id'])

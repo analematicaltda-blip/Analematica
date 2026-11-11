@@ -25,6 +25,8 @@ from apps.wallet.services.android_attestation import AndroidAttestationPolicy,An
 for model in [CustomUser,WalletDeviceChallenge,WalletLimiteOperativo,WalletMovimiento,WalletTransferIntent]:fixture['create'](model)
 # Real audit table and in-memory channel layer make slow-request coverage deterministic.
 from apps.core_erp.models import EventAuditLog
+from apps.core_erp.outbox_models import OutboxEvent
+fixture['create'](OutboxEvent)
 from django.conf import settings
 fixture['create'](EventAuditLog)
 settings.CHANNEL_LAYERS={'default':{'BACKEND':'channels.layers.InMemoryChannelLayer'}}
@@ -226,8 +228,12 @@ class AttestationChecks(unittest.TestCase):
    challenge,message=devices.issue(self.owner,intent.pk,device.pk,phase)
    return {'challenge':challenge.pk,'signature':base64.b64encode(self.key.sign(message,ec.ECDSA(hashes.SHA256()))).decode()},challenge
   intent=transfers.prepare(self.owner,source.pk,target.pk,'5',uuid.uuid4());signed,_=proof(intent,'REVIEW');intent,token=transfers.review(self.owner,intent.pk,intent.digest,signed)
-  signed,_=proof(intent,'EXECUTE');self.assertEqual(transfers.execute(self.owner,intent.pk,intent.digest,token,signed).state,'EXECUTED')
-  intent=transfers.prepare(self.owner,source.pk,target.pk,'10',uuid.uuid4());signed,_=proof(intent,'REVIEW');intent,token=transfers.review(self.owner,intent.pk,intent.digest,signed)
+  signed,challenge=proof(intent,'EXECUTE')
+  with self.assertRaises(transfers.TransferConflict):transfers.execute(self.owner,intent.pk,intent.digest,token,signed)
+  challenge.refresh_from_db();self.assertIsNone(challenge.consumed_at)
+  transfers.consent(other,intent.pk,intent.digest,True)
+  self.assertEqual(transfers.execute(self.owner,intent.pk,intent.digest,token,signed).state,'EXECUTED')
+  intent=transfers.prepare(self.owner,source.pk,target.pk,'10',uuid.uuid4());transfers.consent(other,intent.pk,intent.digest,True);signed,_=proof(intent,'REVIEW');intent,token=transfers.review(self.owner,intent.pk,intent.digest,signed)
   signed,challenge=proof(intent,'EXECUTE');self.snapshot=replace(self.snapshot,revoked_serials=frozenset({leaf.serial_number}))
   with self.assertRaises(APIException):transfers.execute(self.owner,intent.pk,intent.digest,token,signed)
   source.refresh_from_db();target.refresh_from_db();challenge.refresh_from_db()

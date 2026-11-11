@@ -36,6 +36,39 @@ class ACC001Acceptance(unittest.TestCase):
   for amount in ['0.001',10.0,'NaN']:
    with self.assertRaises(AccountingError):JournalService.create_entry(str(self.c.tenant.pk),timezone.localdate(),'Invalid transaction amount',[{'account':self.c.a,'debit':'10.00','amount_transaction':amount},{'account':self.c.b,'credit':'10.00'}],created_by=self.c.user)
    self.assertEqual(self.counts(),before)
+ def test_draft_exchange_rate_never_accepts_float_or_silent_precision_loss(self):
+  before=self.counts()
+  for rate in [1.0,True,'NaN','Infinity','0','-1','1.0000001','1000000000000']:
+   with self.subTest(rate=repr(rate)),self.assertRaises(AccountingError):
+    JournalService.create_entry(str(self.c.tenant.pk),timezone.localdate(),'Invalid header rate',self.c.lines(),created_by=self.c.user,exchange_rate=rate)
+   self.assertEqual(self.counts(),before)
+ def test_direct_header_save_rejects_float_and_default_is_exact(self):
+  entry=self.c.draft();entry.exchange_rate=1.0
+  with self.assertRaises(AccountingError):entry.save()
+  self.assertEqual(JournalEntry().exchange_rate,Decimal('1.000000'))
+  self.assertIsInstance(JournalEntry().exchange_rate,Decimal)
+ def test_report_margin_does_not_inherit_process_traps_or_rounding(self):
+  from apps.core_erp.accounting.reports_engine import ReportsEngine
+  self.c.b.type='REVENUE';self.c.b.save()
+  expense=Account.plain_objects.create(tenant=self.c.tenant,chart_of_accounts=self.c.chart,code='EXP-TEST',name='Synthetic expense',type='EXPENSE')
+  self.c.post(JournalService.create_entry(str(self.c.tenant.pk),timezone.localdate(),'Three of revenue',[{'account':self.c.a,'debit':'3.00'},{'account':self.c.b,'credit':'3.00'}],created_by=self.c.user))
+  self.c.post(JournalService.create_entry(str(self.c.tenant.pk),timezone.localdate(),'One of expense',[{'account':expense,'debit':'1.00'},{'account':self.c.a,'credit':'1.00'}],created_by=self.c.user))
+  with localcontext() as ctx:
+   ctx.prec=3;ctx.rounding=ROUND_DOWN;ctx.traps[Inexact]=True
+   result=ReportsEngine.get_profitability(self.c.tenant.pk,timezone.localdate(),timezone.localdate())
+  self.assertEqual(result['net_margin']['value'],'66.6667')
+ def test_rate_default_migration_has_no_database_rewrite(self):
+  from django.db import connection,models
+  from django.db.migrations.state import ProjectState,ModelState
+  from django.test.utils import CaptureQueriesContext
+  state=ProjectState();state.add_model(ModelState('core_erp','JournalEntry',[('id',models.AutoField(primary_key=True)),('exchange_rate',models.DecimalField(max_digits=18,decimal_places=6,default=1.0))]))
+  root=Path(__file__).resolve().parents[3]
+  for relative in ['BACKEND/ANALEMATICA-BACKEND/core_erp/migrations/0007_accounting_exact_rate_default.py','BACKEND/deployment/fresh_migrations/core_erp/0007_accounting_exact_rate_default.py']:
+   operation=runpy.run_path(str(root/relative))['Migration'].operations[0];after=state.clone();operation.state_forwards('core_erp',after)
+   self.assertIsInstance(after.models['core_erp','journalentry'].fields['exchange_rate'].default,Decimal)
+   with connection.schema_editor(atomic=False) as editor:
+    with CaptureQueriesContext(connection) as queries:operation.database_forwards('core_erp',editor,state,after);operation.database_backwards('core_erp',editor,after,state)
+   self.assertEqual(len(queries),0)
  def test_period_created_after_draft_blocks_posting_without_writes(self):
   entry=self.c.draft();before=self.counts();other=FiscalPeriod.plain_objects.create(tenant=self.c.tenant,period_start=self.c.period.period_start,period_end=self.c.period.period_end,status='open')
   with self.assertRaises(AccountingError):self.c.post(entry)

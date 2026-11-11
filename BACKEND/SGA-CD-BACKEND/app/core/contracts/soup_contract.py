@@ -1,34 +1,18 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Dict, Any, List, Optional
-from enum import Enum
-import uuid
-from datetime import datetime, timezone
-
-class OptimizationDomain(str, Enum):
-    TOOL_CALLING_ACCURACY = "TOOL_CALLING_ACCURACY"
-    LATENCY_REDUCTION = "LATENCY_REDUCTION"
-    HALLUCINATION_ELIMINATION = "HALLUCINATION_ELIMINATION"
-    SCHEMA_COMPLIANCE = "SCHEMA_COMPLIANCE"
-
-class PromotionReadinessLevel(str, Enum):
-    CANDIDATE_TRAINED = "CANDIDATE_TRAINED"
-    BENCHMARK_PASSED = "BENCHMARK_PASSED"
-    REGRESSION_TEST_CLEARED = "REGRESSION_TEST_CLEARED"
-    REQUIRES_ARCHITECT_APPROVAL = "REQUIRES_ARCHITECT_APPROVAL"
-
-class ModelCandidatePromotionContract(BaseModel):
-    """CONTRATO DE ENTREGA DE SOUP HACIA JARVI Y EL ROUTER"""
-    model_config = ConfigDict(frozen=True)
-
-    proposal_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    target_military_rank: str = Field(...)
-    base_model_id: str = Field(...)
-    adapter_artifact_uri: str = Field(...)
-    optimization_domain: OptimizationDomain = Field(...)
-    dataset_training_samples: int = Field(...)
-    prior_accuracy_percentage: float = Field(...)
-    candidate_accuracy_percentage: float = Field(...)
-    backend_72_tests_passed: bool = Field(default=True)
-    readiness_level: PromotionReadinessLevel = Field(default=PromotionReadinessLevel.REQUIRES_ARCHITECT_APPROVAL)
-    activation_command: str = Field(...)
+"""Compatibility export from the Analemática canonical contract."""
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
+import sys
+_name = "analematica_soup_contract"
+if _name not in sys.modules:
+    _source = Path(__file__).resolve().parents[4] / "ANALEMATICA-BACKEND" / "agents" / "contracts" / "soup_contract.py"
+    _spec = spec_from_file_location(_name, _source)
+    _module = module_from_spec(_spec)
+    sys.modules[_name] = _module
+    try:
+        _spec.loader.exec_module(_module)
+    except BaseException:
+        sys.modules.pop(_name, None)
+        raise
+else:
+    _module = sys.modules[_name]
+globals().update({key: value for key, value in vars(_module).items() if not key.startswith("_")})

@@ -14,6 +14,8 @@ class Lead(models.Model):
     phone = models.CharField(max_length=50, blank=True)
     source = models.CharField(max_length=100, default='organic')
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.NEW)
+    industry = models.CharField(max_length=100,blank=True,default='')
+    company_size = models.CharField(max_length=30,blank=True,default='')
     score = models.IntegerField(default=0)
     estimated_value = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -99,6 +101,8 @@ class AddOn(models.Model):
 class Opportunity(models.Model):
     class Stage(models.TextChoices):
         PROSPECTING = 'prospecting', 'Prospecting'
+        PROPOSAL = 'proposal', 'Proposal'
+        NEGOTIATION = 'negotiation', 'Negotiation'
         WON = 'won', 'Won'
         LOST = 'lost', 'Lost'
 
@@ -106,6 +110,8 @@ class Opportunity(models.Model):
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='opportunities')
     stage = models.CharField(max_length=20, choices=Stage.choices, default=Stage.PROSPECTING)
     estimated_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    expected_plan = models.CharField(max_length=100,blank=True,default='')
+    probability = models.PositiveSmallIntegerField(null=True,blank=True)
 
     class Meta:
         app_label = 'comercial'

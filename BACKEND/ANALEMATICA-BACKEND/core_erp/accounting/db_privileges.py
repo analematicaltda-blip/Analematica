@@ -1,4 +1,4 @@
-"""Read-only PostgreSQL role-boundary audit for the three guarded accounting tables.
+"""Read-only PostgreSQL role-boundary audit for guarded accounting tables and account identity.
 
 Not a complete database/application authorization audit. Membership is evaluated
 conservatively, including roles reachable from both current_user and session_user.
@@ -28,9 +28,9 @@ def inspect_privileges(connection):
         if temp:issues.add('accounting_db_temporary_objects')
         cursor.execute('''SELECT c.oid,c.relname,c.relowner,n.oid,n.nspowner
             FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
-            WHERE c.oid IN (pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s))''',list(TABLES.values()))
+            WHERE c.oid IN (pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s))''',list(TABLES.values())+['core_erp_account'])
         objects=cursor.fetchall()
-        if len(objects)!=3:issues.add('accounting_db_guarded_objects_missing')
+        if len(objects)!=4:issues.add('accounting_db_guarded_objects_missing')
         schemas=set()
         for oid,name,owner,schema,schema_owner in objects:
             schemas.add(schema)
@@ -38,11 +38,12 @@ def inspect_privileges(connection):
             if schema_owner in role_ids:issues.add('accounting_db_schema_owner')
             cursor.execute("SELECT bool_or(pg_catalog.has_schema_privilege(oid,%s,'CREATE')) FROM pg_catalog.pg_roles WHERE oid=ANY(%s)",[schema,role_ids])
             if cursor.fetchone()[0]:issues.add('accounting_db_schema_create')
-            required=['SELECT','INSERT']+(['UPDATE'] if name!=TABLES['policy'] else [])
+            required=['SELECT'] if name=='core_erp_account' else ['SELECT','INSERT']+(['UPDATE'] if name!=TABLES['policy'] else [])
             for privilege in required:
                 cursor.execute('SELECT pg_catalog.has_table_privilege(current_user,%s,%s)',[oid,privilege])
                 if not cursor.fetchone()[0]:issues.add('accounting_db_required_dml_missing')
             forbidden='DELETE,TRUNCATE,TRIGGER'+(',UPDATE' if name==TABLES['policy'] else '')
+            if name=='core_erp_account':forbidden+=',INSERT,UPDATE'
             cursor.execute('SELECT bool_or(pg_catalog.has_table_privilege(oid,%s,%s)) FROM pg_catalog.pg_roles WHERE oid=ANY(%s)',[oid,forbidden,role_ids])
             if cursor.fetchone()[0]:issues.add('accounting_db_excessive_table_privilege')
         if schemas:

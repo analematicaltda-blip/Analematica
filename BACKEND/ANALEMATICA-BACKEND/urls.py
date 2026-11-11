@@ -1,4 +1,5 @@
 from django.urls import path, include
+import os
 from rest_framework.routers import DefaultRouter
 from .views import SaritaProfileView, PlanViewSet, SuscripcionViewSet, MetaStandardView, SupervisionDianViewSet
 from .superadmin import SuperAdminSystemAuditViewSet
@@ -43,3 +44,7 @@ urlpatterns = [
 
     path('', include(router.urls)),
 ]
+
+# A native Analemática army is never exposed by the institutional Tourism process.
+if os.environ.get('BACKEND_SERVICE','analematica')=='analematica':
+    urlpatterns += [path('accounting-army/',include('apps.admin_plataforma.gestion_contable.contabilidad.agent_army.urls'))]

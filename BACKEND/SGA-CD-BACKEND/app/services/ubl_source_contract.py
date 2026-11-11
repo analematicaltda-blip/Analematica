@@ -6,6 +6,10 @@ from uuid import UUID
 
 
 def validate(data, company_id, parameters):
+    if not isinstance(parameters,dict) or set(parameters) not in ({'reservation_id','review_id'},{'opportunity_id','review_id'}):raise ValueError('Exact source reference required.')
+    source_key='opportunity_id' if 'opportunity_id' in parameters else 'reservation_id'
+    source_type='crm_opportunity' if source_key=='opportunity_id' else 'reservation'
+    source_state='WON' if source_key=='opportunity_id' else 'CONFIRMED'
     fields = {'schema','company_id','review_id','source_fingerprint','intent_digest','snapshot',
               'read_only','ledger_written','fiscal_accepted','legal_tax_policy_verified','identity_independently_verified'}
     if not isinstance(data, dict) or set(data) != fields or data['schema'] != 'sgacd-reviewed-ubl-source-v1':
@@ -21,7 +25,7 @@ def validate(data, company_id, parameters):
     source=data['snapshot']
     if not isinstance(source,dict) or set(source)!={'schema','company_id','source_type','source_id','revision','state','currency','items','totals'}:
         raise ValueError('Invalid snapshot.')
-    if source['schema']!='sgacd-invoice-intent-v1' or source['company_id']!=company_id or source['source_type']!='reservation' or source['source_id']!=parameters['reservation_id'] or source['state']!='CONFIRMED' or source['currency']!='COP' or type(source['revision']) is not int or not 1<=source['revision']<=2147483647:
+    if source['schema']!='sgacd-invoice-intent-v1' or source['company_id']!=company_id or source['source_type']!=source_type or source['source_id']!=parameters[source_key] or source['state']!=source_state or source['currency']!='COP' or type(source['revision']) is not int or not 1<=source['revision']<=2147483647:
         raise ValueError('Unsupported snapshot context.')
     if str(UUID(source['source_id']))!=source['source_id']: raise ValueError('Canonical source required.')
     items=source['items']; seen=set(); net=tax=0

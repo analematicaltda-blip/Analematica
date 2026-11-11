@@ -127,6 +127,16 @@ def resolve_refs(provider,entry):
     from django.db import connection
     from .worker_data_guards import require
     require(connection)
+    # Validate before UUID conversion/set construction: malformed nested JSON is
+    # a rejected request, never an unhandled exception or implicit reference.
+    ids=entry['ppe_assignment_ids']
+    if (not isinstance(ids,list) or len(ids)>20 or
+        any(not isinstance(value,str) for value in ids) or len(set(ids))!=len(ids)):
+        raise ValidationError('Referencias EPP canónicas únicas requeridas.')
+    try:
+        values=[entry['employee_id'],entry['fitness_authorization_id'],entry['rest_period_id'],*ids]
+        if any(not isinstance(value,str) or str(UUID(value))!=value for value in values):raise ValueError()
+    except (ValueError,TypeError,AttributeError):raise ValidationError('Referencias canónicas de seguridad requeridas.') from None
     worker=employee(provider,entry['employee_id'],True);terms=policy(provider)
     fitness=ProfessionalAuthorization.objects.filter(pk=UUID(str(entry['fitness_authorization_id'])),provider=provider,employee=worker).first()
     latest=ProfessionalAuthorization.objects.filter(provider=provider,employee=worker).order_by('-revision').first()

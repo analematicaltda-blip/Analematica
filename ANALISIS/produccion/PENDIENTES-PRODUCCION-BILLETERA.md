@@ -12,7 +12,7 @@ Estado: **PENDIENTE** · Área: Android · Responsable: Seguridad
 
 Aprobar raíces oficiales, paquete, firmantes y parches; verificar cadena y rechazos en dispositivos reales.
 
-Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio.
+Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio. Auditoría ACC-001–024: fixture de cancelaciones/consentimiento actualizada y28 pruebas criptográficas sintéticas; no acreditan dispositivo, raíces ni feed reales. Registro: ANALISIS/contabilidad/CIERRE_20_HITOS.md.
 
 ## WAL-002 · Ingesta autenticada y disponible del feed
 
@@ -20,7 +20,7 @@ Estado: **PENDIENTE** · Área: Revocación · Responsable: Seguridad
 
 Probar actualización atómica, frescura, revocación y caída del feed sin aceptar datos inventados.
 
-Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio.
+Evidencia: No acreditado en producción; consultar cortes de pruebas del repositorio. Auditoría ACC-001–024: fixture de cancelaciones/consentimiento actualizada y28 pruebas criptográficas sintéticas; no acreditan dispositivo, raíces ni feed reales. Registro: ANALISIS/contabilidad/CIERRE_20_HITOS.md.
 
 ## WAL-003 · Alta y recuperación independientes reales
 

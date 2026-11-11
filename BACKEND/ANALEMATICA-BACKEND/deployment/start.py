@@ -1,8 +1,8 @@
 """Node 7 corporate gateway. Copy only public assets; reuse the existing SGA database."""
-import argparse,json,os,shutil,subprocess,sys
+import argparse,json,os,shutil,subprocess,sys,importlib.util
 from datetime import datetime,timezone
 from pathlib import Path
-PUBLIC=['platform.html','js/platform.js','resources.html','js/resources.js','control.html','js/control.js','content.html','js/content.js','css/content.css','assistance.html','js/assistance.js','css/assistance.css','js/instagram.js','config/meta-public.json','js/meta-setup.js','js/meta-ads.js','css/meta-ads.css','login.html','css/console.css','js/login.js','index.html','admin.html','assets/analema-logo.svg','css/style.css','css/admin.css','js/main.js','js/admin.js','js/connection.js','js/accounting-ledger.js','js/accounting-remediation.js','agents/analematica_army.js']
+PUBLIC=['platform.html','js/platform.js','resources.html','js/resources.js','control.html','js/control.js','content.html','js/content.js','css/content.css','assistance.html','js/assistance.js','css/assistance.css','js/instagram.js','config/meta-public.json','js/meta-setup.js','js/meta-ads.js','css/meta-ads.css','login.html','css/console.css','js/login.js','index.html','admin.html','assets/analema-logo.svg','css/style.css','css/admin.css','js/main.js','js/admin.js','js/connection.js','js/accounting-ledger.js','js/accounting-remediation.js','js/accounting-offline.js','agents/analematica_army.js']
 def prepare(demo,port,repo):
     demo=demo.resolve();path=demo/'compose.json'
     if not 1024<=port<=65535:raise ValueError('Puerto no válido.')
@@ -15,6 +15,8 @@ def prepare(demo,port,repo):
         source=repo/'FRONTEND/ANALEMATICA-FRONTEND'/name
         if source.is_symlink() or not source.is_file():raise ValueError('Archivo público ausente o no permitido: '+name)
         target=site/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target);target.chmod(0o644)
+    spec=importlib.util.spec_from_file_location('offline_capture_assets',repo/'FRONTEND/deployment/accounting_offline_assets.py')
+    offline=importlib.util.module_from_spec(spec);spec.loader.exec_module(offline);offline.install_assets(site/'contabilidad-offline')
     for directory in [site,*[p for p in site.rglob('*') if p.is_dir()]]:directory.chmod(0o755)
     nginx=release/'nginx.conf';shutil.copy2(repo/'BACKEND/ANALEMATICA-BACKEND/deployment/nginx.conf',nginx)
     backup=release/'compose.before.json';shutil.copy2(path,backup);backup.chmod(0o600)

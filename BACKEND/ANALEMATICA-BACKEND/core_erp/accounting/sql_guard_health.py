@@ -1,4 +1,4 @@
-"""Read-only structural guard checks, not forensic attestation of function bodies."""
+"""Read-only installed guard/body checks; not independent release attestation."""
 from .sql_guards import TABLES
 
 
@@ -20,10 +20,11 @@ def inspect_guards(connection):
             for kind,function,events in [('journal','core_accounting_header_guard_v1',31),('line','core_accounting_line_guard_v1',31),('policy','core_accounting_deny_v1',27)]:
                 expected[(TABLES[kind],'accounting_row_guard_v1')]=(function,events)
                 expected[(TABLES[kind],'accounting_truncate_guard_v1')]=('core_accounting_deny_v1',34)
+            expected[('core_erp_account','accounting_account_identity_v1')]=('core_accounting_account_identity_guard_v1',27)
             cursor.execute('''SELECT c.relname,t.tgname,t.tgenabled,t.tgtype,p.proname,t.tgnargs,t.tgqual IS NULL,t.tgattr::text='',p.pronamespace=c.relnamespace
                 FROM pg_catalog.pg_trigger t JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid
                 JOIN pg_catalog.pg_proc p ON p.oid=t.tgfoid
-                WHERE NOT t.tgisinternal AND t.tgrelid IN (pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s))''',list(TABLES.values()))
+                WHERE NOT t.tgisinternal AND t.tgrelid IN (pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s),pg_catalog.to_regclass(%s))''',list(TABLES.values())+['core_erp_account'])
             actual={(table,name):(enabled,events,function,args,no_when,all_columns,same_schema) for table,name,enabled,events,function,args,no_when,all_columns,same_schema in cursor.fetchall()}
             for key,(function,events) in expected.items():
                 if key not in actual:issues.add('accounting_sql_guards_missing');continue
@@ -31,4 +32,7 @@ def inspect_guards(connection):
                 if enabled not in {'O','A'}:issues.add('accounting_sql_guards_disabled')
                 if (found_events,found_function,args,no_when,all_columns,same_schema)!=(events,function,0,True,True,True):issues.add('accounting_sql_guards_invalid')
         else:issues.add('accounting_sql_guards_unsupported')
-    return {'ready':not issues,'checks':sorted(issues),'scope':'structural_presence_and_enabled_state_not_body_attestation'}
+    if connection.vendor in {'sqlite','postgresql'}:
+        from .sql_guard_contract import body_issues
+        issues.update(body_issues(connection))
+    return {'ready':not issues,'checks':sorted(issues),'scope':'installed_structure_and_expected_bodies_not_independent_attestation'}

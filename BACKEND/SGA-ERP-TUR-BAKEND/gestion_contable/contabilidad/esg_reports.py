@@ -3,7 +3,7 @@
 Framework applicability and support authenticity remain a professional decision.
 Only explicit mappings are emitted; incompatible boundaries are never summed.
 """
-from decimal import Decimal, localcontext
+from decimal import Decimal, localcontext, Context
 from django.db import transaction
 from django.utils import timezone
 from apps.core_erp.accounting.environmental import _date, _code
@@ -24,13 +24,13 @@ def report(*, actor, provider_id, since, until, mappings):
     for mapping in mappings:
         if not isinstance(mapping, dict) or set(mapping) != {'framework','version','disclosure','boundary','applicability_reason','evidence_digest'}:
             raise AccountingError('Exact applicability mapping required.')
-        if mapping['framework'] not in {'GRI','SASB'}:
+        if not isinstance(mapping['framework'],str) or mapping['framework'] not in {'GRI','SASB'}:
             raise AccountingError('Explicit GRI or SASB mapping required.')
         _code(mapping['version']); _code(mapping['disclosure'])
         from apps.core_erp.accounting.environmental import BOUNDARIES
         from apps.core_erp.accounting.bank_reconciliation import digest
         digest(mapping['evidence_digest'])
-        if mapping['boundary'] not in BOUNDARIES or not isinstance(mapping['applicability_reason'], str) or not 1 <= len(mapping['applicability_reason'].strip()) <= 500:
+        if not isinstance(mapping['boundary'],str) or mapping['boundary'] not in BOUNDARIES or not isinstance(mapping['applicability_reason'], str) or not 1 <= len(mapping['applicability_reason'].strip()) <= 500:
             raise AccountingError('Applicable boundary and reviewed rationale required.')
         key = (mapping['framework'], mapping['version'], mapping['disclosure'])
         if key in catalog or (mapping['framework'], mapping['boundary']) in mapped_boundaries:
@@ -41,7 +41,7 @@ def report(*, actor, provider_id, since, until, mappings):
     if len(roots) > 200:
         raise AccountingError('Report exceeds bounded source history; reviewed export required.')
     sources = []; seen = set(); totals = {}
-    with localcontext() as ctx:
+    with localcontext(Context(prec=60)) as ctx:
         ctx.prec = 60
         for root in roots:
             head = corrections._chain(company, provider, root.pk)

@@ -19,9 +19,30 @@ from .customer_package_store import CustomerPackageStore,StorageConflict,Storage
 MAX=1500000
 
 def private_json(path):
+    """Read one bounded private regular file without following any path symlink.
+
+    Directory descriptors prevent parent replacement from redirecting a checked
+    path. Duplicate/nonfinite JSON is rejected like the ciphertext API itself.
+    """
     p=Path(path)
-    if p.is_symlink() or not p.is_file() or p.stat().st_mode&0o077 or p.stat().st_size>16384:raise ValueError('Private bounded configuration file required.')
-    return json.loads(p.read_text())
+    if not p.is_absolute() or '..' in p.parts:raise ValueError('Absolute private configuration required.')
+    directory=None;descriptor=None
+    try:
+        directory=os.open('/',os.O_RDONLY|os.O_DIRECTORY)
+        for part in p.parts[1:-1]:
+            next_directory=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,dir_fd=directory)
+            os.close(directory);directory=next_directory
+        descriptor=os.open(p.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,dir_fd=directory)
+        info=os.fstat(descriptor)
+        if not stat.S_ISREG(info.st_mode) or info.st_mode&0o077 or info.st_size>16384:raise ValueError('Private bounded configuration file required.')
+        with os.fdopen(descriptor,'rb') as stream:
+            descriptor=None;raw=stream.read(16385)
+        if len(raw)>16384:raise ValueError('Private configuration exceeds size limit.')
+        return strict_json(raw)
+    except (OSError,UnicodeError):raise ValueError('Private configuration unavailable or unsafe.') from None
+    finally:
+        if descriptor is not None:os.close(descriptor)
+        if directory is not None:os.close(directory)
 
 def origin(value,allow_loopback=False):
     if not isinstance(value,str):raise ValueError('Explicit origin required.')

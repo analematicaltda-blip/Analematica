@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.keywrap import aes_key_wrap,aes_key_unwrap
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 MAX=1024*1024
+_REFERENCE_UNSET=object()
 
 def canonical(value):return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
 def encode(value):return base64.urlsafe_b64encode(value).rstrip(b'=').decode()
@@ -24,11 +25,13 @@ def derive(password,salt):
     return key(salt),key(salt+b'fiscal-package-auth')
 def body(value):return {k:v for k,v in value.items() if k not in {'auth_tag','package_digest'}}
 
-def open_package(value,password,expected):
+def open_package(value,password,expected,*,expected_reference=_REFERENCE_UNSET):
     expected=scope(expected)
     if not isinstance(value,dict) or set(value)!={'schema','revision','previous_digest','key_descriptor','envelope','auth_tag','package_digest'} or len(canonical(value))>1500000:raise ValueError('Invalid document package.')
     p=json.loads(canonical(value));rev=p['revision']
     if p['schema']!='sgacd-fiscal-package-v1' or type(rev) is not int or not 1<=rev<=1000000 or (rev==1 and p['previous_digest'] is not None) or (rev>1 and (not isinstance(p['previous_digest'],str) or not re.fullmatch('[0-9a-f]{64}',p['previous_digest']))):raise ValueError('Invalid package version.')
+    if expected_reference is not _REFERENCE_UNSET:
+        if (not isinstance(expected_reference,dict) or set(expected_reference)!={'revision','package_digest'} or type(expected_reference['revision']) is not int or not 1<=expected_reference['revision']<=1000000 or not isinstance(expected_reference['package_digest'],str) or not re.fullmatch('[0-9a-f]{64}',expected_reference['package_digest']) or p['revision']!=expected_reference['revision'] or p['package_digest']!=expected_reference['package_digest']):raise ValueError('Package does not match the trusted expected reference.')
     descriptor=p['key_descriptor'];env=p['envelope']
     if not isinstance(descriptor,dict) or set(descriptor)!={'kdf','iterations','salt'} or descriptor['kdf']!='PBKDF2-SHA256' or type(descriptor['iterations']) is not int or descriptor['iterations']!=600000:raise ValueError('Unsupported key derivation.')
     if not isinstance(env,dict) or set(env)!={'schema','algorithm','context','iv','wrapped_key','ciphertext'} or env['schema']!='sgacd-fiscal-envelope-v1' or env['algorithm']!='AES-256-GCM+A256KW' or scope(env['context'])!=expected:raise ValueError('Document scope mismatch.')

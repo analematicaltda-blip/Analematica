@@ -33,6 +33,12 @@ class PayrollEarningsChecks(unittest.TestCase):
   for earnings in [[{**self.workers[0]['earnings'][0],'code':'UNKNOWN'}],self.workers[0]['earnings']*2,[{**self.workers[0]['earnings'][0],'minutes':True}],[{**self.workers[0]['earnings'][0],'minutes':1.5}]]:
    w=copy.deepcopy(self.workers);w[0]['earnings']=earnings
    with self.assertRaises(AccountingError):self.review(workers=w)
+ def test_nested_json_codes_and_kinds_rejected_as_accounting_errors(self):
+  for value in [[],{},None]:
+   workers=copy.deepcopy(self.workers);workers[0]['earnings'][0]['code']=value
+   with self.assertRaises(AccountingError):self.review(workers=workers)
+   policy=copy.deepcopy(self.policy);policy['earning_rules'][0]['kind']=value
+   with self.assertRaises(AccountingError):self.review(policy=policy)
  def test_source_evidence_required(self):
   self.workers[0]['earnings'][0]['evidence_digest']='not-a-proof'
   with self.assertRaises(AccountingError):self.review()

@@ -1,7 +1,7 @@
 """Never allow the bridge to turn an evidence report into a certificate."""
 import json,hashlib,re
 from datetime import date,datetime
-from decimal import Decimal,localcontext,ROUND_HALF_UP
+from decimal import Decimal,localcontext,Context,ROUND_HALF_UP
 from uuid import UUID
 BOUNDARIES={'direct_combustion','electricity_location_based','lifecycle'}
 FLAGS={'ledger_written','money_transferred','liability_recognized','carbon_credit_issued','esg_certified','framework_applicability_verified','sources_independently_verified','confirmations_restored'}
@@ -16,7 +16,7 @@ def validate(data,payload,context):
     mappings=data['mappings']
     if not isinstance(mappings,dict) or set(mappings)-BOUNDARIES:raise ValueError('Declared boundary mappings required.')
     for row in mappings.values():
-        if not isinstance(row,dict) or set(row)!={'framework','version','reference','evidence_digest'} or row['framework'] not in {'GRI','SASB','CUSTOM'}:raise ValueError('Declared framework required.')
+        if not isinstance(row,dict) or set(row)!={'framework','version','reference','evidence_digest'} or not isinstance(row['framework'],str) or row['framework'] not in {'GRI','SASB','CUSTOM'}:raise ValueError('Declared framework required.')
         for key in ['version','reference']:
             if not isinstance(row[key],str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,63}',row[key]):raise ValueError('Canonical framework reference required.')
         digest(row['evidence_digest'])
@@ -26,10 +26,17 @@ def validate(data,payload,context):
     if len(encoded)>524288 or hashlib.sha256(encoded).hexdigest()!=data['report_digest']:raise ValueError('ESG digest changed.')
     if not isinstance(data['items'],list) or len(data['items'])>200 or type(data['activity_count']) is not int or data['activity_count']!=len(data['items']):raise ValueError('ESG bounded count required.')
     seen=set();totals={};unmapped=0
-    with localcontext() as ctx:
+    with localcontext(Context(prec=60)) as ctx:
         ctx.prec=60
         for row in data['items']:
-            if set(row)!={'observation_id','activity_id','date','quantity','activity_unit','factor_id','factor_version','factor_rate','factor_source_digest','boundary','kg_co2e','revision','known_at','proof_digest','framework_mapping'}:raise ValueError('ESG unexpected activity fields.')
+            if not isinstance(row,dict):raise ValueError('ESG activity object required.')
+            extra=set(row)&{'activity_support_digest','source_reference','source_segment'}
+            if ('source_reference' in extra)!=('source_segment' in extra):raise ValueError('Paired operational source required.')
+            if 'activity_support_digest' in extra:digest(row['activity_support_digest'])
+            if 'source_reference' in extra:
+                identifier(row['source_reference'])
+                if not isinstance(row['source_segment'],str) or not re.fullmatch(r'[A-Z0-9][A-Z0-9_.-]{0,63}',row['source_segment']):raise ValueError('Canonical source segment required.')
+            if set(row)-extra!={'observation_id','activity_id','date','quantity','activity_unit','factor_id','factor_version','factor_rate','factor_source_digest','boundary','kg_co2e','revision','known_at','proof_digest','framework_mapping'}:raise ValueError('ESG unexpected activity fields.')
             identifier(row['observation_id']);digest(row['factor_source_digest']);digest(row['proof_digest'])
             if not isinstance(row['activity_id'],str) or row['activity_id'] in seen or not data['since']<=row['date']<=data['until'] or type(row['revision']) is not int or row['revision']<0:raise ValueError('ESG source reuse or dates invalid.')
             if date.fromisoformat(row['date']).isoformat()!=row['date']:raise ValueError('Canonical activity date required.')

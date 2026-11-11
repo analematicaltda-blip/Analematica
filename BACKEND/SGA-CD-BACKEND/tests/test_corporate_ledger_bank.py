@@ -9,6 +9,12 @@ class CorporateBankTests(unittest.TestCase):
  def bank_source(self):
   p=self.unwrap(self.erp.get(integration.bridge.BASE+'clasificacion-liquidez/',params={'provider_id':self.provider}).json())
   return p['mapping']['cash_equivalents'][0],'transaction_id,date,direction,amount,currency\nprivate-bank-001,'+self.day+',IN,10.00,COP\n'
+ def test_declared_external_states_and_manual_resolution_denied(self):
+  account,_=self.bank_source()
+  for status in ['PENDING','REVERSED']:
+   text='transaction_id,date,direction,amount,currency,bank_id,status\nprivate-external-ref,'+self.day+',IN,10.00,COP,CO_BANK_TEST,'+status+'\n'
+   compared=self.command('compare_bank_statement',{'account_id':account,'csv_text':text});self.assertEqual(compared.status_code,200,compared.text);row=compared.json()['data']['rows'][0];self.assertEqual(row['status'],'EXTERNAL_'+status);self.assertEqual(row['candidates'],[])
+   rejected=self.command('review_bank_reconciliation',{'account_id':account,'csv_text':text,'evidence_digest':'a'*64,'expected_revision':0,'confirmed':True,'resolutions':[]});self.assertEqual(rejected.status_code,409,rejected.text)
  def test_actual_compare_confirm_recover_release_no_ledger_mutation(self):
   account,text=self.bank_source();comparison=self.command('compare_bank_statement',{'account_id':account,'csv_text':text});self.assertEqual(comparison.status_code,200,comparison.text);self.assertFalse(comparison.json()['data']['bank_verified'])
   review=self.command('review_bank_reconciliation',{'account_id':account,'csv_text':text,'evidence_digest':'a'*64,'expected_revision':0,'confirmed':True});self.assertEqual(review.status_code,200,review.text)

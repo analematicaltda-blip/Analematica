@@ -18,6 +18,10 @@ class ESGChecks(unittest.TestCase):
   self.base.record(self.base.review());r=self.report();self.assertEqual(r['disclosures'][0]['value'],'24.691200');self.assertEqual(len(r['sources']),1);self.assertEqual(r['sources'][0]['revision'],1);self.assertEqual(self.report(),r);self.assertNotEqual(original['report_digest'],r['report_digest'])
  def test_no_writes_or_certification(self):
   count=OutboxEvent.objects.count();r=self.report();self.assertEqual(count,OutboxEvent.objects.count());self.assertFalse(r['esg_certified']);self.assertFalse(r['supports_independently_verified']);self.assertEqual(r['status'],'DRAFT_REQUIRES_PROFESSIONAL_REVIEW')
+ def test_malformed_framework_or_boundary_is_domain_error(self):
+  for key in ['framework','boundary']:
+   for value in [[],{},None,True]:
+    with self.assertRaises(AccountingError):self.report(mappings=[{**self.mapping,key:value}])
  def test_frameworks_must_be_explicit_and_unique(self):
   for mappings in [[],[self.mapping,self.mapping],[{**self.mapping,'framework':'CERTIFIED'}],[{**self.mapping,'evidence_digest':'x'}]]:
    with self.assertRaises(AccountingError):self.report(mappings=mappings)

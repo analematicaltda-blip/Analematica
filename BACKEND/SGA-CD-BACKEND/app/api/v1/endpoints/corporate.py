@@ -179,10 +179,11 @@ async def accounting_write(operation:str,request:Request,actor=Depends(owner),db
     from app.services.corporate_ledger import COOKIE
     from app.services.corporate_ledger_commands import dispatch
     if request.query_params:raise HTTPException(422,'No se admiten selectores de empresa u origen.')
+    maximum=262144 if operation=='backtest_cash_windows' else 8192
     raw=bytearray()
     async for part in request.stream():
         raw.extend(part)
-        if len(raw)>8192:raise HTTPException(413,'Solicitud contable demasiado grande.')
+        if len(raw)>maximum:raise HTTPException(413,'Solicitud contable demasiado grande.')
     def pairs(items):
         result={}
         for key,value in items:

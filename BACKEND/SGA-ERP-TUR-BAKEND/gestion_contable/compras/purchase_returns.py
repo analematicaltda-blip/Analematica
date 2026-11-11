@@ -184,4 +184,4 @@ def register_body(company,journal):
     proof=OutboxEvent.objects.filter(event_type__in=[POSTED,VOIDED],payload__body__company_id=str(company.pk),payload__body__journal_id=str(journal.pk)).first()
     if proof is None:raise AccountingError('Return/correction origin missing.')
     p=read(proof,proof.event_type,company);review=read(OutboxEvent.objects.filter(pk=p['review_id']).first(),REVIEW if proof.event_type==POSTED else VOID_REVIEW,company);body,source=original(company,review['document_id']);history(company,p['invoice_id'],body,source)
-    return {'document_id':body['document_id'],'preview':{'lines':review['lines']}}
+    return {'document_id':body['document_id'],'tax_source':body,'preview':{'lines':review['lines']}}

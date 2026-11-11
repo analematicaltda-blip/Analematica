@@ -154,6 +154,16 @@ if os.environ.get('FX_SETTLEMENT_BROWSER')=='1':
  cash_journal=LedgerEngine.post_lines(tenant_id=case.tenant.pk,entry_date=timezone.localdate(),description='Synthetic existing COP receipt',actor=case.user,idempotency_key='synthetic-fx-settlement-cash',lines_data=[{'account':case.a,'debit':'17200.00'},{'account':clearing,'credit':'17200.00'}]);cash_line=LedgerEntry.plain_objects.get(journal_entry=cash_journal,account=case.a)
  credentials['fx_settlement']={**credentials['fx_revaluation'],'cash_line_id':str(cash_line.pk),'clearing_account_id':str(clearing.pk),'cash_journal_id':str(cash_journal.pk),'cash_journal_hash':cash_journal.system_hash}
 if os.environ.get('LEDGER_BROWSER')=='1':credentials.update(ledger_date=timezone.localdate().isoformat(),provider_id=str(case.provider.pk),reservation_id=str(billing_reservation.pk),recognition_receivable_id=str(recognition_receivable.pk),recognition_revenue_id=str(case.b.pk))
+if os.environ.get('ACC008_CRM_FIXTURE')=='1':
+ from apps.comercial.models import Lead,Opportunity
+ from apps.domain_business.comercial.services.crm_fiscal import bind_crm_source
+ from datetime import timedelta
+ import uuid
+ for model in [Lead,Opportunity]:fixture['fixture']['create'](model)
+ crm_lead=Lead.objects.create(name='Synthetic CRM HTTP source',email=uuid.uuid4().hex+'@example.test')
+ crm_source=Opportunity.objects.create(lead=crm_lead,stage=Opportunity.Stage.WON,estimated_revenue='100.00')
+ bind_crm_source(operator=case.link.reviewed_by,provider_id=case.provider.pk,opportunity_id=crm_source.pk,evidence_digest='c'*64,valid_until=timezone.now()+timedelta(days=1),apply=True)
+ credentials['crm_opportunity_id']=str(crm_source.pk)
 if os.environ.get('OPENING_LINK_BROWSER')=='1':credentials.update(opening_existing_journal_id=str(opening_existing.pk),opening_existing_hash=opening_existing.system_hash)
 if os.environ.get('PAYROLL_BROWSER')=='1':
  helper=runpy.run_path(str(ROOT/'BACKEND/deployment/tests/payroll_fixture.py'))
@@ -175,6 +185,14 @@ if os.environ.get('PAYROLL_SOURCE_EARNINGS_FIXTURE')=='1':
 if os.environ.get('OPERATIONAL_COST_FIXTURE')=='1':
  helper=runpy.run_path(str(ROOT/'BACKEND/deployment/tests/operational_cost_fixture.py'))
  credentials['payroll_cost']=helper['install'](case,fixture['fixture']['create'],credentials['payroll'])
+if os.environ.get('ENVIRONMENTAL_SOURCE_FIXTURE')=='1':
+ from apps.prestadores.mi_negocio.gestion_operativa.models import OrdenOperativa
+ from datetime import datetime,time,timedelta
+ from zoneinfo import ZoneInfo
+ fixture['fixture']['create'](OrdenOperativa)
+ begin=datetime.combine(timezone.localdate(),time.min,ZoneInfo('America/Bogota'))
+ order=OrdenOperativa.objects.create(provider=case.provider,contrato_ref_id=uuid.uuid4(),descripcion_servicio='Synthetic environmental source',fecha_inicio=begin,fecha_fin_estimada=begin+timedelta(hours=23))
+ credentials['environmental_source_order_id']=str(order.pk)
 if os.environ.get('HOTEL_BROWSER')=='1':
  helper=runpy.run_path(str(ROOT/'BACKEND/deployment/tests/hotel_metrics_fixture.py'))
  credentials['hotel']=helper['install'](case,fixture['fixture']['create'])

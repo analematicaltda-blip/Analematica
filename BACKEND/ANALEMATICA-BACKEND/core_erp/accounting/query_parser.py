@@ -43,10 +43,11 @@ def reject_deep_json(text):
 
 
 class AccountingQueryJSONParser(JSONParser):
+    max_bytes = MAX_QUERY_BYTES
     def parse(self, stream, media_type=None, parser_context=None):
-        raw = stream.read(MAX_QUERY_BYTES + 1)
-        if len(raw) > MAX_QUERY_BYTES:
-            raise ParseError('La consulta supera el límite de 8192 bytes de esta ruta.')
+        raw = stream.read(self.max_bytes + 1)
+        if len(raw) > self.max_bytes:
+            raise ParseError(f'La consulta supera el límite de {self.max_bytes} bytes de esta ruta.')
         try:
             text = raw.decode('utf-8')
             reject_deep_json(text)
@@ -57,3 +58,8 @@ class AccountingQueryJSONParser(JSONParser):
             return value
         except (ValueError, RecursionError):
             raise ParseError('Consulta JSON inválida, duplicada o fuera de estructura.') from None
+
+
+class AccountingScenarioJSONParser(AccountingQueryJSONParser):
+    """Only bounded analytical scenarios, never a larger financial write route."""
+    max_bytes = 262144

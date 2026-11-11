@@ -1,19 +1,30 @@
 """Deterministic, evidence-referenced milestone index; never estimates production readiness."""
 import argparse,csv,json
-from decimal import Decimal,ROUND_HALF_UP
+from decimal import Decimal,ROUND_HALF_UP,Context,localcontext
+from functools import wraps
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 HERE=ROOT/'ANALISIS/contabilidad'
 STAGES=('functional_increment','automated_verification','full_acceptance')
+STAGE_LABELS=('Incremento funcional','Verificación automatizada','Aceptación completa')
 
+def independent_arithmetic(function):
+    @wraps(function)
+    def wrapped(*args,**kwargs):
+        with localcontext(Context(prec=50)):
+            return function(*args,**kwargs)
+    return wrapped
+
+@independent_arithmetic
 def calculate(registry,rows):
     if registry.get('baseline')!='accounting-blueprint-v1':raise ValueError('Explicit baseline review required.')
     expected={r['id'] for r in rows}
     if len(expected)!=24 or len(rows)!=24:raise ValueError('The baseline requires exactly 24 unique work items; review the denominator explicitly.')
+    if expected!={f'ACC-{i:03d}' for i in range(1,25)}:raise ValueError('Unknown task IDs; preserve ACC-001 through ACC-024.')
     entries=registry['items']
     if len(entries)!=24 or {r['id'] for r in entries}!=expected:raise ValueError('Progress items must match the approved matrix exactly.')
-    points=0;accepted=0;details=[]
-    for row in entries:
+    points=0;accepted=0;details=[];milestones=[]
+    for row in sorted(entries,key=lambda item:item['id']):
         if set(row['milestones'])!=set(STAGES):raise ValueError('Unknown or missing milestone.')
         completed=[]
         for stage in STAGES:
@@ -28,6 +39,15 @@ def calculate(registry,rows):
         score=sum(completed);points+=score;accepted+=int(completed[2])
         matrix=next(r for r in rows if r['id']==row['id'])
         details.append({'task':matrix['tarea'],'remaining':row.get('acceptance_remaining',matrix['limite']),'id':row['id'],'completed_milestones':score,'total_milestones':3,'full_acceptance':completed[2]})
+        for position,stage in enumerate(STAGES):
+            number=(int(row['id'][-3:])-1)*3+position+1
+            criterion=matrix['aceptacion'] if stage=='full_acceptance' else (
+                ('Incremento ejecutable, aunque parcial: ' if position==0 else 'Verificación automatizada reproducible del incremento: ')+matrix['tarea'])
+            milestones.append({'id':f'H{number:03d}','number':number,'task_id':row['id'],
+                'stage':stage,'label':STAGE_LABELS[position],'criterion':criterion,
+                'credited':completed[position],'status':'ACREDITADO_EN_REGISTRO' if completed[position] else 'PENDIENTE',
+                'evidence':sorted(set(row['milestones'][stage])),
+                'remaining':'' if completed[position] else row.get('acceptance_remaining',matrix['limite'])})
     percent=(Decimal(points)*100/Decimal(72)).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP)
     groups={
         'Núcleo y puente contable':['ACC-001','ACC-002','ACC-003','ACC-004','ACC-005','ACC-006','ACC-007','ACC-015'],
@@ -44,7 +64,8 @@ def calculate(registry,rows):
         done=sum(by_id[i]['completed_milestones'] for i in identifiers);total=3*len(identifiers)
         fronts.append({'front':name,'items':identifiers,'completed_milestones':done,'total_milestones':total,'implementation_percent':str((Decimal(done)*100/Decimal(total)).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP))})
     if sum(r['total_milestones'] for r in fronts)!=72 or len({i for r in fronts for i in r['items']})!=24:raise ValueError('Fronts must partition the unchanged baseline.')
-    return {'fronts':fronts,'baseline':'accounting-blueprint-v1','measurement':'curated evidence-backed milestones, not effort or code coverage',
+    if len(milestones)!=72 or sum(m['credited'] for m in milestones)!=points:raise ValueError('Milestone index does not reconcile with earned credits.')
+    return {'milestones':milestones,'fronts':fronts,'baseline':'accounting-blueprint-v1','measurement':'curated evidence-backed milestones, not effort or code coverage',
             'completed_milestones':points,'total_milestones':72,'implementation_percent':str(percent),
             'fully_accepted_items':accepted,'items_with_verified_increment':sum(r['completed_milestones']>=2 for r in details),'total_items':24,'production_ready':False,'items':details}
 
@@ -76,7 +97,14 @@ Registro: `progress-registry.json`. Resultado calculado: `progreso.json`.
 Regenerar con `python ANALISIS/contabilidad/tools/update_progress.py`; comprobar coherencia con `--check`.
 
 Antes de cambiar el alcance o las ponderaciones se debe documentar una nueva base y conservar la anterior. Las acreditaciones de producción no se deducen del porcentaje.
-'''
+
+## Índice explícito de los72 hitos
+
+La numeración conserva la base original: cada tarea tiene tres hitos consecutivos. ACREDITADO significa acreditación curada en el registro, no inferida por presencia de archivos ni nueva aceptación productiva. Los criterios, referencias y pendientes de cada hito están en `progreso.json`.
+
+| Hito | Tarea | Etapa | Acreditación registrada |
+|---|---|---|---|
+'''+''.join(f"| {m['id']} | {m['task_id']} | {m['label']} | {'Sí' if m['credited'] else 'Pendiente'} |\n" for m in result['milestones'])
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--check',action='store_true');args=parser.parse_args()

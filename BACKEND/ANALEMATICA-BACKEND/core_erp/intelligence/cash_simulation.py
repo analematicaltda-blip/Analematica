@@ -1,11 +1,20 @@
 """Bounded, seeded daily bootstrap scenarios; not a bank forecast or ledger write."""
 import hashlib,json,random,sys
 from datetime import date,timedelta
-from decimal import Decimal,InvalidOperation,ROUND_HALF_UP
+from decimal import Decimal,InvalidOperation,ROUND_HALF_UP,Context,localcontext
 HORIZONS=(30,90,365)
 VERSION='cash-bootstrap-v1'
 
+from functools import wraps
+def exact(function):
+    @wraps(function)
+    def wrapped(*args,**kwargs):
+        with localcontext(Context(prec=64)):
+            return function(*args,**kwargs)
+    return wrapped
 
+
+@exact
 def cents(value):
     if isinstance(value,bool) or not isinstance(value,(str,int,Decimal)):
         raise ValueError('Money must be exact decimal text, integer or Decimal; floats are rejected.')
@@ -18,9 +27,11 @@ def cents(value):
     return int(amount*100)
 
 
+@exact
 def money(value):return format((Decimal(value)/100).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP),'.2f')
 
 
+@exact
 def simulate(parameters):
     required={'opening_cash','observations','seed','paths'}
     if not isinstance(parameters,dict) or set(parameters)!=required:raise ValueError('Explicit opening cash, observations, seed and paths are required.')
@@ -72,6 +83,7 @@ def simulate(parameters):
         'production_qualified':False,'financial_execution':False,'ledger_written':False}
 
 
+@exact
 def backtest(parameters):
     """One chronological holdout of 365 days; outcomes never enter training or RNG."""
     if not isinstance(parameters,dict) or set(parameters)!={'scenario','actuals'}:
@@ -118,6 +130,7 @@ def backtest(parameters):
         'production_qualified':False,'financial_execution':False,'ledger_written':False}
 
 
+@exact
 def sensitivity(parameters):
     """Paired scenarios with common draws; explicit additive monetary shocks only."""
     if not isinstance(parameters,dict) or set(parameters)!={'scenario','shocks'}:
@@ -155,6 +168,7 @@ def sensitivity(parameters):
             'production_qualified':False,'financial_execution':False,'ledger_written':False}
 
 
+@exact
 def backtest_windows(parameters):
     """Chronologically ordered holdouts; descriptive summaries never assume independence."""
     if not isinstance(parameters,dict) or set(parameters)!={'windows'}:

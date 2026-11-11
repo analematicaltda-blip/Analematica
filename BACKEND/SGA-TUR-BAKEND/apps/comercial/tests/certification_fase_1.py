@@ -83,7 +83,7 @@ def run_block_1():
     for l in hot_leads:
         l.status = Lead.Status.QUALIFIED
         l.save()
-        opps.append(FunnelEngine.create_opportunity(l, "PRO", float(l.estimated_value)))
+        opps.append(FunnelEngine.create_opportunity(l, "PRO", l.estimated_value))
 
     # 4. Marcar 2 como WON
     won_opps = opps[:2]
