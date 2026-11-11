@@ -2,15 +2,15 @@
 
 ## ACC-001 · Validación monetaria exacta y aislamiento de cuentas
 
-2/3 hitos. Pendiente: Los9 casos ORM originales se complementan con posteo/replay/contrapartidas y escenarios PostgreSQL de laboratorio. La aceptación integral sigue sin acreditarse; no se infiere del número acumulado de pruebas.
+3/3 hitos. Pendiente: Ninguno en los cinco criterios funcionales originales deACC-001; cierre evidenciado2026-11-11. No equivale a habilitación productiva, fiscal/bancaria o cierre de otras tareas.
 
 ## ACC-002 · UUID de alta y guardas de asientos/líneas
 
-2/3 hitos. Pendiente: Triggers SQL probados con posteo/contrapartida válidos; pendientes roles privilegiados, otras tablas, migración nativa real y auditoría/firma independiente según alcance.
+3/3 hitos. Pendiente: Ninguno en los criterios originales deACC-002, cerrados2026-11-11. ORM masivo requiere las guardas SQL del esquema migrado, verificadas enSQLite/PostgreSQL. SQL privilegiado, roles/RLS y despliegue global pertenecen aACC-007/024; no se acreditan aquí.
 
 ## ACC-003 · Idempotencia y outbox en una transacción
 
-2/3 hitos. Pendiente: Corte39: entrega local por leases, recibo único y proyección/acuse en transacción; reintentos y PostgreSQL. Publicación Kafka y deduplicación externa pendientes.
+3/3 hitos. Pendiente: Ninguno en los criterios transaccionales locales originales deACC-003; cierre2026-11-11. No se acredita publicaciónKafka, acuse externo ni exactly-once de red; esos alcances no se deducen del outbox local.
 
 ## ACC-004 · Periodos, concurrencia y contrapartidas
 
@@ -58,7 +58,7 @@
 
 ## ACC-015 · Legacy bridge y open banking
 
-2/3 hitos. Pendiente: Conciliación COP por filas/período, períodos vacíos, agrupación/asignación parcial acumulada, consolidación de lotes e historia hasta20k ejercitados en ambos paneles. Falta autenticidad/consentimiento del origen bancario, FX/instrumentos/otros formatos y tránsito, snapshots/carga/archivo/migración y aceptación profesional/productiva.
+2/3 hitos. Pendiente: Conciliación COP por filas/período, períodos vacíos, agrupación/asignación parcial acumulada, consolidación de lotes e historia hasta20k ejercitados en ambos paneles. Falta autenticidad/consentimiento del origen bancario, FX/instrumentos/otros formatos y tránsito, snapshots/carga/archivo/migración y aceptación profesional/productiva. Catálogo2026-11-11: retirado truncamiento inaccesible de50 mediante páginas verificadas en ambos paneles; probado53/55 lotes. Persisten1000 confirmaciones por empresa,20 seleccionadas por consolidación,200 filas/200 movimientos,COP; falta snapshots/carga, presentación de429 del puente, fuentes auténticas y aceptación profesional.
 
 ## ACC-016 · Proyecciones y ratios turísticos
 
@@ -74,7 +74,7 @@
 
 ## ACC-019 · Reportes ESG y marcos aplicables
 
-2/3 hitos. Pendiente: Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva.
+2/3 hitos. Pendiente: Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva. ESG2026-11-11: ambos paneles permiten declarar varios límites, resumir soporte local y exportar actividades efectivas aCSV/JSON con ámbito/hash/aritmética comprobados; vacío explícito sin inventar cobertura. Siguen factores/soportes auténticos, aplicabilidad profesional, duplicados semánticos y snapshots/volumen/aceptación integral.
 
 ## ACC-020 · Consultas NLP de solo lectura
 

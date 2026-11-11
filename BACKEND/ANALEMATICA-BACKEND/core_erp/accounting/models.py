@@ -64,6 +64,16 @@ class JournalEntry(BaseJournalEntry, AccountingTenantModel):
     immutable_signature = models.TextField(null=True, blank=True)
     hash_version = models.CharField(max_length=16, default="legacy")
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance=super().from_db(db,field_names,values)
+        instance._loaded_accounting_pk=instance.pk
+        return instance
+
+    def _check_identity(self):
+        if getattr(self,'_loaded_accounting_pk',self.pk)!=self.pk:
+            raise PermissionError('An existing accounting identity cannot be reassigned. Create a new instance explicitly.')
+
     def compute_hash(self):
         """
         Calcula el hash SHA-256 del asiento incluyendo sus líneas para garantizar integridad.
@@ -110,15 +120,18 @@ class JournalEntry(BaseJournalEntry, AccountingTenantModel):
     def save(self, *args, **kwargs):
         from .validation import lock_company
         from .exceptions import TenantMismatchError
+        self._check_identity()
         lock_company(self.tenant_id)
         stored = JournalEntry.plain_objects.select_for_update().filter(pk=self.pk).first()
         if stored and str(stored.tenant_id) != str(self.tenant_id):
             raise TenantMismatchError('A journal cannot move between accounting companies.')
         if stored and stored.is_posted:
             raise PermissionError('Posted journal entries cannot be modified. Use reversal instead.')
-        if self.is_posted and not getattr(self, '_validated_post', False):
+        from .posting_write import permits
+        if self.is_posted and not permits(self):
             raise PermissionError('Use LedgerEngine to post a journal entry.')
         super().save(*args, **kwargs)
+        self._loaded_accounting_pk=self.pk
 
     def delete(self, *args, **kwargs):
         # Phase 3.5: Irreversibility - No physical deletion
@@ -155,9 +168,20 @@ class LedgerEntry(TenantAwareModel):
 
     description = models.CharField(max_length=255, blank=True, null=True)
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance=super().from_db(db,field_names,values)
+        instance._loaded_accounting_pk=instance.pk
+        return instance
+
+    def _check_identity(self):
+        if getattr(self,'_loaded_accounting_pk',self.pk)!=self.pk:
+            raise PermissionError('An existing accounting identity cannot be reassigned. Create a new instance explicitly.')
+
     def _locked_parent(self):
         from .validation import lock_company
         from .exceptions import TenantMismatchError
+        self._check_identity()
         lock_company(self.tenant_id)
         stored = LedgerEntry.plain_objects.filter(pk=self.pk).first()
         if stored and stored.journal_entry_id != self.journal_entry_id:
@@ -181,6 +205,7 @@ class LedgerEntry(TenantAwareModel):
             raise UnbalancedEntryError('A line requires exactly one positive side.')
         self.amount_transaction=money(self.amount_transaction);self.amount_base=money(self.amount_base)
         super().save(*args, **kwargs)
+        self._loaded_accounting_pk=self.pk
 
     @transaction.atomic
     def delete(self, *args, **kwargs):

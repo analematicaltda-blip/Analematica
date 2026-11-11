@@ -1,7 +1,7 @@
 # Avance verificable del motor de contabilidad
 
-**Implementación y optimización: 66.67 %** · 48/72 hitos.
-**Alcance completo aceptado: 0/24 tareas. Producción: no habilitada.**
+**Implementación y optimización: 70.83 %** · 51/72 hitos.
+**Alcance completo aceptado: 3/24 tareas. Producción: no habilitada.**
 
 La base es la directriz de siete pools y las 24 tareas de `matriz-pools.csv`. Cada tarea tiene tres hitos de igual peso:
 
@@ -11,11 +11,11 @@ La base es la directriz de siete pools y las 24 tareas de `matriz-pools.csv`. Ca
 
 El máximo antes de aceptación completa de una tarea es 2/3. El porcentaje mide estos hitos, no líneas de código, horas, porcentaje de pruebas cubiertas ni ausencia de vulnerabilidades. No se obtiene crédito por documentación o planificación solas. El registro es una evaluación explícita de evidencias, no una deducción automática por presencia de archivos.
 
-24 tareas tienen incrementos verificados; ninguna acredita aún su alcance completo. Reforzar pruebas existentes no aumenta automáticamente el porcentaje. El 100 % significará cumplimiento comprobado de esta versión del alcance, no perfección absoluta ni inmunidad a ataques.
+24 tareas tienen incrementos verificados; 3 tienen aceptación completa registrada. Reforzar pruebas existentes no aumenta automáticamente el porcentaje. El 100 % significará cumplimiento comprobado de esta versión del alcance, no perfección absoluta ni inmunidad a ataques.
 
 | Frente | Hitos | Implementación verificable |
 |---|---:|---:|
-| Núcleo y puente contable | 16/24 | 66.67 % |
+| Núcleo y puente contable | 19/24 | 79.17 % |
 | Comercial y fiscal | 6/9 | 66.67 % |
 | Bóveda documental | 4/6 | 66.67 % |
 | Operación y nómina | 4/6 | 66.67 % |
@@ -28,9 +28,9 @@ Los frentes agrupan las mismas 24 tareas sin duplicarlas ni cambiar el denominad
 
 | Tarea | Hitos completados | Alcance completo aceptado |
 |---|---:|---|
-| ACC-001 | 2/3 | No |
-| ACC-002 | 2/3 | No |
-| ACC-003 | 2/3 | No |
+| ACC-001 | 3/3 | Sí |
+| ACC-002 | 3/3 | Sí |
+| ACC-003 | 3/3 | Sí |
 | ACC-004 | 2/3 | No |
 | ACC-005 | 2/3 | No |
 | ACC-006 | 2/3 | No |

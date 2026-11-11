@@ -681,19 +681,19 @@ class PlanCuentaViewSet(PrivateAccountingResponseMixin,viewsets.ModelViewSet):
     @action(detail=False,methods=['post'],url_path='estado-periodo-bancario-vacio',parser_classes=[AccountingQueryJSONParser])
     def empty_bank_period_state(self,request):return self._empty_bank_period_command(request,'state',{'review_id'})
 
-    def _bank_rollup_command(self,request,operation,fields):
+    def _bank_rollup_command(self,request,operation,fields,optional=frozenset()):
         from apps.core_erp.accounting import bank_period_rollup
         from apps.core_erp.accounting.exceptions import AccountingError
         with transaction.atomic():
             company=self.company();lock_company(company.pk)
             if self.company().pk!=company.pk:raise PermissionDenied('La empresa cambió.')
-            if not isinstance(request.data,dict) or set(request.data)!=fields:raise ValidationError('Contrato de consolidación bancaria inválido.')
+            if not isinstance(request.data,dict) or not fields<=set(request.data) or set(request.data)-fields-optional:raise ValidationError('Contrato de consolidación bancaria inválido.')
             try:result=getattr(bank_period_rollup,operation)(company.pk,actor=request.user,**request.data)
             except (AccountingError,ValueError,TypeError,KeyError):raise ValidationError('Revisa cuenta, lotes activos, cobertura completa, saldos, período y confirmaciones.') from None
             return Response(result)
 
     @action(detail=False,methods=['post'],url_path='fuentes-consolidacion-bancaria',parser_classes=[AccountingQueryJSONParser])
-    def bank_rollup_sources(self,request):return self._bank_rollup_command(request,'sources',{'account_id'})
+    def bank_rollup_sources(self,request):return self._bank_rollup_command(request,'sources',{'account_id'},{'after_id','catalog_digest'})
 
     @action(detail=False,methods=['post'],url_path='revisar-consolidacion-bancaria',parser_classes=[AccountingQueryJSONParser])
     def review_bank_rollup(self,request):return self._bank_rollup_command(request,'review',{'period', 'account_id', 'confirmed', 'expected_revision', 'reconciliation_ids'})

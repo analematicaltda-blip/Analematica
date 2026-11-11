@@ -12,9 +12,9 @@
         "ACC-007",
         "ACC-015"
       ],
-      "completed_milestones": 16,
+      "completed_milestones": 19,
       "total_milestones": 24,
-      "implementation_percent": "66.67"
+      "implementation_percent": "79.17"
     },
     {
       "front": "Comercial y fiscal",
@@ -91,37 +91,37 @@
   ],
   "baseline": "accounting-blueprint-v1",
   "measurement": "curated evidence-backed milestones, not effort or code coverage",
-  "completed_milestones": 48,
+  "completed_milestones": 51,
   "total_milestones": 72,
-  "implementation_percent": "66.67",
-  "fully_accepted_items": 0,
+  "implementation_percent": "70.83",
+  "fully_accepted_items": 3,
   "items_with_verified_increment": 24,
   "total_items": 24,
   "production_ready": false,
   "items": [
     {
       "task": "Validación monetaria exacta y aislamiento de cuentas",
-      "remaining": "Los9 casos ORM originales se complementan con posteo/replay/contrapartidas y escenarios PostgreSQL de laboratorio. La aceptación integral sigue sin acreditarse; no se infiere del número acumulado de pruebas.",
+      "remaining": "Ninguno en los cinco criterios funcionales originales deACC-001; cierre evidenciado2026-11-11. No equivale a habilitación productiva, fiscal/bancaria o cierre de otras tareas.",
       "id": "ACC-001",
-      "completed_milestones": 2,
+      "completed_milestones": 3,
       "total_milestones": 3,
-      "full_acceptance": false
+      "full_acceptance": true
     },
     {
       "task": "UUID de alta y guardas de asientos/líneas",
-      "remaining": "Triggers SQL probados con posteo/contrapartida válidos; pendientes roles privilegiados, otras tablas, migración nativa real y auditoría/firma independiente según alcance.",
+      "remaining": "Ninguno en los criterios originales deACC-002, cerrados2026-11-11. ORM masivo requiere las guardas SQL del esquema migrado, verificadas enSQLite/PostgreSQL. SQL privilegiado, roles/RLS y despliegue global pertenecen aACC-007/024; no se acreditan aquí.",
       "id": "ACC-002",
-      "completed_milestones": 2,
+      "completed_milestones": 3,
       "total_milestones": 3,
-      "full_acceptance": false
+      "full_acceptance": true
     },
     {
       "task": "Idempotencia y outbox en una transacción",
-      "remaining": "Corte39: entrega local por leases, recibo único y proyección/acuse en transacción; reintentos y PostgreSQL. Publicación Kafka y deduplicación externa pendientes.",
+      "remaining": "Ninguno en los criterios transaccionales locales originales deACC-003; cierre2026-11-11. No se acredita publicaciónKafka, acuse externo ni exactly-once de red; esos alcances no se deducen del outbox local.",
       "id": "ACC-003",
-      "completed_milestones": 2,
+      "completed_milestones": 3,
       "total_milestones": 3,
-      "full_acceptance": false
+      "full_acceptance": true
     },
     {
       "task": "Periodos, concurrencia y contrapartidas",
@@ -213,7 +213,7 @@
     },
     {
       "task": "Legacy bridge y open banking",
-      "remaining": "Conciliación COP por filas/período, períodos vacíos, agrupación/asignación parcial acumulada, consolidación de lotes e historia hasta20k ejercitados en ambos paneles. Falta autenticidad/consentimiento del origen bancario, FX/instrumentos/otros formatos y tránsito, snapshots/carga/archivo/migración y aceptación profesional/productiva.",
+      "remaining": "Conciliación COP por filas/período, períodos vacíos, agrupación/asignación parcial acumulada, consolidación de lotes e historia hasta20k ejercitados en ambos paneles. Falta autenticidad/consentimiento del origen bancario, FX/instrumentos/otros formatos y tránsito, snapshots/carga/archivo/migración y aceptación profesional/productiva. Catálogo2026-11-11: retirado truncamiento inaccesible de50 mediante páginas verificadas en ambos paneles; probado53/55 lotes. Persisten1000 confirmaciones por empresa,20 seleccionadas por consolidación,200 filas/200 movimientos,COP; falta snapshots/carga, presentación de429 del puente, fuentes auténticas y aceptación profesional.",
       "id": "ACC-015",
       "completed_milestones": 2,
       "total_milestones": 3,
@@ -245,7 +245,7 @@
     },
     {
       "task": "Reportes ESG y marcos aplicables",
-      "remaining": "Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva.",
+      "remaining": "Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva. ESG2026-11-11: ambos paneles permiten declarar varios límites, resumir soporte local y exportar actividades efectivas aCSV/JSON con ámbito/hash/aritmética comprobados; vacío explícito sin inventar cobertura. Siguen factores/soportes auténticos, aplicabilidad profesional, duplicados semánticos y snapshots/volumen/aceptación integral.",
       "id": "ACC-019",
       "completed_milestones": 2,
       "total_milestones": 3,

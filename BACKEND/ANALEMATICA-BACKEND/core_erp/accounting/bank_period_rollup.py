@@ -51,7 +51,7 @@ def snapshot(company,account_id,proof_ids,period):
     return {'proofs':proofs,'allocations':allocations,'assessment':assessment,'allocations_complete':complete,'bank_row_count':len(bank),'ledger_line_count':len(lines),'eligible':complete and assessment['eligible_for_period_reconciliation']}
 
 @transaction.atomic
-def sources(company_id,*,actor,account_id):
+def sources(company_id,*,actor,account_id,after_id=None,catalog_digest=None):
     company,_=legacy._context(company_id,actor);cash_account(company,account_id)
     proofs=list(OutboxEvent.objects.filter(event_type=groups.APPLIED,payload__company_id=str(company.pk)).order_by('pk')[:1001])
     if len(proofs)>1000:raise AccountingError('Review archival before scanning more than1000 company batches.')
@@ -64,7 +64,18 @@ def sources(company_id,*,actor,account_id):
         except (AccountingError,ObjectDoesNotExist):valid=False
         days=[r['date'] for r in b['bank_rows']]
         rows.append({'reconciliation_id':str(proof.pk),'statement_id':b['statement_id'],'since':min(days),'until':max(days),'bank_row_count':len(days),'ledger_line_count':len(b['ledger_lines']),'source_current':valid})
-    return {'schema':'sgacd-bank-rollup-sources-v1','company_id':str(company.pk),'account_id':account_id,'batches':rows[:50],'truncated':len(rows)>50,'limits':{'catalog':50,'selected_batches':20,'bank_rows':200,'cash_lines':200},'read_only':True,**FLAGS}
+    root=fingerprint(rows)
+    if (after_id is None)!=(catalog_digest is None):raise AccountingError('Cursor and catalog digest must be supplied together.')
+    offset=0
+    if after_id is not None:
+        cursor=groups.ident(after_id)
+        if catalog_digest!=root:raise AccountingError('Catalog changed; reload from the first page.')
+        matches=[i for i,row in enumerate(rows) if row['reconciliation_id']==cursor]
+        if not matches or (matches[0]+1)%50:raise AccountingError('Cursor must end an existing complete page in this account.')
+        offset=matches[0]+1
+        if offset>=len(rows):raise AccountingError('No further catalog page.')
+    page=rows[offset:offset+50];more=offset+len(page)<len(rows)
+    return {'schema':'sgacd-bank-rollup-sources-v1','company_id':str(company.pk),'account_id':account_id,'batches':page,'truncated':more,'after_id':after_id,'next_after':page[-1]['reconciliation_id'] if more else None,'catalog_digest':root,'total_count':len(rows),'limits':{'catalog':50,'selected_batches':20,'bank_rows':200,'cash_lines':200},'read_only':True,**FLAGS}
 
 @transaction.atomic
 def review(company_id,*,actor,account_id,reconciliation_ids,period,expected_revision,confirmed):

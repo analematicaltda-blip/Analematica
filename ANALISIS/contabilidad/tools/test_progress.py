@@ -6,14 +6,37 @@ class ProgressTests(unittest.TestCase):
     def setUp(self):
         self.registry=json.loads((HERE/'progress-registry.json').read_text())
         with (HERE/'matriz-pools.csv').open(newline='') as stream:self.rows=list(csv.DictReader(stream))
-    def test_baseline_has_no_full_acceptance_or_production_claim(self):
+    def test_current_acceptance_does_not_claim_production(self):
         result=calculate(self.registry,self.rows)
+        self.assertEqual(result['completed_milestones'],51)
+        self.assertEqual(result['implementation_percent'],'70.83')
+        self.assertEqual(result['fully_accepted_items'],3)
+        self.assertFalse(result['production_ready'])
+    def test_preserved_pre_acceptance_cut_is_48_of_72(self):
+        previous=copy.deepcopy(self.registry)
+        for row in previous['items']:row['milestones']['full_acceptance']=[]
+        result=calculate(previous,self.rows)
         self.assertEqual(result['completed_milestones'],48)
         self.assertEqual(result['implementation_percent'],'66.67')
         self.assertEqual(result['fully_accepted_items'],0)
-        self.assertFalse(result['production_ready'])
+    def test_first_acceptance_cut_remains_49_of_72(self):
+        previous=copy.deepcopy(self.registry)
+        for row in previous['items']:
+            if row['id'] in ['ACC-002','ACC-003']:row['milestones']['full_acceptance']=[]
+        result=calculate(previous,self.rows)
+        self.assertEqual(result['completed_milestones'],49)
+        self.assertEqual(result['implementation_percent'],'68.06')
+        self.assertEqual(result['fully_accepted_items'],1)
+    def test_second_acceptance_cut_remains_50_of_72(self):
+        previous=copy.deepcopy(self.registry)
+        next(row for row in previous['items'] if row['id']=='ACC-003')['milestones']['full_acceptance']=[]
+        result=calculate(previous,self.rows)
+        self.assertEqual(result['completed_milestones'],50)
+        self.assertEqual(result['implementation_percent'],'69.44')
+        self.assertEqual(result['fully_accepted_items'],2)
     def test_esg_increment_adds_only_two_credits_to_previous_cut(self):
         before=copy.deepcopy(self.registry)
+        for row in before['items']:row['milestones']['full_acceptance']=[]
         task=next(row for row in before['items'] if row['id']=='ACC-019')
         self.assertFalse(task['milestones']['full_acceptance'])
         task['milestones']['functional_increment']=[]

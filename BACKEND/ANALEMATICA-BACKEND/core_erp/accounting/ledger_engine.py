@@ -8,7 +8,7 @@ from django.db import transaction
 from django.utils import timezone
 from .models import JournalEntry, LedgerEntry, Account, FiscalPeriod, AccountingEventReceipt, AccountingAuditLog
 from .exceptions import AccountingError, FiscalPeriodClosedError, TenantMismatchError, DuplicateReversalError, InactiveAccountError
-from .validation import validate_lines, lock_company, current_actor, money
+from .validation import validate_lines, lock_company, current_actor, money, exact_arithmetic
 from .integrity import journal_hash, fingerprint
 from .journal_service import JournalService
 from .posting_rules import PostingRules
@@ -60,6 +60,21 @@ def historical_reversal_valuation(entry,lines):
     return rate,values
 
 
+def posted_payload(entry,lines):
+    return {'tenant_id':str(entry.tenant_id),'entry_id':str(entry.pk),
+            'actor_id':entry.created_by_id,'total_debit':format(sum((line.debit_amount for line in lines),Decimal('0.00')),'.2f'),
+            'currency':entry.currency,'base_currency':entry.base_currency,
+            'system_hash':entry.system_hash,'hash_version':'v2'}
+
+def verify_posted_effect(entry):
+    """A retry verifies persisted evidence; never silently repairs missing events."""
+    from apps.core_erp.outbox_models import OutboxEvent
+    event=OutboxEvent.objects.filter(pk=entry.pk).first()
+    if (event is None or event.event_type!='accounting.entry.posted.v2' or event.domain!='accounting'
+        or event.aggregate_root!=str(entry.pk) or event.version!=2 or event.payload!=posted_payload(entry,rows(entry))):
+        raise AccountingError('Posted transaction outbox evidence is missing or changed; reconciliation required.')
+
+
 class LedgerEngine:
     @staticmethod
     def calculate_hash(entry, previous_hash=None):
@@ -81,6 +96,7 @@ class LedgerEngine:
         return True
 
     @staticmethod
+    @exact_arithmetic
     @transaction.atomic
     def post_event(event_type,payload,*,actor=None):
         if not isinstance(payload,dict):raise AccountingError('An event payload is required.')
@@ -119,6 +135,7 @@ class LedgerEngine:
         return entry
 
     @staticmethod
+    @exact_arithmetic
     @transaction.atomic
     def post_lines(*,tenant_id,entry_date,description,lines_data,actor,idempotency_key,period_id=None):
         lock_company(tenant_id);user=current_actor(actor)
@@ -149,12 +166,22 @@ class LedgerEngine:
         return entry
 
     @staticmethod
+    @exact_arithmetic
     @transaction.atomic
     def post_entry(entry_id,*,tenant_id=None,actor=None,fx_review_id=None):
         tenant_id=scope(tenant_id);company=lock_company(tenant_id);user=current_actor(actor)
         identifier=getattr(entry_id,'pk',entry_id)
         hint=JournalEntry.plain_objects.get(pk=identifier,tenant_id=tenant_id)
-        period=FiscalPeriod.plain_objects.select_for_update().get(pk=hint.period_id)
+        if hint.is_posted:
+            # Historical replay remains valid after a period has closed.
+            period=FiscalPeriod.plain_objects.select_for_update().get(pk=hint.period_id)
+        else:
+            candidates=list(FiscalPeriod.plain_objects.select_for_update().filter(
+                tenant_id=tenant_id,status='open',period_start__lte=hint.date,
+                period_end__gte=hint.date).order_by('pk')[:2])
+            if len(candidates)!=1 or candidates[0].pk!=hint.period_id:
+                raise FiscalPeriodClosedError('Exactly one current open period must cover the draft company/date.')
+            period=candidates[0]
         entry=JournalEntry.plain_objects.select_for_update().get(pk=identifier,tenant_id=tenant_id)
         from . import reviewed_fx
         fx_reserved=bool(entry.financial_event_id and entry.financial_event_id.startswith('reviewed-fx-pending:'))
@@ -183,6 +210,7 @@ class LedgerEngine:
                 reviewed_fx.verify_posted_origin(company,user,entry)
             if entry.hash_version=='v2' and entry.system_hash!=LedgerEngine.calculate_hash(entry):
                 raise AccountingError('Posted journal failed integrity verification.')
+            if entry.hash_version=='v2':verify_posted_effect(entry)
             return entry
         if entry.created_by_id is None or entry.created_by_id!=user.pk:
             raise AccountingError('The draft must identify the active responsible posting actor.')
@@ -233,17 +261,18 @@ class LedgerEngine:
         entry.posted_at=max(timezone.now(),last.posted_at+timedelta(microseconds=1)) if last else timezone.now()
         entry.hash_version='v2';entry.system_hash=journal_hash(entry,lines,entry.previous_hash)
         entry.immutable_signature=None # A digest is not a digital signature.
-        entry.is_posted=True;entry._validated_post=True;entry.save()
+        from .posting_write import posting_save
+        entry.is_posted=True
+        with posting_save(entry):entry.save()
         AccountingAuditLog.objects.create(tenant_id=tenant_id,user=user,action='POST',reference_entry=entry,
             integrity_hash=fingerprint({'schema':'accounting-audit-v2','entry_id':str(entry.pk),'actor_id':user.pk,'action':'POST','journal_hash':entry.system_hash}))
         from apps.core_erp.outbox_models import OutboxEvent
         OutboxEvent.objects.create(id=entry.pk,event_type='accounting.entry.posted.v2',domain='accounting',
-            aggregate_root=str(entry.pk),version=2,payload={'tenant_id':str(entry.tenant_id),'entry_id':str(entry.pk),
-                'actor_id':user.pk,'total_debit':format(sum((l.debit_amount for l in lines),Decimal('0.00')),'.2f'),
-                'currency':entry.currency,'base_currency':entry.base_currency,'system_hash':entry.system_hash,'hash_version':'v2'},status='PENDING')
+            aggregate_root=str(entry.pk),version=2,payload=posted_payload(entry,lines),status='PENDING')
         return entry
 
     @staticmethod
+    @exact_arithmetic
     @transaction.atomic
     def reverse_entry(journal_entry_id,reason='Reviewed reversal',*,tenant_id=None,actor=None):
         tenant_id=scope(tenant_id);company=lock_company(tenant_id);user=current_actor(actor)

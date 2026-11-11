@@ -4,7 +4,7 @@ Actualización:2026-11-11. Este archivo concentra desde ahora las novedades, hal
 
 ## Estado real
 
-**66,67% (48/72 hitos de la matriz original). Aceptación completa0/24 tareas. Producción no habilitada.** El plan restante tiene 2 hitos verificados localmente, 10 en ejecución y 8 pendientes; ninguno acredita cierre integral de todo el alcance. La existencia de código o una prueba sintética no sustituye aceptación profesional, de proveedor o física.
+**70,83% (51/72 hitos de la matriz original). Aceptación completa3/24 tareas. Producción no habilitada.** El plan restante tiene 2 hitos verificados localmente, 10 en ejecución y 8 pendientes; ninguno acredita cierre integral de todo el alcance. La existencia de código o una prueba sintética no sustituye aceptación profesional, de proveedor o física.
 
 ## Recuperación verificada · 2026-11-10
 
@@ -578,3 +578,106 @@ Evidencia/capturas/logs/hashes en la carpeta existente, followups.chunked_preser
 ## Entrega Git consolidada autorizada · 2026-11-11
 
 El usuario autorizó expresamente integrar el acumulado actual mediante un único commit y actualizar main, como excepción al umbral superior70%. Se conserva48/72=66,67%, aceptación completa0/24 y producción deshabilitada. Se verifican respaldo, diferencias, coherencia y avance normal del remoto antes de publicar; no se usa force ni se descarta trabajo externo. El SHA definitivo se confirma contra refs/heads/main después del push.
+
+
+## R14/R18 · Exportación ESG comprobada y mapeos múltiples · 2026-11-11
+
+Problema: el formulario existente solo declaraba un límite por consulta y exportabaJSON sin comprobar en el navegador la huella completa, la correspondencia del ámbito ni el producto y total decimal. Se amplió el mismo componente compartido, conservando estructura/colores azul metalizado, claro y blanco. Ahora permite agregar hasta los tres límites existentes sin sobrescribir una declaración previa; mantiene los límites sin observaciones separados de los valores medidos. El soporte de cada mapeo se resume localmente conSHA256 (1byte..2MiB); sus bytes nunca forman parte delPOST. Cambiar datos invalida resultados y descargas; descarte, pérdida de sesión y ocultamiento limpian el estado privado. Botones mínimos44px y390px sin desborde comprobados.
+
+Antes de mostrar o descargar, se verifican período/corte/mapeos solicitados, empresa/proveedor, flags de no certificación/no pago/no obligación, UUIDs y fuentes, hash canónico completo, límites de200 actividades/512KiB, duplicados por identificador, producto cantidad por factor y totales por frontera usandoBigInt con decimales exactos y redondeo a seis lugares. Un hash recalculado no convierte un importe o ámbito alterado en aceptable. Esto comprueba consistencia; no autentica las fuentes ambientales ni equivale aZKP o certificación.
+
+CSV descargable conUTF-8, campos entrecomillados y protección frente a fórmulas; cada actividad conserva empresa/prestador, período/corte, hash del reporte, observación, revisión efectiva, cantidad/unidad/factor, kgCO2e, fuentes/prueba y marco/soporte declarado. Incluye explícitamente estadoBORRADOR_NO_CERTIFICADO y flagsFalse. Un período vacío exporta una filaSIN_MEDICIONES con ámbito y digest, sin inventar actividad, medición cero ni cobertura. JSON sigue disponible.
+
+Verificación:44 comprobaciones de navegador en las pantallas reales ERP y Analemática, sobreHTTP/CSRF/cookies/ORM desechables; incluye corrección12.345600->24.691200 sin doble cómputo, dos fronteras mapeadas sin inventar mediciones, soporte local no transmitido, CSV y JSON trazables, vacío explícito y rechazo de tres respuestas alteradas (digest inválido; importe con digest recalculado; fechas con digest recalculado).25 regresiones aprobadas:12 reporte,7 recuperación/correcciones/API y6 contrato corporativo. Capturas panel-exportacion-esg-{erp,analematica}.png y logs/comandos/hashes en la evidencia existente, followups.esg_multi_boundary_verified_csv.
+
+Pendientes: duplicados semánticos que requieren criterio de dominio; soporte/factor legítimo, marco y aplicabilidad revisados profesionalmente; snapshots para superar200 observaciones/actividades, carga, compilación Next.js completa y aceptación nativa/productiva. No se crearon pasivos, créditos, pagos ni integraciones nuevas con proveedores. Sin cambios de esquema niRAT/ADR/reservas. Avance48/72=66,67%, aceptación integral0/24: no se añade crédito a una tarea ya parcialmente acreditada. Este incremento está local sobre el commit publicadoee5280429; no se ha creado otro commit/push. La excepción de publicación anterior fue para una sola entrega.
+
+
+## R12/R18 · Lotes bancarios posteriores al50 accesibles · 2026-11-11
+
+**Implementado y probado.** El catálogo anterior devolvía solo50 lotes y los demás no podían seleccionarse en los paneles. Ahora consulta páginas de50, con cursor ligado a empresa/cuenta y huella del catálogo completo; conserva el límite existente de1000 confirmaciones por empresa. El servidor rechaza cursor incompleto, desconocido, que no termine una página completa o que intente continuar tras el final. Una liberación que cambie el catálogo invalida la continuación: exige recargar desde el principio. El contrato corporativo valida ámbito, continuación, orden, duplicados, límites y huella si la respuesta ya es completa.
+
+El mismo formulario de ambos sistemas ofrece cargar la siguiente página, conserva selecciones y muestra cantidad cargada/total e integridad pendiente/completa. Solo habilita la revisión cuando se consultaron todas las páginas y elSHA256 canónico acumulado coincide. No conserva autorizaciones al ampliar la consulta. Un error de página borra todas las elecciones antiguas e impide usar un catálogo parcial como si fuera completo. No se modifica el libro ni se mueven saldos/dinero. Código compatible con las rutas existentes, sin migraciones.
+
+Pruebas:20 de núcleo/API/contrato (incluida una nueva prueba integral de53 lotes),12 de período agrupado,17 de agrupación y29 bancarias corporativas:78 aprobadas;26 del runner aparte.24 comprobaciones nuevas de navegador (55 lotes sintéticos confirmados en cada base desechable, páginas50+5, últimos lotes seleccionables, selección preservada, huella completa, datos antiguos eliminados ante respuesta alterada y descarte) y44 de regresión del flujo de consolidación completo en ambas pantallas. La regresión confirma que tres lotes6+4+5 siguen conciliando dos movimientos por15COP, con dos autorizaciones, recuperación, exportación y posterior pérdida de vigencia por liberación. Se verificaron azul/blanco y390px sin desborde. Capturas panel-catalogo-bancario-paginado-{erp,analematica}.png, comandos/logs/hashes en la evidencia existente, followups.paged_bank_rollup_catalog.
+
+**Alcance pendiente de desarrollo.** No se ampliaron los máximos de20 lotes seleccionados/200 filas bancarias/200 movimientos por consolidación ni el alcanceCOP. Falta snapshots/escalado y medición de carga; no se acredita rendimiento250ms. Preparar55 lotes mediante110 escrituras HTTP corporativas alcanzó el límite de solicitudes del backend (429); no se deshabilitó. La prueba final prepara sus55 confirmaciones mediante el motor real en ORM desechable antes de abrirHTTP, y prueba la navegación HTTP con cuotas vigentes. Hallazgo adicional pendiente: el puente transforma el429 de consulta previa en503 genérico; mejorar su presentación y espera segura sin aumentar cuotas ni reintentar pagos automáticamente.
+
+**Requisitos externos.** Extractos y soportes bancarios auténticos, consentimiento/permisos si se conectaAPI, revisión contable profesional e infraestructura objetivo para cualificación. Los55 lotes de prueba no acreditan autenticidad bancaria ni aceptación productiva. R12/R18 siguen en ejecución. Avance histórico48/72=66,67%, aceptación integral0/24, sin crédito adicional por esta ampliación. Desde esta entrega las novedades se presentan con estas tres categorías explícitas; no se equipara código probado parcialmente a sistema completado. Base publicadaee5280429; este incremento y el anteriorESG permanecen locales, documentados y respaldados, sin otro commit/push.
+
+
+## Directriz vigente · Cierre secuencialACC-001 aACC-024
+
+El usuario exige cerrar cada tarea al100% antes de pasar a la siguiente. Esta regla sustituye la ejecución alternada de frentes; no cambia el alcance original ni convierte incrementos parciales en aceptación completa. Conservar el trabajo previo de todas las tareas. Los20 hitos remanentes son acciones dependientes dentro de las24 tareas originales, no un segundo denominador de avance.
+
+Única tarea activa: **ACC-001 · Validación monetaria exacta y aislamiento de cuentas**. Estado: abierta, aceptación integral pendiente. No iniciarACC-002 hasta documentar evidencia de todos sus criterios y acreditar full_acceptance deACC-001. Una dependencia compartida puede modificarse exclusivamente si es necesaria para cerrar la tarea activa, con regresión del comportamiento afectado; eso no inicia ni cierra otra tarea.
+
+| Orden | ID | Tarea | Estado secuencial |
+|---|---|---|---|
+| 1 | ACC-001 | Validación monetaria exacta y aislamiento de cuentas | CERRADA · 100% de sus criterios originales |
+| 2 | ACC-002 | UUID de alta y guardas de asientos/líneas | CERRADA · 100% de sus criterios originales |
+| 3 | ACC-003 | Idempotencia y outbox en una transacción | CERRADA · 100% de sus criterios originales |
+| 4 | ACC-004 | Periodos, concurrencia y contrapartidas | EN ESPERA · conservar implementación previa |
+| 5 | ACC-005 | Puente TourismProvider a Tenant y actor verificables | EN ESPERA · conservar implementación previa |
+| 6 | ACC-006 | Monedas, FX y valoración | EN ESPERA · conservar implementación previa |
+| 7 | ACC-007 | Hash canónico versionado y controles SQL | EN ESPERA · conservar implementación previa |
+| 8 | ACC-008 | Contrato CRM y reserva hacia facturación | EN ESPERA · conservar implementación previa |
+| 9 | ACC-009 | XML, representación y firma fiscal | EN ESPERA · conservar implementación previa |
+| 10 | ACC-010 | Envelope encryption cliente y recuperación | EN ESPERA · conservar implementación previa |
+| 11 | ACC-011 | Conectores BYOS y OAuth mínimos | EN ESPERA · conservar implementación previa |
+| 12 | ACC-012 | Órdenes, novedades y controles SG-SST | EN ESPERA · conservar implementación previa |
+| 13 | ACC-013 | Reglas de nómina, costos y provisiones | EN ESPERA · conservar implementación previa |
+| 14 | ACC-014 | Impuestos y conciliación continua | EN ESPERA · conservar implementación previa |
+| 15 | ACC-015 | Legacy bridge y open banking | EN ESPERA · conservar implementación previa |
+| 16 | ACC-016 | Proyecciones y ratios turísticos | EN ESPERA · conservar implementación previa |
+| 17 | ACC-017 | Monte Carlo y recomendaciones | EN ESPERA · conservar implementación previa |
+| 18 | ACC-018 | Factores de carbono y ledger ambiental | EN ESPERA · conservar implementación previa |
+| 19 | ACC-019 | Reportes ESG y marcos aplicables | EN ESPERA · conservar implementación previa |
+| 20 | ACC-020 | Consultas NLP de solo lectura | EN ESPERA · conservar implementación previa |
+| 21 | ACC-021 | RPA financiera con autorizaciones | EN ESPERA · conservar implementación previa |
+| 22 | ACC-022 | Offline cifrado y conflictos | EN ESPERA · conservar implementación previa |
+| 23 | ACC-023 | Benchmark250ms y precisión IA | EN ESPERA · conservar implementación previa |
+| 24 | ACC-024 | Recuperación, seguridad y despliegue | EN ESPERA · conservar implementación previa |
+
+Criterios de cierre deACC-001 conservados de la matriz: importes finitos sin float ni redondeo silencioso; balance exacto; rechazo de cuentas ajenas o inactivas; rechazo de períodos ambiguos. Se debe comprobar su cumplimiento en los puntos de entrada de ambos sistemas, documentar las rutas y pruebas reproducibles, y resolver cualquier fallo encontrado. No exigir certificadosDIAN ni bancos para estos criterios si no son necesarios; no añadir requisitos artificiales ni eliminar criterios para cerrar. El estado actual de código y pruebas históricas no sustituye esta revisión integral del alcance.
+
+Cada cierre tendrá tres apartados:1)funcionalidad implementada y probada con evidencia;2)alcance de desarrollo pendiente (debe quedar vacío para cerrar);3)requisitos externos del criterio original (resueltos o justificados como no aplicables, nunca asumidos). Si hay bloqueo externo, la tarea sigue activa y no se salta a la siguiente. El porcentaje histórico permanece48/72=66,67%, aceptación integral0/24; esta decisión de organización no otorga crédito ni implica un nuevo commit/push.
+
+
+## Cierre secuencial · ACC-001 al100% · 2026-11-11
+
+**Funcionalidad implementada y probada.** Se revisaron los criterios originales de la filaACC-001 sin reducir alcance ni añadir requisitos de otras tareas. Se corrigieron dos fallos: la precisión/redondeo/trampas Decimal del llamante podía afectar operaciones y sumas; un período abierto superpuesto creado después del borrador no se rechazaba al contabilizar. Se fija un contexto decimal interno de50 dígitos, suficiente para importes y agregados acotados del motor, restaurando el contexto del llamante. La unicidad del período abierto y su identidad se revalidan al postear. El replay de un asiento ya contabilizado conserva su efecto histórico aunque el período haya cerrado; no es un nuevo posteo. Además, se rechazan aliases monetarios contradictorios y amount_transaction fraccionario/float antes de que DecimalField pueda redondearlo.
+
+Aceptación por criterio:1)finite/no float/no silent rounding: casosNaN/Infinity/bool/float/negativos/subcentavo/desbordamiento y contexto hostil;2)balance exacto: diferencia de un centavo no desaparece al bajar precisión, eventos/manuales conservan1000000.01 por lado;3)cuenta ajena: cuenta y plan extranjeros rechazados antes de crear efectos;4)inactiva: se reconsulta al crear y al postear un borrador;5)período ambiguo: rechazo tanto al crear como al contabilizar después de introducir superposición. Pruebas de fallo comparan cabeceras/líneas/receipts/auditoría/outbox y preservan ausencia de efectos. Ambos backendsHTTP autenticados rechazan importes inválidos sin persistir factura; el flujo válido de compra produce balances idénticos134.00/134.00. Las rutas financieras activas de ambos sistemas convergen en este motor; no se declara operativo código de presentación antiguo desconectado.
+
+Verificación:10 pruebas específicas nuevas de aceptación y3HTTP nuevas; regresiones26 de posteo,46 adaptador,20 apertura,25 liquidaciónFX,23 reembolso y35 compras, todas aprobadas. Son188 ejecuciones de pruebas entre ocho suites, no188 criterios nuevos ni cobertura100%. Además26 del runner;38 comprobaciones de navegador preservan los recorridos de apertura250 cuentas en ambos paneles. PostgreSQL16 desechable con rol sin superusuario/bypassRLS/DDL comprueba seis escenarios del criterio monetario/aislamiento/período, incluida reversión transaccional de intentos inválidos y replay histórico. No se certifican grants/RLS/migraciones/carga de producción por estos tests. Comandos/tests/logs/hashes y matriz explícita de los cinco criterios en followups.ACC001_full_acceptance del JSON canónico existente.
+
+**Alcance pendiente deACC-001:** ninguno de sus criterios originales. **Requisitos externos deACC-001:** ninguno: estos criterios no requieren un banco, certificadoDIAN ni dictamen tributario. No se usa esta conclusión para cerrarFX, impuestos, concurrencia, inmutabilidadSQL o producción, que tienen tareas propias. Los datos financieros de laboratorio son sintéticos; los motores, bases yHTTP son ejecutables reales.
+
+**Estado:ACC-001 CERRADA al100%.** Se acredita exclusivamente el tercer hito deACC-001. La base48/72=66,67%,0/24 aceptadas se conserva como corte anterior en la evidencia y las pruebas del generador. Resultado nuevo49/72=68,06%,1/24 tareas cerradas (4,17% de cierres integrales), producción deshabilitada. El generador deja de afirmar que ninguna tarea está aceptada y sus pruebas conservan el corte histórico sin alterar el denominador72. ACC-002 es la siguiente en la secuencia; no se ha iniciado su desarrollo en esta entrega. Cambios locales y respaldados, sin commit/push nuevo.
+
+
+## Cierre secuencial · ACC-002 al100% · 2026-11-11
+
+**Funcionalidad implementada y probada.** Se conservaron exactamente los criterios originales: crearUUID nuevo sinDoesNotExist y rechazar cambiosORM sobre contabilizados incluso con padre cacheado. Se sustituyó el atributo reutilizable_validated_post por un permiso temporalContextVar ligado a empresa yUUID, abierto solo durante elsave validado del motor y retirado al finalizar o fallar. Un atributo colocado en un objeto ya no autoriza una cabecera nueva contabilizada. No es una frontera de seguridad contra códigoPython privilegiado: sigue siendo un invariante interno, con permisos y guardasSQL separados.
+
+Las instancias cargadas o ya guardadas recuerdan suUUID y rechazan reasignarlo; altas de instancias nuevas y cargas con campos diferidos siguen funcionando. Las guardas vuelven a leer el padre del libro en la base: guardar/borrar líneas o agregar otra línea bajo un padre cacheado como borrador se rechaza si ya fue contabilizado. Cabeceras contabilizadas rechazan save normal, update_fields, force_update, force_insert, desmarcado ydelete. OperacionesQuerySet/bulk que omiten elsave se comprueban contra los triggers existentes del esquema migrado (0005/0006); no se reconstruyen ni eliminan registros históricos.
+
+Verificación:8 pruebas nuevas de aceptación; regresiones26 posteo,14 guardasSQL,10ACC-001,46 adaptador,20 apertura,4HTTP de compras/recuperación/devoluciones/contrapartidas en ambos sistemas,25FX y23 reembolsos:176 ejecuciones de pruebas funcionales/regresión aprobadas.26 del runner aparte. PostgreSQL16 desechable con rol sin superusuario/bypassRLS/DDL y con permisosDML comprueba cinco escenarios: altaUUID, cabecera/padre cacheados, atributo falsificado, operaciones masivas/delete bloqueadas por triggers y posteo/replay/contrapartida normal con hash original intacto. SQLite también verifica las operaciones masivas. Las pruebas del permiso temporal incluyen retirada al fallar y aislamiento en otro hilo. No se modificó interfaz ni se presenta un nuevo recorrido visual; la aceptaciónHTTP ejecuta los flujos existentes. Logs/comandos ejecutables/tests/hashes y criterios explícitos en followups.ACC002_full_acceptance del JSON canónico existente.
+
+**Alcance pendiente deACC-002:** ninguno de sus criterios originales. **Requisitos externos deACC-002:** ninguno para la implementación y aceptación funcional. Precondición de operación: esquema migrado con guardasSQL instalado; lo verifican estas pruebas y las herramientas de salud existentes. No se afirma haber inspeccionado o cualificado una base productiva. PropietariosSQL capaces de desactivar triggers, roles/RLS/otras tablas y despliegue completo mantienen sus tareasACC-007/024; no se cierran como efecto secundario deACC-002. Sin migraciones nuevas ni cambio de datos.
+
+**Estado:ACC-002 CERRADA al100%.** ACC-001 conserva su aceptación y pasó nuevamente sus diez pruebas. Solo se añade el tercer hito deACC-002:50/72=69,44%,2/24 tareas cerradas (8,33% de cierres integrales), producción deshabilitada. El corte49/72=68,06%,1/24 se preserva en evidencia y en pruebas del generador junto al corte anterior48/72. ACC-003 es la siguiente; no se desarrolló en esta entrega. Cambios locales respaldados, sin otro commit/push.
+
+
+## Cierre secuencial · ACC-003 al100% · 2026-11-11
+
+**Funcionalidad implementada y probada.** Se mantienen los criterios originales: duplicado sin duplicar asiento, contenido distinto rechazado y caída/reintento con efecto único. Se corrigió el replay de un asiento ya contabilizado para que también compruebe que existe el eventooutboxv2 original y que tipo/dominio/agregado/versión/payload coinciden exactamente con el asiento. Un evento ausente o alterado bloquea sin crear otro ni reconstruir evidencia. El estado de transportePROCESSED no altera la identidad del evento ni acredita aceptación fiscal o de red. La proyección local usa contextoDecimal independiente del llamante, conservando importes exactos.
+
+Pruebas:8 nuevas de aceptación y regresiones16 entrega local,26 posteo,10ACC-001,8ACC-002,20 apertura,4HTTP de compras/posteo/retry/recuperación/devoluciones/contrapartidas en ambos sistemas,25FX y23 reembolsos:140 ejecuciones aprobadas.26 del runner aparte. PostgreSQL16 desechable con rol restringido: dos llamadas concurrentes iguales regresan el mismo asiento (un receipt/un outbox); mismo identificador con importes distintos acepta una y rechaza otra; fallo al crear receipt o outbox revierte cabecera/líneas/auditoría/receipt/outbox y permite un retry único; fallo del consumidor revierte balance/receipt/acuse, y un acuse perdido no vuelve a incrementar el balance. SQLite comprueba además interrupción de auditoría, ausencia/alteración del outbox y proyección1000000.01 bajo precisiónDecimal hostil. No se usa bus externo ni cuentas reales. Evidencias/comandos reproducibles/tests/hashes y criterios en followups.ACC003_full_acceptance del JSON existente.
+
+**Alcance pendiente deACC-003:** ninguno en sus criterios transaccionales locales originales. **Requisitos externos de esos criterios:** ninguno. Kafka, publicación externa y deduplicación/acuse de un consumidor externo siguen sin acreditarse: no se declara exactly-once de red ni se usa el estado local como sustituto de un acuse auténtico. Tampoco se habilitan producción ni integraciones fiscales/bancarias. La transacciónACID comprobada es la del motor compartido; los dos backendsHTTP no se convierten en una transacción distribuida.
+
+**Estado:ACC-003 CERRADA al100% de sus criterios originales.** ACC-001/002 conservan aceptación y pasan regresión. Solo se añade el tercer hito deACC-003:51/72=70,83%,3/24 tareas cerradas (12,50% de cierres integrales), producción deshabilitada. El corte50/72=69,44%,2/24 y los anteriores se conservan en evidencia y pruebas del generador. ACC-004 es la siguiente; no se inició su desarrollo.
+
+El cierre supera el umbral estricto70% establecido por el usuario para el siguienteSummit consolidado. Se prepara una sola entrega del acumulado local, con respaldo y comprobación del remoto, sin force ni descarte de trabajo ajeno. La publicación solo se da por confirmada al comparar elSHA local conrefs/heads/main después delpush; no se confunde publicación del código con despliegue productivo.

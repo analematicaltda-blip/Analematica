@@ -92,7 +92,7 @@ COMMANDS={
  'review_fx_settlement':('revisar-liquidacion-divisas/',{'monetary_classification', 'currency', 'account_id', 'request_id', 'clearing_account_id', 'loss_account_id', 'confirmed', 'evidence_digest', 'as_of', 'quantity', 'terms', 'cash_line_id', 'gain_account_id'},set()),
  'post_fx_settlement':('contabilizar-liquidacion-divisas/',{'review_id', 'confirmed'},set()),
  'fx_settlement_state':('estado-liquidacion-divisas/',{'review_id'},set()),
- 'bank_rollup_sources':('fuentes-consolidacion-bancaria/',{'account_id'},set()),
+ 'bank_rollup_sources':('fuentes-consolidacion-bancaria/',{'account_id'},{'after_id','catalog_digest'}),
  'review_bank_rollup':('revisar-consolidacion-bancaria/',{'period', 'account_id', 'confirmed', 'expected_revision', 'reconciliation_ids'},set()),
  'confirm_bank_rollup':('confirmar-consolidacion-bancaria/',{'confirmed', 'review_id'},set()),
  'bank_rollup_state':('estado-consolidacion-bancaria/',{'account_id', 'since', 'until'},set()),

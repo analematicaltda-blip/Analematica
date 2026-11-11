@@ -5021,6 +5021,856 @@
       ],
       "progress": "48/72;66.67%;0/24 accepted;no milestone credit added",
       "published": false
+    },
+    "esg_multi_boundary_verified_csv": {
+      "date": "2026-11-11",
+      "source_sha256": {
+        "FRONTEND/ANALEMATICA-FRONTEND/js/esg-report.js": "103ef1f9e8d7d47cb4f9b5e16805837ff00ab45f17ec7e8b632a440dc865aaa5",
+        "FRONTEND/deployment/tests/esg_report_browser.cjs": "a3d32f8c5f744aa3ecb0710b21529d4de93eb78eda1d0fb0ba16ee1b6abacb06"
+      },
+      "commands": [
+        "PYTHONDONTWRITEBYTECODE=1 /workspace/.integration-venv/bin/python BACKEND/deployment/tests/accounting_esg_reporting_check.py",
+        "PYTHONDONTWRITEBYTECODE=1 /workspace/.integration-venv/bin/python BACKEND/deployment/tests/accounting_esg_recovery_check.py",
+        "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=BACKEND/SGA-CD-BACKEND /workspace/.integration-venv/bin/python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_corporate_ledger_esg_contract.py -v",
+        "PYTHONDONTWRITEBYTECODE=1 QUOTE_UI_DEPS=/tmp/sgacd-quote-ui/node_modules PLAYWRIGHT_MODULE=/workspace/SGA-CD/DESKTOP/asistencia-sgacd/node_modules/playwright ESG_SCREENSHOT_PREFIX=/tmp/sgacd-esg-export node FRONTEND/deployment/tests/esg_report_browser.cjs"
+      ],
+      "regression_tests": [
+        {
+          "log": "sgacd-esg-export-unit.log",
+          "tests": 12,
+          "sha256": "f1c4137524ebdca378b9e99bdef377bcd89e045b9585834d6d7f740e58dd7007"
+        },
+        {
+          "log": "sgacd-esg-export-recovery.log",
+          "tests": 7,
+          "sha256": "ed1ea57e0bee656e888b2548800ae38fc648482c70ff9e30bbc508037e5e5cfe"
+        },
+        {
+          "log": "sgacd-esg-export-contract.log",
+          "tests": 6,
+          "sha256": "a700a973ca7dfa04d2ced96cf48d292ee2084b2123db3d797d1f5d96603e3853"
+        }
+      ],
+      "browser": {
+        "passed": true,
+        "scope": "Both ESG evidence panels; multi-boundary mapping, local support hash, verified JSON/CSV export; synthetic sources only",
+        "results": [
+          {
+            "shell": "erp",
+            "passed": true,
+            "checks": [
+              "owner_authenticated_sources",
+              "explicit_period_and_cutoff_required",
+              "original_as_of_before_correction",
+              "effective_correction_not_double_counted",
+              "unmapped_coverage_visible",
+              "declared_framework_mapping",
+              "mapping_not_certification",
+              "factor_source_and_proof_visible",
+              "download_invalidated_on_edit",
+              "json_export_matches_result",
+              "export_digest_recomputed",
+              "no_payment_liability_or_ledger_write",
+              "blue_white_mobile_no_overflow",
+              "discard_clears_private_report",
+              "csv_contains_effective_revision_proof_and_draft_status",
+              "csv_invalidated_on_mapping_edit",
+              "two_boundaries_mapped_without_fabricated_measurements",
+              "support_hashed_locally_not_uploaded",
+              "tampered_result_blocks_display_and_download",
+              "valid_hash_cannot_hide_arithmetic_change",
+              "valid_hash_cannot_change_requested_dates",
+              "empty_csv_preserves_scope_without_fabricated_zero"
+            ],
+            "production_ready": false
+          },
+          {
+            "shell": "corporate",
+            "passed": true,
+            "checks": [
+              "owner_authenticated_sources",
+              "explicit_period_and_cutoff_required",
+              "original_as_of_before_correction",
+              "effective_correction_not_double_counted",
+              "unmapped_coverage_visible",
+              "declared_framework_mapping",
+              "mapping_not_certification",
+              "factor_source_and_proof_visible",
+              "download_invalidated_on_edit",
+              "json_export_matches_result",
+              "export_digest_recomputed",
+              "no_payment_liability_or_ledger_write",
+              "blue_white_mobile_no_overflow",
+              "discard_clears_private_report",
+              "csv_contains_effective_revision_proof_and_draft_status",
+              "csv_invalidated_on_mapping_edit",
+              "two_boundaries_mapped_without_fabricated_measurements",
+              "support_hashed_locally_not_uploaded",
+              "tampered_result_blocks_display_and_download",
+              "valid_hash_cannot_hide_arithmetic_change",
+              "valid_hash_cannot_change_requested_dates",
+              "empty_csv_preserves_scope_without_fabricated_zero"
+            ],
+            "production_ready": false
+          }
+        ],
+        "production_ready": false
+      },
+      "screenshots": {
+        "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/panel-exportacion-esg-erp.png": "88cad92883b65d6afb0e8414aad16192dee78bbe9df650439042dfdbbffeb245",
+        "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/panel-exportacion-esg-analematica.png": "99b1a8bd019f8b7ea23d6dff1a36f9b32a885f2878b3b9f27a7290d37638bf48"
+      },
+      "scope": "Shared actual ERP/Analematica form; multi-boundary declarations, local support SHA256, CSV/JSON only after scope/hash/exact decimal arithmetic validation. Empty CSV retains metadata without synthetic measurements.",
+      "limits": [
+        "Synthetic observations through real authenticated HTTP/ORM; not authentic environmental factors or professional applicability.",
+        "No additional liability/carbon credits/payments/certification.",
+        "Existing bounded reports max200 activities and200 observation roots; no new snapshots/native acceptance."
+      ],
+      "progress": "48/72=66.67%;0/24 accepted;no extra milestone credit",
+      "published": false
+    },
+    "paged_bank_rollup_catalog": {
+      "date": "2026-11-11",
+      "source_sha256": {
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_period_rollup.py": "3ab3d8053ff83c5c53cc0c8ed699f0f48d00fe97a4be16cf4bcfc7766c6001af",
+        "BACKEND/SGA-CD-BACKEND/app/services/bank_rollup_contract.py": "bb0e194d53808bc04d5fc05d6957e4d55e70f01cfe92fc8be176414927a3633e",
+        "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py": "061e5f56ae6e87f7946d466f2e96d3270b646d447e98754dc21be929d1dc0cd5",
+        "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_recovery_commands.py": "09812d1a54f60683528c899f5b6250058fc6c13ff1ee831d448244b9194eb655",
+        "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/views.py": "176ef96cf2116b76170cf75fa6bc29cb93b860546d8204711ed413a592974038",
+        "BACKEND/deployment/tests/accounting_bank_rollup_check.py": "0a88d2c6ea8c47ba4485c0fa0d79df51afbd131a2c64be9bc7adec4108c801c5",
+        "FRONTEND/ANALEMATICA-FRONTEND/js/bank-groups.js": "46ed482a3a34b35ca47ac0199b28a63cf679621f968dd45eccf5520e7d49dbcb",
+        "FRONTEND/deployment/tests/bank_catalog_panels_browser.cjs": "22bd54ef56d45233958c785aceefbdec06afc1470c9a6fe1227603fef1dd4fb1",
+        "FRONTEND/deployment/tests/bank_catalog_fixture.py": "2bd6d66df6e767b4cedebd6e1890dc85feec528a147510da524cf69710342c47",
+        "FRONTEND/deployment/tests/quotation_server.py": "8c204258267d684b2788e4614f5bd235f03e5907615b8f9888c779ff8c805d20"
+      },
+      "implemented_and_tested": [
+        "Catalog pages50 with cursor and stable account digest, no hidden batches after50.",
+        "Company/account scoping; reject incomplete cursor, wrong snapshot, non-boundary cursor, final cursor and snapshot changed by release.",
+        "Both shared panels preserve selections but not approvals; verify accumulated metadata hash before enabling review; clear stale choices on any page error.",
+        "53 confirmed batches in ORM/API/contract test and55 synthetic confirmations in each browser fixture."
+      ],
+      "local_remaining": [
+        "Catalog scan still bounded1000 company confirmations; no production load/250ms qualification or scalable snapshots.",
+        "Each consolidation remains limited20 selected batches,200 bank rows and200 cash lines; COP only.",
+        "Upstream read429 currently appears as generic503 through corporate bridge; improve safe retry/status presentation without increasing quotas."
+      ],
+      "external_requirements": [
+        "Authentic bank statements/consent when API used, professional reconciliation acceptance and target infrastructure qualification."
+      ],
+      "tests": [
+        {
+          "log": "sgacd-bank-catalog-unit.log",
+          "tests": 20,
+          "sha256": "c86f8b28355ffddab7095706295de1ed91322524fc6080267b7a6176287ab64e"
+        },
+        {
+          "log": "sgacd-bank-catalog-group-reg.log",
+          "tests": 12,
+          "sha256": "249118ba478fa20d4d03c70b26bb4643ecf803d46d30751b05d56a4b50901408"
+        },
+        {
+          "log": "sgacd-bank-catalog-grouped-reg.log",
+          "tests": 17,
+          "sha256": "2a9f64303251336fddcd59c9d96b81cb6e0117425c80f43d0a0f2f5c1cc524b2"
+        },
+        {
+          "log": "sgacd-bank-catalog-corporate-approved.log",
+          "tests": 29,
+          "sha256": "60d67d16e9ba7aaaca5be53de627d68f0b7a3184fc1bb3a7fab416c9835ef3bf"
+        },
+        {
+          "log": "sgacd-bank-catalog-runner-reg.log",
+          "tests": 26,
+          "sha256": "90f678b88cfd90b985d000ee88b3dd88e22df568f9ea1cc4d88c5402cf5d63da"
+        }
+      ],
+      "browsers": [
+        {
+          "result": {
+            "passed": true,
+            "scope": "Both panels: complete paged bank catalog, stable snapshot and stale-page rejection; synthetic only",
+            "results": [
+              {
+                "shell": "erp",
+                "passed": true,
+                "checks": [
+                  "55_real_confirmed_batches_in_same_cash_line",
+                  "first_page_bounded_to50",
+                  "later_batches_accessible",
+                  "complete_catalog_hash_verified",
+                  "selection_preserved_on_next_page",
+                  "first_approval_not_restored",
+                  "ordered_unique_batch_ids",
+                  "no_review_of_incomplete_catalog",
+                  "wrong_snapshot_clears_all_stale_choices",
+                  "reload_recovers_catalog_without_writes",
+                  "blue_white_mobile_without_overflow",
+                  "discard_clears_catalog_and_cursor"
+                ],
+                "production_ready": false
+              },
+              {
+                "shell": "corporate",
+                "passed": true,
+                "checks": [
+                  "55_real_confirmed_batches_in_same_cash_line",
+                  "first_page_bounded_to50",
+                  "later_batches_accessible",
+                  "complete_catalog_hash_verified",
+                  "selection_preserved_on_next_page",
+                  "first_approval_not_restored",
+                  "ordered_unique_batch_ids",
+                  "no_review_of_incomplete_catalog",
+                  "wrong_snapshot_clears_all_stale_choices",
+                  "reload_recovers_catalog_without_writes",
+                  "blue_white_mobile_without_overflow",
+                  "discard_clears_catalog_and_cursor"
+                ],
+                "production_ready": false
+              }
+            ],
+            "production_ready": false
+          },
+          "checks": 24,
+          "sha256": "93ab63edd95799a6528fd7e608074b22a1acd3804f8932044d47779691e7a812"
+        },
+        {
+          "result": {
+            "passed": true,
+            "scope": "Both panels: consolidated period across confirmed partial batches; synthetic only",
+            "results": [
+              {
+                "shell": "erp",
+                "passed": true,
+                "checks": [
+                  "bank_and_ledger_comparison_visible_before_confirmation",
+                  "read_failure_clears_stale_qualification",
+                  "successful_read_recovers_without_approvals",
+                  "downloaded_report_matches_fresh_state",
+                  "download_bytes_match_displayed_sha256",
+                  "report_preserves_non_authentication_and_no_approvals",
+                  "three_independently_confirmed_batches",
+                  "incremental_six_plus_four_same_cash_line",
+                  "another_five_cash_line",
+                  "owner_scoped_batch_catalog",
+                  "explicit_complete_statement_declaration",
+                  "first_confirmation_required",
+                  "second_confirmation_required",
+                  "editing_balance_invalidates_review",
+                  "recovery_restores_data_not_approvals",
+                  "lost_confirmation_response_recovers_same_period",
+                  "uncertain_confirmation_freezes_scope",
+                  "full_period_three_batches_two_cash_lines",
+                  "source_release_invalidates_qualification",
+                  "no_payment_or_new_ledger_entry",
+                  "blue_white_mobile_without_overflow",
+                  "discard_clears_sources_and_statement_hash"
+                ],
+                "production_ready": false
+              },
+              {
+                "shell": "corporate",
+                "passed": true,
+                "checks": [
+                  "bank_and_ledger_comparison_visible_before_confirmation",
+                  "read_failure_clears_stale_qualification",
+                  "successful_read_recovers_without_approvals",
+                  "downloaded_report_matches_fresh_state",
+                  "download_bytes_match_displayed_sha256",
+                  "report_preserves_non_authentication_and_no_approvals",
+                  "three_independently_confirmed_batches",
+                  "incremental_six_plus_four_same_cash_line",
+                  "another_five_cash_line",
+                  "owner_scoped_batch_catalog",
+                  "explicit_complete_statement_declaration",
+                  "first_confirmation_required",
+                  "second_confirmation_required",
+                  "editing_balance_invalidates_review",
+                  "recovery_restores_data_not_approvals",
+                  "lost_confirmation_response_recovers_same_period",
+                  "uncertain_confirmation_freezes_scope",
+                  "full_period_three_batches_two_cash_lines",
+                  "source_release_invalidates_qualification",
+                  "no_payment_or_new_ledger_entry",
+                  "blue_white_mobile_without_overflow",
+                  "discard_clears_sources_and_statement_hash"
+                ],
+                "production_ready": false
+              }
+            ],
+            "production_ready": false
+          },
+          "checks": 44,
+          "sha256": "ed549809e571f3c7e07a7cc96a603403d823ceaefa0332e15da926dc0493990c"
+        }
+      ],
+      "screenshots": {
+        "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/panel-catalogo-bancario-paginado-erp.png": "c94b744d946baa3b68261149f9a55365efecdd0fed54b0df221a384de6be15ec",
+        "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/panel-catalogo-bancario-paginado-analematica.png": "e8a50fae87c982b587e14ee55c3a438a7d801cda44cb53ed87cbe5f9bb0e80f2"
+      },
+      "commands": [
+        "PYTHONDONTWRITEBYTECODE=1 /workspace/.integration-venv/bin/python BACKEND/deployment/tests/accounting_bank_rollup_check.py",
+        "PYTHONDONTWRITEBYTECODE=1 /workspace/.integration-venv/bin/python BACKEND/deployment/tests/accounting_group_period_check.py",
+        "PYTHONDONTWRITEBYTECODE=1 /workspace/.integration-venv/bin/python BACKEND/deployment/tests/accounting_bank_grouped_check.py",
+        "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=BACKEND/SGA-CD-BACKEND /workspace/.integration-venv/bin/python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p 'test_corporate_ledger_bank*.py' -v",
+        "PYTHONDONTWRITEBYTECODE=1 /workspace/.integration-venv/bin/python -m unittest discover -s INTEGRACIONES/operacion/tests -v",
+        "PYTHONDONTWRITEBYTECODE=1 QUOTE_UI_DEPS=/tmp/sgacd-quote-ui/node_modules PLAYWRIGHT_MODULE=/workspace/SGA-CD/DESKTOP/asistencia-sgacd/node_modules/playwright BANK_CATALOG_SCREENSHOT_PREFIX=/tmp/sgacd-bank-catalog node FRONTEND/deployment/tests/bank_catalog_panels_browser.cjs",
+        "PYTHONDONTWRITEBYTECODE=1 QUOTE_UI_DEPS=/tmp/sgacd-quote-ui/node_modules PLAYWRIGHT_MODULE=/workspace/SGA-CD/DESKTOP/asistencia-sgacd/node_modules/playwright node FRONTEND/deployment/tests/bank_rollup_panels_browser.cjs"
+      ],
+      "test_environment_notes": [
+        "Browser/http tests needed approved local sockets.",
+        "Initial preparation via110 corporate writes hit existing upstream read quota429; final fixture prepares55 synthetic confirmations through real engine in disposable ORM before HTTP. No production quota was increased."
+      ],
+      "progress": "48/72=66.67%;0/24 full acceptance;unchanged",
+      "published": false
+    },
+    "ACC001_full_acceptance": {
+      "date": "2026-11-11",
+      "task_id": "ACC-001",
+      "status": "CLOSED",
+      "task_percent": "100.00",
+      "original_acceptance": "Importes finitos sin float ni redondeo silencioso; balance exacto; cuenta ajena/inactiva y periodo ambiguo rechazados",
+      "criteria": [
+        {
+          "criterion": "Importes finitos sin float ni redondeo silencioso",
+          "status": "PASSED",
+          "evidence": [
+            "test_money_rejects_nonfinite_float_bool_fraction_and_overflow",
+            "test_money_does_not_inherit_precision_rounding_or_traps",
+            "test_transaction_amount_cannot_be_silently_rounded_in_draft",
+            "test_invalid_money_rejected_by_both_entry_points_without_persisted_invoice",
+            "PostgreSQL invalid_money"
+          ]
+        },
+        {
+          "criterion": "Balance exacto",
+          "status": "PASSED",
+          "evidence": [
+            "test_context_cannot_hide_one_cent_imbalance",
+            "test_event_and_manual_posting_are_exact_under_hostile_context",
+            "test_valid_native_post_is_exact_and_both_reports_agree",
+            "PostgreSQL hostile_context_exact_balanced_post"
+          ]
+        },
+        {
+          "criterion": "Cuenta ajena rechazada",
+          "status": "PASSED",
+          "evidence": [
+            "AccountingFoundation.test_cross_company_account_rejected_before_header",
+            "test_foreign_chart_even_on_local_account_rejected",
+            "test_unavailable_account_cannot_enter_shared_posting_contract",
+            "PostgreSQL foreign_account"
+          ]
+        },
+        {
+          "criterion": "Cuenta inactiva rechazada",
+          "status": "PASSED",
+          "evidence": [
+            "AccountingFoundation.test_stale_active_flag_is_rechecked",
+            "test_account_deactivated_after_draft_is_rechecked",
+            "PostgreSQL account_deactivated_after_draft"
+          ]
+        },
+        {
+          "criterion": "Período ambiguo rechazado",
+          "status": "PASSED",
+          "evidence": [
+            "AccountingFoundation.test_ambiguous_open_period_is_rejected",
+            "test_period_created_after_draft_blocks_posting_without_writes",
+            "PostgreSQL period_ambiguity_after_draft"
+          ]
+        }
+      ],
+      "source_sha256": {
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/validation.py": "f16db14e82e0f493ad4c8b18bba9d496217cf5d2ff14b4cdd1af689697dc3b61",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/journal_service.py": "7ea7f80765d8f0fbabdf84f94aeffc2956b5c068ab6320255fc5f7c007778746",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py": "fc25bad17498438a8e2a533b0666092ae8059762c67c56232288be3009111ad3",
+        "BACKEND/deployment/tests/accounting_acc001_acceptance_check.py": "d5e4d2785927eef1635a752d6c88931ae618287ca1f536c6a78557f20326fb7c",
+        "BACKEND/deployment/tests/accounting_acc001_postgres.py": "48743ed1bdbd3e9856e9d0064741e0f35c6dc5ce96bea600f692fae19824d280",
+        "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_acc001.py": "276a0c4c6ba4e0e969c6eb7d442486debde95c8a49f9d6b0b43b07bdd256ebc8",
+        "INTEGRACIONES/operacion/verify_local.py": "ac0304b4f828e8126a1cbe8cb58c54671b2888b5264dd4665029fc11dc5ccc55"
+      },
+      "tests": [
+        {
+          "log": "sgacd-acc001-acceptance.log",
+          "tests": 10,
+          "sha256": "950fccbe69dac2432e125ae9756b2b8411a977549959ea0269b5c49fd81b3bf5"
+        },
+        {
+          "log": "sgacd-acc001-posting-reg.log",
+          "tests": 26,
+          "sha256": "de16038a1b5880cfed63045a87d29062f90ffdaeb4024080877d32ea87e52bcd"
+        },
+        {
+          "log": "sgacd-acc001-adapter-reg.log",
+          "tests": 46,
+          "sha256": "0ced3958417fb7fd6788b0509f9899697a6d9b3f963ede365b5c578056e3d901"
+        },
+        {
+          "log": "sgacd-acc001-opening-reg.log",
+          "tests": 20,
+          "sha256": "80cf1743f2932003a52088f4eaf329312e757fec9bf0fd6cbecdc40d3903549b"
+        },
+        {
+          "log": "sgacd-acc001-fx-reg.log",
+          "tests": 25,
+          "sha256": "802a0133c153437da44a7dbc2f5ff8f1bbe9ef4b5406d153bdb1784fcf33cb0a"
+        },
+        {
+          "log": "sgacd-acc001-wallet-reg.log",
+          "tests": 23,
+          "sha256": "baf3e13dec556c03aab296275c1903e4da58e38a95336ddeb6207856f8f56b12"
+        },
+        {
+          "log": "sgacd-acc001-purchase-reg.log",
+          "tests": 35,
+          "sha256": "2fed4ea21875aa1f6cc227a7e93934acf8b3b4caf0c97912015ba249bad8d90f"
+        },
+        {
+          "log": "sgacd-acc001-http.log",
+          "tests": 3,
+          "sha256": "bfb7c5f662123f36d3204b683cb3e5d8577286fb8fa7190061bdc7348f3e3831"
+        },
+        {
+          "log": "sgacd-acc001-runner-reg.log",
+          "tests": 26,
+          "sha256": "8f0eeaeb27df19df604824541a28b890051de06e63e8ff38861de1dac8d17eeb"
+        }
+      ],
+      "postgresql": {
+        "passed": true,
+        "postgresql": "16",
+        "disposable": true,
+        "scenarios": [
+          {
+            "scenario": "invalid_money",
+            "rejected_without_header_lines_receipt_audit_outbox": true
+          },
+          {
+            "scenario": "foreign_account",
+            "rejected": true
+          },
+          {
+            "scenario": "account_deactivated_after_draft",
+            "rejected": true
+          },
+          {
+            "scenario": "period_ambiguity_after_draft",
+            "rejected_without_posting": true
+          },
+          {
+            "scenario": "hostile_context_exact_balanced_post",
+            "balanced_and_single_effect": true
+          },
+          {
+            "scenario": "closed_period_historical_replay",
+            "preserved": true
+          }
+        ],
+        "production_roles_qualified": false,
+        "restricted_fixture_role": true,
+        "runtime_ddl_denied": true,
+        "acceptance_scope": "ACC001 original monetary and account/period criteria only",
+        "production_ready": false
+      },
+      "browser_regression": {
+        "passed": true,
+        "scope": "Paged opening of250 preserved accounts in both panels; Real ERP and corporate shells, browser, both APIs and ledger; synthetic fixtures",
+        "results": [
+          {
+            "shell": "erp",
+            "passed": true,
+            "checks": [
+              "server_business_date_default_avoids_utc_rollover",
+              "source_table_can_be_collapsed_without_mutation",
+              "250_preserved_source_accounts",
+              "five_cursor_pages_without_duplicates",
+              "incomplete_source_cannot_review",
+              "all_page_hashes_match_manifest",
+              "unicode_account_names_hashed_locally",
+              "support_file_never_uploaded",
+              "first_confirmation_required",
+              "lost_review_reply_recovers_company_state",
+              "uncertain_scope_frozen",
+              "recovery_restores_no_approval",
+              "second_confirmation_required",
+              "lost_post_reply_recovers_one_journal",
+              "single_balanced_opening_224",
+              "actual_trial_balance_250_lines",
+              "legacy_opening_panel_compatible",
+              "blue_white_mobile_no_overflow",
+              "identity_loss_clears_private_source"
+            ],
+            "production_ready": false
+          },
+          {
+            "shell": "corporate",
+            "passed": true,
+            "checks": [
+              "server_business_date_default_avoids_utc_rollover",
+              "source_table_can_be_collapsed_without_mutation",
+              "250_preserved_source_accounts",
+              "five_cursor_pages_without_duplicates",
+              "incomplete_source_cannot_review",
+              "all_page_hashes_match_manifest",
+              "unicode_account_names_hashed_locally",
+              "support_file_never_uploaded",
+              "first_confirmation_required",
+              "lost_review_reply_recovers_company_state",
+              "uncertain_scope_frozen",
+              "recovery_restores_no_approval",
+              "second_confirmation_required",
+              "lost_post_reply_recovers_one_journal",
+              "single_balanced_opening_224",
+              "actual_trial_balance_250_lines",
+              "legacy_opening_panel_compatible",
+              "blue_white_mobile_no_overflow",
+              "identity_loss_clears_private_source"
+            ],
+            "production_ready": false
+          }
+        ],
+        "production_ready": false
+      },
+      "implemented_and_tested": [
+        "Exact independent decimal context for validation, draft creation, manual/event posting and reversal; preserve caller context.",
+        "Reject contradictory aliases and transaction amounts before database rounding.",
+        "Revalidate unique open covering period at posting even if overlap was created after draft. Preserve read-only replay of already posted journals after period closure.",
+        "Owner-authenticated ERP and Analematica HTTP reject invalid native invoice money; valid native posting produces identical exact balances134.00/134.00."
+      ],
+      "development_remaining_for_this_task": [],
+      "external_requirements_for_this_task": [],
+      "acceptance_basis": "Original ACC-001 functional criteria only, reviewed against source and reproducible SQLite, PostgreSQL and both authenticated HTTP backends. No requirement for bank/DIAN/professional tax opinion in these monetary validation criteria.",
+      "does_not_certify": [
+        "Overall system completeness or production acceptance",
+        "Production database grants/RLS, privileged SQL mutation protection, concurrency close races (other tasks)",
+        "Tax/legal rules, bank sources, DIAN, devices or any external provider"
+      ],
+      "historical_progress_preserved": {
+        "completed_milestones": 48,
+        "total_milestones": 72,
+        "percent": "66.67",
+        "accepted_tasks": 0
+      },
+      "new_progress": {
+        "completed_milestones": 49,
+        "total_milestones": 72,
+        "percent": "68.06",
+        "accepted_tasks": 1,
+        "total_tasks": 24
+      },
+      "published": false
+    },
+    "ACC002_full_acceptance": {
+      "date": "2026-11-11",
+      "task_id": "ACC-002",
+      "status": "CLOSED",
+      "task_percent": "100.00",
+      "original_acceptance": "Crear UUID nuevo sin DoesNotExist; rechazar cambios ORM sobre contabilizados incluso con padre cacheado",
+      "criteria": [
+        {
+          "criterion": "Nuevo UUID de cabecera y líneas sin DoesNotExist",
+          "status": "PASSED",
+          "evidence": [
+            "test_fresh_uuid_header_and_lines_create_without_reading_missing_object",
+            "PostgreSQL new_uuid_header_lines"
+          ]
+        },
+        {
+          "criterion": "Cambios ORM de cabeceras contabilizadas rechazados",
+          "status": "PASSED",
+          "evidence": [
+            "test_posted_header_all_instance_save_forms_and_delete_are_rejected",
+            "test_stale_cached_header_cannot_save_or_unpost",
+            "test_instance_flag_does_not_authorize_posted_uuid_creation",
+            "test_sql_guards_block_bulk_mutations_and_creation_in_posted_parent",
+            "PostgreSQL queryset_bulk_and_delete"
+          ]
+        },
+        {
+          "criterion": "Líneas contabilizadas protegidas incluso con padre cacheado",
+          "status": "PASSED",
+          "evidence": [
+            "test_cached_draft_parent_cannot_mutate_delete_or_add_posted_lines",
+            "PostgreSQL stale_header_and_cached_parent",
+            "PostgreSQL queryset_bulk_and_delete"
+          ]
+        }
+      ],
+      "source_sha256": {
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/models.py": "6d65085405b154b82997f19872eb38020c028befa5fe57ec58e620486ffcf8d7",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/posting_write.py": "a4d020c3bd64fe7388ea7b8e6f106821b253fc425ef15c1c5af3b2dddabf04f2",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py": "bf32d852bbe37e8cd1631a53f77c83776e33d6f27102f0236714c65139f1102b",
+        "BACKEND/deployment/tests/accounting_acc002_acceptance_check.py": "a0a7f164d3a66c1ac5c4ad8f3bfcea7ebeebd445747bdc48d321ac9f0fd1de43",
+        "BACKEND/deployment/tests/accounting_acc002_postgres.py": "dd46b502015188b9bc278b8493be48f74fa2dd2351344e067c328a1bd5f63b9b",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/sql_guards.py": "6ad66275a562d5f7d59fd32eb4168b862643618a809b286793e2b3fbfae18c0e",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/migrations/0005_accounting_sql_guards.py": "39fb7c5fd7878bb24ef991984c5b4ca0abc0d0bac19cb2700eb2beaadf053c13",
+        "INTEGRACIONES/operacion/verify_local.py": "9c4bc59e1f338826bdcc1db8f3c1e8f8a7a8c7846549ee772a1f7230f1989ad9"
+      },
+      "tests": [
+        {
+          "log": "sgacd-acc002-acceptance.log",
+          "tests": 8,
+          "sha256": "e90732ea81a094c4247ff53400b6335113fb2d224678798a278fa6e74dfb754b"
+        },
+        {
+          "log": "sgacd-acc002-posting-reg.log",
+          "tests": 26,
+          "sha256": "a42b5b3bd4c40d928d10a7f601e75ea84ff1ead7e7c6da470d2d8d5c886cc4be"
+        },
+        {
+          "log": "sgacd-acc002-sql-reg.log",
+          "tests": 14,
+          "sha256": "6e9e1e3eb3cdfca9c7a30540d10f3964658762227d830e831299ccd885b4f097"
+        },
+        {
+          "log": "sgacd-acc002-acc001-reg.log",
+          "tests": 10,
+          "sha256": "612dac91b8409255f6fc5b3891722bc6c3e6e559cf89dc5e43d80903fd6f0bfc"
+        },
+        {
+          "log": "sgacd-acc002-adapter-reg.log",
+          "tests": 46,
+          "sha256": "6baa9f67d53095c25da81ebcc8bd7cd2ccd8e504607b895e00c47e2311f1bf06"
+        },
+        {
+          "log": "sgacd-acc002-opening-reg.log",
+          "tests": 20,
+          "sha256": "d4995a8ee53926b7ac6b72a91fb52b74fe5551e31cbd655116787dc0dbaf20ac"
+        },
+        {
+          "log": "sgacd-acc002-http-reg.log",
+          "tests": 4,
+          "sha256": "bb582857a8d64128948ae8abf4dc4707ff66fa015a5201b0c108b2985017092e"
+        },
+        {
+          "log": "sgacd-acc002-runner-reg.log",
+          "tests": 26,
+          "sha256": "69eab3fb5959cdd58c56f2438a10096c2b0cc437099aee8f9b24edec924b3c36"
+        },
+        {
+          "log": "sgacd-acc002-fx-reg.log",
+          "tests": 25,
+          "sha256": "b8e803874a82387a917dfb5fee8efc08915b790115dc2063af71939145f799dd"
+        },
+        {
+          "log": "sgacd-acc002-wallet-reg.log",
+          "tests": 23,
+          "sha256": "ed8de04766da6a585bfb0eb70d1b119f4e058e868bce6688e0c290e6a11cb094"
+        }
+      ],
+      "postgresql": {
+        "passed": true,
+        "postgresql": "16",
+        "disposable": true,
+        "scenarios": [
+          {
+            "scenario": "new_uuid_header_lines",
+            "created_without_missing_object_error": true
+          },
+          {
+            "scenario": "stale_header_and_cached_parent",
+            "save_and_delete_blocked": true
+          },
+          {
+            "scenario": "forged_reusable_flag",
+            "blocked_and_capability_reset": true
+          },
+          {
+            "scenario": "queryset_bulk_and_delete",
+            "database_guards_enforced_with_runtime_write_role": true
+          },
+          {
+            "scenario": "normal_post_replay_and_reversal",
+            "original_preserved": true
+          }
+        ],
+        "production_roles_qualified": false,
+        "restricted_fixture_role": true,
+        "runtime_ddl_denied": true,
+        "acceptance_scope": "ACC002 original UUID and posted ORM guard criteria only",
+        "production_ready": false
+      },
+      "implemented_and_tested": [
+        "Replace reusable instance _validated_post flag by temporary identity/company-bound ContextVar capability reset after success/failure and isolated between threads.",
+        "Reject primary-key reassignment on loaded or already-saved accounting instances while preserving fresh UUID creation and deferred-field loading.",
+        "Existing model guards requery parent state; existing schema triggers block queryset/bulk SQL writes on posted records; verified SQLite and PostgreSQL.",
+        "Both authenticated HTTP backends preserve native invoice intake/post/recovery/return/reversal."
+      ],
+      "development_remaining_for_this_task": [],
+      "external_requirements_for_this_task": [],
+      "runtime_precondition": "Normal migrated accounting schema includes0005/0006 SQL guards. Their installation and behavior were verified in disposable schemas. Missing/disabled guards must be rejected by existing readiness controls; no assertion about an uninspected production database.",
+      "does_not_certify": [
+        "Privileged SQL owners who can disable triggers; production roles/RLS/complete deployment qualification (ACC007/ACC024)",
+        "Other tables, device hardware, tax/legal/provider acceptance or full system completeness"
+      ],
+      "historical_progress_preserved": {
+        "completed_milestones": 49,
+        "total_milestones": 72,
+        "percent": "68.06",
+        "accepted_tasks": 1
+      },
+      "new_progress": {
+        "completed_milestones": 50,
+        "total_milestones": 72,
+        "percent": "69.44",
+        "accepted_tasks": 2,
+        "total_tasks": 24
+      },
+      "published": false
+    },
+    "ACC003_full_acceptance": {
+      "date": "2026-11-11",
+      "task_id": "ACC-003",
+      "status": "CLOSED",
+      "task_percent": "100.00",
+      "original_acceptance": "Evento duplicado no duplica asiento; payload distinto rechaza; caída/reintento conserva efecto único",
+      "criteria": [
+        {
+          "criterion": "Evento duplicado no duplica asiento",
+          "status": "PASSED",
+          "evidence": [
+            "test_duplicate_manual_event_has_single_journal_outbox_receipt",
+            "PostgreSQL same_event:2 accepted retries,1 effect"
+          ]
+        },
+        {
+          "criterion": "Payload distinto con mismo identificador rechazado",
+          "status": "PASSED",
+          "evidence": [
+            "test_changed_payload_same_key_is_rejected_without_new_effect",
+            "test_event_receipt_failure_and_retry_are_atomic_and_payload_bound",
+            "PostgreSQL changed_payload:1 accepted,1 rejected"
+          ]
+        },
+        {
+          "criterion": "Caída/reintento conserva efecto único en transacción",
+          "status": "PASSED",
+          "evidence": [
+            "test_receipt_audit_or_outbox_failure_rolls_back_entire_manual_transaction",
+            "PostgreSQL receipt_failure/outbox_failure",
+            "PostgreSQL consumer_retry",
+            "test_projection_is_exact_and_lost_ack_does_not_duplicate_effect"
+          ]
+        }
+      ],
+      "source_sha256": {
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py": "ee596e5664e578ace2872661b2b7e2a16a4f9106398fcbe19c808e95247dd6cc",
+        "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/delivery.py": "5e95d50e98b8f1860645d6a1682909571e4ee55e9ade38d72ec0ac5510d198f8",
+        "BACKEND/deployment/tests/accounting_acc003_acceptance_check.py": "6b549799a4b87468316d96987813d9b911f513af96be241270d8a171e98cd2a5",
+        "BACKEND/deployment/tests/accounting_acc003_postgres.py": "fdfc194dc11a03ed17ddd7f51fb4619cdb05932bad1a8a3b829c9a53066de261",
+        "INTEGRACIONES/operacion/verify_local.py": "8969a667e86078d3c5b4f6a9ea0271f5878e7491e8fbc04800b9f4e5f181e942"
+      },
+      "tests": [
+        {
+          "log": "sgacd-acc003-acceptance.log",
+          "tests": 8,
+          "sha256": "2c4af5745b38a8c7d82e70a018a05c6328a5491c8935787e81a175c976afcb13"
+        },
+        {
+          "log": "sgacd-acc003-delivery-reg.log",
+          "tests": 16,
+          "sha256": "bb12f612ae9951ad874c9539d1d5a58adc27c753551b70035a380ee4bc4d04c4"
+        },
+        {
+          "log": "sgacd-acc003-posting-reg.log",
+          "tests": 26,
+          "sha256": "878450860ee11316c3da11f7d26d0f8e6fd9c727624d99feec98e3794312eb15"
+        },
+        {
+          "log": "sgacd-acc003-acc001-reg.log",
+          "tests": 10,
+          "sha256": "4bf6fd802b90ce3a9fa099903c6f6dca7c6def0b686832ab4bcc9e7414e4dad1"
+        },
+        {
+          "log": "sgacd-acc003-acc002-reg.log",
+          "tests": 8,
+          "sha256": "c4bbc9b7505a85133517eeb8b22015257b7bd930bf890cec7117c283e4a0e958"
+        },
+        {
+          "log": "sgacd-acc003-opening-reg.log",
+          "tests": 20,
+          "sha256": "dc5af4c9617e31de02c6217ca8253159bc96de2f07c1fee1141e269ed8d29cbd"
+        },
+        {
+          "log": "sgacd-acc003-http-reg.log",
+          "tests": 4,
+          "sha256": "2176756cec68936db6a92742eb92e1e4867a96e35ccdbf6691268c64c6b6ec0b"
+        },
+        {
+          "log": "sgacd-acc003-fx-reg.log",
+          "tests": 25,
+          "sha256": "4270fde397e7e5a427774d94bd3f7bc3504df62300dd523f83688b243b24b903"
+        },
+        {
+          "log": "sgacd-acc003-wallet-reg.log",
+          "tests": 23,
+          "sha256": "faa01d142e2703e9cce52b8387dc0d7706291f23157bc5869e41ad75477f5e74"
+        },
+        {
+          "log": "sgacd-acc003-runner-reg.log",
+          "tests": 26,
+          "sha256": "4c0ca3df1e8cc8d0bb042f888a8238ead92a7bb2f6f4d933fe6d2b3d3e3ec5b9"
+        }
+      ],
+      "postgresql": {
+        "passed": true,
+        "postgresql": "16",
+        "disposable": true,
+        "scenarios": [
+          {
+            "scenario": "same_event",
+            "accepted": 2,
+            "single_effect": true
+          },
+          {
+            "scenario": "changed_payload",
+            "accepted": 1,
+            "single_effect": true
+          },
+          {
+            "scenario": "receipt_failure",
+            "whole_transaction_rolled_back_then_single_retry": true
+          },
+          {
+            "scenario": "outbox_failure",
+            "whole_transaction_rolled_back_then_single_retry": true
+          },
+          {
+            "scenario": "consumer_retry",
+            "projection_atomic_and_lost_ack_effect_once": true
+          }
+        ],
+        "production_roles_qualified": false,
+        "restricted_fixture_role": true,
+        "runtime_ddl_denied": true,
+        "acceptance_scope": "ACC003 original idempotency and transactional outbox criteria only",
+        "production_ready": false
+      },
+      "implemented_and_tested": [
+        "Replays verify exact persisted v2 outbox envelope and payload against journal; missing/changed event fails closed without reconstruction.",
+        "Atomic rollback of journal, lines, audit, receipt and outbox before retry.",
+        "Same/different payload concurrent requests serialize to single journal/receipt/outbox in PostgreSQL.",
+        "Local consumer receipt, balance and acknowledgment commit together; lost acknowledgment cannot duplicate projection; exact Decimal context.",
+        "Both authenticated HTTP backends preserve native purchase post/retry/return/reversal."
+      ],
+      "development_remaining_for_this_task": [],
+      "external_requirements_for_this_task": [],
+      "boundary": "Original ACC003 local transactional outbox/idempotency criteria. This does not certify exactly-once network delivery; Kafka publication/external consumer acknowledgment remains unimplemented/unqualified and is not inferred from local status.",
+      "historical_progress_preserved": {
+        "completed_milestones": 50,
+        "total_milestones": 72,
+        "percent": "69.44",
+        "accepted_tasks": 2
+      },
+      "new_progress": {
+        "completed_milestones": 51,
+        "total_milestones": 72,
+        "percent": "70.83",
+        "accepted_tasks": 3,
+        "total_tasks": 24
+      },
+      "production_ready": false
     }
   }
 }

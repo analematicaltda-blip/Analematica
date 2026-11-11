@@ -11,7 +11,7 @@ from django.utils import timezone
 from .delivery_models import AccountingDelivery,AccountingProjectionReceipt,AccountingDailyBalance
 from .models import JournalEntry,Account
 from .ledger_engine import LedgerEngine,rows
-from .validation import lock_company
+from .validation import lock_company,exact_arithmetic
 from .integrity import fingerprint
 from .exceptions import AccountingError
 from apps.core_erp.outbox_models import OutboxEvent
@@ -91,6 +91,7 @@ def valid_lease(row,token,now):
             and row.lease_until is not None and row.lease_until>now)
 
 
+@exact_arithmetic
 @transaction.atomic
 def consume(tenant_id,delivery_id,token):
     enabled();lock_company(tenant_id)

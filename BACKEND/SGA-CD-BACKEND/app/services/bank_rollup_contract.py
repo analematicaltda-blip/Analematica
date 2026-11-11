@@ -11,11 +11,17 @@ def validate(operation,data,payload,context):
     if 'account_id' in payload and data['account_id']!=payload['account_id']:raise ValueError('Different cash account returned.')
     if operation=='bank_rollup_sources':
         if data.get('schema')!='sgacd-bank-rollup-sources-v1' or data.get('read_only') is not True or type(data.get('truncated')) is not bool or not isinstance(data.get('batches'),list) or len(data['batches'])>50:raise ValueError('Bounded read-only batch catalog required.')
-        seen=set()
+        if type(data.get('total_count')) is not int or not 0<=data['total_count']<=1000 or data['total_count']<len(data['batches']) or not isinstance(data.get('catalog_digest'),str) or not re.fullmatch('[a-f0-9]{64}',data['catalog_digest']):raise ValueError('Catalog count/digest required.')
+        if data.get('after_id')!=payload.get('after_id') or ('after_id' in payload)!=('catalog_digest' in payload) or 'catalog_digest' in payload and data['catalog_digest']!=payload['catalog_digest']:raise ValueError('Catalog cursor/snapshot changed.')
+        prior=payload.get('after_id');seen=set()
+        if prior is not None:identifier(prior)
         for row in data['batches']:
             identifier(row['reconciliation_id']);identifier(row['statement_id'])
-            if row['reconciliation_id'] in seen or type(row['source_current']) is not bool:raise ValueError('Duplicate or unqualified batch.')
-            seen.add(row['reconciliation_id'])
+            if row['reconciliation_id'] in seen or prior is not None and row['reconciliation_id']<=prior or type(row['source_current']) is not bool:raise ValueError('Duplicate, unordered or unqualified batch.')
+            prior=row['reconciliation_id'];seen.add(prior)
+        more=data['truncated']
+        if more and (len(data['batches'])!=50 or data.get('next_after')!=prior) or not more and data.get('next_after') is not None:raise ValueError('Catalog continuation changed.')
+        if not payload.get('after_id') and not more and (data['total_count']!=len(data['batches']) or digest(data['batches'])!=data['catalog_digest']):raise ValueError('Complete catalog does not match fingerprint.')
         return
     if operation=='bank_rollup_state':
         if data.get('schema')!='sgacd-bank-rollup-state-v1' or data.get('read_only') is not True or data.get('since')!=payload['since'] or data.get('until')!=payload['until'] or type(data.get('revision')) is not int or data['revision']<0:raise ValueError('Different consolidation state returned.')

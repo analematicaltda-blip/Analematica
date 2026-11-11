@@ -3,7 +3,7 @@ from datetime import date
 from typing import List, Dict, Any
 from django.db import transaction
 from .models import JournalEntry, LedgerEntry, Account, FiscalPeriod
-from .validation import validate_lines, lock_company, current_actor
+from .validation import validate_lines, lock_company, current_actor, exact_arithmetic
 from .exceptions import AccountingError, TenantMismatchError, InactiveAccountError
 
 logger = logging.getLogger(__name__)
@@ -13,6 +13,7 @@ class JournalService:
     Service layer for Journal Entry lifecycle management.
     """
     @staticmethod
+    @exact_arithmetic
     @transaction.atomic
     def create_entry(
         tenant_id: str,

@@ -62,7 +62,7 @@ La base es la directriz de siete pools y las 24 tareas de `matriz-pools.csv`. Ca
 
 El máximo antes de aceptación completa de una tarea es 2/3. El porcentaje mide estos hitos, no líneas de código, horas, porcentaje de pruebas cubiertas ni ausencia de vulnerabilidades. No se obtiene crédito por documentación o planificación solas. El registro es una evaluación explícita de evidencias, no una deducción automática por presencia de archivos.
 
-{result['items_with_verified_increment']} tareas tienen incrementos verificados; ninguna acredita aún su alcance completo. Reforzar pruebas existentes no aumenta automáticamente el porcentaje. El 100 % significará cumplimiento comprobado de esta versión del alcance, no perfección absoluta ni inmunidad a ataques.
+{result['items_with_verified_increment']} tareas tienen incrementos verificados; {result['fully_accepted_items']} tienen aceptación completa registrada. Reforzar pruebas existentes no aumenta automáticamente el porcentaje. El 100 % significará cumplimiento comprobado de esta versión del alcance, no perfección absoluta ni inmunidad a ataques.
 
 | Frente | Hitos | Implementación verificable |
 |---|---:|---:|

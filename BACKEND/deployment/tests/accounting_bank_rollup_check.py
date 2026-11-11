@@ -18,6 +18,22 @@ class RollupChecks(unittest.TestCase):
  def state(self):return engine.state(self.c.tenant.pk,actor=self.c.user,account_id=str(self.c.a.pk),since=self.period['since'],until=self.period['until'])
  def release(self,index=0):
   p=OutboxEvent.objects.get(pk=self.ids[index]);return self.g.release({'reconciliation_id':str(p.pk)})
+ def test_all_catalog_pages_use_stable_account_snapshot_and_reject_bad_cursors(self):
+  for number in range(51):
+   journal=self.post();line=f['engine'].LedgerEntry.plain_objects.get(journal_entry=journal,account=self.c.a)
+   text='transaction_id,date,direction,amount,currency\npage-'+str(number)+','+self.period['since']+',IN,3.00,COP\n'
+   reviewed=self.g.review(csv_text=text,groups=[{'group_id':str(uuid.uuid4()),'bank_rows':[1],'ledger_line_ids':[str(line.pk)]}]);self.g.confirm(reviewed)
+  args={'actor':self.c.user,'account_id':str(self.c.a.pk)};first=engine.sources(self.c.tenant.pk,**args);self.assertEqual(first['total_count'],53);self.assertEqual(len(first['batches']),50);self.assertTrue(first['truncated'])
+  cursor={'after_id':first['next_after'],'catalog_digest':first['catalog_digest']};second=engine.sources(self.c.tenant.pk,**args,**cursor);self.assertEqual(len(second['batches']),3);self.assertFalse(second['truncated']);self.assertIsNone(second['next_after']);self.assertEqual(engine.fingerprint(first['batches']+second['batches']),first['catalog_digest'])
+  validate=runpy.run_path(str(Path(__file__).resolve().parents[2]/'SGA-CD-BACKEND/app/services/bank_rollup_contract.py'))['validate'];scope={'tenant_id':str(self.c.tenant.pk)};payload={'account_id':args['account_id'],**cursor};validate('bank_rollup_sources',second,payload,scope)
+  response=self.c.call('bank_rollup_sources','post',payload);self.assertEqual(response.status_code,200,response.data);self.assertEqual(response.data,second)
+  for bad in [{'after_id':first['next_after']},{'catalog_digest':first['catalog_digest']},{**cursor,'catalog_digest':'a'*64},{**cursor,'after_id':str(uuid.uuid4())},{**cursor,'after_id':first['batches'][0]['reconciliation_id']},{**cursor,'after_id':second['batches'][-1]['reconciliation_id']}]:
+   with self.assertRaises(AccountingError):engine.sources(self.c.tenant.pk,**args,**bad)
+  for bad in [{'total_count':2},{'catalog_digest':'x'},{'next_after':str(uuid.uuid4())},{'after_id':None},{'batches':list(reversed(second['batches']))}]:
+   with self.assertRaises(ValueError):validate('bank_rollup_sources',{**second,**bad},payload,scope)
+  self.release()
+  with self.assertRaises(AccountingError):engine.sources(self.c.tenant.pk,**args,**cursor)
+  self.assertEqual(engine.sources(self.c.tenant.pk,**args)['total_count'],52)
  def test_partial_batches_qualify_only_together_without_money_or_new_claims(self):
   counts=self.g.base.counts();claims=OutboxEvent.objects.filter(event_type=grouped.legacy.CLAIM).count();r=self.review();self.assertFalse(r['period_reconciled']);self.assertTrue(r['preview']['snapshot']['eligible']);a=self.confirm(r);self.assertTrue(a['period_reconciled']);self.assertEqual(a['batch_count'],2);self.assertEqual(a['bank_row_count'],2);self.assertEqual(a['ledger_line_count'],1);self.assertFalse(a['bank_verified']);self.assertFalse(a['ledger_written']);self.assertFalse(a['money_transferred']);self.assertEqual(counts,self.g.base.counts());self.assertEqual(claims,OutboxEvent.objects.filter(event_type=grouped.legacy.CLAIM).count());self.assertEqual(self.confirm(r)['confirmation_id'],a['confirmation_id']);self.assertTrue(self.confirm(r)['replayed'])
  def test_missing_batch_or_wrong_balances_does_not_qualify(self):

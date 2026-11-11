@@ -6,41 +6,62 @@
       "id": "ACC-001",
       "milestones": {
         "functional_increment": [
-          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py"
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py",
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/validation.py",
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/journal_service.py"
         ],
         "automated_verification": [
           "ANALISIS/contabilidad/evidencias/implementacion-07.json",
-          "ANALISIS/contabilidad/evidencias/implementacion-51.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-51.json",
+          "BACKEND/deployment/tests/accounting_acc001_acceptance_check.py",
+          "BACKEND/deployment/tests/accounting_acc001_postgres.py",
+          "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_acc001.py",
+          "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json"
         ],
-        "full_acceptance": []
+        "full_acceptance": [
+          "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json"
+        ]
       },
-      "acceptance_remaining": "Los9 casos ORM originales se complementan con posteo/replay/contrapartidas y escenarios PostgreSQL de laboratorio. La aceptación integral sigue sin acreditarse; no se infiere del número acumulado de pruebas."
+      "acceptance_remaining": "Ninguno en los cinco criterios funcionales originales deACC-001; cierre evidenciado2026-11-11. No equivale a habilitación productiva, fiscal/bancaria o cierre de otras tareas."
     },
     {
       "id": "ACC-002",
       "milestones": {
         "functional_increment": [
-          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py"
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py",
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/models.py",
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/posting_write.py"
         ],
         "automated_verification": [
-          "ANALISIS/contabilidad/evidencias/implementacion-17.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-17.json",
+          "BACKEND/deployment/tests/accounting_acc002_acceptance_check.py",
+          "BACKEND/deployment/tests/accounting_acc002_postgres.py",
+          "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json"
         ],
-        "full_acceptance": []
+        "full_acceptance": [
+          "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json"
+        ]
       },
-      "acceptance_remaining": "Triggers SQL probados con posteo/contrapartida válidos; pendientes roles privilegiados, otras tablas, migración nativa real y auditoría/firma independiente según alcance."
+      "acceptance_remaining": "Ninguno en los criterios originales deACC-002, cerrados2026-11-11. ORM masivo requiere las guardas SQL del esquema migrado, verificadas enSQLite/PostgreSQL. SQL privilegiado, roles/RLS y despliegue global pertenecen aACC-007/024; no se acreditan aquí."
     },
     {
       "id": "ACC-003",
       "milestones": {
         "functional_increment": [
-          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py"
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py",
+          "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/delivery.py"
         ],
         "automated_verification": [
-          "ANALISIS/contabilidad/evidencias/implementacion-07.json"
+          "ANALISIS/contabilidad/evidencias/implementacion-07.json",
+          "BACKEND/deployment/tests/accounting_acc003_acceptance_check.py",
+          "BACKEND/deployment/tests/accounting_acc003_postgres.py",
+          "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json"
         ],
-        "full_acceptance": []
+        "full_acceptance": [
+          "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json"
+        ]
       },
-      "acceptance_remaining": "Corte39: entrega local por leases, recibo único y proyección/acuse en transacción; reintentos y PostgreSQL. Publicación Kafka y deduplicación externa pendientes."
+      "acceptance_remaining": "Ninguno en los criterios transaccionales locales originales deACC-003; cierre2026-11-11. No se acredita publicaciónKafka, acuse externo ni exactly-once de red; esos alcances no se deducen del outbox local."
     },
     {
       "id": "ACC-004",
@@ -428,11 +449,13 @@
           "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
           "BACKEND/deployment/tests/accounting_bank_rollup_check.py",
           "BACKEND/deployment/tests/accounting_bank_rollup_postgres.py",
-          "FRONTEND/deployment/tests/bank_rollup_panels_browser.cjs"
+          "FRONTEND/deployment/tests/bank_rollup_panels_browser.cjs",
+          "FRONTEND/deployment/tests/bank_catalog_panels_browser.cjs",
+          "FRONTEND/deployment/tests/bank_catalog_fixture.py"
         ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "Conciliación COP por filas/período, períodos vacíos, agrupación/asignación parcial acumulada, consolidación de lotes e historia hasta20k ejercitados en ambos paneles. Falta autenticidad/consentimiento del origen bancario, FX/instrumentos/otros formatos y tránsito, snapshots/carga/archivo/migración y aceptación profesional/productiva."
+      "acceptance_remaining": "Conciliación COP por filas/período, períodos vacíos, agrupación/asignación parcial acumulada, consolidación de lotes e historia hasta20k ejercitados en ambos paneles. Falta autenticidad/consentimiento del origen bancario, FX/instrumentos/otros formatos y tránsito, snapshots/carga/archivo/migración y aceptación profesional/productiva. Catálogo2026-11-11: retirado truncamiento inaccesible de50 mediante páginas verificadas en ambos paneles; probado53/55 lotes. Persisten1000 confirmaciones por empresa,20 seleccionadas por consolidación,200 filas/200 movimientos,COP; falta snapshots/carga, presentación de429 del puente, fuentes auténticas y aceptación profesional."
     },
     {
       "id": "ACC-016",
@@ -498,16 +521,19 @@
       "id": "ACC-019",
       "milestones": {
         "functional_increment": [
-          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/esg_reports.py"
+          "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/esg_reports.py",
+          "FRONTEND/ANALEMATICA-FRONTEND/js/esg-report.js"
         ],
         "automated_verification": [
           "BACKEND/deployment/tests/accounting_esg_recovery_check.py",
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_recovery.py",
-          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json"
+          "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json",
+          "FRONTEND/deployment/tests/esg_report_browser.cjs",
+          "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json"
         ],
         "full_acceptance": []
       },
-      "acceptance_remaining": "Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva."
+      "acceptance_remaining": "Incremento local: reporte JSON por período, mapeo GRI/SASB declarado con versión, justificación y soporte; revalida cadenas/factores y usa la corrección efectiva sin doble suma. No certifica autenticidad de soportes, aplicabilidad normativa ni cobertura completa; faltan catálogo/marcos revisados, datos legítimos, duplicados semánticos, exportaciones e interfaces completas y aceptación profesional/productiva. ESG2026-11-11: ambos paneles permiten declarar varios límites, resumir soporte local y exportar actividades efectivas aCSV/JSON con ámbito/hash/aritmética comprobados; vacío explícito sin inventar cobertura. Siguen factores/soportes auténticos, aplicabilidad profesional, duplicados semánticos y snapshots/volumen/aceptación integral."
     },
     {
       "id": "ACC-020",

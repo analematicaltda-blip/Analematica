@@ -59,6 +59,9 @@ if os.environ.get('LEDGER_BROWSER')=='1':
  if os.environ.get('OPENING_BROWSER')!='1':
   LedgerEngine.post_lines(tenant_id=case.tenant.pk,entry_date=timezone.localdate(),description='Synthetic liquidity funding',
    lines_data=[{'account':case.a,'debit':'5.00'},{'account':liability,'credit':'5.00'}],actor=case.user,idempotency_key='browser-liquidity')
+ if os.environ.get('BANK_CATALOG_FIXTURE')=='1':
+  from bank_catalog_fixture import seed
+  seed(case)
  if os.environ.get('BANK_HISTORY_FIXTURE')=='1':
   from bank_history_fixture import seed
   seed(case)

@@ -69,6 +69,10 @@ El2026-11-11 el usuario autorizó expresamente una excepción para un único com
 consolidado y la integración de los avances actuales en main, aunque el indicador
 siga en66,67%. Esta excepción no autoriza commits parciales posteriores.
 
+El cierre secuencial deACC-003 acredita51/72=70,83% y cumple el umbral
+para la siguiente entrega consolidada del acumulado local. Esta entrega consume
+esa condición; no autoriza commits parciales automáticos posteriores.
+
 ## Identidad visual obligatoria
 
 Replicar la identidad de SGA-CD en Analemática, ERP, Turismo y billetera: azul
@@ -104,3 +108,15 @@ entrega (IMPLEMENTACION_NN.md, cierres nuevos, etc.). Conservar documentos hist�
 y enlaces existentes; mantener las matrices/registros automáticos canónicos.
 La actualización de main solicitada el2026-11-09 es una entrega consolidada
 explícitamente autorizada; después se conserva la preferencia de no commits parciales.
+
+## Ejecución secuencial de las24 tareas contables
+
+Directriz expresa vigente del usuario: enumerarACC-001 aACC-024 y cerrar cada
+tarea al100% antes de iniciar la siguiente. Única tarea activa: la primera que
+no tenga aceptación integral acreditada en progress-registry.json. No alternar
+frentes ni ampliar otras tareas mientras esa tarea siga abierta. Si un requisito
+externo impide el cierre, registrar el bloqueo y solicitar únicamente la
+evidencia necesaria; no saltar a otra tarea ni declarar100% local como cierre
+integral. Mantener alcance/criterios originales y separar implementado/probado,
+desarrollo pendiente y requisitos externos. La secuencia y su seguimiento viven
+en ANALISIS/contabilidad/CIERRE_20_HITOS.md; no crear otro plan narrativo.
