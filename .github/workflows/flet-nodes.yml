@@ -4,17 +4,17 @@ on:
     paths:
       - 'MOVILES/**'
       - 'DESKTOP/**'
-      - 'scripts/*flet*'
-      - 'scripts/flet_preview/**'
-      - 'tests/flet/**'
+      - 'DESKTOP/tools/*flet*'
+      - 'DESKTOP/tools/flet_preview/**'
+      - 'DESKTOP/tests/flet/**'
       - '.github/workflows/flet-nodes.yml'
   pull_request:
     paths:
       - 'MOVILES/**'
       - 'DESKTOP/**'
-      - 'scripts/*flet*'
-      - 'scripts/flet_preview/**'
-      - 'tests/flet/**'
+      - 'DESKTOP/tools/*flet*'
+      - 'DESKTOP/tools/flet_preview/**'
+      - 'DESKTOP/tests/flet/**'
       - '.github/workflows/flet-nodes.yml'
 permissions:
   contents: read
@@ -26,5 +26,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python3 tests/flet/setup_nodes.py
-      - run: python3 -m py_compile scripts/start_flet_nodes.py scripts/setup_flet_previews.py scripts/flet_preview/check_session.py
+      - run: python3 DESKTOP/tests/flet/setup_nodes.py
+      - run: python3 -m py_compile DESKTOP/tools/start_flet_nodes.py DESKTOP/tools/setup_flet_previews.py DESKTOP/tools/flet_preview/check_session.py

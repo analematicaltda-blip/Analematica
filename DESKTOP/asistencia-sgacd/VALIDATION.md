@@ -25,4 +25,4 @@ node --test DESKTOP/asistencia-sgacd/tests/*.test.mjs
 PYTHONPATH=BACKEND/SGA-CD-BACKEND python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p 'test_assistance*.py' -v
 ```
 
-Las pruebas de interfaz `tests/control.cjs` leen credenciales y certificado desde rutas privadas indicadas por variables; nunca imprimen esos valores. No deben ejecutarse contra producción. Para completar la cualificación, seguir la lista física y de cuentas en [CONTROL.md](CONTROL.md), en cada host y dispositivo expresamente autorizado.
+Las pruebas de interfaz `BACKEND/tests/control.cjs` leen credenciales y certificado desde rutas privadas indicadas por variables; nunca imprimen esos valores. No deben ejecutarse contra producción. Para completar la cualificación, seguir la lista física y de cuentas en [CONTROL.md](CONTROL.md), en cada host y dispositivo expresamente autorizado.

@@ -1,0 +1,9 @@
+{
+  "checks": 104,
+  "passed": true,
+  "actual_http": true,
+  "synthetic_contacts": true,
+  "tax_acceptance_verified": false,
+  "financial_execution": false,
+  "production_ready": false
+}

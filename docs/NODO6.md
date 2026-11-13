@@ -32,15 +32,15 @@ esta entrega. Esta prueba no certifica esa sincronización.
 ## Arrancar en el Codespace existente
 
 ```sh
-python3 scripts/start_node6.py
-python3 scripts/node6_client.py status
+python3 BACKEND/tools/start_node6.py
+python3 BACKEND/tools/node6_client.py status
 ```
 
 En **Puertos**, agrega **8606**, conserva **Private** y abre su dirección reenviada.
 Para obtener la clave de acceso del estudio, solo en tu terminal privado:
 
 ```sh
-python3 scripts/node6_client.py access
+python3 BACKEND/tools/node6_client.py access
 ```
 
 Cópiala en «Clave privada de acceso al nodo». No es la clave de Gemini ni debe
@@ -63,8 +63,8 @@ La suscripción o la aplicación de Gemini no equivalen necesariamente a acceso 
 los modelos de la API. Guarda la nueva clave mediante entrada oculta:
 
 ```sh
-python3 scripts/start_node6.py --set-gemini-key
-python3 scripts/node6_client.py models
+python3 BACKEND/tools/start_node6.py --set-gemini-key
+python3 BACKEND/tools/node6_client.py models
 ```
 
 El archivo privado `~/sgacd-demo/node6/node6.env` tiene permisos 0600. Ninguna
@@ -75,9 +75,9 @@ usando identificadores disponibles en la respuesta de `models`, sin `models/`.
 Repite el arranque para aplicar cambios.
 
 ```sh
-python3 scripts/node6_client.py script --prompt 'Escribe un guion de 15 segundos para invitar a un taller cultural'
-python3 scripts/node6_client.py image --prompt 'Cartel deportivo azul cielo y azul oscuro, sin texto'
-python3 scripts/node6_client.py reel --title 'Talleres culturales' --caption 'Conoce nuestras actividades'
+python3 BACKEND/tools/node6_client.py script --prompt 'Escribe un guion de 15 segundos para invitar a un taller cultural'
+python3 BACKEND/tools/node6_client.py image --prompt 'Cartel deportivo azul cielo y azul oscuro, sin texto'
+python3 BACKEND/tools/node6_client.py reel --title 'Talleres culturales' --caption 'Conoce nuestras actividades'
 ```
 
 Los reels de esta versión son montajes con plantilla y opcionalmente una imagen
@@ -111,7 +111,7 @@ utilizarse la herramienta oficial https://developers.google.com/oauthplayground:
    y canjea el código. Copia el refresh token al preparador privado, nunca al chat.
 
 ```sh
-python3 scripts/start_node6.py --set-youtube-oauth
+python3 BACKEND/tools/start_node6.py --set-youtube-oauth
 ```
 
 La pantalla del estudio permite clasificar si el contenido está creado para niños,
@@ -123,14 +123,14 @@ repetir: no se hacen reintentos de subida automáticos.
 También se puede preparar un borrador sin autorizar ninguna cuenta:
 
 ```sh
-python3 scripts/node6_client.py draft --filename NOMBRE_DEL_REEL.mp4
+python3 BACKEND/tools/node6_client.py draft --filename NOMBRE_DEL_REEL.mp4
 ```
 
 Sustituye `NOMBRE_DEL_REEL.mp4` por el nombre devuelto al renderizar. Para una
 subida real autorizada, selecciona explícitamente la clasificación apropiada:
 
 ```sh
-python3 scripts/node6_client.py upload-private --filename NOMBRE_DEL_REEL.mp4 --made-for-kids no
+python3 BACKEND/tools/node6_client.py upload-private --filename NOMBRE_DEL_REEL.mp4 --made-for-kids no
 ```
 
 Ese último comando envía contenido: úsalo solo después de autorizar y comprobar tu
@@ -148,7 +148,7 @@ git submodule update --init matrix-os colibri
 
 Esto restaura fuentes; no instala modelos ni configura el kernel de Matrix.
 El preparador genera `~/sgacd-demo/node6/matrix-mcp.json`, un fragmento MCP stdio
-que ejecuta `scripts/node6_mcp_stdio.py`. El puente lee la credencial desde el
+que ejecuta `BACKEND/tools/node6_mcp_stdio.py`. El puente lee la credencial desde el
 archivo privado, sin incrustarla en la configuración del cliente. Incorpóralo
 mediante el mecanismo MCP admitido por tu cliente/SDK Matrix. No se sobrescribe
 la configuración ni la proyección administrada de Matrix y no se afirma que el
@@ -166,12 +166,12 @@ consulta `/v1/models` para usar el ID anunciado, y envía texto a
 
 ## Pruebas
 
-- `tests/node6/test_node6.py`: proveedor simulado, errores sin credenciales en
+- `BACKEND/tests/node6/test_node6.py`: proveedor simulado, errores sin credenciales en
   mensajes, imagen válida, reel real/ffprobe, límites y rutas de archivo,
   protocolo Colibrí simulado, privacidad y duplicados YouTube simulados.
-- `tests/node6/test_setup.py`: preservación de servicios, volúmenes y credenciales.
-- `tests/node6/mcp.cjs`: SDK MCP instalado en Matrix, HTTP y stdio.
-- `tests/node6/studio.cjs`: estudio real, vista móvil/escritorio, reel y borrador.
+- `BACKEND/tests/node6/test_setup.py`: preservación de servicios, volúmenes y credenciales.
+- `BACKEND/tests/node6/mcp.cjs`: SDK MCP instalado en Matrix, HTTP y stdio.
+- `BACKEND/tests/node6/studio.cjs`: estudio real, vista móvil/escritorio, reel y borrador.
 
 No se modifican los archivos protegidos de la landing, el panel de administrador,
 las bases locales Flet ni los repositorios internos de Matrix/Colibrí.

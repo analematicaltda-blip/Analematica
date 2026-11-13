@@ -1,0 +1,82 @@
+{
+  "task": "GC-008",
+  "plan_step": 10,
+  "milestone_id": "GCH-023",
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "functional_scope_complete": false,
+  "tests_complete": false,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "BLOCKED_FUNCTIONAL_PREREQUISITE",
+  "functional_prerequisite": "GCH-022 / paso9: verificador, consulta y conciliación auténticos Bold pendientes.",
+  "required_scenarios": [
+    {
+      "scenario": "INVALID_SIGNATURE",
+      "state": "BLOCKED_BY_UNIMPLEMENTED_AUTHENTIC_CONTRACT",
+      "credited": false
+    },
+    {
+      "scenario": "REPLAYED_PROVIDER_EVENT",
+      "state": "BLOCKED_BY_UNIMPLEMENTED_AUTHENTIC_CONTRACT",
+      "credited": false
+    },
+    {
+      "scenario": "OUT_OF_ORDER_PROVIDER_EVENTS",
+      "state": "BLOCKED_BY_UNIMPLEMENTED_AUTHENTIC_CONTRACT",
+      "credited": false
+    },
+    {
+      "scenario": "AMOUNT_MERCHANT_SALE_MISMATCH",
+      "state": "BLOCKED_BY_UNIMPLEMENTED_AUTHENTIC_CONTRACT",
+      "credited": false
+    },
+    {
+      "scenario": "AUTHENTIC_STATUS_QUERY",
+      "state": "BLOCKED_BY_UNIMPLEMENTED_AUTHENTIC_CONTRACT",
+      "credited": false
+    },
+    {
+      "scenario": "UNCERTAIN_RESULT_RECONCILIATION",
+      "state": "BLOCKED_BY_UNIMPLEMENTED_AUTHENTIC_CONTRACT",
+      "credited": false
+    },
+    {
+      "scenario": "IDEMPOTENT_PAYMENT_LEDGER_SETTLEMENT",
+      "state": "BLOCKED_BY_UNIMPLEMENTED_AUTHENTIC_CONTRACT",
+      "credited": false
+    }
+  ],
+  "verified_this_turn": {
+    "previous_quality_integrity": true,
+    "current_source_matches_previous_regression": true,
+    "previous_quality_artifact": "ANALISIS/gestion-comercial/evidencias/gc008-paso9-20261113/quality/report.json",
+    "new_tests_executed": 0,
+    "test_counts_not_recredited": true
+  },
+  "network_and_credentials": {
+    "documentation_domain_allowed_in_current_runtime": false,
+    "configured_secret_bindings": 0,
+    "saved_network_draft_still_requires_publish": true
+  },
+  "work_performed": "Verificación de hashes y correspondencia actual de fuentes; inventario de escenarios bloqueados. No se creó un verificador supuesto ni pruebas que aprobaran una función ausente.",
+  "application_code_changed": false,
+  "prior_followups_preserved": 88,
+  "git": {
+    "commit_created": false,
+    "main_updated": false,
+    "push_performed": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

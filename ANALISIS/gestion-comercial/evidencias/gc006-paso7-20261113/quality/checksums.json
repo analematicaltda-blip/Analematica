@@ -1,0 +1,12 @@
+{
+  "pool08_quotations_browser.log": "5ccd6cd62f013888e4691f18bd225cd662e433ecd4b0672298829ba17f8169cc",
+  "pool08_quotations_native.log": "631eaca0d85e5f04b89aea9770e8e00251854a9564153f2f425f08d64bb50311",
+  "pool08_quotations_http.log": "7b453aaf0cd0cf4393dc3c4c7037f51909ae3e788b2f01363fa9efba3189182e",
+  "source-manifest.json": "50a4cba47348a0549179535e0cc634ac4985e97fb26e90ec473520a8d6985502",
+  "pool08_quotation_busy_browser.log": "370c816c8d370abbd7197c60440b9709ccf5a036ed64440301c679533c04bcdb",
+  "pool08_quotations_sga.log": "cf3baf881cedab9c47a9b1e825af027a8b01d510dc3fea4a2350312b62ecd481",
+  "report.json": "6f4b0764e632eac34d88166aaa8f9414fca78b9f1098e1f04947abff0689a007",
+  "runner.log": "22a6c0e95b1ab28f08a2dc2c71cb7d80f187c0ed3c379e6ff2e411d92ea31a58",
+  "pool08_quotation_lifecycle.log": "365391b7cd4f8f1a92257e656c93f5a61c3760b13b4f6e644fc7a35e2b2a045a",
+  "pool08_quote_delivery.log": "c7972063fcaa1a908aa6efa1f18aff288d49919de45515d1cfe021f282e64536"
+}

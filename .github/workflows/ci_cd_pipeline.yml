@@ -21,7 +21,7 @@ jobs:
           test -d "FRONTEND/SGA-CD-WEB.git" || { echo "Missing FRONTEND/SGA-CD-WEB.git"; exit 1; }
           test -d "DESKTOP/SGA-CD-APP.git" || { echo "Missing DESKTOP/SGA-CD-APP.git"; exit 1; }
           test -d "MOVILES/SGA-CD-APK.git" || { echo "Missing MOVILES/SGA-CD-APK.git"; exit 1; }
-          test -d "DB/SGA-CD-DB.git" || { echo "Missing DB/SGA-CD-DB.git"; exit 1; }
+          test -d "BACKEND/DB/SGA-CD-DB.git" || { echo "Missing BACKEND/DB/SGA-CD-DB.git"; exit 1; }
           echo "All SGA-CD component boundaries verified successfully."
 
   backend_test_suite:
@@ -50,7 +50,7 @@ jobs:
           DATABASE_URL: "sqlite:///./test_ci.db"
         run: |
           cd BACKEND/SGA-CD-BACKEND
-          PYTHONPATH=. pytest tests/ -v -k "not integration and not slow" || echo "Pytest execution completed with fallback allowance"
+          PYTHONPATH=. pytest BACKEND/tests/ -v -k "not integration and not slow" || echo "Pytest execution completed with fallback allowance"
 
   frontend_web_audit:
     name: Web Frontend & PWA Compliance Check
@@ -62,7 +62,7 @@ jobs:
 
       - name: Verify Design Tokens & Web Assets
         run: |
-          test -f "design_tokens.json" || { echo "Missing root design_tokens.json"; exit 1; }
+          test -f "FRONTEND/design_tokens.json" || { echo "Missing root FRONTEND/design_tokens.json"; exit 1; }
           test -f "FRONTEND/SGA-CD-WEB.git/index.html" || { echo "Missing index.html"; exit 1; }
           test -f "FRONTEND/SGA-CD-WEB.git/app.html" || { echo "Missing app.html"; exit 1; }
           test -f "FRONTEND/SGA-CD-WEB.git/service-worker.js" || { echo "Missing service-worker.js"; exit 1; }

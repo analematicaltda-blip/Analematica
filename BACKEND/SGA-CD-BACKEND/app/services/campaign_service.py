@@ -122,6 +122,8 @@ def dispatch_job(db,job_id):
         if job.contact_id:
             contact=db.get(CampaignContact,job.contact_id)
             if not contact or contact.scope!=access.scope or not contact.subscribed or contact.provider!=job.provider:raise HTTPException(409,'El destinatario se dio de baja o ya no pertenece a esta audiencia.')
+            from app.commercial.pool08.crm_delivery_guard import require_not_suppressed
+            require_not_suppressed(db,access.scope,job.provider,contact.address)
             recipient=contact.address
         if job.variant_id:asset=ws.asset_for(db,access,job.variant_id,'reel')
         else:
@@ -137,6 +139,8 @@ def dispatch_job(db,job_id):
         if job.contact_id:
             contact=db.get(CampaignContact,job.contact_id)
             if not contact.subscribed:raise HTTPException(409,'El destinatario se dio de baja durante la preparación.')
+            from app.commercial.pool08.crm_delivery_guard import require_not_suppressed
+            require_not_suppressed(db,access.scope,job.provider,contact.address)
         origin=public_origin(db) if job.provider in ['instagram','gmail'] else ''
         if job.provider=='instagram' and not origin:raise HTTPException(409,'Instagram necesita un dominio público HTTPS para obtener el video.')
         if not job.quota_charged:

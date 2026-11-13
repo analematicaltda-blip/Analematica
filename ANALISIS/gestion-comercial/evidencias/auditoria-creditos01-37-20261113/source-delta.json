@@ -1,0 +1,7 @@
+{
+  "comparison": "Previous steps01-12 cut to current full audit",
+  "changed_source_paths": [
+    "BACKEND/INTEGRACIONES/operacion/commercial_audit.py",
+    "BACKEND/INTEGRACIONES/operacion/tests/test_commercial_audit.py"
+  ]
+}

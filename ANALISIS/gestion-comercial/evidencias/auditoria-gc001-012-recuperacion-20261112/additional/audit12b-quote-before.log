@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: Newly rendered controls must inherit busy state while media is still loading
+
+false !== true
+
+    at /workspace/SGA-CD-conectado/FRONTEND/deployment/tests/pool08_quotation_busy_browser.cjs:13:187

@@ -1,0 +1,28 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_basic_and_undelegated_staff_cannot_use_campaigns_or_connect_channels (test_campaigns.CampaignTests.test_basic_and_undelegated_staff_cannot_use_campaigns_or_connect_channels) ... ok
+test_bulk_audience_dispatches_once_per_recipient_reuses_adaptation_and_charges_once (test_campaigns.CampaignTests.test_bulk_audience_dispatches_once_per_recipient_reuses_adaptation_and_charges_once) ... ok
+test_calendar_requires_aware_valid_time_and_explicit_approval (test_campaigns.CampaignTests.test_calendar_requires_aware_valid_time_and_explicit_approval) ... ok
+test_channels_are_encrypted_scoped_and_never_reflect_secrets (test_campaigns.CampaignTests.test_channels_are_encrypted_scoped_and_never_reflect_secrets) ... ok
+test_concurrent_workers_claim_one_job_only (test_campaigns.CampaignTests.test_concurrent_workers_claim_one_job_only) ... ok
+test_delegation_revoked_after_approval_blocks_creator_at_dispatch (test_campaigns.CampaignTests.test_delegation_revoked_after_approval_blocks_creator_at_dispatch) ... ok
+test_draft_is_idempotent_and_has_no_external_side_effect (test_campaigns.CampaignTests.test_draft_is_idempotent_and_has_no_external_side_effect) ... ok
+test_future_calendar_waits_and_survives_new_database_session (test_campaigns.CampaignTests.test_future_calendar_waits_and_survives_new_database_session) ... ok
+test_instagram_requires_public_origin_configuration_and_only_owner_can_set_it (test_campaigns.CampaignTests.test_instagram_requires_public_origin_configuration_and_only_owner_can_set_it) ... ok
+test_one_click_unsubscribe_get_is_safe_and_post_records_bye (test_campaigns.CampaignTests.test_one_click_unsubscribe_get_is_safe_and_post_records_bye) ... ok
+test_pending_provider_is_polled_with_new_phase_not_duplicated (test_campaigns.CampaignTests.test_pending_provider_is_polled_with_new_phase_not_duplicated) ... ok
+test_preview_mode_cannot_approve_or_dispatch_external_jobs (test_campaigns.CampaignTests.test_preview_mode_cannot_approve_or_dispatch_external_jobs) ... ok
+test_reschedule_restores_draft_and_media_links_require_signed_target_scope (test_campaigns.CampaignTests.test_reschedule_restores_draft_and_media_links_require_signed_target_scope) ... ok
+test_revoked_permission_inactive_plan_and_changed_channel_block_scheduled_sends (test_campaigns.CampaignTests.test_revoked_permission_inactive_plan_and_changed_channel_block_scheduled_sends) ... ok
+test_tenant_isolation_in_campaign_approval_audience_and_adaptation (test_campaigns.CampaignTests.test_tenant_isolation_in_campaign_approval_audience_and_adaptation) ... ok
+test_uncertain_result_never_requeues_and_cancel_prevents_unsent_targets (test_campaigns.CampaignTests.test_uncertain_result_never_requeues_and_cancel_prevents_unsent_targets) ... ok
+test_unknown_reconciles_by_reading_journal_without_repeating_send (test_campaigns.CampaignTests.test_unknown_reconciles_by_reading_journal_without_repeating_send) ... ok
+test_unsubscribe_is_checked_again_at_dispatch (test_campaigns.CampaignTests.test_unsubscribe_is_checked_again_at_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 16.296s
+
+OK

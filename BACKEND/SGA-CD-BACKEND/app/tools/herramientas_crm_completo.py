@@ -394,30 +394,35 @@ def tool_nota_credito_anulacion(instruccion: str) -> str:
 @tool
 def tool_generar_link_pago_online(instruccion: str) -> str:
     """Soldado especialista de la escuadra PasarelasPagoSargento: tool_generar_link_pago_online"""
-    return f"[PasarelasPagoSargento] tool_generar_link_pago_online ejecutada con éxito para: {instruccion[:50]}"
+    return '{"status":"BLOCKED","code":"PERSISTED_PAYMENT_AND_AUTHENTIC_RECEIPT_REQUIRED","executed":false}'
 
 @tool
+
 def tool_verificar_webhook_pago(instruccion: str) -> str:
     """Soldado especialista de la escuadra PasarelasPagoSargento: tool_verificar_webhook_pago"""
-    return f"[PasarelasPagoSargento] tool_verificar_webhook_pago ejecutada con éxito para: {instruccion[:50]}"
+    return '{"status":"BLOCKED","code":"PERSISTED_PAYMENT_AND_AUTHENTIC_RECEIPT_REQUIRED","executed":false}'
 
 @tool
+
 def tool_reintentar_cobro_fallido(instruccion: str) -> str:
     """Soldado especialista de la escuadra PasarelasPagoSargento: tool_reintentar_cobro_fallido"""
-    return f"[PasarelasPagoSargento] tool_reintentar_cobro_fallido ejecutada con éxito para: {instruccion[:50]}"
+    return '{"status":"BLOCKED","code":"PERSISTED_PAYMENT_AND_AUTHENTIC_RECEIPT_REQUIRED","executed":false}'
 
 @tool
+
 def tool_actualizar_factura_pagada(instruccion: str) -> str:
     """Soldado especialista de la escuadra PasarelasPagoSargento: tool_actualizar_factura_pagada"""
-    return f"[PasarelasPagoSargento] tool_actualizar_factura_pagada ejecutada con éxito para: {instruccion[:50]}"
+    return '{"status":"BLOCKED","code":"PERSISTED_PAYMENT_AND_AUTHENTIC_RECEIPT_REQUIRED","executed":false}'
 
 @tool
+
 def tool_enviar_comprobante_pago(instruccion: str) -> str:
     """Soldado especialista de la escuadra PasarelasPagoSargento: tool_enviar_comprobante_pago"""
-    return f"[PasarelasPagoSargento] tool_enviar_comprobante_pago ejecutada con éxito para: {instruccion[:50]}"
+    return '{"status":"BLOCKED","code":"PERSISTED_PAYMENT_AND_AUTHENTIC_RECEIPT_REQUIRED","executed":false}'
 
 # --- Escuadra: PrevencionDesercionSargento (RetencionChurnLieutenant / CierreFacturacionCaptain) ---
 @tool
+
 def tool_detectar_inasistencias_3(instruccion: str) -> str:
     """Soldado especialista de la escuadra PrevencionDesercionSargento: tool_detectar_inasistencias_3"""
     return f"[PrevencionDesercionSargento] tool_detectar_inasistencias_3 ejecutada con éxito para: {instruccion[:50]}"

@@ -1,6 +1,6 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/fx-settlements.js';
+import '../runtime/fx-settlements.js';
 declare global {interface Window {SGACDFxSettlements:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>,signal:AbortSignal)=>Promise<unknown>;onPosted:()=>void})=>{destroy:()=>void;clear:()=>void}}}}
 const actions:Record<string,string>={fx_settlement_catalog:'catalogo-liquidacion-divisas',review_fx_settlement:'revisar-liquidacion-divisas',post_fx_settlement:'contabilizar-liquidacion-divisas',fx_settlement_state:'estado-liquidacion-divisas',fx_settlement_request_state:'consultar-solicitud-liquidacion-divisas'};
 export function FxSettlements({identity,providerId,request,onPosted}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>;onPosted:()=>void}){

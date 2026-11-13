@@ -31,8 +31,8 @@ Si falta sesión/vínculo, se revoca o no coincide el actor, se bloquea y no se 
 ## Ensayo reproducible local
 
 ```bash
-python INTEGRACIONES/operacion/verify_local.py --profile accounting --output /tmp/resultado-contable-nuevo
-python INTEGRACIONES/operacion/verify_local.py --verify /tmp/resultado-contable-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile accounting --output /tmp/resultado-contable-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --verify /tmp/resultado-contable-nuevo
 ```
 
 El perfil incluye dos procesos/backends, roles y almacenes desechables. El navegador corporativo se valida con FRONTEND/deployment/tests/corporate_ledger_browser.cjs usando las dependencias Playwright y Python ya preparadas del entorno. Las credenciales de fixture son efímeras, quedan en directorios privados y no se sirven por HTTP.

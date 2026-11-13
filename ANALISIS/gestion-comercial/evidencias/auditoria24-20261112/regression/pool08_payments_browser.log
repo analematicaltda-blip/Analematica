@@ -1,0 +1,46 @@
+Sales browser sga-cd 1280
+Sales browser sga-cd 390
+Sales browser erp-tur 1280
+Sales browser erp-tur 390
+Sales browser analematica 1280
+Sales browser analematica 390
+Sales browser gateway 1280
+Payment UI state: Intenciones de pago · Bold
+
+El importe procede de una venta contabilizada. Crear o abrir un enlace no confirma dinero recibido.
+
+Recibo local recuperado; no constituye confirmación de dinero.
+
+Venta contabilizada
+Venta navegador 1794526382737
+Revisé el origen y el importe de la venta
+Preparar intención
+Recuperar recibo pendiente
+
+PAY-02a0faf876bc428abc89db4f395f9881 · Envío bloqueado; revisar configuración o contrato
+
+Abrir intención
+
+PAY-36bea2e7b43c4e959f0dab437068ce0a · Intención preparada
+
+Abrir intención
+
+PAY-47d7685a65d242f398a6eaccec8d52c2 · Envío bloqueado; revisar configuración o contrato
+
+Abrir intención
+Intención PAY-36bea2e7b43c4e959f0dab437068ce0a
+
+Intención preparada · Revisión 1
+
+COP 119.00
+
+Pago confirmado: No · Asiento de recaudo: Sin registrar
+
+Confirmo el envío de esta intención por su importe registrado
+Solicitar enlace a Bold
+Ver historial
+UI errors: 
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-payment-feedback]').filter({ hasText: 'Envío bloqueado' }) to be visible[22m
+

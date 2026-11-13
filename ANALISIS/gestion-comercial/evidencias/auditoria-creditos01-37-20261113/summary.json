@@ -1,0 +1,191 @@
+{
+  "date_colombia": "2026-11-13",
+  "reviewed_credit_ordinals": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37
+  ],
+  "remaining_plan_steps_reviewed": 37,
+  "tasks_in_scope": 24,
+  "suites": 136,
+  "python_tests": 1410,
+  "browser_checks": 3837,
+  "browser_suites": [
+    {
+      "suite": "pool08_opportunity_recovery_browser",
+      "checks": 21
+    },
+    {
+      "suite": "pool08_after_sales_lifecycle",
+      "checks": 54
+    },
+    {
+      "suite": "pool08_after_sales_browser",
+      "checks": 58
+    },
+    {
+      "suite": "pool08_sales_lifecycle",
+      "checks": 32
+    },
+    {
+      "suite": "pool08_sales_browser",
+      "checks": 112
+    },
+    {
+      "suite": "pool08_pricing_browser",
+      "checks": 104
+    },
+    {
+      "suite": "pool08_opportunities_browser",
+      "checks": 120
+    },
+    {
+      "suite": "pool08_crm_browser",
+      "checks": 88
+    },
+    {
+      "suite": "pool08_crm_recovery_browser",
+      "checks": 24
+    },
+    {
+      "suite": "pool08_recovery_browser",
+      "checks": 60
+    },
+    {
+      "suite": "pool08_quotation_lifecycle",
+      "checks": 33
+    },
+    {
+      "suite": "pool08_quotation_busy_browser",
+      "checks": 9
+    },
+    {
+      "suite": "pool08_quotations_browser",
+      "checks": 176
+    },
+    {
+      "suite": "pool08_access_browser",
+      "checks": 336
+    },
+    {
+      "suite": "pool08_payments_lifecycle",
+      "checks": 27
+    },
+    {
+      "suite": "pool08_payments_browser",
+      "checks": 150
+    },
+    {
+      "suite": "pool08_offline_browser",
+      "checks": 75
+    },
+    {
+      "suite": "pool08_workspace_browser",
+      "checks": 804
+    },
+    {
+      "suite": "pool08_native_ui",
+      "checks": 30
+    },
+    {
+      "suite": "pool08_capture_browser",
+      "checks": 192
+    },
+    {
+      "suite": "pool08_email_campaign_browser",
+      "checks": 96
+    },
+    {
+      "suite": "pool08_publishing_browser",
+      "checks": 64
+    },
+    {
+      "suite": "pool08_inbox_browser",
+      "checks": 88
+    },
+    {
+      "suite": "pool08_army_browser",
+      "checks": 128
+    },
+    {
+      "suite": "pool08_analytics_browser",
+      "checks": 72
+    },
+    {
+      "suite": "pool08_ads_browser",
+      "checks": 136
+    },
+    {
+      "suite": "pool08_mobile_browser",
+      "checks": 256
+    },
+    {
+      "suite": "pool08_adaptation_browser",
+      "checks": 168
+    },
+    {
+      "suite": "pool08_library_browser",
+      "checks": 152
+    },
+    {
+      "suite": "pool08_video_browser",
+      "checks": 36
+    },
+    {
+      "suite": "pool08_landings_browser",
+      "checks": 136
+    }
+  ],
+  "all_selected_suites_passed": true,
+  "source_stable": true,
+  "failed_suites": [],
+  "acceptance_complete": false,
+  "production_enabled": false,
+  "new_progress_credit": 0,
+  "global_implementation_percent": null,
+  "limitations": [
+    "37 credit ordinals retain their original nonconsecutive GCH identifiers.",
+    "Regression and historical artifact integrity are distinct from complete functionality or professional/provider/hardware acceptance.",
+    "GC-001 historical report is embedded in the hashed registry; no raw historical logs are asserted.",
+    "Source presence or a related passed test does not independently accept a task."
+  ],
+  "fixes": [
+    "GC-002 maps to its actual access_admin modules and pool08_access tests.",
+    "Current-run qualification requires stable matching source digests, unique suites and no failed/skipped/truncated logs.",
+    "Each credited milestone now exposes its own anchored historical artifact integrity and current related regression."
+  ]
+}

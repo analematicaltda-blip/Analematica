@@ -1,0 +1,7 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- '00000000-0000-4000-8000-000000000001'
+
+    at /workspace/SGA-CD-conectado/FRONTEND/deployment/tests/pool08_quotation_lifecycle.cjs:14:802

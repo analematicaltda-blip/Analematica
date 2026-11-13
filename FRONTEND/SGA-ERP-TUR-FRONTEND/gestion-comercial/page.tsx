@@ -37,6 +37,7 @@ import LevelAIStudio from './components/LevelAIStudio';
 import LevelFunnels from './components/LevelFunnels';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
 import Link from 'next/link';
+import CommercialCRMWorkspace from './components/CommercialCRMWorkspace';
 
 enum CommercialView {
   DASHBOARD = 'dashboard',
@@ -160,13 +161,13 @@ export default function GestionComercialPage() {
                 <Card className="border-none shadow-sm bg-brand/5">
                    <CardContent className="p-6">
                       <p className="text-[10px] font-black text-brand uppercase tracking-widest mb-1">Tasa de Recompra</p>
-                      <h3 className="text-3xl font-black">12%</h3>
+                      <h3 className="text-3xl font-black">No disponible</h3>
                    </CardContent>
                 </Card>
                 <Card className="border-none shadow-sm bg-indigo-50 dark:bg-indigo-900/10">
                    <CardContent className="p-6">
                       <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1">LTV Promedio</p>
-                      <h3 className="text-3xl font-black">$450.00</h3>
+                      <h3 className="text-3xl font-black">No disponible</h3>
                    </CardContent>
                 </Card>
              </div>
@@ -274,26 +275,7 @@ export default function GestionComercialPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { label: 'Ingresos Mes', val: statsData?.ventas_mes ? `$${statsData.ventas_mes.toLocaleString()}` : '$0.00', icon: FiDollarSign, color: 'text-brand' },
-                 { label: 'Leads Nuevos', val: statsData?.leads_nuevos || '0', icon: FiUsers, color: 'text-indigo-600' },
-                 { label: 'Conversión', val: statsData?.tasa_conversion ? `${statsData.tasa_conversion}%` : '0%', icon: FiZap, color: 'text-amber-500' },
-                 { label: 'Tickets Activos', val: statsData?.tickets_activos || '0', icon: FiActivity, color: 'text-emerald-600' },
-               ].map((kpi, i) => (
-                 <Card key={i} className="border-none shadow-sm bg-white dark:bg-brand-deep/20">
-                    <CardContent className="p-8 flex items-center justify-between">
-                       <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{kpi.label}</p>
-                          <h3 className="text-3xl font-black text-slate-900 dark:text-white">{kpi.val}</h3>
-                       </div>
-                       <div className={`p-4 rounded-2xl bg-slate-50 dark:bg-black/20 ${kpi.color}`}>
-                          <kpi.icon size={24} />
-                       </div>
-                    </CardContent>
-                 </Card>
-               ))}
-            </div>
+            <CommercialCRMWorkspace initialWorkspace="analytics" />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                <Card className="border-none shadow-xl bg-slate-900 text-white rounded-[2rem] p-10 overflow-hidden relative group cursor-pointer" onClick={() => setActiveView(CommercialView.FUNNELS)}>
@@ -326,6 +308,8 @@ export default function GestionComercialPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-black transition-colors flex flex-col">
        <div className="px-8 py-3"><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/cotizaciones">Cotizaciones y borradores</Link></div>
        <div className="px-8 py-3"><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/politicas-devolucion">Políticas de devolución y retención comercial</Link></div>
+       <div className="px-8 py-3"><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/crm">CRM, contactos y seguimiento</Link></div>
+       <div className="px-8 py-3"><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/cotizaciones-dinamicas" className="text-sky-300 underline">Cotizaciones dinámicas</Link><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/tarifas" className="text-sky-300 underline">Catálogo y tarifas</Link><Link href="/dashboard/prestador/mi-negocio/gestion-comercial/oportunidades">Oportunidades y embudo verificado</Link></div>
        <ViewState
           isLoading={isLoading}
           loadingMessage="Sincronizando flujo comercial..."

@@ -1,0 +1,9 @@
+{
+  "SYSTEM:SCOPE": {
+    "version": "requires-company-review",
+    "currency": "COP",
+    "max_reserved_minor": 1000000,
+    "max_daily_minor": 100000,
+    "support_digest": "0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

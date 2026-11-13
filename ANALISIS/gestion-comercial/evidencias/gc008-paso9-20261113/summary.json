@@ -1,0 +1,63 @@
+{
+  "task": "GC-008",
+  "plan_step": 9,
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "functional_scope_complete": false,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "BLOCKED_PROVIDER_CONTRACT_AND_CONFIGURATION",
+  "work_performed": "Inspección de gateway/pagos y regresión actual; propuesta de red guardada para documentación Bold, sin modificar confirmación de pagos ni inventar contrato.",
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc008-paso9-20261113/quality/report.json",
+    "sha256": "6bcb919f40a8ce18558119fc9d4abfd6dd16b16fce443e6023b08cd179a011ff",
+    "suites": 7,
+    "tests": 36,
+    "source_stable": true,
+    "source_digest": "b72843f0a1b8d30ebcbbb69c3f8bb270e3037694e14333891340d6738cbb5acb"
+  },
+  "browser_checks": {
+    "payments": 150,
+    "lifecycle": 27
+  },
+  "network_and_bindings": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc008-paso9-20261113/network-and-bindings.json",
+    "sha256": "93ece37e7641db708b781b3d96b19d116d5932d704c41100dcc69acbbddbbbdf"
+  },
+  "implementation_still_missing": [
+    "Verificador de acuses según contrato oficial auténtico de Bold.",
+    "Consulta autenticada de estado con contrato/entornos cualificados.",
+    "Conciliación/liquidación enlazada de forma idempotente a venta, importe, empresa y asiento."
+  ],
+  "external_blockers": [
+    "Aplicar la propuesta de red para consultar la documentación oficial; el proxy bloqueó la conexión, no se recibió respuesta del origen Bold.",
+    "Configuración privada de comercio/pruebas y acuses legítimos; no hay vinculaciones Bold en el proceso ni en los dos .env revisados.",
+    "GC-007 permanece sin aceptación integral."
+  ],
+  "false_payment_proofs_rejected": [
+    "Retorno de navegador",
+    "Hash declarado",
+    "Enlace de checkout",
+    "Resultado de transmisión incierto"
+  ],
+  "application_code_changed": false,
+  "real_provider_calls": false,
+  "prior_followups_preserved": 87,
+  "git": {
+    "commit_created": false,
+    "push_performed": false,
+    "main_updated": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "commercial-identity-acceptance-readiness-v1",
+  "task_id": "GC-003",
+  "milestone_id": "GCH-009",
+  "gate": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+  "dependencies_without_acceptance": [
+    "GC-002"
+  ],
+  "local_evidence_origin_task": "GC-002",
+  "local_blocker": null,
+  "local_evidence": {
+    "suite_ids": [
+      "pool08_crm_browser",
+      "pool08_crm_domain",
+      "pool08_crm_http",
+      "pool08_crm_native",
+      "pool08_crm_sga",
+      "pool08_event_binding_native",
+      "pool08_event_binding_sga"
+    ],
+    "artifact_integrity_verified": true,
+    "identity_sources_current": true,
+    "changed_sources": [],
+    "checked_source_count": 337,
+    "external_authenticity_verified": false
+  },
+  "external_review": [
+    {
+      "id": "CRM_CREATE",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: CREATE",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_SEARCH",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: SEARCH",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_UPDATE",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: UPDATE",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_FOLLOW_UP",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: FOLLOW_UP",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_DUPLICATE_REVIEW",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: DUPLICATE_REVIEW",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_CONVERT",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: CONVERT",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_WITHDRAW",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: WITHDRAW",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_CONSENT_AND_HISTORY",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: CONSENT_AND_HISTORY",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    }
+  ],
+  "known_materials_availability": "El usuario indicó no disponer del conjunto solicitado de muestras autorizadas de clientes y políticas revisadas; no se vuelve a solicitar ni se sustituye por fixtures.",
+  "credited_milestones": 37,
+  "credited_milestone_percent": "51.39",
+  "new_progress_credit": 0,
+  "acceptance_complete": false,
+  "production_enabled": false,
+  "permissions_changed": false,
+  "publication_performed": false,
+  "limitations": [
+    "Checksums prove internal consistency, never legitimacy of people or policies.",
+    "No input flag, document hash or synthetic reviewer automatically grants acceptance.",
+    "This preparation tool does not certify an acceptance completed elsewhere."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "matched_fresh_tested_migrations": true,
+  "sha256": {
+    "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/migrations/0011_media_library.py": "70b98b587c3fbce0a4bd7a8091ae72fda0c971cb22a54d4c6da48c11a87e1d81",
+    "BACKEND/ANALEMATICA-BACKEND/migrations/0011_media_library.py": "dc7b255a92169056ff27dd172ded90f69efd7d60d50c31f76ed09a4e98b49346"
+  }
+}

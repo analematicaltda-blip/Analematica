@@ -60,7 +60,7 @@ bash -e <<'SH'
 cd /workspaces/SGA-CD
 git fetch origin codex/node6-campaign-calendar
 git merge --ff-only FETCH_HEAD
-python3 scripts/integrate_workspace.py --start
+python3 BACKEND/tools/integrate_workspace.py --start
 SH
 ```
 

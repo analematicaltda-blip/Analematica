@@ -1,0 +1,262 @@
+INFO Suscriptor registrado para el evento: RESERVATION_CREATED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: RESERVATION_CANCELLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECEIVED
+INFO Suscriptor registrado para el evento: SALE_COMPLETED
+INFO Suscriptor registrado para el evento: PURCHASE_ORDER_POSTED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED
+INFO Suscriptor registrado para el evento: INVENTORY_ADJUSTED
+INFO Suscriptor registrado para el evento: ASSET_DEPRECIATED
+INFO Suscriptor registrado para el evento: LIQUIDATION
+INFO Suscriptor registrado para el evento: SALE_CREATED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED_V2
+INFO Suscriptor registrado para el evento: SaaS_INVOICE_GENERATED
+INFO Suscriptor registrado para el evento: BANK_FEE_REGISTERED
+INFO Standard Accounting Handlers registered.
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: FINANCIAL_PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: SUBSIDIARY_CREATED
+INFO EOS CONSOLIDATION: Event handlers registered.
+INFO Suscriptor registrado para el evento: TENANT_PROVISIONING_REQUESTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_EXPIRED
+INFO TENANT LIFECYCLE ENGINE: Listening for lifecycle events.
+INFO Suscriptor registrado para el evento: FINANCIAL_IMPACT_REQUESTED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: PAYMENT_FAILED
+INFO Control Tower Monitoring Handlers registered.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: ANOMALY_DETECTED
+INFO CONTROL TOWER: Metric Listener active.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Enterprise Policy Engine registered.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Global Holding Orchestrator registered.
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Capital Markets Orchestrator registered.
+INFO Suscriptor registrado para el evento: EQUITY_BUYBACK_TRIGGERED
+INFO Tokenization Orchestrator registered.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: LEAD_CONVERTED
+INFO COMMERCIAL ENGINE: Suscriptores de eventos registrados.
+INFO Suscriptor registrado para el evento: USAGE_CYCLE_CLOSED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO TREASURY AUTOMATION: Orquestación de eventos configurada.
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_CANCELLED
+INFO Suscriptor registrado para el evento: PLAN_UPGRADED
+INFO Suscriptor registrado para el evento: PLAN_DOWNGRADED
+INFO Suscriptor registrado para el evento: USAGE_BILLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO Suscriptor registrado para el evento: INVOICE_CREATED
+INFO Suscriptor registrado para el evento: USAGE_RECORDED
+INFO OPERATIONAL INTELLIGENCE: DataCollector initialized.
+/workspace/.integration-venv/lib/python3.12/site-packages/django/db/backends/utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+INFO KERNEL: Intención 'PLATFORM_CREATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_SUSPEND_USER' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ERP_CONFIRM_SALE' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_GENERATE_BALANCE' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'OPTIMIZE_TENANT_RETENTION' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ADAPTIVE_PRICING_ADJUSTMENT' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'SYSTEMIC_EVOLUTION_STEP' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'MANAGE_WORKSHOP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'REGISTER_PRODUCTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'UPDATE_ARTISAN_INVENTORY' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'PROCESS_COMMAND' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'VOID_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CREATE_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CANCEL_PACKAGE_COMPONENT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_AGENCY_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'SCHEDULE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_TRANSPORT_SEAT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'ASSIGN_GUIDE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_GUIDE_COMMISSION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BILL_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'NIGHT_CASH_CLOSE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'WALLET_DEPOSIT' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_PAY' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_REFUND' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_LIQUIDATE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_FREEZE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'DELIVERY_REQUEST' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_ASSIGN' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_COMPLETE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_RATE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'VEHICLE_REGISTER' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'GENERATE_LEGACY_BUNDLE' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PLATFORM_TRANSFER_OWNERSHIP' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'SYSTEM_EVOLUTION_HARDENING' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'QUERY_META_STANDARD' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PUBLIC_BUDGET_OPTIMIZATION' registrada en el dominio 'hacienda'.
+INFO KERNEL: Intención 'TERRITORIAL_IMPACT_SIMULATION' registrada en el dominio 'planeacion'.
+INFO KERNEL: Intención 'CIVIL_DEFENSE_ALERT' registrada en el dominio 'seguridad_civil'.
+INFO KERNEL: Intención 'LAND_USE_AUDIT' registrada en el dominio 'gestion_territorial'.
+INFO KERNEL: Intención 'ERP_CREATE_VOUCHER' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'ERP_VIEW_SALES_STATS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'PRIORITIZE_CRITICAL_LEADS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'OPTIMIZE_MARKETING_BUDGET' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_VIEW_CASH_FLOW' registrada en el dominio 'financiero'.
+INFO KERNEL: Intención 'ERP_MANAGE_RESOURCES' registrada en el dominio 'operativo'.
+INFO KERNEL: Intención 'ERP_SEARCH_DOCUMENT' registrada en el dominio 'archivistico'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_OPTIMIZE_RESOURCES' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_WEB_CMS' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_LEGAL' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ONBOARDING_PRESTADOR' registrada en el dominio 'prestadores'.
+INFO KERNEL: Intención 'AUDITORIA_GLOBAL' registrada en el dominio 'administrador_general'.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO EOS DECISION ENGINE: Metric Listener active.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO SAAS ORCHESTRATOR: Listening for onboarding signals.
+INFO Suscriptor registrado para el evento: WALLET_PAYMENT_REQUESTED
+INFO Wallet event boundary registered; payment execution requires explicit approvals.
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_FROM_TURISMO
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_DIRECT
+INFO Delivery Event Handlers registrados.
+test_cancelled_job_is_not_due_and_cannot_reschedule (__main__.Checks.test_cancelled_job_is_not_due_and_cannot_reschedule) ... ok
+test_daily_limit_and_poll_delay_prevent_unbounded_dispatch (__main__.Checks.test_daily_limit_and_poll_delay_prevent_unbounded_dispatch) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/123_456?fields=id%2Cfrom%2Cis_published "HTTP/1.1 200 OK"
+ok
+test_different_administrator_cannot_authorize_original_job (__main__.Checks.test_different_administrator_cannot_authorize_original_job) ... ok
+test_draft_replay_and_conflicting_request (__main__.Checks.test_draft_replay_and_conflicting_request) ... ok
+test_due_calendar_normalizes_timezone_and_filters_before_limit (__main__.Checks.test_due_calendar_normalizes_timezone_and_filters_before_limit) ... ok
+test_history_chain_detects_tampered_event (__main__.Checks.test_history_chain_detects_tampered_event) ... ok
+test_instagram_container_completion_is_not_publication (__main__.Checks.test_instagram_container_completion_is_not_publication) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/media "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/777?fields=id%2Cstatus_code "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/media_publish "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/888?fields=id%2Cowner%2Cmedia_type%2Cmedia_product_type%2Cpermalink "HTTP/1.1 200 OK"
+ok
+test_interrupted_mutation_recovers_uncertain_without_retry (__main__.Checks.test_interrupted_mutation_recovers_uncertain_without_retry) ... ok
+test_invalid_asset_or_format_or_visibility_rejected (__main__.Checks.test_invalid_asset_or_format_or_visibility_rejected) ... ok
+test_invalid_unicode_and_oversized_batch_are_validation_errors (__main__.Checks.test_invalid_unicode_and_oversized_batch_are_validation_errors) ... ok
+test_owned_video_jobs_use_real_sanitized_library_for_all_video_formats (__main__.Checks.test_owned_video_jobs_use_real_sanitized_library_for_all_video_formats) ... ok
+test_past_far_future_and_naive_times_rejected (__main__.Checks.test_past_far_future_and_naive_times_rejected) ... ok
+test_policy_change_or_disabled_worker_prevents_claim (__main__.Checks.test_policy_change_or_disabled_worker_prevents_claim) ... ok
+test_post_ack_database_failure_keeps_durable_claim_without_reupload (__main__.Checks.test_post_ack_database_failure_keeps_durable_claim_without_reupload) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+ok
+test_provider_redirect_does_not_leak_or_follow_token (__main__.Checks.test_provider_redirect_does_not_leak_or_follow_token) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 302 Found"
+ok
+test_role_revocation_blocks_get_command_history_and_receipt (__main__.Checks.test_role_revocation_blocks_get_command_history_and_receipt) ... ok
+test_stale_revision_and_false_confirmation_do_not_mutate (__main__.Checks.test_stale_revision_and_false_confirmation_do_not_mutate) ... ok
+test_tiktok_init_is_not_completion_and_public_ids_required (__main__.Checks.test_tiktok_init_is_not_completion_and_public_ids_required) ... INFO HTTP Request: GET https://open.tiktokapis.com/v2/user/info/?fields=open_id%2Cdisplay_name "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://open.tiktokapis.com/v2/post/publish/creator_info/query/ "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://open.tiktokapis.com/v2/post/publish/video/init/ "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://open.tiktokapis.com/v2/user/info/?fields=open_id%2Cdisplay_name "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://open.tiktokapis.com/v2/post/publish/status/fetch/ "HTTP/1.1 200 OK"
+ok
+test_timeout_or_generic_200_never_reuploads (__main__.Checks.test_timeout_or_generic_200_never_reuploads) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+ok
+test_two_reviews_and_schedule_do_not_publish (__main__.Checks.test_two_reviews_and_schedule_do_not_publish) ... ok
+test_unconfirmed_remote_read_does_not_report_published (__main__.Checks.test_unconfirmed_remote_read_does_not_report_published) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/123_456?fields=id%2Cfrom%2Cis_published "HTTP/1.1 200 OK"
+ok
+test_upload_ack_is_not_publication_and_second_step_reads_only (__main__.Checks.test_upload_ack_is_not_publication_and_second_step_reads_only) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/123_456?fields=id%2Cfrom%2Cis_published "HTTP/1.1 200 OK"
+ok
+test_withdrawn_media_cannot_be_scheduled (__main__.Checks.test_withdrawn_media_cannot_be_scheduled) ... ok
+test_wrong_owner_and_generic_remote_200_never_publish (__main__.Checks.test_wrong_owner_and_generic_remote_200_never_publish) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/channels?part=id&mine=true "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://open.tiktokapis.com/v2/user/info/?fields=open_id%2Cdisplay_name "HTTP/1.1 200 OK"
+ok
+test_youtube_upload_requires_processing_and_owned_channel_proof (__main__.Checks.test_youtube_upload_requires_processing_and_owned_channel_proof) ... INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/channels?part=id&mine=true "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://www.googleapis.com/upload/youtube/v3/videos?part=snippet%2Cstatus&uploadType=multipart "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/channels?part=id&mine=true "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/videos?part=snippet%2Cstatus%2CprocessingDetails&id=abcdefghijk "HTTP/1.1 200 OK"
+ok
+test_cancelled_job_is_not_due_and_cannot_reschedule (__main__.Checks.test_cancelled_job_is_not_due_and_cannot_reschedule) ... ok
+test_daily_limit_and_poll_delay_prevent_unbounded_dispatch (__main__.Checks.test_daily_limit_and_poll_delay_prevent_unbounded_dispatch) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/123_456?fields=id%2Cfrom%2Cis_published "HTTP/1.1 200 OK"
+ok
+test_different_administrator_cannot_authorize_original_job (__main__.Checks.test_different_administrator_cannot_authorize_original_job) ... ok
+test_draft_replay_and_conflicting_request (__main__.Checks.test_draft_replay_and_conflicting_request) ... ok
+test_due_calendar_normalizes_timezone_and_filters_before_limit (__main__.Checks.test_due_calendar_normalizes_timezone_and_filters_before_limit) ... ok
+test_history_chain_detects_tampered_event (__main__.Checks.test_history_chain_detects_tampered_event) ... ok
+test_instagram_container_completion_is_not_publication (__main__.Checks.test_instagram_container_completion_is_not_publication) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/media "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/777?fields=id%2Cstatus_code "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/media_publish "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/888?fields=id%2Cowner%2Cmedia_type%2Cmedia_product_type%2Cpermalink "HTTP/1.1 200 OK"
+ok
+test_interrupted_mutation_recovers_uncertain_without_retry (__main__.Checks.test_interrupted_mutation_recovers_uncertain_without_retry) ... ok
+test_invalid_asset_or_format_or_visibility_rejected (__main__.Checks.test_invalid_asset_or_format_or_visibility_rejected) ... ok
+test_invalid_unicode_and_oversized_batch_are_validation_errors (__main__.Checks.test_invalid_unicode_and_oversized_batch_are_validation_errors) ... ok
+test_owned_video_jobs_use_real_sanitized_library_for_all_video_formats (__main__.Checks.test_owned_video_jobs_use_real_sanitized_library_for_all_video_formats) ... ok
+test_past_far_future_and_naive_times_rejected (__main__.Checks.test_past_far_future_and_naive_times_rejected) ... ok
+test_policy_change_or_disabled_worker_prevents_claim (__main__.Checks.test_policy_change_or_disabled_worker_prevents_claim) ... ok
+test_post_ack_database_failure_keeps_durable_claim_without_reupload (__main__.Checks.test_post_ack_database_failure_keeps_durable_claim_without_reupload) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+ok
+test_provider_redirect_does_not_leak_or_follow_token (__main__.Checks.test_provider_redirect_does_not_leak_or_follow_token) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 302 Found"
+ok
+test_role_revocation_blocks_get_command_history_and_receipt (__main__.Checks.test_role_revocation_blocks_get_command_history_and_receipt) ... ok
+test_stale_revision_and_false_confirmation_do_not_mutate (__main__.Checks.test_stale_revision_and_false_confirmation_do_not_mutate) ... ok
+test_tiktok_init_is_not_completion_and_public_ids_required (__main__.Checks.test_tiktok_init_is_not_completion_and_public_ids_required) ... INFO HTTP Request: GET https://open.tiktokapis.com/v2/user/info/?fields=open_id%2Cdisplay_name "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://open.tiktokapis.com/v2/post/publish/creator_info/query/ "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://open.tiktokapis.com/v2/post/publish/video/init/ "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://open.tiktokapis.com/v2/user/info/?fields=open_id%2Cdisplay_name "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://open.tiktokapis.com/v2/post/publish/status/fetch/ "HTTP/1.1 200 OK"
+ok
+test_timeout_or_generic_200_never_reuploads (__main__.Checks.test_timeout_or_generic_200_never_reuploads) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+ok
+test_two_reviews_and_schedule_do_not_publish (__main__.Checks.test_two_reviews_and_schedule_do_not_publish) ... ok
+test_unconfirmed_remote_read_does_not_report_published (__main__.Checks.test_unconfirmed_remote_read_does_not_report_published) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/123_456?fields=id%2Cfrom%2Cis_published "HTTP/1.1 200 OK"
+ok
+test_upload_ack_is_not_publication_and_second_step_reads_only (__main__.Checks.test_upload_ack_is_not_publication_and_second_step_reads_only) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://graph.facebook.com/v22.0/123/photos "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/123_456?fields=id%2Cfrom%2Cis_published "HTTP/1.1 200 OK"
+ok
+test_withdrawn_media_cannot_be_scheduled (__main__.Checks.test_withdrawn_media_cannot_be_scheduled) ... ok
+test_wrong_owner_and_generic_remote_200_never_publish (__main__.Checks.test_wrong_owner_and_generic_remote_200_never_publish) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/me?fields=id "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/me/accounts?fields=id%2Ctasks%2Cinstagram_business_account%7Bid%7D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/channels?part=id&mine=true "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://open.tiktokapis.com/v2/user/info/?fields=open_id%2Cdisplay_name "HTTP/1.1 200 OK"
+ok
+test_youtube_upload_requires_processing_and_owned_channel_proof (__main__.Checks.test_youtube_upload_requires_processing_and_owned_channel_proof) ... INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/channels?part=id&mine=true "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://www.googleapis.com/upload/youtube/v3/videos?part=snippet%2Cstatus&uploadType=multipart "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/channels?part=id&mine=true "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://www.googleapis.com/youtube/v3/videos?part=snippet%2Cstatus%2CprocessingDetails&id=abcdefghijk "HTTP/1.1 200 OK"
+ok
+
+----------------------------------------------------------------------
+Ran 50 tests in 27.572s
+
+OK

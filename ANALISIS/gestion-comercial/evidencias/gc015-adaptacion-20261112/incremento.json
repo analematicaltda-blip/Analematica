@@ -1,0 +1,164 @@
+{
+  "date_colombia": "2026-11-12",
+  "scope": "GC-015: versioned own-library image and video adaptation, original preservation and review",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "verified_task_ids": [
+    "GC-015"
+  ],
+  "accepted_task_ids": [],
+  "accepted_milestones": [
+    "GCH-043",
+    "GCH-044"
+  ],
+  "functional_scope_complete": true,
+  "tests_complete": true,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "new_progress_credit": 2,
+  "local_functionality": {
+    "profiles_version": "1.0",
+    "profiles": {
+      "image-vertical-v1": [
+        1080,
+        1920
+      ],
+      "image-square-v1": [
+        1080,
+        1080
+      ],
+      "image-landscape-v1": [
+        1920,
+        1080
+      ],
+      "video-vertical-v1": [
+        720,
+        1280
+      ],
+      "video-square-v1": [
+        720,
+        720
+      ],
+      "video-landscape-v1": [
+        1280,
+        720
+      ]
+    },
+    "image_output": "PNG",
+    "video_output": "MP4/H264/AAC when audio kept",
+    "modes": [
+      "PAD",
+      "CROP"
+    ],
+    "crop_consent_required": true,
+    "upscaling_explicit": true,
+    "sample_aspect_ratio_respected": true,
+    "audio": [
+      "KEEP",
+      "MUTE"
+    ],
+    "subtitle_policy": "BURNED_ONLY_NO_TEXT_TRACKS; burned pixels may crop, acknowledged explicitly",
+    "source_original_preserved": true,
+    "new_version_requires_review": true,
+    "existing_public_version_not_replaced": true,
+    "neural_reframing": false,
+    "quality_gain_claimed": false,
+    "new_database_migration": false
+  },
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc015-adaptacion-20261112/quality/report.json",
+    "sha256": "77f059f45a16152c74547b800558348428a4caed8e3e640a3b8893e7172270f5",
+    "tests": 131,
+    "suites": 14,
+    "browser_checks": {
+      "adaptation_real_http": 168,
+      "library_regression_real_http": 152
+    },
+    "single_scoped_green_run": true,
+    "source_stable": true,
+    "not_full_platform_suite": true
+  },
+  "findings_fixed": [
+    "Validate company/actor receipt ownership before adaptation replay fingerprint comparison",
+    "Respect existing library revision cap, verified against 200 real revisions",
+    "Account for non-square source pixels to prevent display-aspect distortion",
+    "Reject stale source after processing and roll back artifact/version if audit fails"
+  ],
+  "remaining_external": [
+    "Current platform-specific delivery profile acceptance and rights with legitimate content",
+    "Performance/concurrency qualification on target hardware and production infrastructure",
+    "Real-user acceptance; no production enabled"
+  ],
+  "prior_followup_hashes": {
+    "empty_bank_period": "5e72b12bc96a49c167c08fb2dd53a9d0c00acc99c038ede8080e7d26effdf069",
+    "grouped_period_and_recovery_tax": "5a348c71981e2ada62ba15b9422af43fea43f892208684402b206d82912eff8a",
+    "byos_uncertain_commit_recovery": "d9f8aa900e5f8fb1c76c7bcc2b65f6e9f6f19f623d27ed4402e31fee37d5671e",
+    "reviewed_ubl_commercial_source": "250d63b2a406115d1baa078730216690ffed2694fbb8cecbb821690f4afa76eb",
+    "reviewed_fx_initial_posting": "5fb90688a52cc3ad0a1f083c500d22c9f6323c988ce444c5e99a3aa736987922",
+    "monetary_fx_revaluation": "be27d1700d72b9db8e9470c40ec80ad67326e7ef8ab106a60363bb5aa0e3df36",
+    "native_purchase_multiconcepts": "ab27065d3ff631d693ca4f1feaa70a580214cc6e95009bfa7b165500320ae843",
+    "purchase_item_returns": "fc2c3071da408d0fd95acdc24ece25ac2bc6822a514f6c1b33b52f1617e2ce86",
+    "purchase_returns_postgres_and_export": "3559aeb667278603f4180d84fb90ad15a1ce03c4bacf9948b7ef263997ea5122",
+    "bank_history_streaming": "cbbdf9b4ce47cf17d9b2ee2c407582294cbf6d1dfc5a7ad674ab18e4fb40a3d5",
+    "declared_fixed_payroll_deductions": "8e294f2680531ed314381cd0179352d746e705be378257e775a5b9b45383bd6e",
+    "reviewed_payroll_novelties": "e30c22953c3a2e4c819bc97b0b89494a90b25be9d8ae9afc65c4fde3a0ffaf73",
+    "registered_source_earnings": "6ba7293eeb7c88daa311eb06f433c0aeec9648edf4c661143a89a6e421516146",
+    "native_payroll_source_intake": "2da7f1b56e4a39953dd6c6a827d5a84db0ab06600d823ef92bb9dc41c153dc5a",
+    "native_payroll_source_correction": "78d94bc6acbfd2ac6ae927986a55dc0592041fd1b0172b06ad5908875a6abf6f",
+    "consolidated_bank_period": "9c04a7797789b79d98334693fe1721e8eca7bb59b04f42c2b6a6f91ca3b999ec",
+    "reviewed_fx_settlement": "89c2385fe2dc37e547de1a551f01b434e4d4feb7aeb2d90bf2b610254a78be98",
+    "chunked_preserved_opening": "d2f3de93e6f2f1b2d0785ec2685223b2d30a6d609a65cd84b36c6edb69c23cf0",
+    "esg_multi_boundary_verified_csv": "983997ec5aa2fdc6cc3bf35c88508282a7fa4249112408e18031f9eddf73e722",
+    "paged_bank_rollup_catalog": "8613d0fd9fd44fbbe0d120c669484ee9d31bb04e4138eb10d6e8afc4b5a65b18",
+    "ACC001_full_acceptance": "277c2d70da1854715afe73aee26648844d81478279438bd9797bca6b7bf3423d",
+    "ACC002_full_acceptance": "8dbde02302b110b1716d13bb035e8c3b438665a35520d129f7522582ccf895a4",
+    "ACC003_full_acceptance": "b1933ea9e297bf3e2f1e87566db40da0fe1477a6b8fe4865b38fb33d352373e7",
+    "ACC004_full_acceptance": "e0ac0f33837492ea6ce98ad19b007a10b5a23a19d21f77c4219dc8b127223187",
+    "ACC005_full_acceptance": "0663f32f65a7032a35b49f2ca24c43d55753aabafdd3d7d5a4e7b36846e36613",
+    "ACC006_full_acceptance": "78f2d4277d0f873d75ee3f994c6e0c20369b20904f023169ddcd13386ce8b7fa",
+    "ACC001_ACC006_exhaustive_reevaluation": "a9a46974139af91531bf5b1f0f0d6b3c9e0399f42f20f1cae8b153aad14ebb8d",
+    "ACC007_full_acceptance": "259ebc6e9586f6c8899f48b70b418a057925b9631524cfc96d6aaa8724b0cac1",
+    "ACC008_full_acceptance": "a187b8f66f0cd27be82785c6432d1041879b5bf494d10282f6a4781b12e63b7a",
+    "ACC009_local_increment": "ce31c75830d94aece5f72e0a6bd1e96dd82d618cbad2a82d8e173fe0e04f3a71",
+    "ACC010_full_acceptance": "a6e72568bc5fa099fe1efc650ed9d00b8ab4930f5fcde787418ee05e3d1f5f8c",
+    "acc011_cloud_connectors": "5714ae2cac31508e9695f10833503edbb063a32f047fd0665ca972d2ffd5abfd",
+    "acc012_risk_gate": "e91a81d1f043f0882f96a982d16f71190aed1bf39ae273ceed0d76e0794f230b",
+    "audit_tasks_1_12": "7cc3677554defc435f60b2cac5d36cc8a2af79f2be91681ed4e74b2988923580",
+    "acc013_operational_trace": "481b39ce65a4a82e36d6c96bceb5298dfac5d7738f2dfabcd0870ac6de4fe0d2",
+    "acc014_tax_explanation": "93b4f76291e1d84b08c1a2590e43d850401f04888beb053b695d705cc446bc6a",
+    "acc015_bank_states": "7b3857849d2d9f5f971be6e4738197554a94ba0c716a6a191a45b2318b852237",
+    "acc016_exact_liquidity": "47eb8e3ddb6212407c9e665d1ede7332a17a7cbcb2784f68b9b93c414f64860a",
+    "acc017_chronological_windows": "83242fbdeb95271811269ecc177460fd71b834fd42d72a77e4d0827ea7efcb84",
+    "acc018_operational_source": "aab55697a75d4022db2f729dcfda8b6fd6c9cdaaee1aeaef870ed90d96eb55fd",
+    "audit_tasks_1_18": "094565be84a4accb080c076ec41df1e9ead6ffac60839f8bf68a3868ad669303",
+    "acc019_effective_source_trace": "51a32f8fefb25e6b05f1239858fb9a01601cbbbdb4dc4a2969cc28b541287e4f",
+    "acc020_scoped_query_tools": "0f4ded1878af84a1955d467b078befb78304e0d4f9dc258f267e9ae90d4b2377",
+    "acc021_recoverable_supervised_rehearsal": "58b0e464eabb0bbb8a946fdfca13440fe88eb0016510898826442879302ed869",
+    "acc022_cold_offline_capture": "09e89247612cb0a3c9c6f9230f10909374ec49125c8b2784e07f713599286a67",
+    "acc023_measured_context_optimization": "82e7a3151529678d08e54fac8fc540e3e650f04df06d569430d3d43f984d5ddd",
+    "acc024_restore_and_file_boundaries": "ef8a05aa67535151ca831cafca598cd73a3852cf0e5f07effd0ed3818e9d74e2",
+    "audit_acc001_acc024": "fd484082346ab093949aa305be9a39e7e17f130e95d4196d6341bcd77bdfe940",
+    "audit_milestones_001_072": "e65df65c8a61dff98a112cc40b55bdb2cfe959889b60e2401530ae3ded41690b",
+    "native_erp_analematica_agent_armies": "ba8a45723864fb8e5c3e23a968ef3edf9627160d2764fefa9c9486f8372f1c3f",
+    "commercial_crm_agents_multimedia_audit_20261111": "164b6f2d1506d3a84e557bc617ef271c302bd2cca234771b56e919bd3eaedf2d",
+    "pool08_commercial_contract_and_plan_20261111": "24864fc2ef1c4638ef23e72e6cc0a72e9713db2a6a31f5cb736df9756a3edb9e",
+    "gc001_contract_completion_20261111": "53a939020a89406229ffcb98fdb1f083f3fb9785c1f12759f99b133ec4f24786",
+    "gc003_crm_integrado_y_ubicacion_20261111": "1701a1786a6b960e72468712ba508863193044d71d53a7ae5089df1df674b0f2",
+    "gc004_oportunidades_embudo_20261111": "617d3be230b290cda7f9f425d36243bddd571074ff34c87149cb90a2ca82088e",
+    "gc005_catalogo_tarifas_20261111": "e637300ee6e4a031d0b969285ffebba0a889e588ca3d021fc801d795e0cd2c25",
+    "gc006_cotizaciones_dinamicas_20261111": "921386692c54984bfa81e93a8179a841c3abae96d58e66f15dd707e060c263dd",
+    "gc007_venta_operacion_contabilidad_20261112": "7d4e3487686fc1cfb89323029d1a038d063f65d27248391655408ed5a695db8d",
+    "gc008_bold_intenciones_parcial_20261111": "f3737909be44b486ee398a401581df6bc7948389ad15addb04055c52e53e13ed",
+    "gc009_posventa_parcial_20261112": "2ff47f027e3ce9466a6d5dd9bcd86d55ba2a8951a94a1e1ddb491e6c9484c849",
+    "gc010_landings_locales_20261112": "d857ee8c9b48d16f3df58b01bf3f9b483a91a284a491ee997c8260a2c1cc8c80",
+    "gc011_captacion_crm_local_20261112": "acec6632364ddc233e3abef254191687f5a4971d624b0b5d29874948a858ea0e",
+    "gc012_biblioteca_multimedia_local_20261112": "2f531686af962db4abcc156b39156d6d08fd6059e12cb06dc2b109df0aefcab6",
+    "auditoria_gc001_012_20261112": "1fc9139e581aa53d0b284953d892f25658df1d8c26134c36fd26c6d60676ce81",
+    "auditoria_gc001_012_recuperacion_20261112": "5863b86b300493c80870e5d468d8744d6f68eb974a9e6aab32c835df0d0a43fa",
+    "auditoria_gc001_012_integridad_eventos_20261112": "bdf680cd8b06ba251c0b58c0bce3a940c9934078f6120b7c2845fac129af06d1",
+    "gc014_video_composition_20261112": "641327905a01a73c3b810c8d557ac529c5ba56d46a7588a0ca4bf723705f1929"
+  }
+}

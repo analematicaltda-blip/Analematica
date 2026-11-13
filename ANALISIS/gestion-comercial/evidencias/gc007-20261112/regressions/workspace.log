@@ -1,0 +1,22 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_atomic_quota_limit_and_invalid_asset_refund (test_workspace.WorkspaceTests.test_atomic_quota_limit_and_invalid_asset_refund) ... ok
+test_basic_denies_every_advanced_operation_even_with_forged_cached_roles (test_workspace.WorkspaceTests.test_basic_denies_every_advanced_operation_even_with_forged_cached_roles) ... ok
+test_crm_assets_and_owner_are_separate (test_workspace.WorkspaceTests.test_crm_assets_and_owner_are_separate) ... ok
+test_failed_generation_refunds_quota_and_success_consumes (test_workspace.WorkspaceTests.test_failed_generation_refunds_quota_and_success_consumes) ... ok
+test_full_delegation_and_revocation_are_checked_every_request (test_workspace.WorkspaceTests.test_full_delegation_and_revocation_are_checked_every_request) ... ok
+test_future_subscription_is_not_yet_eligible (test_workspace.WorkspaceTests.test_future_subscription_is_not_yet_eligible) ... ok
+test_grants_cannot_cross_tenants_or_promote_non_administrative_accounts (test_workspace.WorkspaceTests.test_grants_cannot_cross_tenants_or_promote_non_administrative_accounts) ... ok
+test_invalid_subscription_and_inactive_company_fail_closed (test_workspace.WorkspaceTests.test_invalid_subscription_and_inactive_company_fail_closed) ... [SubscriptionEvaluation] Status 'unknown' unrecognized. Marking as inconsistente.
+ok
+test_legacy_endpoints_cannot_bypass_plan_or_company_channel (test_workspace.WorkspaceTests.test_legacy_endpoints_cannot_bypass_plan_or_company_channel) ... ok
+test_private_publication_requires_own_encrypted_channel_and_is_idempotent (test_workspace.WorkspaceTests.test_private_publication_requires_own_encrypted_channel_and_is_idempotent) ... ok
+test_registration_commits_basic_company_and_returns_compatible_names (test_workspace.WorkspaceTests.test_registration_commits_basic_company_and_returns_compatible_names) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 11.227s
+
+OK

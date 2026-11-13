@@ -1,0 +1,152 @@
+INFO Suscriptor registrado para el evento: RESERVATION_CREATED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: RESERVATION_CANCELLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECEIVED
+INFO Suscriptor registrado para el evento: SALE_COMPLETED
+INFO Suscriptor registrado para el evento: PURCHASE_ORDER_POSTED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED
+INFO Suscriptor registrado para el evento: INVENTORY_ADJUSTED
+INFO Suscriptor registrado para el evento: ASSET_DEPRECIATED
+INFO Suscriptor registrado para el evento: LIQUIDATION
+INFO Suscriptor registrado para el evento: SALE_CREATED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED_V2
+INFO Suscriptor registrado para el evento: SaaS_INVOICE_GENERATED
+INFO Suscriptor registrado para el evento: BANK_FEE_REGISTERED
+INFO Standard Accounting Handlers registered.
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: FINANCIAL_PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: SUBSIDIARY_CREATED
+INFO EOS CONSOLIDATION: Event handlers registered.
+INFO Suscriptor registrado para el evento: TENANT_PROVISIONING_REQUESTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_EXPIRED
+INFO TENANT LIFECYCLE ENGINE: Listening for lifecycle events.
+INFO Suscriptor registrado para el evento: FINANCIAL_IMPACT_REQUESTED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: PAYMENT_FAILED
+INFO Control Tower Monitoring Handlers registered.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: ANOMALY_DETECTED
+INFO CONTROL TOWER: Metric Listener active.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Enterprise Policy Engine registered.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Global Holding Orchestrator registered.
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Capital Markets Orchestrator registered.
+INFO Suscriptor registrado para el evento: EQUITY_BUYBACK_TRIGGERED
+INFO Tokenization Orchestrator registered.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: LEAD_CONVERTED
+INFO COMMERCIAL ENGINE: Suscriptores de eventos registrados.
+INFO Suscriptor registrado para el evento: USAGE_CYCLE_CLOSED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO TREASURY AUTOMATION: Orquestación de eventos configurada.
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_CANCELLED
+INFO Suscriptor registrado para el evento: PLAN_UPGRADED
+INFO Suscriptor registrado para el evento: PLAN_DOWNGRADED
+INFO Suscriptor registrado para el evento: USAGE_BILLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO Suscriptor registrado para el evento: INVOICE_CREATED
+INFO Suscriptor registrado para el evento: USAGE_RECORDED
+INFO OPERATIONAL INTELLIGENCE: DataCollector initialized.
+/workspace/.integration-venv/lib/python3.12/site-packages/django/db/backends/utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+INFO KERNEL: Intención 'PLATFORM_CREATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_SUSPEND_USER' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ERP_CONFIRM_SALE' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_GENERATE_BALANCE' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'OPTIMIZE_TENANT_RETENTION' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ADAPTIVE_PRICING_ADJUSTMENT' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'SYSTEMIC_EVOLUTION_STEP' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'MANAGE_WORKSHOP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'REGISTER_PRODUCTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'UPDATE_ARTISAN_INVENTORY' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'PROCESS_COMMAND' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'VOID_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CREATE_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CANCEL_PACKAGE_COMPONENT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_AGENCY_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'SCHEDULE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_TRANSPORT_SEAT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'ASSIGN_GUIDE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_GUIDE_COMMISSION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BILL_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'NIGHT_CASH_CLOSE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'WALLET_DEPOSIT' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_PAY' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_REFUND' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_LIQUIDATE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_FREEZE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'DELIVERY_REQUEST' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_ASSIGN' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_COMPLETE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_RATE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'VEHICLE_REGISTER' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'GENERATE_LEGACY_BUNDLE' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PLATFORM_TRANSFER_OWNERSHIP' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'SYSTEM_EVOLUTION_HARDENING' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'QUERY_META_STANDARD' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PUBLIC_BUDGET_OPTIMIZATION' registrada en el dominio 'hacienda'.
+INFO KERNEL: Intención 'TERRITORIAL_IMPACT_SIMULATION' registrada en el dominio 'planeacion'.
+INFO KERNEL: Intención 'CIVIL_DEFENSE_ALERT' registrada en el dominio 'seguridad_civil'.
+INFO KERNEL: Intención 'LAND_USE_AUDIT' registrada en el dominio 'gestion_territorial'.
+INFO KERNEL: Intención 'ERP_CREATE_VOUCHER' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'ERP_VIEW_SALES_STATS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'PRIORITIZE_CRITICAL_LEADS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'OPTIMIZE_MARKETING_BUDGET' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_VIEW_CASH_FLOW' registrada en el dominio 'financiero'.
+INFO KERNEL: Intención 'ERP_MANAGE_RESOURCES' registrada en el dominio 'operativo'.
+INFO KERNEL: Intención 'ERP_SEARCH_DOCUMENT' registrada en el dominio 'archivistico'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_OPTIMIZE_RESOURCES' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_WEB_CMS' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_LEGAL' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ONBOARDING_PRESTADOR' registrada en el dominio 'prestadores'.
+INFO KERNEL: Intención 'AUDITORIA_GLOBAL' registrada en el dominio 'administrador_general'.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO EOS DECISION ENGINE: Metric Listener active.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO SAAS ORCHESTRATOR: Listening for onboarding signals.
+INFO Suscriptor registrado para el evento: WALLET_PAYMENT_REQUESTED
+INFO Wallet event boundary registered; payment execution requires explicit approvals.
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_FROM_TURISMO
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_DIRECT
+INFO Delivery Event Handlers registrados.
+.INFO Journal Entry created: 2cb56c31-98d0-486a-b1f3-a7db1e0dac99 (Venta comercial revisada e0414799-15bd-4fd1-a4c4-9768106061ff)
+.INFO Journal Entry created: cb318447-83a5-469c-ac41-d9d551dcc533 (Venta comercial revisada 9cef6966-289f-4c16-aaa8-eb6ec6c5ace3)
+..INFO Journal Entry created: ca91b089-2387-4e88-ac82-85f21a5f5949 (Venta comercial revisada 5b0c7f69-7124-4ccd-bd60-2d9178b2e3f8)
+..INFO Journal Entry created: 0d342fab-bda3-4739-b81f-7c48428f51f4 (Venta comercial revisada 61da920a-4f56-47b8-bbe2-d2d528a1a03f)
+...INFO Journal Entry created: 4ff77124-2c08-48e3-9492-337d69dd1ec3 (Venta comercial revisada bd59d362-c599-46ff-88b1-dc0f5d56e304)
+..INFO Journal Entry created: 7fa85770-ea66-4c1a-bfd3-cda89536d0b3 (Venta comercial revisada 11f1bacc-4274-4e69-92ff-c7f641bb490e)
+INFO Journal Entry created: cf3095ac-3d62-4e48-8c72-e52d0e887d95 (Revisión y liberación)
+.INFO Journal Entry created: 21daaa94-9373-4d01-9342-a612a22c2dfe (Venta comercial revisada 45c90bb8-c019-44ff-856d-8aabda89c6ed)
+INFO Journal Entry created: 5003e0c7-9578-4a8a-9f0a-940f5d86bdb8 (Anulación revisada)
+..INFO Journal Entry created: 5a2e3d8a-3a1f-40e0-9f74-152819d7873a (Venta comercial revisada 87f5fb12-de01-41ec-918e-994c7f394dbe)
+.INFO Journal Entry created: 10749998-75fc-4bd4-921d-dcb639b1b852 (Venta comercial revisada 476e8bfe-9c4c-43ab-9a6c-b194c913c3dd)
+..INFO Journal Entry created: 6805dd66-d89d-4c00-8d71-8ecc7ecace88 (Venta comercial revisada 50f88307-6db9-471a-ac70-079b522971a5)
+..INFO Journal Entry created: 2583c03a-bed8-403d-8bff-8144e6e94f67 (Venta comercial revisada 83ef1672-f7de-486b-9eb4-0e484f90a6dd)
+...INFO Journal Entry created: c8f86f7d-7f67-4f1a-9c48-da1bc61f04ca (Venta comercial revisada d44a22ed-49eb-407b-b797-3d5bc7743b6e)
+..INFO Journal Entry created: e077fb28-d4b8-4aad-b1fd-3dd172e2323b (Venta comercial revisada 55f541b1-977f-4472-b16c-82e3c59dbc9e)
+INFO Journal Entry created: 9b3beb7f-4924-4ae5-8764-77fd488c75a8 (Revisión y liberación)
+.INFO Journal Entry created: b49da987-6bc1-469b-b6a8-065beb0655d4 (Venta comercial revisada b15213f0-de1f-411b-88b7-1bc047282e06)
+INFO Journal Entry created: a6f4b974-e0b9-4216-a7a7-49c875e4346a (Anulación revisada)
+.
+----------------------------------------------------------------------
+Ran 26 tests in 38.712s
+
+OK

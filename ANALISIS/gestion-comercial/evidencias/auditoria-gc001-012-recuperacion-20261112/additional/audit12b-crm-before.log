@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: CRM must not accept writes until context, pending key and initial list are ready
+
+false !== true
+
+    at /workspace/SGA-CD-conectado/FRONTEND/deployment/tests/pool08_crm_recovery_browser.cjs:17:73

@@ -6,6 +6,8 @@ class AdminPlataformaConfig(AppConfig):
     label = 'admin_plataforma'
 
     def ready(self):
+        from .gestion_comercial.pool08 import identity_models, crm_models, opportunity_models, pricing_models, quotation_models, sales_models, payment_models, landing_models, capture_models, library_models, generation_models, email_campaign_models, mobile_message_models, analytics_models,army_models,ads_models,inbox_models,publishing_models
+
         try:
             from apps.core_erp import CORE_ERP_VERSION
             from django.core.exceptions import ImproperlyConfigured

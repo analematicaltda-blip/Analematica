@@ -1,0 +1,77 @@
+[
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/operations.py",
+    "before": "76bc6c216d49dd4ca839d53a3eb6f6865454b481e170c75122e6eb1c5339990f",
+    "after": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+  },
+  {
+    "path": "BACKEND/INTEGRACIONES/operacion/commercial_audit.py",
+    "before": null,
+    "after": "7fe61827ddd7dd1396bc13e0dc8b1958d8428872b8b80ad8cf2fcc58e9e2a3f8"
+  },
+  {
+    "path": "BACKEND/INTEGRACIONES/operacion/tests/test_commercial_audit.py",
+    "before": null,
+    "after": "e24c343331113c360ad1157bafb7300a92dd0c2a4b209187109c412de191cec4"
+  },
+  {
+    "path": "BACKEND/INTEGRACIONES/operacion/verify_local.py",
+    "before": "be80867c5a3a2fa5ceac81c274f0b2dd0e64e56249d86401682d5f38a8131d61",
+    "after": "49421ee9d3900f416d32567b26be098950e694e7f2427be1c004f60754aef5ae"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/operations.py",
+    "before": "76bc6c216d49dd4ca839d53a3eb6f6865454b481e170c75122e6eb1c5339990f",
+    "after": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/operations.py",
+    "before": "76bc6c216d49dd4ca839d53a3eb6f6865454b481e170c75122e6eb1c5339990f",
+    "after": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_operations_cases.py",
+    "before": "8f292e97c34017e920bc0f4dc9e07263a77ad49fb1c660dc8d5e45d12d6da57c",
+    "after": "610e56e7b4fd8468791a1066f28598b88faef4cc2d6486f439257936869c8209"
+  },
+  {
+    "path": "DESKTOP/tools/flet_preview/web-manifest.json",
+    "before": "d2dc3c22dc4f5f7f2da8ef2a1e414cbc3e3c7a160011c38c4287a7c58c27f31c",
+    "after": "639b487d0c77488adbfdd3ef2627a8ae4f8d2d87319392f8fb3a249a0a89b177"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-payments.js",
+    "before": "c73483f231c7379ba105254b7961ad7d72fba8099997c4a407363cf103c62ce5",
+    "after": "63f3982b098ad24ac8ef9f63b6b9fdc3697fac74dffb8e69e5dedadeb2840f21"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/deployment/manifest.json",
+    "before": "33ac7080fd85b0e3410e01f12f85235e7258af66ffe74b516403e0c957759995",
+    "after": "ccce2be76da71fbd28b86c6878cc74162f1671fe95b836544b2a9e34f3a6ee79"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-payments.js",
+    "before": "c73483f231c7379ba105254b7961ad7d72fba8099997c4a407363cf103c62ce5",
+    "after": "63f3982b098ad24ac8ef9f63b6b9fdc3697fac74dffb8e69e5dedadeb2840f21"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-payments.js",
+    "before": "c73483f231c7379ba105254b7961ad7d72fba8099997c4a407363cf103c62ce5",
+    "after": "63f3982b098ad24ac8ef9f63b6b9fdc3697fac74dffb8e69e5dedadeb2840f21"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_payments_lifecycle.cjs",
+    "before": null,
+    "after": "a7896ef7e891303956b58ac5254c347905023312b3c5651f76016b52692a2e45"
+  },
+  {
+    "path": ".github/workflows/master-integration.yml",
+    "before": "7f0ea4548843c7a00d04ff0ebdce44da64bb66e59620f27f0ff54a1772726d74",
+    "after": "ada98bb81c054428f59542ba0f3b44111377b8336820da64a0b8d68b65686929"
+  },
+  {
+    "path": ".github/workflows/local-operation-audit.yml",
+    "before": "3fd10972d59bc0aa32e5a3b90ed70947139bea1f620f85d4f138a2ec5f101365",
+    "after": "1681ac8dece8dfb8e0697c325f62816096c2b49dcdb9d2b951fd720955a94420"
+  }
+]

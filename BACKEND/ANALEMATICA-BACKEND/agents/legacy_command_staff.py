@@ -62,11 +62,11 @@ class JarviGeneralOrchestrator:
 
         # Redes Sociales, Ads y Vinculación Oficial
         if envelope.target_division == "MARKETING" or any(w in text_lower for w in ["perfil", "bio", "portada", "avatar", "publicar", "difundir", "redes", "post", "facebook", "instagram", "ads", "analematica"]):
-            return await self.colonel_redes.ainvoke({"general_order": envelope.raw_utterance, "app_context": context})
+            return {'status':'BLOCKED','code':'VERIFIED_COMMERCIAL_MISSION_REQUIRED','execution_summary':'Usa la misión comercial autenticada con herramientas y evidencias del dominio.','provider_action_executed':False,'financial_action_authorized':False}
 
         # Ventas y CRM
         if envelope.target_division == "VENTAS" or any(w in text_lower for w in ["prospecto", "lead", "venta", "cotizacion", "embudo", "pipeline", "matricula", "bold", "plan", "club", "colegio"]):
-            return await self.colonel_ventas.ainvoke({"general_order": envelope.raw_utterance, "app_context": context})
+            return {'status':'BLOCKED','code':'VERIFIED_COMMERCIAL_MISSION_REQUIRED','execution_summary':'Usa la misión comercial autenticada con herramientas y evidencias del dominio.','provider_action_executed':False,'financial_action_authorized':False}
 
         # Deportes
         if envelope.target_division == "DEPORTES" or any(w in text_lower for w in ["deporte", "atleta", "entrenamiento", "cancha", "partido"]):
@@ -76,7 +76,7 @@ class JarviGeneralOrchestrator:
         if envelope.target_division == "CULTURA" or any(w in text_lower for w in ["cultura", "taller", "danza", "musica", "obra", "teatro"]):
             return await self.colonel_cultura.ainvoke({"general_order": envelope.raw_utterance, "app_context": context})
 
-        return await self.colonel_redes.ainvoke({"general_order": envelope.raw_utterance, "app_context": context})
+        return {'status':'BLOCKED','code':'VERIFIED_COMMERCIAL_MISSION_REQUIRED','execution_summary':'Usa la misión comercial autenticada con herramientas y evidencias del dominio.','provider_action_executed':False,'financial_action_authorized':False}
 
 class NekoConversationalGeneral:
     def __init__(self, orchestrator: Optional[JarviGeneralOrchestrator] = None, jarvi: Optional[JarviGeneralOrchestrator] = None, *args, **kwargs):
@@ -104,7 +104,7 @@ class NekoConversationalGeneral:
             target_div = "MARKETING"
             action = "DIFUSION_GENERAL"
 
-        clean_roles = [str(r.value if hasattr(r, 'value') else r) for r in (roles or ["admin_general"])]
+        clean_roles = [str(r.value if hasattr(r, 'value') else r) for r in (roles or [])]
 
         # Contrato estricto MissionDispatchEnvelope
         envelope = MissionDispatchEnvelope(
@@ -130,4 +130,6 @@ class NekoConversationalGeneral:
         else:
             report_str = str(report)
 
-        return f"🎙️ [N.E.K.O.]: Misión de Redes & Ads procesada por JARVI con DeepSeek-R1:8B.\nEstado: COMPLETED_SUCCESS\n\n{report_str}"
+        if isinstance(report,dict) and report.get("status")=="BLOCKED":
+            return "[N.E.K.O.] Estado: BLOCKED · "+str(report.get("code","REQUIRES_VERIFIED_WORKFLOW"))
+        return f"[N.E.K.O.] Estado: NO_VERIFICADO. La salida heredada requiere evidencia de ejecución.\n\n{report_str}"

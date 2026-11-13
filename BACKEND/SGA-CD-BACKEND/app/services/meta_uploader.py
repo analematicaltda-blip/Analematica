@@ -24,19 +24,8 @@ class MetaUploader:
         self.api_url = f"{self.BASE_URL}/{self.page_id}/videos"
 
     def _make_request(self, method, url, **kwargs):
-        """Wrapper for requests with retry logic."""
-        for attempt in range(self.MAX_RETRIES):
-            try:
-                response = requests.request(method, url, **kwargs)
-                response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-                return response.json()
-            except requests.exceptions.RequestException as e:
-                logging.warning(f"Request failed (attempt {attempt + 1}/{self.MAX_RETRIES}): {e}")
-                if attempt < self.MAX_RETRIES - 1:
-                    time.sleep(self.RETRY_DELAY_SECONDS * (2 ** attempt)) # Exponential backoff
-                else:
-                    logging.error("All retry attempts failed.")
-                    raise
+        """Disabled legacy protocol: no placeholder receipts or unsafe retries."""
+        raise RuntimeError("LEGACY_PUBLISH_DISABLED_USE_POOL08_CALENDAR")
 
     def _start_upload_session(self, file_size: int) -> str:
         """Starts a resumable upload session and returns the upload session ID."""
@@ -68,57 +57,9 @@ class MetaUploader:
         return len(chunk)
 
     def _finish_upload_session(self, upload_session_id: str, title: str, description: str) -> dict:
-        """Finishes the upload session and publishes the video."""
-        logging.info(f"Finishing Meta video upload session ID: {upload_session_id}")
-        params = {
-            "upload_phase": "finish",
-            "access_token": self.page_access_token,
-            "upload_session_id": upload_session_id,
-            "title": title,
-            "description": description,
-        }
-        response = self._make_request("POST", self.api_url, params=params)
-        if not response.get("success"):
-             raise ValueError(f"Failed to finalize video upload: {response}")
-        logging.info("Video upload finalized successfully.")
-        # We need to get the video ID to build the URL. This requires another call.
-        # This is a simplification; a robust solution would query the video post's status.
-        return {"id": "post_id_placeholder"} # The finish call doesn't return the post ID directly.
+        """Disabled legacy protocol: no placeholder receipts or unsafe retries."""
+        raise RuntimeError("LEGACY_PUBLISH_DISABLED_USE_POOL08_CALENDAR")
 
     def upload_video(self, video_path: str, title: str, description: str) -> dict:
-        """
-        Orchestrates the entire video upload process with chunking and retries.
-        """
-        if not os.path.exists(video_path):
-            raise FileNotFoundError(f"Video file not found at: {video_path}")
-
-        file_size = os.path.getsize(video_path)
-        logging.info(f"Starting upload for video: {video_path} ({file_size} bytes)")
-
-        try:
-            session_id = self._start_upload_session(file_size)
-
-            with open(video_path, "rb") as f:
-                offset = 0
-                while True:
-                    chunk = f.read(self.CHUNK_SIZE)
-                    if not chunk:
-                        break
-                    self._transfer_chunk(session_id, chunk, offset)
-                    offset += len(chunk)
-
-            result = self._finish_upload_session(session_id, title, description)
-
-            # The Graph API does not return the post URL directly on finish.
-            # A common practice is to query the page's feed for the video post
-            # or construct a URL based on the page ID and the video ID (if obtainable).
-            # For this implementation, we return a placeholder.
-            post_id = result.get("id")
-            return {
-                "status": "success",
-                "platform": "facebook",
-                "post_url": f"https://www.facebook.com/{self.page_id}/videos/{post_id}"
-            }
-        except Exception as e:
-            logging.error(f"Failed to upload video to Meta: {e}")
-            raise
+        """Disabled legacy protocol: no placeholder receipts or unsafe retries."""
+        raise RuntimeError("LEGACY_PUBLISH_DISABLED_USE_POOL08_CALENDAR")

@@ -1,0 +1,57 @@
+[
+  {
+    "suite": "pool08_workspace_browser",
+    "checks": 804,
+    "passed": true
+  },
+  {
+    "suite": "pool08_native_ui",
+    "checks": 30,
+    "passed": true
+  },
+  {
+    "suite": "pool08_crm_browser",
+    "checks": 88,
+    "passed": true
+  },
+  {
+    "suite": "pool08_opportunities_browser",
+    "checks": 120,
+    "passed": true
+  },
+  {
+    "suite": "pool08_quotations_browser",
+    "checks": 176,
+    "passed": true
+  },
+  {
+    "suite": "pool08_capture_browser",
+    "checks": 192,
+    "passed": true
+  },
+  {
+    "suite": "pool08_email_campaign_browser",
+    "checks": 96,
+    "passed": true
+  },
+  {
+    "suite": "pool08_publishing_browser",
+    "checks": 64,
+    "passed": true
+  },
+  {
+    "suite": "pool08_inbox_browser",
+    "checks": 88,
+    "passed": true
+  },
+  {
+    "suite": "pool08_army_browser",
+    "checks": 128,
+    "passed": true
+  },
+  {
+    "suite": "pool08_analytics_browser",
+    "checks": 72,
+    "passed": true
+  }
+]

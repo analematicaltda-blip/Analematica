@@ -13,7 +13,7 @@ try{
  // Only the ignored runtime is replaced; the complete source copy stays untouched.
  fs.rmSync(p.packageDir,{recursive:true,force:true});fs.cpSync(path.join(source,'npm'),p.packageDir,{recursive:true});
  const env=environment(p);delete env.AGENT_DESKTOP_BINARY_PATH;delete env.AGENT_DESKTOP_MACOS_HELPER_PATH;env.AGENT_DESKTOP_SKIP_DOWNLOAD='0';
- const install=spawnSync(process.execPath,[path.join(p.packageDir,'scripts/postinstall.js')],{env,stdio:'inherit',timeout:150000,windowsHide:true});
+ const install=spawnSync(process.execPath,[path.join(p.packageDir,'BACKEND/tools/postinstall.js')],{env,stdio:'inherit',timeout:150000,windowsHide:true});
  if(install.error||install.status!==0)throw new Error('No se pudo descargar/verificar el runtime oficial. No se activó el conector.');
  const version=spawnSync(p.binary,['version'],{env,encoding:'utf8',timeout:10000,windowsHide:true});
  if(version.error||version.status!==0)throw new Error('El binario descargado no puede ejecutarse en este sistema.');

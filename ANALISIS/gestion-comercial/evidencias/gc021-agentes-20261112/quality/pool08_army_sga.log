@@ -1,0 +1,30 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_a_rank_bypass_cannot_reach_a_real_tool (__main__.Checks.test_a_rank_bypass_cannot_reach_a_real_tool) ... ok
+test_all_read_soldiers_bind_real_owned_domains (__main__.Checks.test_all_read_soldiers_bind_real_owned_domains) ... ok
+test_ambiguous_engine_ack_is_uncertain_and_never_reissued (__main__.Checks.test_ambiguous_engine_ack_is_uncertain_and_never_reissued) ... ok
+test_audit_corruption_blocks_mission_read (__main__.Checks.test_audit_corruption_blocks_mission_read) ... ok
+test_catalog_mutation_requests_return_real_block_not_fictional_success (__main__.Checks.test_catalog_mutation_requests_return_real_block_not_fictional_success) ... ok
+test_disabled_engine_yields_block_with_real_local_tool_result (__main__.Checks.test_disabled_engine_yields_block_with_real_local_tool_result) ... ok
+test_engine_owner_scope_and_remote_origin_are_rejected (__main__.Checks.test_engine_owner_scope_and_remote_origin_are_rejected) ... ok
+test_interrupted_mission_keeps_uncertainty_without_retry (__main__.Checks.test_interrupted_mission_keeps_uncertainty_without_retry) ... ok
+test_jarvi_runs_real_scoped_crm_tool_with_full_chain_and_evidence (__main__.Checks.test_jarvi_runs_real_scoped_crm_tool_with_full_chain_and_evidence) ... ok
+test_malformed_runtime_object_is_not_reported_as_ready (__main__.Checks.test_malformed_runtime_object_is_not_reported_as_ready) ... ok
+test_neko_prepares_without_execution_or_voice_authorization (__main__.Checks.test_neko_prepares_without_execution_or_voice_authorization) ... ok
+test_open_duet_receives_only_static_tasks_in_plan_mode (__main__.Checks.test_open_duet_receives_only_static_tasks_in_plan_mode) ... ok
+test_permission_changes_invalidate_old_mission_and_receipt_access (__main__.Checks.test_permission_changes_invalidate_old_mission_and_receipt_access) ... ok
+test_request_replay_does_not_rerun_completed_mission (__main__.Checks.test_request_replay_does_not_rerun_completed_mission) ... ok
+test_revoked_role_cannot_get_audit_or_run (__main__.Checks.test_revoked_role_cannot_get_audit_or_run) ... ok
+test_soup_only_proposes_process_review_and_cannot_change_policy (__main__.Checks.test_soup_only_proposes_process_review_and_cannot_change_policy) ... ok
+test_status_probe_is_pinned_no_free_args_and_not_hardware_qualification (__main__.Checks.test_status_probe_is_pinned_no_free_args_and_not_hardware_qualification) ... ok
+test_tool_reads_current_rows_and_does_not_store_contact_text (__main__.Checks.test_tool_reads_current_rows_and_does_not_store_contact_text) ... ok
+test_two_confirmations_and_same_admin_are_enforced (__main__.Checks.test_two_confirmations_and_same_admin_are_enforced) ... ok
+test_unsupported_intent_and_free_shell_sql_parameters_never_dispatch (__main__.Checks.test_unsupported_intent_and_free_shell_sql_parameters_never_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 21.781s
+
+OK

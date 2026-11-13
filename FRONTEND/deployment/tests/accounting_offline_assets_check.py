@@ -15,6 +15,10 @@ class AssetChecks(unittest.TestCase):
    corporate=deploy.RUNTIME/'sites/analematica/contabilidad-offline';erp=deploy.RUNTIME/'erp/public/contabilidad-offline'
    self.assertTrue((deploy.RUNTIME/'sites/analematica/js/accounting-offline.js').is_file())
    config=(deploy.RUNTIME/'nginx.conf').read_text();self.assertEqual(config.count('location = /contabilidad-offline/worker.js { auth_basic off;'),2);self.assertEqual(config.count('location ^~ /contabilidad-offline/ { return 404; }'),2);self.assertEqual(config.count('auth_basic off; absolute_redirect off; return 302 /contabilidad-offline/index.html'),2);self.assertIn('auth_basic "Vista local erp"',config);self.assertNotIn('location /api/ { auth_basic off',config)
+   self.assertEqual(config.count('location ^~ /commercial-offline/ { return 404; }'),3)
+   for asset in ['index.html','editor.js','style.css','vault.js','worker.js']:
+    self.assertEqual(config.count('location = /commercial-offline/'+asset+' { auth_basic off;'),3)
+    for folder in ['sgacd','analematica','erp-capture']:self.assertTrue((deploy.RUNTIME/'sites'/folder/'commercial-offline'/asset).is_file())
    for name in ['index.html','editor.js','editor.css','vault.js','worker.js']:self.assertEqual((corporate/name).read_bytes(),(erp/name).read_bytes());self.assertEqual((corporate/name).read_bytes(),(deploy.RUNTIME/'sites/erp-capture/contabilidad-offline'/name).read_bytes())
  def test_install_does_not_delete_unrelated_files(self):
   with tempfile.TemporaryDirectory() as tmp:

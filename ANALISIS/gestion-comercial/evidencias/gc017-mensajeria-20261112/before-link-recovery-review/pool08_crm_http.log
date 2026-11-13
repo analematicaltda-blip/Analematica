@@ -1,0 +1,9 @@
+test_all_backends_and_gateway_complete_crm (__main__.CRMHTTPChecks.test_all_backends_and_gateway_complete_crm) ... ok
+test_authentication_context_and_unsupported_methods (__main__.CRMHTTPChecks.test_authentication_context_and_unsupported_methods) ... ok
+test_national_tourism_does_not_acquire_crm_enterprise_routes (__main__.CRMHTTPChecks.test_national_tourism_does_not_acquire_crm_enterprise_routes) ... ok
+test_real_http_errors_and_body_limits (__main__.CRMHTTPChecks.test_real_http_errors_and_body_limits) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 14.836s
+
+OK

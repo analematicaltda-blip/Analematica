@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: Opportunity form must remain locked during initial list/hint hydration
+
+false !== true
+
+    at /tmp/pool08_opportunity_recovery_browser.cjs:7:88

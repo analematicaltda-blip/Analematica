@@ -1,0 +1,17 @@
+test_check_has_no_side_effects_and_preserves_source_git_head (test_entrega_segura.SafeDeliveryTests.test_check_has_no_side_effects_and_preserves_source_git_head) ... ok
+test_conflict_refuses_entire_delivery_before_any_change (test_entrega_segura.SafeDeliveryTests.test_conflict_refuses_entire_delivery_before_any_change) ... ok
+test_deletion_is_explicit_and_original_is_backed_up (test_entrega_segura.SafeDeliveryTests.test_deletion_is_explicit_and_original_is_backed_up) ... ok
+test_existing_archive_is_never_overwritten (test_entrega_segura.SafeDeliveryTests.test_existing_archive_is_never_overwritten) ... ok
+test_full_modified_and_untracked_delivery_applies_and_replays (test_entrega_segura.SafeDeliveryTests.test_full_modified_and_untracked_delivery_applies_and_replays) ... ok
+test_generated_tracked_bytecode_is_explicitly_excluded (test_entrega_segura.SafeDeliveryTests.test_generated_tracked_bytecode_is_explicitly_excluded) ... ok
+test_interrupted_application_rolls_back_and_keeps_recovery_journal (test_entrega_segura.SafeDeliveryTests.test_interrupted_application_rolls_back_and_keeps_recovery_journal) ... ok
+test_private_runtime_paths_and_private_key_material_are_not_packaged (test_entrega_segura.SafeDeliveryTests.test_private_runtime_paths_and_private_key_material_are_not_packaged) ... ok
+test_rollback_preserves_newer_concurrent_edit (test_entrega_segura.SafeDeliveryTests.test_rollback_preserves_newer_concurrent_edit) ... ok
+test_symlink_and_traversal_cannot_write_outside_destination (test_entrega_segura.SafeDeliveryTests.test_symlink_and_traversal_cannot_write_outside_destination) ... ok
+test_tampered_payload_is_rejected_before_writing (test_entrega_segura.SafeDeliveryTests.test_tampered_payload_is_rejected_before_writing) ... ok
+test_zipapp_is_directly_executable_for_dry_run (test_entrega_segura.SafeDeliveryTests.test_zipapp_is_directly_executable_for_dry_run) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.540s
+
+OK

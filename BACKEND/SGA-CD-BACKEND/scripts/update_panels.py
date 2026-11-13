@@ -65,7 +65,7 @@ def install(args):
   volumes.append(new)
  # Reuse a previously configured Node 6; only prepare it when absent.
  if 'node6' not in config['services']:
-  run([sys.executable,str(repo/'scripts/start_node6.py'),'--demo-dir',str(demo),'--prepare-only'])
+  run([sys.executable,str(repo/'BACKEND/tools/start_node6.py'),'--demo-dir',str(demo),'--prepare-only'])
   node_config=json.loads(path.read_text());config['services']['node6']=node_config['services']['node6'];config['volumes']=node_config.get('volumes',config.get('volumes',{}))
  node=config['services']['node6'];envs=node.get('env_file',[]);envs=[envs] if isinstance(envs,str) else envs
  values={}
@@ -92,12 +92,12 @@ def install(args):
   for key in ['NODE6_URL','NODE6_TOKEN','CAMPAIGN_DELIVERY_ENABLED']:backend['environment'].pop(key,None)
  elif isinstance(backend.get('environment'),list):backend['environment']=[line for line in backend['environment'] if line.split('=',1)[0] not in ['NODE6_URL','NODE6_TOKEN','CAMPAIGN_DELIVERY_ENABLED']]
  for filename in ['engine.py','main.py','youtube.py','adaptation.py','social.py','campaign_dispatch.py']:
-  copied=overlay/'node6'/filename;copied.parent.mkdir(exist_ok=True);shutil.copy2(repo/'infra/node6'/filename,copied);copied.chmod(0o644)
+  copied=overlay/'node6'/filename;copied.parent.mkdir(exist_ok=True);shutil.copy2(repo/'BACKEND/infra/node6'/filename,copied);copied.chmod(0o644)
   target='/app/infra/node6/'+filename;value=str(copied)+':'+target+':ro';volumes=node.setdefault('volumes',[])
   for mount in volumes:
    if destination(mount)==target:
     source=Path(mount.split(':')[0] if isinstance(mount,str) else mount.get('source','')).resolve()
-    if not any(source.is_relative_to(root) for root in [demo/'workspace-overlay',demo/'workspace-overlays',repo/'infra/node6']):raise SystemExit('Montaje Node 6 personalizado; no se sustituyó.')
+    if not any(source.is_relative_to(root) for root in [demo/'workspace-overlay',demo/'workspace-overlays',repo/'BACKEND/infra/node6']):raise SystemExit('Montaje Node 6 personalizado; no se sustituyó.')
   volumes[:]=[mount for mount in volumes if destination(mount)!=target]
   volumes.append(value)
  # The scheduler uses the same backend code, credentials and DB, with no listening port.

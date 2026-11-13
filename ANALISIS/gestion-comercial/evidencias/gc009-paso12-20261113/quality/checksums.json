@@ -1,0 +1,12 @@
+{
+  "source-manifest.json": "0301d56431dd412700c6033458722c235f55d53240a65cf8c56fbcc1a57552cd",
+  "cancellation_timing.log": "2f6ef7c55da425f67f698728570481a60da447cf045e05c352f6956362abc30f",
+  "pool08_after_followup_sga.log": "600c1281b69ab2970feb581a390ee4dba7f8be3d7170cadffe91ffc84af58496",
+  "pool08_after_sales_native.log": "a0a02da582dcc6fb7b8865aa416282a6d4e618ceff3942b254e02808450b5e22",
+  "pool08_after_sales_browser.log": "2e08b6bd83f04577f0ffe63cad2912e54724ae2ef28d1255c7f54c103846b958",
+  "report.json": "05641aeb5d2db2030b1313bb53a9efa99c64fc5d51dd5e86cfd3b0e657e40758",
+  "runner.log": "ba77d5b5076b55a4efde811ec9c31106c2bb6ed771a5d67ff4039ea94720e21e",
+  "pool08_after_sales_wallet.log": "892229d631b3537ca05fcc4763e63f93c64916eb0ef8a93aba0a6d7191b6dd9e",
+  "pool08_after_sales_lifecycle.log": "23a82bdc98d1b4cc049f91c1f257e556aed69cb6fd9e153a7838a7939b7a448e",
+  "pool08_after_sales_sga_http.log": "ea89fb53844154134ce9135fbd6821ecbeda7767b8d8b34c7ca411c5a8ffc753"
+}

@@ -1,3 +1,3 @@
-"""Compatibility import path; canonical wallet code is in WALLET-BACKEND."""
+"""Compatibility import path; canonical wallet code is in BACKEND/WALLET-BACKEND."""
 from pathlib import Path
-__path__=[str(Path(__file__).resolve().parents[4]/'WALLET-BACKEND/fresh_migrations/wallet')]
+__path__=[str(Path(__file__).resolve().parents[4]/'BACKEND/WALLET-BACKEND/fresh_migrations/wallet')]

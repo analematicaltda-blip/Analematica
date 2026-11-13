@@ -1,0 +1,9 @@
+Email workflow sga-cd 1280
+Email workflow sga-cd 390
+Email workflow erp-tur 1280
+Email workflow erp-tur 390
+Email workflow analematica 1280
+Email workflow analematica 390
+Email workflow gateway 1280
+Email workflow gateway 390
+{"passed":true,"checks":96,"targets":4,"widths":[1280,390],"real_http":true,"real_messages_sent":false,"provider_qualified":false}

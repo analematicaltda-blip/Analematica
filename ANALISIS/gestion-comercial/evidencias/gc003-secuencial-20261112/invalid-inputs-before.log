@@ -1,0 +1,215 @@
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... 
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=0) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=1) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=127) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=159) ... FAIL
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... FAIL
+test_email_normalization_and_consent_remain_declarations (__main__.cases.<locals>.Checks.test_email_normalization_and_consent_remain_declarations) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string) ... FAIL
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... 
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=0) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=1) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=127) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=159) ... FAIL
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... FAIL
+test_email_normalization_and_consent_remain_declarations (__main__.cases.<locals>.Checks.test_email_normalization_and_consent_remain_declarations) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string) ... FAIL
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... 
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=0) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=1) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=127) ... FAIL
+  test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=159) ... FAIL
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... FAIL
+test_email_normalization_and_consent_remain_declarations (__main__.cases.<locals>.Checks.test_email_normalization_and_consent_remain_declarations) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string) ... FAIL
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=127)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=159)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 58, in test_email_control_characters_never_enter_contact_or_audit
+    self.assertFalse(self.store.items);self.assertFalse(self.store.events)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'82c2fbfc-1573-49bb-ac7d-384031a3695f': {'name': 'Persona', 'email': 'bad\x00@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': '82c2fbfc-1573-49bb-ac7d-384031a3695f', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, 'fc98b6b7-f403-4a2e-87d9-ef2085aeaa7f': {'name': 'Persona', 'email': 'bad\x01@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': 'fc98b6b7-f403-4a2e-87d9-ef2085aeaa7f', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, 'bb6c3b7d-0462-49dd-9068-165d82464513': {'name': 'Persona', 'email': 'bad\x7f@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': 'bb6c3b7d-0462-49dd-9068-165d82464513', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, '8e8b5f98-60be-4222-995a-9f6164aa9477': {'name': 'Persona', 'email': 'bad\x9f@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': '8e8b5f98-60be-4222-995a-9f6164aa9477', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}} is not false
+
+======================================================================
+FAIL: test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 63, in test_numeric_or_boolean_evidence_is_not_a_hash_string
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONSENT'):self.crm.command(dict(request_id=str(uuid.uuid4()),operation='consent',contact_id=cid,expected_revision=1,data=data))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=127)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=159)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 58, in test_email_control_characters_never_enter_contact_or_audit
+    self.assertFalse(self.store.items);self.assertFalse(self.store.events)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'d69de609-4230-440a-9fef-2965edde1a68': {'name': 'Persona', 'email': 'bad\x00@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': 'd69de609-4230-440a-9fef-2965edde1a68', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, 'dc4085d5-305c-4eb9-aae1-731c87238fe7': {'name': 'Persona', 'email': 'bad\x01@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': 'dc4085d5-305c-4eb9-aae1-731c87238fe7', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, '8315b69b-4126-4629-945a-157490b5c429': {'name': 'Persona', 'email': 'bad\x7f@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': '8315b69b-4126-4629-945a-157490b5c429', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, '7983a95d-60f3-463a-a25d-b22a6b026458': {'name': 'Persona', 'email': 'bad\x9f@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': '7983a95d-60f3-463a-a25d-b22a6b026458', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}} is not false
+
+======================================================================
+FAIL: test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 63, in test_numeric_or_boolean_evidence_is_not_a_hash_string
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONSENT'):self.crm.command(dict(request_id=str(uuid.uuid4()),operation='consent',contact_id=cid,expected_revision=1,data=data))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=127)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) (code=159)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 57, in test_email_control_characters_never_enter_contact_or_audit
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONTACT'):self.crm.command(self.body(email='bad'+char+'@example.test'))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+======================================================================
+FAIL: test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 58, in test_email_control_characters_never_enter_contact_or_audit
+    self.assertFalse(self.store.items);self.assertFalse(self.store.events)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'a3855992-f0f7-4452-a26c-0a72edbde18f': {'name': 'Persona', 'email': 'bad\x00@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': 'a3855992-f0f7-4452-a26c-0a72edbde18f', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, '568b15af-6bf0-4df0-814a-b510a825a114': {'name': 'Persona', 'email': 'bad\x01@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': '568b15af-6bf0-4df0-814a-b510a825a114', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, '110566cb-1ecf-4015-a1fb-390070609be3': {'name': 'Persona', 'email': 'bad\x7f@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': '110566cb-1ecf-4015-a1fb-390070609be3', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}, '15ef8f96-921e-4fb9-a049-cab0db549513': {'name': 'Persona', 'email': 'bad\x9f@example.test', 'phone': '', 'origin': 'MANUAL', 'responsible_ref': '1', 'notes': '', 'id': '15ef8f96-921e-4fb9-a049-cab0db549513', 'revision': 1, 'status': 'PROSPECT', 'consents': {}, 'tasks': [], 'duplicate_review': None, 'customer_ref': None, 'stage': 'nuevo'}} is not false
+
+======================================================================
+FAIL: test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_crm_check.py", line 63, in test_numeric_or_boolean_evidence_is_not_a_hash_string
+    with self.assertRaisesRegex(module.CRMError,'INVALID_CONSENT'):self.crm.command(dict(request_id=str(uuid.uuid4()),operation='consent',contact_id=cid,expected_revision=1,data=data))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CRMError not raised
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.011s
+
+FAILED (failures=18)

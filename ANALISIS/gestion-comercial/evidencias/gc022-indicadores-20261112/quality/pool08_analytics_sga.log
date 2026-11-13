@@ -1,0 +1,29 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_corrupt_audit_blocks_report (__main__.Checks.test_corrupt_audit_blocks_report) ... ok
+test_current_crm_and_real_capture_adapter_are_available_for_empty_scope (__main__.Checks.test_current_crm_and_real_capture_adapter_are_available_for_empty_scope) ... ok
+test_dates_scope_and_confirmation_are_required_before_collection (__main__.Checks.test_dates_scope_and_confirmation_are_required_before_collection) ... ok
+test_drafts_do_not_count_as_revenue_and_uncertain_sales_block_metrics (__main__.Checks.test_drafts_do_not_count_as_revenue_and_uncertain_sales_block_metrics) ... ok
+test_duplicate_provider_account_aliases_cannot_double_costs (__main__.Checks.test_duplicate_provider_account_aliases_cannot_double_costs) ... ok
+test_forecast_does_not_use_test_period_for_model_selection (__main__.Checks.test_forecast_does_not_use_test_period_for_model_selection) ... ok
+test_google_and_tiktok_cost_protocols_keep_exact_precision (__main__.Checks.test_google_and_tiktok_cost_protocols_keep_exact_precision) ... ok
+test_incomplete_tiktok_report_is_not_a_zero_cost_source (__main__.Checks.test_incomplete_tiktok_report_is_not_a_zero_cost_source) ... ok
+test_interrupted_collection_can_only_recover_after_timeout (__main__.Checks.test_interrupted_collection_can_only_recover_after_timeout) ... ok
+test_ltv_requires_reviewed_policy_and_never_substitutes_arpu (__main__.Checks.test_ltv_requires_reviewed_policy_and_never_substitutes_arpu) ... ok
+test_meta_costs_require_correct_account_and_currency (__main__.Checks.test_meta_costs_require_correct_account_and_currency) ... ok
+test_meta_pagination_never_follows_provider_supplied_url (__main__.Checks.test_meta_pagination_never_follows_provider_supplied_url) ... ok
+test_persisted_report_zero_is_distinct_from_unavailable_and_does_not_write_ledger (__main__.Checks.test_persisted_report_zero_is_distinct_from_unavailable_and_does_not_write_ledger) ... ok
+test_provider_reads_disabled_before_any_network (__main__.Checks.test_provider_reads_disabled_before_any_network) ... ok
+test_remote_income_requires_fresh_bound_reader (__main__.Checks.test_remote_income_requires_fresh_bound_reader) ... ok
+test_report_replay_returns_existing_reservation_without_repeating_reads (__main__.Checks.test_report_replay_returns_existing_reservation_without_repeating_reads) ... ok
+test_revoked_role_blocks_report_and_receipt (__main__.Checks.test_revoked_role_blocks_report_and_receipt) ... ok
+test_source_failure_does_not_fabricate_zero_sales (__main__.Checks.test_source_failure_does_not_fabricate_zero_sales) ... ok
+test_temporal_forecast_uses_explicit_history_and_independent_holdout (__main__.Checks.test_temporal_forecast_uses_explicit_history_and_independent_holdout) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 14.586s
+
+OK

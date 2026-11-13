@@ -45,14 +45,11 @@ class EmailService:
         Sends transactional email safely with error handling and List-Unsubscribe header.
         """
         if not self.validate_email_address(recipient_email):
-            logger.error(f"Sintaxis de correo inválida: {recipient_email}")
+            logger.error("Invalid email syntax; message not submitted")
             return False
 
-        full_body = body_text + self.build_unsubscribe_footer(recipient_email)
-
-        # Log delivery execution without exposing PII secrets
-        logger.info(f"Simulando/Enviando correo a {recipient_email} - Asunto: '{subject}'")
-        print(f"[EMAIL SERVICE] Correo enviado a {recipient_email} | Asunto: {subject}")
-        return True
+        # This compatibility service has no transport configured. Never claim delivery.
+        logger.warning("Legacy email transport unavailable; message not submitted")
+        return False
 
 email_service = EmailService()

@@ -1,0 +1,93 @@
+{
+  "task": "GC-003",
+  "plan_step": 4,
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+  "implemented": "Extensión de la herramienta existente para preparar GC-003, comprobar su dependencia GC-002 y contrastar específicamente las siete familias de regresión CRM del paso2. No se modifican módulos de aplicación ni se incorporan aprobaciones reales.",
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc003-paso4-20261113/quality/report.json",
+    "sha256": "bda8d4b377cdb86acc19cdf13629480502594d4ad92252ee9e62b428ee7f292d",
+    "tests": 12,
+    "suites": 3,
+    "source_stable": true,
+    "source_digest": "e4686c1c59606cadeda4b22aacb6635706672260b2a70fe2bad3a7d99f76d394"
+  },
+  "additional_checks": {
+    "runner_tests": 21,
+    "plan_tests": 10
+  },
+  "readiness": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc003-paso4-20261113/quality/crm-acceptance.json",
+    "sha256": "de80c3ebd20c9f7f692fae3277ad09b598bbb58fd9029d66dfec29005040e3e0",
+    "local_evidence_origin_task": "GC-002",
+    "supporting_quality_is_step2_regression_not_new_crm_acceptance": true,
+    "current_source_files_checked": 337
+  },
+  "dependencies_without_acceptance": [
+    "GC-002"
+  ],
+  "external_review_required": [
+    {
+      "id": "CRM_CREATE",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: CREATE",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_SEARCH",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: SEARCH",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_UPDATE",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: UPDATE",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_FOLLOW_UP",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: FOLLOW_UP",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_DUPLICATE_REVIEW",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: DUPLICATE_REVIEW",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_CONVERT",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: CONVERT",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_WITHDRAW",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: WITHDRAW",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "CRM_CONSENT_AND_HISTORY",
+      "required": "Recorrido aceptado con muestra autorizada en los tres sistemas: CONSENT_AND_HISTORY",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    }
+  ],
+  "known_unavailable": "El usuario indicó no disponer del conjunto solicitado de muestras autorizadas de clientes y políticas revisadas; no se vuelve a solicitar ni se sustituye por fixtures.",
+  "prior_followups_preserved": 82,
+  "git": {
+    "commit_created": false,
+    "push_performed": false,
+    "main_updated": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

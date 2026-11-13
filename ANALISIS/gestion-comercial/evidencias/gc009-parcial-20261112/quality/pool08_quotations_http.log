@@ -1,0 +1,8 @@
+test_full_flow_media_public_accept_and_replay_all_paths (__main__.QuotationHTTP.test_full_flow_media_public_accept_and_replay_all_paths) ... ok
+test_strict_requests_private_errors_and_media_limits (__main__.QuotationHTTP.test_strict_requests_private_errors_and_media_limits) ... ok
+test_tourism_has_no_company_quote_or_link_api (__main__.QuotationHTTP.test_tourism_has_no_company_quote_or_link_api) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 20.718s
+
+OK

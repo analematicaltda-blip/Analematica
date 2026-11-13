@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { FiHardHat } from 'react-icons/fi';
+import { FiTool } from 'react-icons/fi';
+import { Card,CardHeader,CardTitle,CardContent } from '@/components/ui/Card';
 import { FiActivity } from 'react-icons/fi';
 
 interface PlaceholderContentProps {
@@ -20,7 +21,7 @@ export default function PlaceholderContent({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center justify-center text-center text-gray-500 py-12">
-          <FiHardHat className="w-16 h-16 mb-4 text-yellow-500" />
+          <FiTool className="w-16 h-16 mb-4 text-yellow-500" />
           <h2 className="text-2xl font-bold mb-2">Módulo en Construcción</h2>
           <p className="max-w-md">{description}</p>
         </div>

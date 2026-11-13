@@ -35,8 +35,8 @@ Después de restaurar: conservar el origen y la copia intactos, configurar una i
 ## Validación integrada
 
 ```bash
-python INTEGRACIONES/operacion/verify_local.py --profile backup --profile postgres --output /tmp/sgacd-respaldo-evidencia-nueva
-python INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-respaldo-evidencia-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile backup --profile postgres --output /tmp/sgacd-respaldo-evidencia-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-respaldo-evidencia-nueva
 ```
 
 `backup` ejecuta pruebas negativas/positivas y el ensayo del modelo real `ContentDraft`: recuperar texto cifrado y versión revisada con las claves originales. `postgres` ejecuta los contratos existentes en un contenedor efímero, con origen intacto y restauración hacia otra base. El perfil por sí solo no se conecta a PostgreSQL del usuario.

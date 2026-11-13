@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, AuditLog, Permission, Role } from '../types';
-import { getSalesForecast } from '../services/geminiService';
+import CommercialCRMWorkspace from './CommercialCRMWorkspace';
 import { 
     UsersIcon, TrendingUpIcon, SupportIcon, MegaphoneIcon, EuroIcon, 
     FileExportIcon, PlusIcon, ShieldCheckIcon, AppStoreIcon, GooglePlayIcon 
@@ -42,53 +42,9 @@ const KpiCard: React.FC<{ icon: React.FC<{className?: string}>, title: string, v
 );
 
 // --- TABS ---
-const DashboardTab: React.FC = () => {
-    // This would typically use a charting library like Chart.js or Recharts
-    const SalesForecastChart = () => {
-        const [forecastData, setForecastData] = useState<{month: string, forecast: number}[]>([]);
-        useEffect(() => {
-            const historicalData = [ {month: "Ene", sales: 150}, {month: "Feb", sales: 180}, {month: "Mar", sales: 220}, {month: "Abr", sales: 210}, {month: "May", sales: 250}];
-            getSalesForecast(historicalData).then(setForecastData);
-        }, []);
-        const chartData = [...[{month: "May", sales: 250, isForecast: false}], ...forecastData.map(d=>({month: d.month, sales: d.forecast, isForecast: true}))];
-        return (
-            <div className="bg-card p-6 rounded-xl h-80 flex flex-col border shadow-md">
-                <h4 className="font-bold text-foreground">Predicción de Ventas IA</h4>
-                <div className="flex-1 flex items-end space-x-4 p-4">
-                     {/* Simplified bar chart */}
-                    {chartData.map((d, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
-                           <div className={`${d.isForecast ? 'bg-primary/50' : 'bg-primary' } w-full rounded-t-md`} style={{height: `${(d.sales / 350) * 100}%`}}></div>
-                           <span className="text-xs mt-2 text-muted-foreground">{d.month}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        )
-    }
-
-    return (
-        <div className="p-8 space-y-8">
-            <div className="flex justify-between items-center">
-                <h3 className="text-2xl font-bold text-foreground">Dashboard de Analítica</h3>
-                <button className="bg-primary px-4 py-2 rounded-lg text-primary-foreground font-semibold">Personalizar Dashboard</button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <KpiCard icon={TrendingUpIcon} title="ROI Campañas" value="3.5x" change="+0.2" />
-                <KpiCard icon={EuroIcon} title="CAC (Adquisición)" value="€45.20" change="-5%" />
-                <KpiCard icon={UsersIcon} title="LTV (Vida Cliente)" value="€1,280" />
-                <KpiCard icon={MegaphoneIcon} title="Conversión Funnel" value="4.1%" change="+0.5%" />
-            </div>
-            <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center gap-2 text-xs text-amber-700 font-medium italic">
-                <span>Nota: Los cálculos de CAC/LTV se basan en datos de inversión en marketing y recurrencia detectada. (Cálculo parcial – backend en progreso)</span>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <SalesForecastChart />
-                {/* Another chart could go here */}
-            </div>
-        </div>
-    );
-};
+// Metrics use the owned authenticated CRM/ledger reporting service.
+// Sample sales, fixed CAC/LTV and generated forecasts are not financial evidence.
+const DashboardTab: React.FC = () => <CommercialCRMWorkspace initialWorkspace="analytics" />;
 
 const UserManagementTab: React.FC = () => {
     // ... logic for user management

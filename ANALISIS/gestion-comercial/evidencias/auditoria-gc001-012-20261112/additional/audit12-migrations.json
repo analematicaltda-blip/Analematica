@@ -1,0 +1,14 @@
+[
+  {
+    "owned": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/migrations/0012_quotation_media_provider.py",
+    "fresh": "BACKEND/deployment/fresh_migrations/gestion_comercial/0012_quotation_media_provider.py",
+    "sha256": "9b0b33ae3a6ac2802615038ae6dc6d9968332ef0f8765a7eadf109be60f8ffaf",
+    "identical": true
+  },
+  {
+    "owned": "BACKEND/ANALEMATICA-BACKEND/migrations/0012_quotation_media_provider.py",
+    "fresh": "BACKEND/deployment/fresh_migrations/admin_plataforma/0012_quotation_media_provider.py",
+    "sha256": "084630b182fe669c4779cb5403cdfa0ae7b30a5ab1f57890aeafa5d6b078a4f5",
+    "identical": true
+  }
+]

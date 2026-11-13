@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "own_copies": 3,
+  "sha256": {
+    "commercial-landings.js": "53a8cd276b4ed51241f87b6d74fbfcf5550b92c33d95fc475502bc701dbc8360",
+    "commercial-crm.js": "9f80861df1c7db1207df528743f81333906e3278247f1125eefe63bb0efd889c"
+  }
+}

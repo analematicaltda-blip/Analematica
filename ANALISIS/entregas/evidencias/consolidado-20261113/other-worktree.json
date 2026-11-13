@@ -1,0 +1,750 @@
+{
+  "count": 124,
+  "all_previously_captured_or_current": true,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 5996
+    },
+    {
+      "path": "ANALISIS/contabilidad/BLOQUEOS_POR_TAREA.md",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 13707
+    },
+    {
+      "path": "ANALISIS/contabilidad/CIERRE_20_HITOS.md",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 68323
+    },
+    {
+      "path": "ANALISIS/contabilidad/PLAN_REMANENTE_20_HITOS.json",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 44236
+    },
+    {
+      "path": "ANALISIS/contabilidad/PLAN_SUBSANACION_20_HITOS.md",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 37606
+    },
+    {
+      "path": "ANALISIS/contabilidad/PROGRESO.md",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 2761
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/abonos-parciales-corporate.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 190149
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/abonos-parciales-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 165791
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/agrupacion-bancaria-analematica.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 147065
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/agrupacion-bancaria-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 130882
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/cancelacion-tramos-bold-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 322372
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/cierre-compra-corregida-corporate.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 161294
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/cierre-compra-corregida-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 146524
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/correccion-devolucion-corporate.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 167045
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/correccion-devolucion-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 150818
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/devolucion-billetera-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 386502
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/devoluciones-compra-corporate.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 106640
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/devoluciones-compra-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 95509
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/gestion-intencion-billetera-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 389534
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/historial-compras-corporate.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 31710
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/historial-compras-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 28721
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/ocupacion-adr-corporate.png",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 204504
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/ocupacion-adr-erp.png",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 182819
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/reporte-esg-corporate.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 123533
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/reporte-esg-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 111723
+    },
+    {
+      "path": "ANALISIS/contabilidad/evidencias/retencion-comercial-erp.png",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 206943
+    },
+    {
+      "path": "ANALISIS/contabilidad/matriz-pools.csv",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 12202
+    },
+    {
+      "path": "ANALISIS/contabilidad/plan-subsanacion-20.json",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 40871
+    },
+    {
+      "path": "ANALISIS/contabilidad/progreso.json",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 19071
+    },
+    {
+      "path": "ANALISIS/contabilidad/progress-registry.json",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 35565
+    },
+    {
+      "path": "ANALISIS/contabilidad/tools/test_progress.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 3020
+    },
+    {
+      "path": "ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 9961
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_capacity.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 2672
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_grouped.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 19755
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/bank_reconciliation.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 21160
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/commercial_tax_posting.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 24014
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/ledger_engine.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 19798
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/native_return_reversal.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 3163
+    },
+    {
+      "path": "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/tax_register_snapshot.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 5272
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/payments.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 2374
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/bank_group_contract.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 8417
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 33971
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/esg_report_contract.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 5237
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/native_purchase_contract.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 7707
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/payment_gateway_adapter.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 5192
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/app/services/purchase_return_contract.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 6589
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_bank.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 13616
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_bank_group_contract.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 3147
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_environmental.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 4946
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_esg_contract.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 2685
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_hotel.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 3307
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 9863
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_native_purchase_contract.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 5005
+    },
+    {
+      "path": "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_purchase_return_contract.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 4372
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/cancellation_policies.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 23300
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/cancellation_views.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 2685
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/refund_liability.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 3792
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/refund_orders.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 7355
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/urls.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 1804
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/wallet_refund.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 18706
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/wallet_refund_lifecycle.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 11438
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/native_purchase.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 22261
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/purchase_return_voids.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 9557
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/compras/purchase_returns.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 20257
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/esg_reporting.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 5147
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/hotel_sales.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 10724
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/tourism_metrics.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 20211
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/contabilidad/views.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 57270
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_financiera/services.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 6757
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/modulos_genericos/reservas/serializers.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 3898
+    },
+    {
+      "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_operativa/modulos_genericos/reservas/views.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 2572
+    },
+    {
+      "path": "BACKEND/deployment/fresh_local_settings.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 2297
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_bank_grouped_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 8051
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_bank_partial_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 6521
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_esg_reporting_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 4972
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_hotel_sales_check.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 7702
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_purchase_history_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 4475
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_purchase_return_check.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 7635
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_purchase_return_void_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 6070
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_return_final_reversal_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 6445
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_wallet_refund_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 16512
+    },
+    {
+      "path": "BACKEND/deployment/tests/accounting_wallet_refund_lifecycle_check.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 8366
+    },
+    {
+      "path": "BACKEND/deployment/tests/cancellation_policy_check.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 10460
+    },
+    {
+      "path": "BACKEND/deployment/tests/cancellation_timing_check.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 8521
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/admin.html",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 113794
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ledger.js",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 32473
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-remediation.js",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 81260
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/bank-groups.js",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 16201
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/esg-report.js",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 7233
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 24193
+    },
+    {
+      "path": "FRONTEND/ANALEMATICA-FRONTEND/js/purchase-returns.js",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 11572
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/page.tsx",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 18828
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/politicas-devolucion/CancellationPolicyPanel.tsx",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 1801
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/politicas-devolucion/page.tsx",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 2538
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/politicas-devolucion/panel.js",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 31109
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/BankGroups.tsx",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 1879
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/ESGReport.tsx",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 1506
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/NativePurchases.tsx",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 2770
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/RemediationPanel.tsx",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 3738
+    },
+    {
+      "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/page.tsx",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 6442
+    },
+    {
+      "path": "FRONTEND/deployment/tests/bank_allocations_browser.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 8460
+    },
+    {
+      "path": "FRONTEND/deployment/tests/bank_grouped_browser.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 10572
+    },
+    {
+      "path": "FRONTEND/deployment/tests/cancellation_policy_browser.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 14303
+    },
+    {
+      "path": "FRONTEND/deployment/tests/cancellation_policy_types.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 946
+    },
+    {
+      "path": "FRONTEND/deployment/tests/corporate_ledger_server.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 4794
+    },
+    {
+      "path": "FRONTEND/deployment/tests/esg_report_browser.cjs",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 9722
+    },
+    {
+      "path": "FRONTEND/deployment/tests/hotel_metrics_browser.cjs",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 12968
+    },
+    {
+      "path": "FRONTEND/deployment/tests/native_purchases_browser.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 13654
+    },
+    {
+      "path": "FRONTEND/deployment/tests/purchase_return_final_reversal_browser.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 17956
+    },
+    {
+      "path": "FRONTEND/deployment/tests/purchase_return_void_browser.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 16453
+    },
+    {
+      "path": "FRONTEND/deployment/tests/purchase_returns_browser.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 14695
+    },
+    {
+      "path": "FRONTEND/deployment/tests/quotation_server.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 12609
+    },
+    {
+      "path": "FRONTEND/deployment/tests/reservation_recognition_types.cjs",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 1963
+    },
+    {
+      "path": "FRONTEND/deployment/tests/wallet_lifecycle_fixture.py",
+      "captured_original": true,
+      "current_same": true,
+      "bytes": 4153
+    },
+    {
+      "path": "FRONTEND/deployment/tests/wallet_refund_lifecycle_browser.cjs",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 9636
+    },
+    {
+      "path": "INTEGRACIONES/operacion/verify_local.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 18191
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/models.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 12556
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/serializers.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 3719
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/services/internal_transfer.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 8537
+    },
+    {
+      "path": "WALLET-BACKEND/apps/wallet/services/refund_guard.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 2801
+    },
+    {
+      "path": "WALLET-BACKEND/fresh_migrations/wallet/0005_transfer_cancellation_state.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 406
+    },
+    {
+      "path": "WALLET-BACKEND/offline/src/sgacd_wallet_offline/production_pending.json",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 11084
+    },
+    {
+      "path": "WALLET-BACKEND/tests/device_approval_check.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 11154
+    },
+    {
+      "path": "WALLET-BACKEND/tests/wallet_security_check.py",
+      "captured_original": true,
+      "current_same": false,
+      "bytes": 11099
+    }
+  ]
+}

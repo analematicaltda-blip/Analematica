@@ -1,0 +1,60 @@
+{
+  "schema": "commercial-identity-acceptance-readiness-v1",
+  "task_id": "GC-002",
+  "milestone_id": "GCH-006",
+  "gate": "BLOCKED_EXTERNAL_ACCEPTANCE",
+  "local_blocker": null,
+  "local_evidence": {
+    "suite_ids": [
+      "pool08_access_browser",
+      "pool08_access_http",
+      "pool08_access_native",
+      "pool08_access_sga"
+    ],
+    "artifact_integrity_verified": true,
+    "identity_sources_current": true,
+    "changed_sources": [],
+    "checked_source_count": 337,
+    "external_authenticity_verified": false
+  },
+  "external_review": [
+    {
+      "id": "LEGITIMATE_ADMINISTRATORS",
+      "required": "Titularidad y autoridad de los administradores de cada sistema y empresa.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "REVIEWED_NATIVE_ROLES",
+      "required": "Matriz revisada de roles propios, permisos y separación entre empresas.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "REVIEWED_CONSENT_POLICIES",
+      "required": "Políticas legítimas de autorización, finalidades, vigencias y revocación.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "AUTHORIZED_ACCEPTANCE_CASES",
+      "required": "Usuarios y muestras autorizados para recorridos positivos y negativos reales.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "TRACEABLE_REVIEW",
+      "required": "Acta de revisión identificable, alcance y versión, decisiones y pendientes de los revisores legítimos.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    }
+  ],
+  "known_materials_availability": "El usuario indicó no disponer del conjunto solicitado de muestras autorizadas de clientes y políticas revisadas; no se vuelve a solicitar ni se sustituye por fixtures.",
+  "credited_milestones": 37,
+  "credited_milestone_percent": "51.39",
+  "new_progress_credit": 0,
+  "acceptance_complete": false,
+  "production_enabled": false,
+  "permissions_changed": false,
+  "publication_performed": false,
+  "limitations": [
+    "Checksums prove internal consistency, never legitimacy of people or policies.",
+    "No input flag, document hash or synthetic reviewer automatically grants acceptance.",
+    "This preparation tool does not certify an acceptance completed elsewhere."
+  ]
+}

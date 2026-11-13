@@ -1,6 +1,6 @@
 # Seguimiento único · Motor contable y20 hitos finales
 
-Actualización:2026-11-11. Este archivo concentra desde ahora las novedades, hallazgos, bloqueos y siguientes acciones. No crear un informe Markdown por entrega o análisis. Los documentos anteriores se conservan como historia/evidencia; las matrices JSON y sus verificadores mantienen sus contratos.
+Actualización:2026-11-12. Este archivo concentra desde ahora las novedades, hallazgos, bloqueos y siguientes acciones. No crear un informe Markdown por entrega o análisis. Los documentos anteriores se conservan como historia/evidencia; las matrices JSON y sus verificadores mantienen sus contratos.
 
 ## Estado real
 
@@ -1321,3 +1321,146 @@ divergencia. La API rechazó el cambio de nombre solicitado con Forbidden;
 el token de gh tampoco autentica. El acceso Git admite la comprobación de push.
 No afirmar que el nombre remoto cambió ni modificar origin a una URL inexistente.
 La publicación se confirmará comparando el SHA remoto después del push normal.
+
+## Organización de billetera por capa · 2026-11-11
+
+Traslado completo de las cuatro carpetas raíz a BACKEND/WALLET-BACKEND,
+FRONTEND/WALLET-FRONTEND, DESKTOP/WALLET-DESKTOP y MOVILES/WALLET-MOVIL.
+204 archivos preservados antes de adaptar rutas; inventario y hashes en
+BACKEND/WALLET-BACKEND/move-inventory.json. Se actualizaron aliases Django,
+migraciones fresh, Docker, dependencias Flet, puente nativo, runner, workflows
+y documentación de uso. No se dejaron copias de las cuatro carpetas en la raíz.
+
+Validación: 212 pruebas unittest, cuatro pruebas Node, cuatro verificadores Java,
+19 recursos nativos idénticos y Chromium con vista móvil y tráfico externo
+bloqueado. Se detectó pending.json público desactualizado, se regeneró desde
+el registro canónico y su comprobación pasó. Dos instalaciones SQLite desde
+cero (ERP y Turismo), con 13 pruebas de esquema/HTTP por servicio: 26 más.
+No se modificaron datos históricos ni se desplegó producción. Dispositivos físicos
+y proveedores externos siguen pendientes. Indicador contable sin cambio: 79,17 %.
+Este traslado posterior al Summit está sin commit/push nuevo.
+
+
+## Integración comercial GC-007 · 2026-11-12
+
+Se conectó la venta comercial revisada al ledger existente de ERP/Analemática, con guardas de posteo/reversión y protección de cupos. No se duplicó un motor contable en SGA: conserva intención pendiente y recupera el asiento nativo confirmado. Nómina/SG-SST se consultan desde sus fuentes revisadas, sin otro gasto ni pago. Evidencia y relato comercial único: INTEGRACIONES/plan-maestro/auditoria-bloque01/HALLAZGOS_Y_PRIORIDADES.md, sección GC-007. El indicador contable permanece 79,17% (57/72, 9/24); esta entrega no añade crédito ACC ni acredita DIAN, fuentes legítimas, PostgreSQL/concurrencia o producción mediante fixtures.
+
+
+## GC-008 · Intenciones Bold, alcance parcial · 2026-11-11 (America/Bogota)
+
+Se eliminó el éxito ficticio del checkout y se añadieron intenciones propias, referencias únicas, estados inciertos, recibos y protección de ventas con cobro pendiente. No se confirma dinero ni se crea asiento de recaudo. Continúan pendientes verificador/consulta auténticos y conciliación/asiento idempotente según contrato Bold, además de recuperar la conexión segura ya suministrada por el usuario en este entorno. El relato y evidencias están en el seguimiento comercial único, sección GC-008. No se concede nuevo crédito ACC ni comercial por el incremento parcial; contabilidad 79,17%, comercial 18,06%.
+
+
+## GC-009 · Integración CRM de posventa · 2026-11-12
+
+Se conectaron políticas y reembolso financiado existentes con los CRM propios y el puente SGA; las pruebas desechables verifican atomicidad y rechazo por falta de prueba de dispositivo, sin cualificar hardware. Permanecen pendientes el vínculo comercial verificado, cancelación efectiva, recorrido completo y banco auténtico. Detalle/evidencias en el seguimiento comercial único, sección GC-009. Sin nuevo crédito ACC (79,17%) ni comercial (18,06%); no se declara cierre de la tarea.
+
+
+## GC-010 · Landing pages propias · 2026-11-12
+
+Constructor comercial propio implementado y probado en los tres sistemas, con versiones, aprobación/publicación, restauración y retiro. Detalle y evidencias en el seguimiento comercial único, sección GC-010. Se acreditan exclusivamente GCH-028/029: comercial 15/72 (20,83%), aceptación integral de esta tarea pendiente. No se modificó el motor contable ni su crédito: 79,17%. Sin commit ni push.
+
+
+## GC-011 · Captación comercial y consentimiento · 2026-11-12
+
+Formularios de landing integrados al CRM propio, con declaraciones de consentimiento, atribución declarada, antispam básico, baja trazable y métricas observadas. Se verificaron exclusivamente GCH-031/032; la aceptación empresarial/productiva sigue pendiente. Relato y evidencias en el seguimiento comercial único, sección GC-011. Comercial 17/72 (23,61%); motor contable sin cambios ni nuevo crédito, 79,17%. Sin commit ni push.
+
+
+## GC-012 · Biblioteca multimedia privada · 2026-11-12
+
+Biblioteca propia de los tres módulos comerciales, originales privados, copias procesadas, versiones/derechos/marca y cuotas. Se separa de la bóveda fiscal y no se modificó el motor contable. Evidencia y pendientes en el seguimiento comercial único, sección GC-012. GCH-034/035 verificados; aceptación real pendiente. Comercial 19/72 (26,39%); contabilidad sin nuevo crédito, 79,17%. Sin commit ni push.
+
+
+## Auditoría comercial GC-001..012 · 2026-11-12
+
+Revisión de doce tareas y regresión completa, con correcciones de aislamiento por prestador, vinculación de documentos/índices y editor de landings. Detalle único en HALLAZGOS_Y_PRIORIDADES.md, sección Auditoría GC-001 a GC-012; evidencia en ANALISIS/gestion-comercial/evidencias/auditoria-gc001-012-20261112/. Comercial sin crédito nuevo: 19/72 (26,39%); contabilidad independiente sin cambios: 57/72 (79,17%). Sin commit ni push.
+
+
+## Segunda auditoría comercial 1–12 · 2026-11-12
+
+Corregidos el arranque/recuperación del CRM, los recibos pendientes de landing/biblioteca, su aislamiento por prestador/reintento exacto y el bloqueo de controles al cargar cotizaciones. Informe único actualizado en HALLAZGOS_Y_PRIORIDADES.md, subsección Segunda revisión · Recuperación de resultados. Sin modificación del motor contable ni crédito adicional: comercial 19/72 (26,39%); contabilidad 57/72 (79,17%). Evidencia en ANALISIS/gestion-comercial/evidencias/auditoria-gc001-012-recuperacion-20261112/. Sin commit ni push.
+
+
+## Tercera auditoría comercial 1–12 · 2026-11-12
+
+Endurecidos los vínculos entre filas SQL y documentos de evento en ocho dominios de los tres backends; recibos, historial y registro validan su identidad/empresa/recurso. Corregidos también el arranque y la recuperación del embudo de oportunidades. Sin reescritura de eventos históricos ni modificación del motor contable. Informe único actualizado en HALLAZGOS_Y_PRIORIDADES.md, subsección Tercera revisión · Integridad de eventos; evidencia en ANALISIS/gestion-comercial/evidencias/auditoria-gc001-012-eventos-20261112/. Comercial 19/72 (26,39%); contabilidad 57/72 (79,17%), sin crédito nuevo. Sin commit ni push.
+
+
+GC-013 comercial (2026-11-12): inventario LLM existente y generación privada en los tres backends; 85 pruebas acotadas aprobadas, sin inferencia auténtica ni aceptación. Detalle único en INTEGRACIONES/plan-maestro/auditoria-bloque01/HALLAZGOS_Y_PRIORIDADES.md, apartado GC-013. La medición contable no cambia.
+
+
+GC-014 comercial, 2026-11-12: composición MP4 propia en los tres sistemas, mezcla de fuentes revisadas, reproducción y revisión privadas; 141 pruebas y 36 comprobaciones de navegador en perfil acotado. Sigue en ejecución, sin crédito adicional; detalle único en HALLAZGOS_Y_PRIORIDADES.md y evidencia gc014-video-20261112. Contabilidad sin cambios.
+
+
+GC-015 comercial (2026-11-12): adaptación real de imágenes y vídeo, perfiles versionados, originales intactos y revisión privada en los tres sistemas; F/T acreditados, aceptación externa pendiente. Comercial 21/72 = 29,17%, 1/24 aceptada. Detalle único en HALLAZGOS_Y_PRIORIDADES.md, apartado GC-015. Contabilidad permanece 57/72 = 79,17%, 9/24. Sin publicación Git.
+
+
+GC-016 comercial (2026-11-12): campañas privadas con confirmaciones, agenda, cuotas, bajas y recibos; SMTP local probado, sin correos reales. F/T acreditados; aceptación de remitente/proveedor e infraestructura pendiente. Comercial 23/72 = 31,94%, 1/24 aceptada; contabilidad sin cambios, 57/72 = 79,17%, 9/24. Detalle único en HALLAZGOS_Y_PRIORIDADES.md y evidencia gc016-correos-20261112. Sin publicación Git.
+
+
+GC-017 comercial, 2026-11-12: canales SMS/MMS/WhatsApp separados, política/consentimiento/medios y cola propios; contratos y UI locales verificados, sin envíos telefónicos reales. F/T acreditados, proveedor/cobertura MMS Colombia y WhatsApp auténticos pendientes. Comercial 25/72 = 34,72%, 1/24 aceptada; contabilidad sin cambios, 57/72 = 79,17%, 9/24. Detalle único en HALLAZGOS_Y_PRIORIDADES.md y evidencia gc017-mensajeria-20261112. Sin publicación Git.
+
+
+GC-018 comercial,2026-11-12: calendario y etapas de publicación propios con confirmaciones, auditoría y protección ante duplicados; adaptadores Meta/YouTube/TikTok probados localmente, sin publicar en cuentas reales. F/T acreditados; OAuth, permisos, cuentas/dominio y recibos auténticos pendientes. Comercial27/72=37,50%,1/24 aceptada; contabilidad sin cambios57/72=79,17%,9/24. Detalle único en HALLAZGOS_Y_PRIORIDADES.md y evidencia gc018-publicacion-20261112. Sin commit/push.
+
+
+GC-019 comercial,2026-11-12: bandeja y respuestas revisadas propias, protocolos de recepción/respuesta probados localmente. Sin eventos ni respuestas de cuentas reales acreditados. Comercial29/72=40,28%,1/24 aceptada; contabilidad permanece57/72=79,17%,9/24. Detalle único en HALLAZGOS_Y_PRIORIDADES.md y evidencia gc019-bandeja-20261112. Sin commit/push.
+
+
+GC-020 comercial,2026-11-12: planificación de pauta A/B, límites total/diario agregados, confirmaciones, reservas locales y propuesta de contrato del motor implementados/probados. Incremento parcial: faltan ejecución/recibos de proveedores o conexión completa del ejecutor supervisado; sin gasto. No se acredita F/T: comercial permanece29/72=40,28%,1/24. Diagnóstico del motor actual separado del estado de otros equipos. Detalle único HALLAZGOS_Y_PRIORIDADES.md, evidencia gc020-pauta-20261112. Contabilidad sin cambios57/72=79,17%,9/24. Sin commit/push.
+
+
+GC-021 comercial,2026-11-12: cadena validada, ocho consultas reales, bloqueos de dominio, misiones/evidencias y motores limitados propios verificados localmente. Corregidos falso éxito y rol administrativo implícito heredados. Comercial31/72=43,06%,1/24 aceptada; motores/modelos/hardware/voz y aceptación externa pendientes. GC-020 sigue parcial0/3. Contabilidad sin cambios57/72=79,17%,9/24. Detalle único HALLAZGOS_Y_PRIORIDADES.md y evidencia gc021-agentes-20261112. Sin commit/push.
+
+
+GC-022 comercial,2026-11-12: informes con fuentes, ledger revalidado, captura/consentimiento, costes de lectura, CAC limitado y escenarios LTV/pronóstico explícitos verificados localmente. Eliminadas métricas simuladas del tablero ERP. Comercial33/72=45,83%,1/24 aceptada; GC-022:2/3, aceptación/calibración reales pendientes; GC-020 sigue parcial0/3. Contabilidad permanece57/72=79,17%,9/24 sin cambios. Detalle único HALLAZGOS_Y_PRIORIDADES.md y evidencia gc022-indicadores-20261112. Sin commit/push.
+
+
+GC-023 comercial,2026-11-12: navegación equivalente, formularios conservados, carga/reintento, bloqueo combinado y ciclo de vida de sesión propios verificados localmente. Comercial35/72=48,61%,1/24 aceptada; GC-023:2/3, aceptación de usuarios/roles/equipos y release pendientes. Contabilidad permanece57/72=79,17%,9/24 sin cambios. Detalle único HALLAZGOS_Y_PRIORIDADES.md y evidencia gc023-frontends-20261112. Sin commit/push.
+
+GC-024 comercial2026-11-12: incremento operativo parcial; cierre bloqueado por compilación integral y alcance pendiente. Evidencia: `../gestion-comercial/evidencias/gc024-operacion-20261112/summary.json`. Seguimiento narrativo único: `INTEGRACIONES/plan-maestro/auditoria-bloque01/HALLAZGOS_Y_PRIORIDADES.md` sección GC-024. Sin cambios de crédito contable.
+
+Auditoría comercial GC-001..024,2026-11-12: seguimiento único en HALLAZGOS_Y_PRIORIDADES.md sección GC-AUDIT24 y detalle `../gestion-comercial/evidencias/auditoria24-20261112/revision-24.json`. Comercial35/72=48,61%; sin cambios de crédito contable ni publicación.
+
+Cierre comercial secuencial2026-11-12: única activa GC-003, pendiente de GC-002 y conjunto de aceptación no disponible según el usuario; tres defectos CRM subsanados y pruebas locales aprobadas.0/16 cierres nuevos,35/72 comerciales=48,61%; sin cambios contables. Detalle único en HALLAZGOS_Y_PRIORIDADES.md, sección GC003-SEQUENCE.
+
+Plan comercial restante2026-11-12:37 pasos sobre GCH originales (7 F,7 T,23 A), guardados en remaining_work_plan del plan-pool08.json y HALLAZGOS_Y_PRIORIDADES.md sección COMMERCIAL-REMAINING37. Primer desarrollo GC-002/GCH-004 como dependencia del cierre activo GC-003; sin cambios de crédito comercial ni contable.
+
+Paso 1 comercial GC-002/GCH-004,2026-11-12: administración propia de permisos, consentimientos y referencias externas implementada en los tres CRM;183 pruebas Python y244 comprobaciones de navegador aprobadas. Crédito comercial36/72=50,00%,aceptación1/24;pasos2/T y3/A pendientes. Sin cambio contable ni Git. Detalle único en HALLAZGOS_Y_PRIORIDADES.md sección GC002-STEP1 y evidencia `../gestion-comercial/evidencias/gc002-paso1-20261112/summary.json`.
+
+Paso 2 comercial GC-002/GCH-005,2026-11-12: verificación local de identidad/aislamiento completada; revocación CRM atómica, errores de autoridad/importación y revisión de formularios corregidos.12 suites,263 pruebas Python y424 comprobaciones de navegador aprobadas. Crédito comercial37/72=51,39%,aceptación1/24;paso3/A pendiente de usuarios/políticas auténticos. Sin cambio contable ni Git. Detalle único en HALLAZGOS_Y_PRIORIDADES.md sección GC002-STEP2 y evidencia `../gestion-comercial/evidencias/gc002-paso2-20261112/summary.json`.
+
+Paso3 comercial GC-002/GCH-006,2026-11-13: preparación de aceptación codificada;337 fuentes coinciden con paso2 y39 pruebas del verificador/runner/registro aprobadas. Aceptación externa bloqueada por usuarios/políticas legítimos no disponibles; sin crédito nuevo:37/72=51,39%,1/24 aceptadas. Detalle único en HALLAZGOS_Y_PRIORIDADES.md sección GC002-STEP3 y `../gestion-comercial/evidencias/gc002-paso3-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso4 comercial GC-003/GCH-009,2026-11-13: preparación del CRM incorporada al verificador existente;43 pruebas aprobadas. Aceptación bloqueada por GC-002 sin aceptar y muestras autorizadas no disponibles; sin crédito nuevo:37/72=51,39%,1/24 aceptadas. Detalle en HALLAZGOS_Y_PRIORIDADES.md sección GC003-STEP4 y `../gestion-comercial/evidencias/gc003-paso4-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso5 comercial GC-004/GCH-012,2026-11-13: regresión de oportunidades aprobada (8 suites,69 pruebas Python,229 comprobaciones de navegador/recuperación);sin cambios de aplicación ni aceptación nueva. Bloqueado por GC-003 y revisión autorizada;scoring no calibrado. Crédito37/72=51,39%,1/24 aceptadas. Detalle en HALLAZGOS_Y_PRIORIDADES.md sección GC004-STEP5 y `../gestion-comercial/evidencias/gc004-paso5-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso6 comercial GC-005/GCH-015,2026-11-13: contexto Decimal monetario aislado corregido en los tres backends;127 pruebas Python y104 comprobaciones de navegador aprobadas. Aceptación comercial/tributaria y GC-002 pendientes;crédito37/72=51,39%,1/24 aceptadas. Detalle en HALLAZGOS_Y_PRIORIDADES.md sección GC005-STEP6 y `../gestion-comercial/evidencias/gc005-paso6-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso7 comercial GC-006/GCH-018,2026-11-13: carga/reintento, copia única, selección y respuestas tardías corregidas en las tres interfaces;73 pruebas Python y218 comprobaciones de navegador aprobadas. Aceptación de dependencias y condiciones empresariales pendiente;crédito37/72=51,39%,1/24 aceptadas. Detalle en HALLAZGOS_Y_PRIORIDADES.md sección GC006-STEP7 y `../gestion-comercial/evidencias/gc006-paso7-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso8 comercial GC-007/GCH-021,2026-11-13: carga, respuestas tardías, recuperación y captura de login del ledger corregidas en las tres interfaces;89 pruebas Python y144 comprobaciones de navegador aprobadas. Aceptación contable/laboral y GC-006 pendientes;crédito37/72=51,39%,1/24 aceptadas. Detalle en HALLAZGOS_Y_PRIORIDADES.md sección GC007-STEP8 y `../gestion-comercial/evidencias/gc007-paso8-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso9 comercial GC-008/GCH-022,2026-11-13: implementación auténtica Bold bloqueada por contrato/configuración y acceso a documentación;propuesta de red developers.bold.co guardada pero no aplicada. Regresión existente aprobada:36 pruebas Python y177 comprobaciones de navegador;sin llamadas reales ni crédito nuevo37/72=51,39%. Detalle en HALLAZGOS_Y_PRIORIDADES.md sección GC008-STEP9 y `../gestion-comercial/evidencias/gc008-paso9-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso10 comercial GC-008/GCH-023,2026-11-13: bloqueado por GCH-022 no implementado. Integridad y correspondencia actual de la regresión del paso9 comprobadas;sin pruebas nuevas ni crédito:37/72=51,39%. Inventario en HALLAZGOS_Y_PRIORIDADES.md sección GC008-STEP10 y `../gestion-comercial/evidencias/gc008-paso10-20261113/summary.json`. Sin cambios contables ni Git.
+
+Paso11 comercial GC-008/GCH-024,2026-11-13: aceptación Bold bloqueada por pasos9/10 y evidencia auténtica del comercio pendiente. Estado de entorno comprobado;sin tests nuevos ni crédito:37/72=51,39%. Registro consolidado en followups.gc008_step11_provider_acceptance_blocker_20261113;relato en HALLAZGOS_Y_PRIORIDADES.md sección GC008-STEP11. Sin cambios contables ni Git.
+
+Paso12 comercial GC-009/GCH-025,2026-11-13: incremento parcial de seguimiento posventa (guardia, reintento persistente y deduplicación transaccional propia en tres backends);68 pruebas Python y94 comprobaciones de navegador aprobadas. Vínculos, cancelación/firma/fidelización integrales y proveedor pendientes;sin crédito nuevo37/72=51,39%. Detalle en HALLAZGOS_Y_PRIORIDADES.md sección GC009-STEP12 y `../gestion-comercial/evidencias/gc009-paso12-20261113/summary.json`. Sin cambios contables ni Git.
+
+
+### Referencia de auditoría comercial · 2026-11-13
+
+La evaluación de los pasos1–12 del plan comercial restante se consolidó en `INTEGRACIONES/plan-maestro/auditoria-bloque01/HALLAZGOS_Y_PRIORIDADES.md`, sección `COMMERCIAL-STEPS01-12-AUDIT-20261113`; no se abre otro informe narrativo.54 suites,578 pruebas Python y1320 comprobaciones de navegador aprobadas, más10 pruebas de la matriz; reejecuciones sin crédito adicional. Se corrigieron referencias dañadas de reintento de posventa y expectativas obsoletas de aceptación, manteniendo el bloqueo real. Comercial conserva37/72=51,39% de hitos y1/24 aceptadas, sin porcentaje global certificado ni producción; no modifica el indicador contable. Evidencia técnica y respaldo en el registro comercial existente. Sin operación Git de publicación.
+
+
+### Referencia de evaluación de37 créditos comerciales · 2026-11-13
+
+Consolidada en `INTEGRACIONES/plan-maestro/auditoria-bloque01/HALLAZGOS_Y_PRIORIDADES.md`, sección `COMMERCIAL-CREDITS01-37-AUDIT-20261113`. Se revisaron37 créditos conservando sus GCH:34 con logs/artefactos históricos y3 con informe incrustado; regresión relacionada actual aprobada para todos, sin reacreditar alcance integral. Se corrigió el mapeo GC-002 y se añadió auditoría individual/criterio estricto de vigencia. 136 suites, 1410 pruebas Python y 3837 comprobaciones de navegador aprobadas en un corte estable. Comercial permanece37/72=51,39% de crédito,1/24 aceptadas y35 hitos sin acreditar, sin porcentaje global certificado ni producción. No cambia contabilidad. Evidencia y respaldo conservados,92 registros previos intactos; sin publicación Git.
+
+
+### Entrega consolidada autorizada · 2026-11-13
+
+Entrega del acumulado documentada en `INTEGRACIONES/plan-maestro/auditoria-bloque01/HALLAZGOS_Y_PRIORIDADES.md`, sección `CONSOLIDATED-DELIVERY-20261113`; evidencias en `ANALISIS/entregas/evidencias/consolidado-20261113`. Se preservan37647 reubicaciones y124 archivos del otro worktree ya recuperados. El helper de empaquetado trasladado se corrigió y pasó12 pruebas;21 del runner y4 de organización aprobadas. Los indicadores no cambian: contable57/72=79,17% y9/24; comercial37/72=51,39% de crédito y1/24. Publicación Git no equivale a habilitación productiva ni cierra requisitos externos. La entrega se confirma por SHA remoto después de publicar, sin force.

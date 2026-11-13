@@ -1,0 +1,188 @@
+INFO Suscriptor registrado para el evento: RESERVATION_CREATED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: RESERVATION_CANCELLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECEIVED
+INFO Suscriptor registrado para el evento: SALE_COMPLETED
+INFO Suscriptor registrado para el evento: PURCHASE_ORDER_POSTED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED
+INFO Suscriptor registrado para el evento: INVENTORY_ADJUSTED
+INFO Suscriptor registrado para el evento: ASSET_DEPRECIATED
+INFO Suscriptor registrado para el evento: LIQUIDATION
+INFO Suscriptor registrado para el evento: SALE_CREATED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED_V2
+INFO Suscriptor registrado para el evento: SaaS_INVOICE_GENERATED
+INFO Suscriptor registrado para el evento: BANK_FEE_REGISTERED
+INFO Standard Accounting Handlers registered.
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: FINANCIAL_PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: SUBSIDIARY_CREATED
+INFO EOS CONSOLIDATION: Event handlers registered.
+INFO Suscriptor registrado para el evento: TENANT_PROVISIONING_REQUESTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_EXPIRED
+INFO TENANT LIFECYCLE ENGINE: Listening for lifecycle events.
+INFO Suscriptor registrado para el evento: FINANCIAL_IMPACT_REQUESTED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: PAYMENT_FAILED
+INFO Control Tower Monitoring Handlers registered.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: ANOMALY_DETECTED
+INFO CONTROL TOWER: Metric Listener active.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Enterprise Policy Engine registered.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Global Holding Orchestrator registered.
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Capital Markets Orchestrator registered.
+INFO Suscriptor registrado para el evento: EQUITY_BUYBACK_TRIGGERED
+INFO Tokenization Orchestrator registered.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: LEAD_CONVERTED
+INFO COMMERCIAL ENGINE: Suscriptores de eventos registrados.
+INFO Suscriptor registrado para el evento: USAGE_CYCLE_CLOSED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO TREASURY AUTOMATION: Orquestación de eventos configurada.
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_CANCELLED
+INFO Suscriptor registrado para el evento: PLAN_UPGRADED
+INFO Suscriptor registrado para el evento: PLAN_DOWNGRADED
+INFO Suscriptor registrado para el evento: USAGE_BILLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO Suscriptor registrado para el evento: INVOICE_CREATED
+INFO Suscriptor registrado para el evento: USAGE_RECORDED
+INFO OPERATIONAL INTELLIGENCE: DataCollector initialized.
+/workspace/.integration-venv/lib/python3.12/site-packages/django/db/backends/utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+INFO KERNEL: Intención 'PLATFORM_CREATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_SUSPEND_USER' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ERP_CONFIRM_SALE' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_GENERATE_BALANCE' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'OPTIMIZE_TENANT_RETENTION' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ADAPTIVE_PRICING_ADJUSTMENT' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'SYSTEMIC_EVOLUTION_STEP' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'MANAGE_WORKSHOP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'REGISTER_PRODUCTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'UPDATE_ARTISAN_INVENTORY' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'PROCESS_COMMAND' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'VOID_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CREATE_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CANCEL_PACKAGE_COMPONENT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_AGENCY_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'SCHEDULE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_TRANSPORT_SEAT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'ASSIGN_GUIDE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_GUIDE_COMMISSION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BILL_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'NIGHT_CASH_CLOSE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'WALLET_DEPOSIT' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_PAY' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_REFUND' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_LIQUIDATE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_FREEZE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'DELIVERY_REQUEST' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_ASSIGN' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_COMPLETE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_RATE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'VEHICLE_REGISTER' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'GENERATE_LEGACY_BUNDLE' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PLATFORM_TRANSFER_OWNERSHIP' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'SYSTEM_EVOLUTION_HARDENING' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'QUERY_META_STANDARD' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PUBLIC_BUDGET_OPTIMIZATION' registrada en el dominio 'hacienda'.
+INFO KERNEL: Intención 'TERRITORIAL_IMPACT_SIMULATION' registrada en el dominio 'planeacion'.
+INFO KERNEL: Intención 'CIVIL_DEFENSE_ALERT' registrada en el dominio 'seguridad_civil'.
+INFO KERNEL: Intención 'LAND_USE_AUDIT' registrada en el dominio 'gestion_territorial'.
+INFO KERNEL: Intención 'ERP_CREATE_VOUCHER' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'ERP_VIEW_SALES_STATS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'PRIORITIZE_CRITICAL_LEADS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'OPTIMIZE_MARKETING_BUDGET' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_VIEW_CASH_FLOW' registrada en el dominio 'financiero'.
+INFO KERNEL: Intención 'ERP_MANAGE_RESOURCES' registrada en el dominio 'operativo'.
+INFO KERNEL: Intención 'ERP_SEARCH_DOCUMENT' registrada en el dominio 'archivistico'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_OPTIMIZE_RESOURCES' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_WEB_CMS' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_LEGAL' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ONBOARDING_PRESTADOR' registrada en el dominio 'prestadores'.
+INFO KERNEL: Intención 'AUDITORIA_GLOBAL' registrada en el dominio 'administrador_general'.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO EOS DECISION ENGINE: Metric Listener active.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO SAAS ORCHESTRATOR: Listening for onboarding signals.
+INFO Suscriptor registrado para el evento: WALLET_PAYMENT_REQUESTED
+INFO Wallet event boundary registered; payment execution requires explicit approvals.
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_FROM_TURISMO
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_DIRECT
+INFO Delivery Event Handlers registrados.
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+INFO HTTP Request: POST http://127.0.0.1:46727/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=0999fb92-dc3f-4311-a048-7c46c0453621 "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:46727/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=0999fb92-dc3f-4311-a048-7c46c0453621 "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:46727/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=0999fb92-dc3f-4311-a048-7c46c0453621 "HTTP/1.0 200 OK"
+INFO Journal Entry created: c6f3f2d1-be5e-416a-a597-d0d98a50ff5a (Venta comercial revisada bf07f8ed-3511-4814-b126-84c7f337ea63)
+INFO HTTP Request: POST http://127.0.0.1:46727/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=0999fb92-dc3f-4311-a048-7c46c0453621 "HTTP/1.0 503 Service Unavailable"
+.INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 409 Conflict"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+INFO Journal Entry created: 98c5674d-a7b1-4d41-b85f-7f3b17283cae (Venta comercial revisada b13d9ef3-2b3a-41c9-8fd0-e7bd3eef685a)
+INFO HTTP Request: POST http://127.0.0.1:35293/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=9a0a9335-6e2e-46d4-ac5e-9a935f7e719b "HTTP/1.0 200 OK"
+.INFO HTTP Request: POST http://127.0.0.1:39661/api/v1/mi-negocio/comercial/unified/sale-source/after-sales/?provider_id=3493ff78-5f09-4299-b84a-d021da07059e "HTTP/1.0 403 Forbidden"
+INFO HTTP Request: POST http://testserver/api/v1/commercial-unified/crm/after-sales/sources "HTTP/1.1 503 Service Unavailable"
+INFO HTTP Request: POST http://127.0.0.1:39661/api/v1/mi-negocio/comercial/unified/sale-source/after-sales/?provider_id=3c63738a-9614-46f3-b534-7ef1ae9c703d "HTTP/1.0 422 Unprocessable Entity"
+INFO HTTP Request: POST http://testserver/api/v1/commercial-unified/crm/after-sales/sources "HTTP/1.1 503 Service Unavailable"
+..INFO HTTP Request: POST http://127.0.0.1:35473/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=d9a8d8a5-7e34-4c65-9a02-ed67390748e5 "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35473/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=d9a8d8a5-7e34-4c65-9a02-ed67390748e5 "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35473/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=d9a8d8a5-7e34-4c65-9a02-ed67390748e5 "HTTP/1.0 200 OK"
+INFO Journal Entry created: 710a7221-f389-46da-8afd-e18de26ffee8 (Venta comercial revisada cf1a0aff-47cf-48cd-be1b-b4a30aabb346)
+INFO HTTP Request: POST http://127.0.0.1:35473/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=d9a8d8a5-7e34-4c65-9a02-ed67390748e5 "HTTP/1.0 503 Service Unavailable"
+INFO HTTP Request: POST http://127.0.0.1:35473/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=d9a8d8a5-7e34-4c65-9a02-ed67390748e5 "HTTP/1.0 200 OK"
+.INFO HTTP Request: POST http://127.0.0.1:35251/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=98d5ac08-a9ab-4136-be70-5b495ae18613 "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35251/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=98d5ac08-a9ab-4136-be70-5b495ae18613 "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:35251/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=98d5ac08-a9ab-4136-be70-5b495ae18613 "HTTP/1.0 200 OK"
+INFO Journal Entry created: 28dc5a22-6cd2-4e11-8763-9b3f328b4921 (Venta comercial revisada 5caa8a41-9b96-4a99-b64f-5c8bec83bb8d)
+INFO HTTP Request: POST http://127.0.0.1:35251/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=98d5ac08-a9ab-4136-be70-5b495ae18613 "HTTP/1.0 200 OK"
+.INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 200 OK"
+INFO Journal Entry created: 766ac5e5-db09-4c5d-975e-56e6f0ef6683 (Venta comercial revisada 909585ac-4b2e-4147-8549-00c82afa6290)
+INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 200 OK"
+INFO Journal Entry created: c6ddef91-5302-4a9a-a37a-281c970ff316 (Contrapartida revisada)
+INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/command/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 503 Service Unavailable"
+INFO HTTP Request: POST http://127.0.0.1:42791/api/v1/mi-negocio/comercial/unified/sale-source/state/?provider_id=6a0441dd-97d4-41b1-a72d-6524845d29ef "HTTP/1.0 200 OK"
+.INFO HTTP Request: POST http://127.0.0.1:42107/api/v1/mi-negocio/comercial/unified/sale-source/after-sales/?provider_id=d321f17e-5ea6-4112-af3b-3a0f9934284f "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://testserver/api/v1/commercial-unified/crm/after-sales/review_policy "HTTP/1.1 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:42107/api/v1/mi-negocio/comercial/unified/sale-source/after-sales/?provider_id=d321f17e-5ea6-4112-af3b-3a0f9934284f "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://testserver/api/v1/commercial-unified/crm/after-sales/publish_policy "HTTP/1.1 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:42107/api/v1/mi-negocio/comercial/unified/sale-source/after-sales/?provider_id=d321f17e-5ea6-4112-af3b-3a0f9934284f "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://testserver/api/v1/commercial-unified/crm/after-sales/publish_policy "HTTP/1.1 200 OK"
+INFO HTTP Request: POST http://127.0.0.1:42107/api/v1/mi-negocio/comercial/unified/sale-source/after-sales/?provider_id=d321f17e-5ea6-4112-af3b-3a0f9934284f "HTTP/1.0 200 OK"
+INFO HTTP Request: POST http://testserver/api/v1/commercial-unified/crm/after-sales/sources "HTTP/1.1 200 OK"
+.
+----------------------------------------------------------------------
+Ran 8 tests in 19.076s
+
+OK

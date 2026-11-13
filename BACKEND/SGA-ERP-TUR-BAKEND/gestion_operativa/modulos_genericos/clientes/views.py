@@ -55,7 +55,20 @@ class ClienteViewSet(viewsets.ModelViewSet):
         except IntegrityError:
             raise ValidationError({'email':'Ya existe un cliente con este correo en la empresa.'})
 
+    def require_unmanaged_customer(self, instance):
+        import os
+        from django.db import connection
+        system=os.environ.get('BACKEND_SERVICE')
+        if system not in ('analematica','erp-tur'):return
+        if system=='analematica':
+            from apps.admin_plataforma.gestion_comercial.pool08.crm_models import CRMContact
+        else:
+            from apps.prestadores.mi_negocio.gestion_comercial.pool08.crm_models import CRMContact
+        if CRMContact._meta.db_table in connection.introspection.table_names() and CRMContact.objects.filter(provider_ref=str(instance.perfil_id),customer_ref=instance.pk).exists():
+            raise ClientHistoryConflict('El contacto tiene seguimiento CRM protegido. Actualícelo o registre su baja desde CRM.')
+
     def perform_update(self, serializer):
+        self.require_unmanaged_customer(serializer.instance)
         try:
             with transaction.atomic():
                 serializer.save()
@@ -63,6 +76,7 @@ class ClienteViewSet(viewsets.ModelViewSet):
             raise ValidationError({'email':'Ya existe un cliente con este correo en la empresa.'})
 
     def perform_destroy(self, instance):
+        self.require_unmanaged_customer(instance)
         from apps.turismo.models import QuotationDraft
         if QuotationDraft.objects.filter(customer_id=instance.pk).exists():
             raise ClientHistoryConflict()

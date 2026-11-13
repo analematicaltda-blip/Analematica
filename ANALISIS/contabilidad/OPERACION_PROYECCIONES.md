@@ -60,4 +60,4 @@ Los controles de fondos de billetera y sus autorizaciones permanecen separados. 
 
 ## Verificación enfocada
 
-`python INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output /tmp/sgacd-proyeccion-evidencia-nueva` ejecuta únicamente los contratos contables y PostgreSQL. No certifica perfiles no seleccionados ni activa el worker del usuario.
+`python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output /tmp/sgacd-proyeccion-evidencia-nueva` ejecuta únicamente los contratos contables y PostgreSQL. No certifica perfiles no seleccionados ni activa el worker del usuario.

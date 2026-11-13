@@ -1,0 +1,62 @@
+[
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-landings.js",
+    "sha256": "efa09331b114f3c2717b2a7d410bbf8bdb899f8414062baf307017e2280fa139",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-landings.js",
+    "sha256": "efa09331b114f3c2717b2a7d410bbf8bdb899f8414062baf307017e2280fa139",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-landings.js",
+    "sha256": "efa09331b114f3c2717b2a7d410bbf8bdb899f8414062baf307017e2280fa139",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-library.js",
+    "sha256": "2e1cb13c5663a549dac6e446a648ea49b49a2c8132e8f88f9c54d2f5212fb35d",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-library.js",
+    "sha256": "2e1cb13c5663a549dac6e446a648ea49b49a2c8132e8f88f9c54d2f5212fb35d",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-library.js",
+    "sha256": "2e1cb13c5663a549dac6e446a648ea49b49a2c8132e8f88f9c54d2f5212fb35d",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-crm.js",
+    "sha256": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-crm.js",
+    "sha256": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-crm.js",
+    "sha256": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-quotations.js",
+    "sha256": "3cddce4185c06c57f69bef9a5f291562c6e2032bd1f27033cbe0b69d4e9abd97",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-quotations.js",
+    "sha256": "3cddce4185c06c57f69bef9a5f291562c6e2032bd1f27033cbe0b69d4e9abd97",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-quotations.js",
+    "sha256": "3cddce4185c06c57f69bef9a5f291562c6e2032bd1f27033cbe0b69d4e9abd97",
+    "syntax": "PASS"
+  }
+]

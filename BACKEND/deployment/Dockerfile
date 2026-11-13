@@ -19,7 +19,7 @@ FROM common AS sgacd
 COPY --chown=10001:10001 BACKEND/ANALEMATICA-BACKEND/agents/legacy_command_staff.py /srv/BACKEND/ANALEMATICA-BACKEND/agents/legacy_command_staff.py
 COPY --chown=10001:10001 BACKEND/ANALEMATICA-BACKEND/agents/contracts /srv/BACKEND/ANALEMATICA-BACKEND/agents/contracts
 COPY --chown=10001:10001 BACKEND/SGA-CD-BACKEND /srv/BACKEND/SGA-CD-BACKEND
-COPY --chown=10001:10001 DB/SGA-CD-DB.git /srv/DB/SGA-CD-DB.git
+COPY --chown=10001:10001 BACKEND/DB/SGA-CD-DB.git /srv/DB/SGA-CD-DB.git
 COPY --chown=10001:10001 BACKEND/deployment/sgacd_entrypoint.py /srv/entrypoint.py
 RUN --mount=type=secret,id=proxy_ca \
     if [ -s /run/secrets/proxy_ca ]; then export PIP_CERT=/run/secrets/proxy_ca; fi; \
@@ -33,7 +33,7 @@ EXPOSE 8000
 CMD ["python", "/srv/entrypoint.py"]
 
 FROM common AS tourism
-COPY --chown=10001:10001 WALLET-BACKEND /srv/WALLET-BACKEND
+COPY --chown=10001:10001 BACKEND/WALLET-BACKEND /srv/BACKEND/WALLET-BACKEND
 COPY --chown=10001:10001 BACKEND/SGA-TUR-BAKEND /srv/BACKEND/SGA-TUR-BAKEND
 COPY --chown=10001:10001 BACKEND/SGA-ERP-TUR-BAKEND /srv/BACKEND/SGA-ERP-TUR-BAKEND
 COPY --chown=10001:10001 BACKEND/ANALEMATICA-BACKEND /srv/BACKEND/ANALEMATICA-BACKEND

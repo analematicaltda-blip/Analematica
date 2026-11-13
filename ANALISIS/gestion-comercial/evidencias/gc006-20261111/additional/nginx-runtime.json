@@ -1,0 +1,10 @@
+{
+  "source": "https://github.com/nginx/nginx.git",
+  "source_tag": "release-1.28.0",
+  "source_commit": "481d28cb4e04c8096b9b6134856891dc52ecc68f",
+  "binary_sha256": "87b57b7e15fbb4348daa8cc73b26bd2d08795e093b68d5b7ccb101eed2419db7",
+  "version": "nginx version: nginx/1.28.0",
+  "tests": 3,
+  "scope": "Generated ERP TLS proxy, explicit shell/assets and native quote API; loopback fixture endpoints, verified local CA; private panels remain protected",
+  "production_qualified": false
+}

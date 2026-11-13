@@ -1,9 +1,9 @@
 name: Role workspaces
 on:
   push:
-    paths: ['Analematica/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/**', 'BACKEND/SGA-CD-BACKEND/tests/**', 'BACKEND/SGA-CD-BACKEND/scripts/**', 'BACKEND/SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
+    paths: ['BACKEND/Analematica/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/**', 'BACKEND/SGA-CD-BACKEND/tests/**', 'BACKEND/SGA-CD-BACKEND/scripts/**', 'BACKEND/SGA-CD-BACKEND/app/**', 'BACKEND/tests/workspace/**', 'BACKEND/tools/integrate_workspace.py', '.github/workflows/workspaces.yml']
   pull_request:
-    paths: ['Analematica/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/**', 'BACKEND/SGA-CD-BACKEND/tests/**', 'BACKEND/SGA-CD-BACKEND/scripts/**', 'BACKEND/SGA-CD-BACKEND/app/**', 'tests/workspace/**', 'scripts/integrate_workspace.py', '.github/workflows/workspaces.yml']
+    paths: ['BACKEND/Analematica/**', 'FRONTEND/ANALEMATICA-FRONTEND/**', 'BACKEND/ANALEMATICA-BACKEND/**', 'BACKEND/SGA-CD-BACKEND/tests/**', 'BACKEND/SGA-CD-BACKEND/scripts/**', 'BACKEND/SGA-CD-BACKEND/app/**', 'BACKEND/tests/workspace/**', 'BACKEND/tools/integrate_workspace.py', '.github/workflows/workspaces.yml']
 permissions:
   contents: read
 jobs:
@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install fastapi httpx sqlalchemy 'pydantic[email]' pydantic-settings 'python-jose[cryptography]' passlib bcrypt requests python-multipart
-      - run: python -m unittest discover -s tests/workspace -v
+      - run: python -m unittest discover -s BACKEND/tests/workspace -v
       - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_institutional_panels.py -v
       - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_corporate_node.py -v
       - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_owner_console.py -v

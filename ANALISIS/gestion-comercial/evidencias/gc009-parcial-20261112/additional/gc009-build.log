@@ -1,0 +1,8 @@
+test_institutional_shared_erp_modules_do_not_add_erp_routes (test_build_preparation.BuildPreparationTests.test_institutional_shared_erp_modules_do_not_add_erp_routes) ... ok
+test_isolated_full_sources_and_explicit_dependencies (test_build_preparation.BuildPreparationTests.test_isolated_full_sources_and_explicit_dependencies) ... ok
+test_unknown_system_is_rejected (test_build_preparation.BuildPreparationTests.test_unknown_system_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.233s
+
+OK

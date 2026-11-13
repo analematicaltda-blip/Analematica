@@ -1,0 +1,29 @@
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.010s
+
+OK

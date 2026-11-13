@@ -1,0 +1,10 @@
+{
+  "node": "v24.22.1",
+  "platform": "linux",
+  "kind": "ios",
+  "paired": false,
+  "needs": [
+    "Mac con Xcode y firma WebDriverAgent",
+    "Appium local y dispositivo confiado"
+  ]
+}

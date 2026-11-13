@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "checks": 36,
+  "systems": 3,
+  "actual_mp4_playback": true,
+  "controlled_transport": true,
+  "live_provider_acceptance": false
+}

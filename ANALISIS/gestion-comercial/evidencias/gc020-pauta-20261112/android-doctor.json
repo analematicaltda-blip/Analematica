@@ -1,0 +1,10 @@
+{
+  "node": "v24.22.1",
+  "platform": "linux",
+  "kind": "android",
+  "paired": false,
+  "needs": [
+    "Appium local, Android SDK y Java",
+    "USB debugging autorizado y UDID explícito"
+  ]
+}

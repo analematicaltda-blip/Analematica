@@ -1,0 +1,7 @@
+test_measured_concurrent_read_only_probe (__main__.Checks.test_measured_concurrent_read_only_probe) ... ok
+test_owned_audit_trace_permissions_and_no_store (__main__.Checks.test_owned_audit_trace_permissions_and_no_store) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 25.074s
+
+OK

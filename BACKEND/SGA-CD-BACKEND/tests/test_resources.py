@@ -50,7 +50,7 @@ class ResourcesTests(fixtures.AssistanceTests):
     def test_offline_extractor_requires_separately_trusted_key_and_expected_tenant(self):
         import importlib.util
         from pathlib import Path
-        spec=importlib.util.spec_from_file_location('audit_bundle',Path(__file__).resolve().parents[3]/'INTEGRACIONES/seguridad-ia/audit_bundle.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        spec=importlib.util.spec_from_file_location('audit_bundle',Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/seguridad-ia/audit_bundle.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         self.record();bundle=self.resource('/security/control-audit-export').json();key=control_crypto.public_key().encode()
         self.assertEqual(len(module.extract(bundle,key,1)['events']),1)
         with self.assertRaises(ValueError):module.extract(bundle,key,2)

@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": 96,
+  "targets": 4,
+  "widths": [
+    1280,
+    390
+  ],
+  "real_http": true,
+  "real_messages_sent": false,
+  "provider_qualified": false
+}

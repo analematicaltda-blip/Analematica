@@ -1,9 +1,9 @@
 name: Device-bound wallet approvals
 on:
   push:
-    paths: ['WALLET-MOVIL/native/pool-04-anti-phishing/**', 'WALLET-MOVIL/native/pool-03-integrity/**', 'WALLET-MOVIL/native/pool-02-biometrics/**', 'WALLET-BACKEND/**', 'WALLET-BACKEND/tests/attestation_security_check.py', 'WALLET-BACKEND/tests/device_approval_check.py', '.github/workflows/mobile-biometric.yml']
+    paths: ['MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/**', 'MOVILES/WALLET-MOVIL/native/pool-03-integrity/**', 'MOVILES/WALLET-MOVIL/native/pool-02-biometrics/**', 'BACKEND/WALLET-BACKEND/**', 'BACKEND/WALLET-BACKEND/tests/attestation_security_check.py', 'BACKEND/WALLET-BACKEND/tests/device_approval_check.py', '.github/workflows/mobile-biometric.yml']
   pull_request:
-    paths: ['WALLET-MOVIL/native/pool-04-anti-phishing/**', 'WALLET-MOVIL/native/pool-03-integrity/**', 'WALLET-MOVIL/native/pool-02-biometrics/**', 'WALLET-BACKEND/**', 'WALLET-BACKEND/tests/attestation_security_check.py', 'WALLET-BACKEND/tests/device_approval_check.py', '.github/workflows/mobile-biometric.yml']
+    paths: ['MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/**', 'MOVILES/WALLET-MOVIL/native/pool-03-integrity/**', 'MOVILES/WALLET-MOVIL/native/pool-02-biometrics/**', 'BACKEND/WALLET-BACKEND/**', 'BACKEND/WALLET-BACKEND/tests/attestation_security_check.py', 'BACKEND/WALLET-BACKEND/tests/device_approval_check.py', '.github/workflows/mobile-biometric.yml']
 permissions:
   contents: read
 jobs:
@@ -23,18 +23,18 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r BACKEND/deployment/requirements-tourism.txt
-      - run: python -m unittest discover -s WALLET-MOVIL/native/pool-03-integrity/tests -p test_release.py -v
-      - run: python WALLET-BACKEND/tests/attestation_security_check.py -v
-      - run: python WALLET-BACKEND/tests/device_approval_check.py -v
-      - run: python WALLET-MOVIL/native/pool-04-anti-phishing/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
-      - run: sudo --preserve-env=JAVA_HOME,PATH "$(which python)" WALLET-MOVIL/native/pool-04-anti-phishing/tests/local_tls.py
-      - run: python WALLET-MOVIL/native/pool-03-integrity/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
-      - run: python WALLET-MOVIL/native/pool-02-biometrics/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
+      - run: python -m unittest discover -s MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests -p test_release.py -v
+      - run: python BACKEND/WALLET-BACKEND/tests/attestation_security_check.py -v
+      - run: python BACKEND/WALLET-BACKEND/tests/device_approval_check.py -v
+      - run: python MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
+      - run: sudo --preserve-env=JAVA_HOME,PATH "$(which python)" MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/tests/local_tls.py
+      - run: python MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
+      - run: python MOVILES/WALLET-MOVIL/native/pool-02-biometrics/tests/verify.py --android-jar "$ANDROID_HOME/platforms/android-35/android.jar"
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.11.1'
       - run: gradle :android:assembleDebug
-        working-directory: WALLET-MOVIL/native/pool-02-biometrics
+        working-directory: MOVILES/WALLET-MOVIL/native/pool-02-biometrics
   apple:
     runs-on: macos-latest
     steps:
@@ -42,10 +42,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m unittest discover -s WALLET-MOVIL/native/pool-03-integrity/tests -p test_release.py -v
-      - run: swift test --package-path WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection
-      - run: swift test --package-path WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity
+      - run: python -m unittest discover -s MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests -p test_release.py -v
+      - run: swift test --package-path MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection
+      - run: swift test --package-path MOVILES/WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity
       - run: swift test
-        working-directory: WALLET-MOVIL/native/pool-02-biometrics/ios
+        working-directory: MOVILES/WALLET-MOVIL/native/pool-02-biometrics/ios
       - run: xcodebuild -scheme SGAApproval -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/sgacd-approval-derived CODE_SIGNING_ALLOWED=NO build
-        working-directory: WALLET-MOVIL/native/pool-02-biometrics/ios
+        working-directory: MOVILES/WALLET-MOVIL/native/pool-02-biometrics/ios

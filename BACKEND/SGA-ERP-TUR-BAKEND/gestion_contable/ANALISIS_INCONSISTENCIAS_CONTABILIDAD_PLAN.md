@@ -12,7 +12,7 @@
 - **Impacto:** Las vistas frontend de `asientos/nuevo` y los agentes autónomos de contabilización no pueden consultar ni persistir partidas dobles de forma estándar vía API REST.
 
 ### 2. Motor de Conciliación Bancaria y Pasarelas de Pago Automatizado
-- **Comparativa con `skills-contabilidad/shared/bank-sync` y `Conta-Skills/procesar_stripe.py`:**
+- **Comparativa con `BACKEND/skills-contabilidad/shared/bank-sync` y `BACKEND/Conta-Skills/procesar_stripe.py`:**
 - **Hallazgo:** En el backend del ERP existe lógica aislada de transacciones, pero no cuenta con un motor de coincidencia determinístico (*deterministic matching engine*) basado en:
   - Tolerancia de fechas (ventana de +/- 3 días).
   - Reglas difusas por descripción / referencia de transacción.
@@ -23,7 +23,7 @@
 - **Hallazgo:** `BACKEND/SGA-ERP-TUR-BAKEND/gestion_contable/cierres/services.py` solo efectúa una verificación básica de balance (`sum(debits) == sum(credits)`).
 - **Brechas según las Skills:**
   - Falta cálculo y asiento automático de depreciación acumulada mensual de activos fijos (`depreciation-schedule`).
-  - Falta provisión y liquidación periódica de impuestos directos e indirectos (IVA generado vs descontable, Retención en la Fuente, ICA municipal) como estipula `Conta-Skills/calcular_iva.py` y `calcular_irpf.py`.
+  - Falta provisión y liquidación periódica de impuestos directos e indirectos (IVA generado vs descontable, Retención en la Fuente, ICA municipal) como estipula `BACKEND/Conta-Skills/calcular_iva.py` y `calcular_irpf.py`.
   - Falta bloqueo estricto e inmutabilidad del período contable (`FiscalPeriod.is_closed = True`) con trazabilidad de hash encadenado.
 
 ### 4. Integración Reactiva Bidireccional entre Reservas/Servicios y Devengo Contable
@@ -42,8 +42,8 @@
    - `router.register(r'periodos', PeriodoContableViewSet, basename='periodo-contable')`
 
 ### Fase 2: Motor de Reglas Fiscales y Conciliación (Integración Skills)
-1. **Reglas de Impuestos:** Adaptar la lógica de `Conta-Skills/skills/gestor-autonomos/scripts/calcular_iva.py` para la parametrización de tarifas colombianas (0%, 5%, 19%) y retenciones en la fuente.
-2. **Bank Sync Engine:** Implementar el servicio `AutomatedBankReconciler` en `gestion_financiera/services/` inspirado en `skills-contabilidad/shared/bank-sync/SKILL.md`.
+1. **Reglas de Impuestos:** Adaptar la lógica de `BACKEND/Conta-Skills/skills/gestor-autonomos/scripts/calcular_iva.py` para la parametrización de tarifas colombianas (0%, 5%, 19%) y retenciones en la fuente.
+2. **Bank Sync Engine:** Implementar el servicio `AutomatedBankReconciler` en `gestion_financiera/services/` inspirado en `BACKEND/skills-contabilidad/shared/bank-sync/SKILL.md`.
 3. **Cierre Mensual:** Automatizar el checklist de `month-end-close` en `cierres/services.py` para generar el asiento de cierre contra la cuenta de pérdidas y ganancias (cuenta 5905).
 
 ### Fase 3: Gobernanza e Interfaz en Frontend

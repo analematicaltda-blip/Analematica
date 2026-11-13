@@ -268,7 +268,7 @@ def test_10_envio_formularios_correos_unsubscribe(client, db):
         subject="Notificación de Prueba Módulo 16",
         body_text="Cuerpo del mensaje de prueba"
     )
-    assert ok is True
+    assert ok is False  # No transport: saving/logging cannot establish submission.
 
 
 def test_11_carga_imagenes_magic_bytes(client, db):

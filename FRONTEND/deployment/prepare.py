@@ -74,7 +74,7 @@ def public_assets():
                 target = site / 'sgacd' / path.relative_to(source)
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(path, target)
-    for name in ['index.html', 'login.html', 'app.html', 'register.html', 'privacy.html', 'terms.html', '404.html', 'favicon.svg', 'manifest.json']:
+    for name in ['index.html', 'login.html', 'app.html', 'register.html', 'privacy.html', 'terms.html', '404.html', 'favicon.svg', 'manifest.json', 'robots.txt']:
         if (source / name).is_file():
             shutil.copy2(source / name, site / 'sgacd' / name)
     (site / 'sgacd/js/config.js').write_text('window.config = {apiBaseUrl: location.origin};\n')
@@ -90,6 +90,8 @@ def public_assets():
         shutil.copy2(path, target)
     offline_capture(site/'analematica/contabilidad-offline')
     offline_capture(site/'erp-capture/contabilidad-offline')
+    for folder, source in [('sgacd','SGA-CD-WEB.git'),('analematica','ANALEMATICA-FRONTEND'),('erp-capture','SGA-ERP-TUR-FRONTEND/public')]:
+        shutil.copytree(ROOT/'FRONTEND'/source/'commercial-offline',site/folder/'commercial-offline',dirs_exist_ok=True)
     # One canonical assistance UI is served under each site's own authenticated origin.
     for name in ['platform.html','js/platform.js','resources.html','js/resources.js','assistance.html','js/assistance.js','css/assistance.css','control.html','js/control.js','content.html','js/content.js','css/content.css']:
         path = ROOT / 'FRONTEND/ANALEMATICA-FRONTEND' / name
@@ -109,6 +111,13 @@ def next_projects(dependencies=None, systems=('erp','turismo')):
             shutil.copytree(source / folder, dest / folder)
         if name == 'erp':
             offline_capture(dest/'public/contabilidad-offline')
+            shutil.copytree(ROOT/'FRONTEND/SGA-ERP-TUR-FRONTEND/public/commercial-offline',dest/'public/commercial-offline',dirs_exist_ok=True)
+            # Public assets are served at the ERP origin, not buried inside app routes.
+            for asset in ('commercial-crm.html','commercial-quote.html','js/commercial-analytics.js','js/commercial-army.js','js/commercial-ads.js','js/commercial-inbox.js','js/commercial-publishing.js','js/commercial-mobile-messages.js','js/commercial-email-campaigns.js','js/commercial-generation.js','js/commercial-library.js','js/commercial-landings.js','js/commercial-after-sales-policy.js','js/commercial-after-sales.js','js/commercial-payments.js','js/commercial-sales.js','js/commercial-quotations.js','js/commercial-quote-recipient.js','js/commercial-pricing.js','js/commercial-opportunities.js','js/commercial-crm.js','js/commercial-crm-native.js','css/commercial-crm.css'):
+                source_asset=ROOT/'FRONTEND/SGA-ERP-TUR-FRONTEND/public'/asset
+                target_asset=dest/'public'/asset
+                target_asset.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copy2(source_asset,target_asset)
             target = dest / 'src/app/dashboard/prestador/mi-negocio'
             if target.exists():
                 shutil.rmtree(target)
@@ -127,10 +136,10 @@ export default function Preview(){return <><div style={{background:'#142850',pad
             shutil.copytree(ROOT/'FRONTEND/SGA-ERP-TUR-FRONTEND',shared)
         (dest / 'package.json').write_text((HERE / 'package.json').read_text())
         (dest / 'postcss.config.mjs').write_text((source / 'postcss.config.mjs').read_text())
-        aliases={"@":"src"}
-        paths={'@/*':['./src/*']}
+        aliases={"@sarita/shared-ui":"src/components/shared-ui/index.ts","@":"src"}
+        paths={'@/*':['./src/*'],'@sarita/shared-ui':['./src/components/shared-ui/index.ts']}
         if name=='turismo':
-            aliases={'@/app/dashboard/prestador/mi-negocio':'src/shared/erp','@':'src'}
+            aliases={'@sarita/shared-ui':'src/components/shared-ui/index.ts','@/app/dashboard/prestador/mi-negocio':'src/shared/erp','@':'src'}
             paths['@/app/dashboard/prestador/mi-negocio/*']=['./src/shared/erp/*']
         (dest / 'next.config.mjs').write_text("import path from 'node:path';\nexport default {devIndicators:false,poweredByHeader:false,experimental:{cpus:2},webpack(config){const shared="+json.dumps(aliases)+";config.resolve.alias={...config.resolve.alias,...Object.fromEntries(Object.entries(shared).map(([key,value])=>[key,path.resolve(value)]))};return config;}};\n")
         (dest / 'tsconfig.json').write_text(json.dumps({'compilerOptions': {'target':'ES2020','lib':['dom','dom.iterable','esnext'],'allowJs':True,'skipLibCheck':True,'strict':True,'noEmit':True,'esModuleInterop':True,'module':'esnext','moduleResolution':'bundler','resolveJsonModule':True,'isolatedModules':True,'jsx':'preserve','incremental':True,'plugins':[{'name':'next'}],'paths':paths},'include':['next-env.d.ts','**/*.ts','**/*.tsx','.next/types/**/*.ts'],'exclude':['node_modules']},indent=2))
@@ -177,7 +186,7 @@ http {
   add_header X-Frame-Options DENY always;
   add_header Referrer-Policy no-referrer always;
   add_header Permissions-Policy "camera=(), geolocation=(), microphone=(self)" always;
-  add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' {eval_policy}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' wss:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'" always;
+  add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' {eval_policy}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' wss:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'" always;
   location ~ (^|/)\\. {{ return 404; }}
 '''
         if name in ['sgacd','analematica']:
@@ -200,6 +209,10 @@ http {
     proxy_connect_timeout 5s;
     proxy_read_timeout 30s;"""
             text += '  location = /api/v1/erp-session/login/ { limit_req zone=login burst=3 nodelay; '+proxy+' }\n'
+            text += '  location = /api/v1/mi-negocio/comercial/unified/crm/session/login/ { limit_req zone=login burst=3 nodelay; '+proxy+' }\n'
+            text += '  location ^~ /api/v1/mi-negocio/comercial/unified/crm/quotation-media/ { client_max_body_size 256k; limit_req zone=api burst=30 nodelay; '+proxy+' }\n'
+            text += '  location ~ ^/api/v1/mi-negocio/comercial/unified/quote-links/[0-9a-f-]+/[0-9a-f-]+(/media/[0-9a-f-]+)?/$ { client_max_body_size 16k; limit_req zone=api burst=30 nodelay; '+proxy+' }\n'
+            text += '  location ^~ /api/v1/mi-negocio/comercial/unified/crm/ { client_max_body_size 16k; limit_req zone=api burst=30 nodelay; '+proxy+' }\n'
             text += '  location ~ ^/api/v1/(erp-session/((logout|mfa|password-reset/(request|confirm)|security-events|recovery(/issue)?|enrollment/(start|confirm|cancel))/)?|mi-negocio/comercial/(company-scopes/|service-availability/|capacity-holds/([0-9a-f-]+/release/)?|quotation-options/|quotation-preview/|quotation-drafts/([0-9a-f-]+/(withdraw/)?)?))$ { limit_req zone=api burst=30 nodelay; '+proxy+' }\n'
             text += '  location /api/ { default_type application/json; return 503 \'{"detail":"Ruta ERP pendiente de validación."}\'; }\n'
         else:
@@ -210,6 +223,20 @@ http {
             for asset in ['index.html','editor.js','editor.css','vault.js','worker.js']:
                 text += '  location = /contabilidad-offline/'+asset+' { auth_basic off; root '+capture_root+'; try_files $uri =404; }\n'
             text += '  location ^~ /contabilidad-offline/ { return 404; }\n'
+        if name in ['sgacd','analematica','erp']:
+            commercial_root='/sites/erp-capture' if name=='erp' else '/sites/'+name
+            for asset in ['index.html','editor.js','style.css','vault.js','worker.js']:
+                text += '  location = /commercial-offline/'+asset+' { auth_basic off; root '+commercial_root+'; try_files $uri =404; }\n'
+            text += '  location ^~ /commercial-offline/ { return 404; }\n'
+        # Only the capability-link shell is public; business panels retain Basic review auth.
+        if name in ['sgacd','analematica'] or (name=='erp' and os.environ.get('SGACD_ENABLE_ERP_API','0')=='1'):
+            for public_asset in ['commercial-quote.html','js/commercial-quote-recipient.js','css/commercial-crm.css']:
+                text += '  location = /'+public_asset+' { auth_basic off; limit_req zone=views burst=100 nodelay; '
+                if name in ['sgacd','analematica']:
+                    text += 'root /sites/'+name+'; try_files $uri =404;'
+                else:
+                    text += 'proxy_pass http://erp-web:3000; proxy_set_header Host $host; proxy_read_timeout 30s;'
+                text += ' }\n'
         text += f'  location / {{ limit_req zone=views burst=100 nodelay; auth_basic "Vista local {name}"; auth_basic_user_file /private/{name}.htpasswd;\n'
         if name in ['sgacd','analematica']:
             text += f'    root /sites/{name}; index index.html; autoindex off; try_files $uri $uri/ =404;\n'

@@ -100,6 +100,8 @@ def release_hold(user,pk):
     resolve_company(user,candidate.provider_id)
     TourismService.objects.select_for_update().get(pk=candidate.service_id)
     hold=AvailabilityHold.objects.select_for_update().get(pk=candidate.pk)
+    from apps.core_erp.accounting.commercial_sales_guard import require_hold_release
+    require_hold_release(hold)
     if hold.released_at is None:
         hold.released_at=timezone.now();hold.save(update_fields=['released_at'])
     return hold

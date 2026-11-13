@@ -1,0 +1,26 @@
+{
+  "documentation_host": "developers.bold.co",
+  "proxy_connect_http_status": 403,
+  "curl_exit": 56,
+  "provider_connection_established": false,
+  "draft_saved": true,
+  "draft_revision": 10,
+  "requires_publish": true,
+  "runtime_policy_applied": false,
+  "only_added_custom_domain": "developers.bold.co",
+  "existing_custom_domains_preserved": [
+    "*.hf.co",
+    "api.github.com",
+    "generativelanguage.googleapis.com",
+    "huggingface.co",
+    "oauth2.googleapis.com",
+    "www.googleapis.com"
+  ],
+  "process_bold_variable_names_found": [],
+  "checked_env_paths": [
+    "/workspace/SGA-CD-conectado/.env",
+    "/workspace/SGA-CD/.env"
+  ],
+  "bold_variable_names_found_in_checked_env_paths": [],
+  "credential_values_collected_or_printed": false
+}

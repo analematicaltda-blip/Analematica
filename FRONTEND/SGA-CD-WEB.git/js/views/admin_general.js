@@ -72,7 +72,7 @@ async function renderAdminGeneralDashboardView(token) {
                     <h3 style="color:#38BDF8; margin:0; font-size:1.3rem; font-weight:700;">
                         <i class="fas fa-robot"></i> Suite de Automatización de Marketing y CRM MCP
                     </h3>
-                    <span style="color:#94A3B8; font-size:0.8rem;">Integrado con Skill.git/Marketing</span>
+                    <span style="color:#94A3B8; font-size:0.8rem;">Integrado con BACKEND/Skill.git/Marketing</span>
                 </div>
 
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.25rem;">

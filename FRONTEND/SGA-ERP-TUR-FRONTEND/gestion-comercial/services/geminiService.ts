@@ -121,26 +121,9 @@ export const analyzeMessage = async (provider: LLMProvider, config: ProviderConf
 
 // --- GEMINI-ONLY FUNCTIONS ---
 
-export const getSalesForecast = async (historicalData: {month: string, sales: number}[]): Promise<{month: string, forecast: number}[]> => {
-    // In a real scenario, you'd make a call to Gemini with the data.
-    // Here, we simulate the AI's response for a quick and stable UI demo.
-    console.log("Simulating AI sales forecast with data:", historicalData);
-    
-    // Simple simulation logic
-    const lastMonth = historicalData[historicalData.length - 1];
-    const secondLastMonth = historicalData[historicalData.length - 2];
-    const trend = (lastMonth.sales - secondLastMonth.sales) / 2;
-    
-    const forecast = [];
-    let lastValue = lastMonth.sales;
-    const months = ["Jun", "Jul", "Ago"];
-
-    for(const month of months) {
-        lastValue += trend * (1 + (Math.random() - 0.5) * 0.2); // Add some noise
-        forecast.push({ month: month, forecast: Math.round(lastValue) });
-    }
-
-    return Promise.resolve(forecast);
+/** Legacy callers must use scoped ledger analytics with explicit history and evaluation. */
+export const getSalesForecast = async (_historicalData: {month: string, sales: number}[]): Promise<{month: string, forecast: number}[]> => {
+    throw new Error('FORECAST_REQUIRES_VERIFIED_COMMERCIAL_ANALYTICS');
 }
 
 export const createChat = (systemInstruction: string): Chat => {

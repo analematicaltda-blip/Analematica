@@ -1,6 +1,6 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/opening-chunks.js';
+import '../runtime/opening-chunks.js';
 declare global {interface Window {SGACDOpeningChunks:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>,signal:AbortSignal)=>Promise<unknown>;onPosted:()=>void})=>{destroy:()=>void;clear:()=>void}}}}
 const actions:Record<string,string>={opening_chunks_sources:'fuentes-apertura-ampliada',review_opening_chunks:'revisar-apertura-ampliada',apply_opening_chunks:'aplicar-apertura-ampliada',opening_chunks_state:'estado-apertura-ampliada'};
 export function OpeningChunks({identity,providerId,request,onPosted}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>;onPosted:()=>void}){

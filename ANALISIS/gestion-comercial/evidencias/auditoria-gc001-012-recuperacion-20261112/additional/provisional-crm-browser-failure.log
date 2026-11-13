@@ -1,0 +1,12 @@
+Browser target sga-cd 1280
+Browser target sga-cd 390
+Browser target erp-tur 1280
+Browser target erp-tur 390
+Browser target analematica 1280
+Browser target analematica 390
+Browser target gateway 1280
+Browser target gateway 390
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-detail] h3').filter({ hasText: 'gateway 390 1794489222365' }) to be visible[22m
+

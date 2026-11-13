@@ -1,0 +1,79 @@
+{
+  "active_task_id": "GC-003",
+  "sequence": [
+    "GC-003",
+    "GC-004",
+    "GC-005",
+    "GC-006",
+    "GC-007",
+    "GC-010",
+    "GC-011",
+    "GC-012",
+    "GC-015",
+    "GC-016",
+    "GC-017",
+    "GC-018",
+    "GC-019",
+    "GC-021",
+    "GC-022",
+    "GC-023"
+  ],
+  "closed_tasks_this_delivery": [],
+  "functional_milestone_previously_credited": true,
+  "test_milestone_previously_credited": true,
+  "integral_acceptance_complete": false,
+  "blockers": [
+    {
+      "id": "GC-002",
+      "kind": "UNFINISHED_DEPENDENCY",
+      "detail": "Administración de identidad/permisos/consentimientos y aceptación de usuarios/políticas siguen pendientes."
+    },
+    {
+      "id": "GC003_ACCEPTANCE_MATERIALS",
+      "kind": "EXTERNAL_ACCEPTANCE",
+      "detail": "El usuario indicó no disponer del conjunto solicitado: muestras autorizadas de clientes y políticas revisadas. No se atribuye autenticidad a fixtures sintéticos."
+    }
+  ],
+  "user_reported_acceptance_materials_available": false,
+  "local_validation": {
+    "suites": 8,
+    "python_tests": 179,
+    "browser_checks": 88,
+    "source_stable": true,
+    "source_digest": "78f9ef677860f5d7504a2a80746d3dd73bf44b95ac6e7726b7c6061c5b8769d3"
+  },
+  "related_digest_regressions": [
+    {
+      "suite": "inbox",
+      "tests": 30,
+      "passed": true,
+      "scope": "compatibility of shared digest only; no task advancement"
+    },
+    {
+      "suite": "mobile_messages",
+      "tests": 16,
+      "passed": true,
+      "scope": "compatibility of shared digest only; no task advancement"
+    },
+    {
+      "suite": "publishing",
+      "tests": 25,
+      "passed": true,
+      "scope": "compatibility of shared digest only; no task advancement"
+    }
+  ],
+  "fixes": [
+    "Reject control characters in normalized email before persisting contact/audit",
+    "Require evidence_digest to be a string of64 hexadecimal characters; no coercion from numeric JSON",
+    "Turn escaped invalid Unicode into controlled422 domain rejection instead of unhandled encoding error"
+  ],
+  "limits": [
+    "Only synthetic disposable data used; does not establish consent authenticity",
+    "GC-002 administration/dependency still unfinished",
+    "Historical migration/PostgreSQL and productive qualification remain separate",
+    "The initial manual SGA test did not complete in the restricted sandbox; the canonical approved local-socket run passed and is the accepted test evidence"
+  ],
+  "new_progress_credit": 0,
+  "production_enabled": false,
+  "git_mutation": false
+}

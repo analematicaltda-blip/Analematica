@@ -1,0 +1,312 @@
+[
+  {
+    "id": "GC-001",
+    "title": "Contratos, capacidades y DAG POOL-08",
+    "state": "COMPLETADA",
+    "milestones": [
+      {
+        "id": "GCH-001",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-002",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-003",
+        "stage": "A",
+        "state": "VERIFICADO"
+      }
+    ],
+    "remaining": "Sin pendientes del contrato/API y DAG definidos para GC-001. Las funciones de negocio y proveedores permanecen en las tareas correspondientes.",
+    "external_requirements": []
+  },
+  {
+    "id": "GC-002",
+    "title": "Identidad empresarial, roles, permisos y consentimientos",
+    "state": "PENDIENTE_DE_NIVELACION",
+    "milestones": [
+      {
+        "id": "GCH-004",
+        "stage": "F",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      },
+      {
+        "id": "GCH-005",
+        "stage": "T",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      },
+      {
+        "id": "GCH-006",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Pendiente de desarrollo: APIs e interfaz propias de administración de permisos/consentimientos, mapeo explícito de identidades entre sistemas y fuente revisada de consentimientos. Existen controles de acceso usados por los módulos; no constituyen cierre del recorrido de administración. Preservar roles nativos distintos y exclusión de Turismo Nacional institucional. Aceptación con usuarios y políticas revisadas pendiente.",
+    "external_requirements": [
+      "Usuarios y políticas de autorización revisados para aceptación final."
+    ]
+  },
+  {
+    "id": "GC-003",
+    "title": "CRM común de prospectos, contactos y clientes",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-007",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-008",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-009",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Aceptación de uso con muestras consentidas y cierre de revisión de usuarios/políticas GC-002. Las migraciones se validaron solo en SQLite desechable; habilitación de servidor, datos históricos y producción requieren su cualificación.",
+    "external_requirements": [
+      "Muestras de clientes consentidas para aceptación de uso."
+    ]
+  },
+  {
+    "id": "GC-004",
+    "title": "Oportunidades, embudo, seguimiento y scoring",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-010",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-011",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-012",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Aceptación integral pendiente: dataset consentido y evaluación para scoring predictivo; validación con usuarios/datos y dependencias GC-002/GC-003. La prioridad por reglas se declara no calibrada; migración histórica y PostgreSQL/concurrencia productiva sin cualificar.",
+    "external_requirements": [
+      "Dataset consentido y evaluación para scoring predictivo."
+    ]
+  },
+  {
+    "id": "GC-005",
+    "title": "Catálogo, tarifas, descuentos e impuestos de oferta",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-013",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-014",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-015",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Aceptación integral pendiente: precios/condiciones/soportes legítimos y revisión tributaria profesional; usuarios y políticas de GC-002, revisión de migración histórica y cualificación productiva. El cálculo actual es estimación comercial y no acredita factura, pago ni aceptación fiscal.",
+    "external_requirements": [
+      "Precios/condiciones legítimos y revisión tributaria."
+    ]
+  },
+  {
+    "id": "GC-006",
+    "title": "Cotizaciones dinámicas, vigencia y aceptación",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-016",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-017",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-018",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Aceptación integral pendiente: condiciones/precios legítimos aprobados por empresa y revisión de aceptación/entrega al destinatario; dependencias GC-004/GC-005 y cualificación productiva de custodia/rotación, infraestructura, datos/concurrencia y restauración. La aceptación actual acredita posesión del enlace, no identidad verificada ni pago/reserva.",
+    "external_requirements": [
+      "Condiciones comerciales aprobadas por cada empresa."
+    ]
+  },
+  {
+    "id": "GC-007",
+    "title": "Venta confirmada, operación y contabilidad",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-019",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-020",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-021",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Flujo local de confirmación, operación, outbox/asiento y recuperación acreditado por su evidencia F/T. Pendientes aceptación de condiciones/soportes y reglas contables/laborales por actividad, identidad GC-002 y cualificación productiva/concurrencia. Factura DIAN y custodia auténticas pertenecen a sus integraciones; venta confirmada no acredita cobro.",
+    "external_requirements": [
+      "Revisión contable/laboral según actividad; DIAN y custodia reales para aceptación fiscal/documental."
+    ]
+  },
+  {
+    "id": "GC-008",
+    "title": "Bold: checkout, intención de pago y confirmación",
+    "state": "EN_EJECUCION",
+    "milestones": [
+      {
+        "id": "GCH-022",
+        "stage": "F",
+        "state": "EN_EJECUCION"
+      },
+      {
+        "id": "GCH-023",
+        "stage": "T",
+        "state": "EN_EJECUCION"
+      },
+      {
+        "id": "GCH-024",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Checkout e intenciones locales parciales, con importes canónicos y estados diferenciados. Pendiente de desarrollo: verificador del acuse Bold según contrato auténtico, consulta de estado del proveedor y conciliación/liquidación enlazada al asiento. Pendiente externo: contrato/accesos sandbox y acuses auténticos configurados por canal seguro. Retorno del navegador, hash declarado o enlace creado no prueban dinero.",
+    "external_requirements": [
+      "Acceso Bold de pruebas y contrato/firmas/acuses legítimos por canal seguro."
+    ]
+  },
+  {
+    "id": "GC-009",
+    "title": "Cancelaciones, retención, devoluciones y posventa",
+    "state": "EN_EJECUCION",
+    "milestones": [
+      {
+        "id": "GCH-025",
+        "stage": "F",
+        "state": "EN_EJECUCION"
+      },
+      {
+        "id": "GCH-026",
+        "stage": "T",
+        "state": "EN_EJECUCION"
+      },
+      {
+        "id": "GCH-027",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Políticas versionadas y reembolso financiado interno parcial disponibles. Pendiente de desarrollo: vinculación verificable CRM/contacto/venta/reserva/destinatario, cancelación efectiva completa, recorrido de firma y fidelización integral. El reembolso bancario depende del cierre GC-008 y del proveedor. Pendientes políticas legítimas y aceptación de usuarios; el acceso personal a billetera no exige afiliación turística.",
+    "external_requirements": [
+      "Políticas aprobadas y validación del proveedor para devolución bancaria real."
+    ]
+  },
+  {
+    "id": "GC-010",
+    "title": "Constructor de landing pages propias de empresa/prestador",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-028",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-029",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-030",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Constructor, versiones, previsualización, aprobación/publicación y retirada locales acreditados F/T. Pendientes aceptación de titulares/roles GC-002, revisión del contenido y cualificación de datos históricos, concurrencia y despliegue. Dominio/DNS/TLS y autorización si se usa dominio propio.",
+    "external_requirements": [
+      "Dominio/DNS/TLS y autorización del titular si se usa dominio propio."
+    ]
+  },
+  {
+    "id": "GC-011",
+    "title": "Landing: formularios, captación, SEO y atribución CRM",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-031",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-032",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-033",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Captación local enlazada al CRM, origen canónico, consentimiento, baja, antispam, SEO y métricas de envíos aceptados acreditados F/T. Pendientes contenido/políticas de publicación legítimos, aceptación de titulares, retención y despliegue. No acredita titularidad del email, autorización de campañas, métricas de anuncios ni registro institucional/RNT.",
+    "external_requirements": [
+      "Contenido autorizado y reglas de publicación de la empresa."
+    ]
+  },
+  {
+    "id": "GC-012",
+    "title": "Biblioteca multimedia, derechos, marca y activos",
+    "state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+    "milestones": [
+      {
+        "id": "GCH-034",
+        "stage": "F",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-035",
+        "stage": "T",
+        "state": "VERIFICADO"
+      },
+      {
+        "id": "GCH-036",
+        "stage": "A",
+        "state": "PENDIENTE_DE_ACREDITACION"
+      }
+    ],
+    "remaining": "Biblioteca local privada con originales exactos, copias procesadas, versiones, derechos declarados, marca y cuotas acreditada F/T. Pendientes licencias/contenido auténticos revisados, almacenamiento autorizado, política de retención y protección en reposo, restauración y cualificación PostgreSQL/concurrencia/decodificadores en infraestructura objetivo. Plantillas actuales son composición de vista previa, no exportación renderizada.",
+    "external_requirements": [
+      "Derechos/licencias de activos y destino de almacenamiento autorizado."
+    ]
+  }
+]

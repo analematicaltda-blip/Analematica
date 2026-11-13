@@ -7,8 +7,8 @@ Estado: ensayo local reproducible; no es una autorización de restauración prod
 Desde la raíz, con el entorno Python de integración y Docker local preparados:
 
 ```bash
-python INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output /tmp/contabilidad-recuperacion-resultado-nuevo
-python INTEGRACIONES/operacion/verify_local.py --verify /tmp/contabilidad-recuperacion-resultado-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output /tmp/contabilidad-recuperacion-resultado-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --verify /tmp/contabilidad-recuperacion-resultado-nuevo
 python ANALISIS/contabilidad/tools/update_progress.py --check
 ```
 

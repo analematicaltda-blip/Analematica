@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: A single concurrent followup must reuse one request ID
+
+2 !== 1
+
+    at /tmp/gc009-before-duplicate.cjs:2:1805

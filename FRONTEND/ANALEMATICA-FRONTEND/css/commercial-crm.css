@@ -1,0 +1,19 @@
+.pool08-crm{color:#fff;background:linear-gradient(135deg,#123451,#071b30);border:1px solid #68c5f0;border-radius:12px;padding:1.2rem;max-width:100%;overflow-wrap:anywhere}.pool08-crm form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:.8rem;margin:1rem 0}.pool08-crm label{display:flex;flex-direction:column;gap:.35rem}.pool08-crm input,.pool08-crm textarea,.pool08-crm select{background:#0a243d;color:#fff;border:1px solid #77c9ef;border-radius:6px;padding:.65rem;min-width:0;max-width:100%}.pool08-crm button{color:#fff;background:#205b83;border:1px solid #8cd8fa;padding:.65rem .9rem;border-radius:6px;cursor:pointer;margin:.2rem}.pool08-crm button:disabled{opacity:.6;cursor:default}.pool08-crm :focus-visible{outline:3px solid #9be2ff;outline-offset:3px}.pool08-crm article{border-bottom:1px solid #548bad;padding:.7rem 0}.pool08-crm [data-feedback]{color:#bfeaff;min-height:1.5em}.pool08-crm [hidden]{display:none!important}.pool08-crm section{margin-top:1rem}.pool08-crm input[type=checkbox]{align-self:flex-start;width:1.2rem;height:1.2rem}
+
+.op-board{display:grid;grid-template-columns:repeat(8,minmax(175px,1fr));gap:.7rem;overflow:auto;max-width:100%;padding-bottom:.5rem}.op-column{background:#0a243d;border:1px solid #548bad;border-radius:8px;padding:.6rem;min-width:0}.op-column h4,.op-column h5{color:#bfeaff}.op-column h5{font-size:1rem;overflow-wrap:anywhere}.op-column article{padding:.4rem 0}.pool08-crm [data-op-feedback]{color:#bfeaff;min-height:1.5em}
+
+body[data-quote-base]{margin:0;padding:1rem;min-height:100vh;background:#071b30;color:#fff;font-family:system-ui,sans-serif}body[data-quote-base] *{box-sizing:border-box}body[data-quote-base] h1{color:#bce3f9}
+
+/* GC-023: owned workspace navigation and accessible controls, same visual identity. */
+.pool08-crm,.pool08-crm *{box-sizing:border-box}
+.pool08-crm h1,.pool08-crm h2,.pool08-crm h3,.pool08-crm h4,.pool08-crm h5,.pool08-crm [role=status],.pool08-crm [role=alert],.pool08-crm [data-feedback],.pool08-crm [data-op-feedback]{color:#fff}
+.pool08-crm button,.pool08-crm input:not([type=checkbox]),.pool08-crm select,.pool08-crm summary{min-height:44px}
+.pool08-crm summary{padding:.6rem .1rem;cursor:pointer}
+.pool08-crm nav[aria-label="Herramientas CRM"]{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
+.pool08-crm nav[aria-label="Herramientas CRM"] button[aria-pressed=true]{background:#123451;box-shadow:inset 0 -3px #7dd3fc;border-color:#7dd3fc}
+.pool08-crm [role=alert]{border-left:3px solid #7dd3fc;padding:.75rem}
+.pool08-crm [aria-busy=true]{cursor:progress}
+.pool08-crm [data-workspace-panel]{scroll-margin-top:1rem;min-width:0}
+@media(max-width:480px){.pool08-crm{padding:.85rem}.pool08-crm nav[aria-label="Herramientas CRM"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.pool08-crm nav[aria-label="Herramientas CRM"] button{margin:0;overflow-wrap:anywhere;min-width:0}.pool08-crm form{grid-template-columns:minmax(0,1fr)}}
+
+body[data-quote-base] h1{color:#fff}

@@ -1,0 +1,36 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_alias_cannot_point_to_its_own_realm_or_foreign_local_member (__main__.AccessChecks.test_alias_cannot_point_to_its_own_realm_or_foreign_local_member) ... ok
+test_alias_expiry_and_equal_ids_never_grant_remote_access (__main__.AccessChecks.test_alias_expiry_and_equal_ids_never_grant_remote_access) ... ok
+test_competing_revision_has_one_winner (__main__.AccessChecks.test_competing_revision_has_one_winner) ... ok
+test_consent_and_crm_revoke_roll_back_if_policy_event_fails (__main__.AccessChecks.test_consent_and_crm_revoke_roll_back_if_policy_event_fails) ... ok
+test_consent_expiry_never_authorizes_delivery (__main__.AccessChecks.test_consent_expiry_never_authorizes_delivery) ... ok
+test_consent_revocation_reaches_crm_and_is_idempotent (__main__.AccessChecks.test_consent_revocation_reaches_crm_and_is_idempotent) ... ok
+test_consent_source_revision_and_evidence_mismatch (__main__.AccessChecks.test_consent_source_revision_and_evidence_mismatch) ... ok
+test_corrupt_policy_is_rejected (__main__.AccessChecks.test_corrupt_policy_is_rejected) ... ok
+test_every_channel_and_purpose_has_a_separate_consent (__main__.AccessChecks.test_every_channel_and_purpose_has_a_separate_consent) ... ok
+test_foreign_company_cannot_recover_or_reuse_request (__main__.AccessChecks.test_foreign_company_cannot_recover_or_reuse_request) ... ok
+test_foreign_contact_cannot_supply_consent (__main__.AccessChecks.test_foreign_contact_cannot_supply_consent) ... ok
+test_grant_expiry_removes_current_permissions (__main__.AccessChecks.test_grant_expiry_removes_current_permissions) ... ok
+test_grant_role_change_invalidates_previous_fingerprint (__main__.AccessChecks.test_grant_role_change_invalidates_previous_fingerprint) ... ok
+test_http_view_two_companies_and_forged_role_claim (__main__.AccessChecks.test_http_view_two_companies_and_forged_role_claim) ... ok
+test_inactive_staff_cannot_read_or_be_granted (__main__.AccessChecks.test_inactive_staff_cannot_read_or_be_granted) ... ok
+test_invalid_expiry_revision_scope_and_evidence_are_atomic (__main__.AccessChecks.test_invalid_expiry_revision_scope_and_evidence_are_atomic) ... ok
+test_mutated_request_and_extra_context_rejected (__main__.AccessChecks.test_mutated_request_and_extra_context_rejected) ... ok
+test_nondelegable_wallet_and_admin_roles_cannot_be_granted (__main__.AccessChecks.test_nondelegable_wallet_and_admin_roles_cannot_be_granted) ... ok
+test_owner_revocation_blocks_stale_admin_object_and_replay (__main__.AccessChecks.test_owner_revocation_blocks_stale_admin_object_and_replay) ... ok
+test_policy_event_failure_rolls_back_grant (__main__.AccessChecks.test_policy_event_failure_rolls_back_grant) ... ok
+test_same_id_can_be_audited_without_creating_a_second_action (__main__.AccessChecks.test_same_id_can_be_audited_without_creating_a_second_action) ... ok
+test_same_request_is_receipt_and_does_not_restore_revoked_grant (__main__.AccessChecks.test_same_request_is_receipt_and_does_not_restore_revoked_grant) ... ok
+test_schema_missing_and_unknown_sections_fail_closed (__main__.AccessChecks.test_schema_missing_and_unknown_sections_fail_closed) ... ok
+test_simultaneous_revision_writers_have_a_single_commit (__main__.AccessChecks.test_simultaneous_revision_writers_have_a_single_commit) ... ok
+test_staff_and_foreign_company_cannot_administer (__main__.AccessChecks.test_staff_and_foreign_company_cannot_administer) ... ok
+test_stale_role_fingerprint_rejected_without_event (__main__.AccessChecks.test_stale_role_fingerprint_rejected_without_event) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 20.581s
+
+OK

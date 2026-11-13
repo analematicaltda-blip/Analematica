@@ -123,7 +123,7 @@ class TestCrmMediaCapabilityProtection(unittest.TestCase):
     @patch("app.api.v1.endpoints.admin_general.ai_router.generate_text")
     def test_01_full_plan_user_authorized_post_image(self, mock_ai_generate):
         """1. Usuario Plan Full autorizado solicitando formato post_1_1 (AI Images)."""
-        mock_ai_generate.return_value = {"text": "Copy publicitario optimizado por IA"}
+        mock_ai_generate.return_value = {"status":"success", "text": "Copy publicitario optimizado por IA"}
         user = DummyEntity(id=1, inquilino_id=10, role_codes=["admin_empresa"], activo=True)
         tenant = DummyEntity(id=10, nombre_empresa="Full Corp", plan="pro_anual", activo=True)
         sub = DummyEntity(id=1, inquilino_id=10, plan="pro_anual", estado="activa")
@@ -140,7 +140,7 @@ class TestCrmMediaCapabilityProtection(unittest.TestCase):
     @patch("app.api.v1.endpoints.admin_general.ai_router.generate_text")
     def test_02_full_plan_user_authorized_carousel(self, mock_ai_generate):
         """2. Usuario Plan Full autorizado solicitando formato carousel_multi (AI Carousels)."""
-        mock_ai_generate.return_value = {"text": "Copy carrusel IA"}
+        mock_ai_generate.return_value = {"status":"success", "text": "Copy carrusel IA"}
         user = DummyEntity(id=2, inquilino_id=20, role_codes=["admin_empresa"], activo=True)
         tenant = DummyEntity(id=20, nombre_empresa="Full Corp B", plan="pro_anual", activo=True)
         sub = DummyEntity(id=2, inquilino_id=20, plan="pro_anual", estado="activa")
@@ -149,13 +149,15 @@ class TestCrmMediaCapabilityProtection(unittest.TestCase):
         payload = PredisMediaRequest(area="futbol", prompt="Escuela infantil", format="carousel_multi")
         response = generate_predis_media(payload=payload, db=self.db_session, current_user=user)
 
-        self.assertEqual(response.status, "rendered")
+        self.assertEqual(response.status, "draft")
+        self.assertFalse(response.rendering_performed)
+        self.assertFalse(response.scheduling_performed)
         self.assertIn("1080x1350", response.dimensions)
 
     @patch("app.api.v1.endpoints.admin_general.ai_router.generate_text")
     def test_03_full_plan_user_authorized_reel(self, mock_ai_generate):
         """3. Usuario Plan Full autorizado solicitando formato reel_9_16 (AI Reels)."""
-        mock_ai_generate.return_value = {"text": "Copy reel IA"}
+        mock_ai_generate.return_value = {"status":"success", "text": "Copy reel IA"}
         user = DummyEntity(id=3, inquilino_id=30, role_codes=["admin_general"], activo=True)
         tenant = DummyEntity(id=30, nombre_empresa="Root Corp", plan="full", activo=True)
         sub = DummyEntity(id=3, inquilino_id=30, plan="full", estado="activa")

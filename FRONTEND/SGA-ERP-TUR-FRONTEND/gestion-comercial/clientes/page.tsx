@@ -70,6 +70,7 @@ const ClientesPage = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Clientes</h1>
+        <a href="/dashboard/prestador/mi-negocio/gestion-comercial/crm" className="text-sky-300 underline">CRM: prospectos, tareas, consentimiento e historial</a>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingCliente(null)}><PlusCircle className="h-4 w-4 mr-2" />Crear Cliente</Button>

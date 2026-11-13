@@ -1,0 +1,41 @@
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... ok
+test_email_normalization_and_consent_remain_declarations (__main__.cases.<locals>.Checks.test_email_normalization_and_consent_remain_declarations) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_invalid_unicode_is_a_domain_error_without_writing (__main__.cases.<locals>.Checks.test_invalid_unicode_is_a_domain_error_without_writing) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string) ... ok
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... ok
+test_email_normalization_and_consent_remain_declarations (__main__.cases.<locals>.Checks.test_email_normalization_and_consent_remain_declarations) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_invalid_unicode_is_a_domain_error_without_writing (__main__.cases.<locals>.Checks.test_invalid_unicode_is_a_domain_error_without_writing) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string) ... ok
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+test_authority_checked_again_inside_transaction (__main__.cases.<locals>.Checks.test_authority_checked_again_inside_transaction) ... ok
+test_consent_channels_purposes_evidence_and_booleans (__main__.cases.<locals>.Checks.test_consent_channels_purposes_evidence_and_booleans) ... ok
+test_email_control_characters_never_enter_contact_or_audit (__main__.cases.<locals>.Checks.test_email_control_characters_never_enter_contact_or_audit) ... ok
+test_email_normalization_and_consent_remain_declarations (__main__.cases.<locals>.Checks.test_email_normalization_and_consent_remain_declarations) ... ok
+test_foreign_responsible (__main__.cases.<locals>.Checks.test_foreign_responsible) ... ok
+test_invalid_unicode_is_a_domain_error_without_writing (__main__.cases.<locals>.Checks.test_invalid_unicode_is_a_domain_error_without_writing) ... ok
+test_malformed_contacts (__main__.cases.<locals>.Checks.test_malformed_contacts) ... ok
+test_missing_timezone_rejected (__main__.cases.<locals>.Checks.test_missing_timezone_rejected) ... ok
+test_numeric_or_boolean_evidence_is_not_a_hash_string (__main__.cases.<locals>.Checks.test_numeric_or_boolean_evidence_is_not_a_hash_string) ... ok
+test_replay_cannot_resurrect_baja (__main__.cases.<locals>.Checks.test_replay_cannot_resurrect_baja) ... ok
+test_request_and_revision_validation (__main__.cases.<locals>.Checks.test_request_and_revision_validation) ... ok
+test_untrusted_scope_and_roles (__main__.cases.<locals>.Checks.test_untrusted_scope_and_roles) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 0.012s
+
+OK

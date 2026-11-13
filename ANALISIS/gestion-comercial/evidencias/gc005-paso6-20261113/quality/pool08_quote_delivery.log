@@ -1,0 +1,8 @@
+test_blob_media_is_allowed_without_blob_scripts_or_frames (test_quote_delivery.QuoteDeliveryTests.test_blob_media_is_allowed_without_blob_scripts_or_frames) ... ok
+test_only_opted_in_erp_routes_get_media_limit_and_quote_link_proxy (test_quote_delivery.QuoteDeliveryTests.test_only_opted_in_erp_routes_get_media_limit_and_quote_link_proxy) ... ok
+test_private_recipient_assets_and_new_routes_are_in_prepared_erp (test_quote_delivery.QuoteDeliveryTests.test_private_recipient_assets_and_new_routes_are_in_prepared_erp) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.122s
+
+OK

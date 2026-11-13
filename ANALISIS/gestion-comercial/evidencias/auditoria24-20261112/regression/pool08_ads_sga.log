@@ -1,0 +1,26 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_cancel_invalidates_prepared_motor_proposal (__main__.Checks.test_cancel_invalidates_prepared_motor_proposal) ... ok
+test_company_audit_tampering_blocks_budget_calculation (__main__.Checks.test_company_audit_tampering_blocks_budget_calculation) ... ok
+test_company_cap_prevents_overbooking_without_mutating_second_campaign (__main__.Checks.test_company_cap_prevents_overbooking_without_mutating_second_campaign) ... ok
+test_control_proposal_uses_existing_motor_contract_without_grant_or_spending (__main__.Checks.test_control_proposal_uses_existing_motor_contract_without_grant_or_spending) ... ok
+test_daily_cap_is_aggregated_not_just_checked_per_campaign (__main__.Checks.test_daily_cap_is_aggregated_not_just_checked_per_campaign) ... ok
+test_declared_observation_proposes_without_changing_weights_or_budget (__main__.Checks.test_declared_observation_proposes_without_changing_weights_or_budget) ... ok
+test_draft_and_receipt_idempotency_do_not_create_provider_campaign (__main__.Checks.test_draft_and_receipt_idempotency_do_not_create_provider_campaign) ... ok
+test_exact_budgets_reject_float_bool_and_fractional_allocations (__main__.Checks.test_exact_budgets_reject_float_bool_and_fractional_allocations) ... ok
+test_false_impact_and_stale_revision_are_rejected (__main__.Checks.test_false_impact_and_stale_revision_are_rejected) ... ok
+test_insufficient_data_never_claims_optimizer_success (__main__.Checks.test_insufficient_data_never_claims_optimizer_success) ... ok
+test_live_execution_remains_closed_even_after_local_approval (__main__.Checks.test_live_execution_remains_closed_even_after_local_approval) ... ok
+test_policy_or_creative_revocation_invalidates_second_review (__main__.Checks.test_policy_or_creative_revocation_invalidates_second_review) ... ok
+test_revoked_role_cannot_read_reserve_cancel_or_execute (__main__.Checks.test_revoked_role_cannot_read_reserve_cancel_or_execute) ... ok
+test_tiktok_and_google_video_plans_remain_distinct_local_campaigns (__main__.Checks.test_tiktok_and_google_video_plans_remain_distinct_local_campaigns) ... ok
+test_two_approvals_reserve_only_local_plan_and_cancel_releases (__main__.Checks.test_two_approvals_reserve_only_local_plan_and_cancel_releases) ... ok
+test_unconfigured_platform_is_not_silently_mapped_to_meta (__main__.Checks.test_unconfigured_platform_is_not_silently_mapped_to_meta) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 15.398s
+
+OK

@@ -1,0 +1,61 @@
+{
+  "task": "GC-005",
+  "plan_step": 6,
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+  "implemented": "Contexto monetario explícito y aislado para estimaciones en los tres backends propios: precisión, redondeo, exponentes, flags y traps independientes del contexto ambiente. No altera el contexto del llamador ni usa Float para dinero.",
+  "regression": "test_offer_is_independent_of_ambient_decimal_traps_and_exponents: falla antes con decimal.Overflow y pasa después en los tres backends.",
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc005-paso6-20261113/quality/report.json",
+    "sha256": "207bb2d0f7c6e5a1641433edb3766ba090216613412990bc25b5e12043b177be",
+    "suites": 6,
+    "tests": 78,
+    "source_stable": true,
+    "source_digest": "7e853acb660e3002cc8c410c919ce0b1e7f8eb818ce6f1a04b0cca3e39e8c2e9"
+  },
+  "additional_quotation_regressions": {
+    "native": {
+      "tests": 30,
+      "log_sha256": "98e1d923ddfa01d23b6fda43255d93c9e5489ec86c267dd46ff38424a97f8488"
+    },
+    "sga": {
+      "tests": 16,
+      "log_sha256": "2078e96fa5d704eee5ebeb9d0805ebcb27c7ced86ece8090ebdbb348aa370ec5"
+    },
+    "http": {
+      "tests": 3,
+      "log_sha256": "671ee0fadcb789d543c376450ac2e02f968570256ab8e8793204fa80722aac4e"
+    }
+  },
+  "additional_quotation_tests": 49,
+  "browser_checks": 104,
+  "dependencies_without_acceptance": [
+    "GC-002"
+  ],
+  "pending": [
+    "Aceptación legítima de usuarios/permisos GC-002.",
+    "Precios y condiciones comerciales legítimos, revisión tributaria y aceptación del administrador/revisor autorizado.",
+    "No se acredita fiscalidad, factura, cobro ni producción con datos de laboratorio."
+  ],
+  "prior_followups_preserved": 84,
+  "git": {
+    "commit_created": false,
+    "main_updated": false,
+    "push_performed": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

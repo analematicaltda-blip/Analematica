@@ -33,13 +33,13 @@ TURISTA/EMPLEADO son etiquetas históricas, no requisitos de elegibilidad. El v�
 con una reserva y el consentimiento se exigen para recibir ese reembolso concreto,
 no para el acceso general a la billetera.
 
-Las fuentes canónicas están en WALLET-BACKEND, WALLET-FRONTEND, WALLET-MOVIL
-y WALLET-DESKTOP. Conservar los imports apps.wallet, la etiqueta Django wallet
+Las fuentes canónicas están en BACKEND/WALLET-BACKEND, FRONTEND/WALLET-FRONTEND, MOVILES/WALLET-MOVIL
+y DESKTOP/WALLET-DESKTOP. Conservar los imports apps.wallet, la etiqueta Django wallet
 y las migraciones existentes mediante adaptadores de compatibilidad. No mover
 bases, secretos o llaves junto con el código.
 
 Actualizar ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md mediante el registro canónico
-production_pending.json y WALLET-BACKEND/tools/update_pending_doc.py en cada
+production_pending.json y BACKEND/WALLET-BACKEND/tools/update_pending_doc.py en cada
 entrega que cambie evidencia o deje un bloqueo nuevo. No cerrar pruebas físicas,
 identidad, proveedores o releases usando evidencia sintética.
 
@@ -157,3 +157,70 @@ conservan su política empresarial, autenticación y namespaces; el núcleo com�
 y el comportamiento de los generales pertenecen al backend de Analemática.
 La centralización de fuentes no habilita servicios ni comparte credenciales.
 No convertir Turismo Nacional en ERP. No cambiar porcentajes por este traslado.
+
+## Homologación comercial sin traslado de módulos
+
+Directriz del usuario: homologar capacidades, CRM, creación/adaptación multimedia,
+publicación y atención por canales de SGA-CD, ERP y Analemática manteniendo cada
+módulo comercial en su propio backend/frontend. No fusionar ni trasladar esas
+carpetas para homologarlos. Considerar la cadena Jarvi, Neko y SOUP y exigir
+herramientas reales; recepción, publicación, respuesta y anuncios son capacidades
+diferentes. La evaluación vigente se mantiene en el informe existente
+INTEGRACIONES/plan-maestro/auditoria-bloque01/HALLAZGOS_Y_PRIORIDADES.md.
+
+## Plan comercial POOL-08 y aclaración de SOUP
+
+La matriz comercial vigente es ANALISIS/gestion-comercial/plan-pool08.json
+y matriz-hitos-pool08.csv: GC-001 a GC-024, GCH-001 a GCH-072. El relato
+único sigue en el informe de hallazgos existente, sección plan-pool08.
+No mezclar su medición con ACC ni reutilizar el porcentaje contable.
+El usuario aclaró que SOUP conserva exclusivamente la optimización de agentes
+de toda la cadena; la producción multimedia pertenece a la división creativa
+bajo Jarvi. Incluir landing pages por empresa/prestador y, adaptadas a SGA-CD,
+correos masivos y SMS/MMS/WhatsApp multimedia como capacidades diferentes.
+No cerrar un hito por el catálogo, una maqueta o una prueba de incremento parcial.
+
+## Cierre comercial GC-001
+
+GC-001 está cerrada para contratos, catálogo, APIs privadas y DAG local de los
+tres backends: contrato actual 1.1 (20 capacidades), compatibilidad 1.0 (15).
+No equivale a implementar ni autorizar todas las herramientas del catálogo.
+El gateway usa ANALEMATICA_COMMERCIAL_API_URL y no sustituye el servicio nativo
+con SGA-CD; los tokens siguen siendo validados por el backend de destino.
+El registro comercial se regenera/verifica mediante
+ANALISIS/gestion-comercial/tools/update_plan.py (--check). Conservar la entrada
+de evidencia de cierre y su hash; no editarla para añadir trabajo de otra tarea.
+Siguiente tarea GC-002, todavía pendiente. No iniciar otras sin instrucción.
+
+
+## Propiedad de archivos de aplicación · aclaración del usuario
+
+El código y recursos de aplicación deben vivir dentro de BACKEND, FRONTEND,
+MOVILES o DESKTOP, según su función. No recrear scripts, tests, infra, DB,
+SEGURIDAD, catálogos de agentes o compatibilidad Analematica en la raíz.
+Los scripts backend viven en BACKEND/tools; herramientas y pruebas visuales en
+FRONTEND/tools y FRONTEND/tests; utilidades de previsualización Flet en
+DESKTOP/tools y DESKTOP/tests. Los ejecutables de integración viven en
+BACKEND/INTEGRACIONES. Los informes conservan ANALISIS, INTEGRACIONES, docs
+y verificaciones: el usuario aclaró que no solicitó trasladar esos informes.
+Git, configuración de CI, instrucciones del repositorio y compose de entrada
+conservan sus ubicaciones técnicas de raíz. No confundirlos con código de aplicación.
+
+
+## Cierre secuencial de las16 tareas comerciales con F/T · 2026-11-12
+
+El usuario pidió cerrar una a una las16 tareas comerciales con funcionalidad y
+pruebas acreditadas pero aceptación pendiente. La secuencia se registra en
+ANALISIS/gestion-comercial/plan-pool08.json, campo sequential_closure; conservar
+el alcance y las72 ponderaciones originales. Primera activa: GC-003. No avanzar
+a GC-004 ni a otra de esas16 mientras GC-003 no tenga aceptación integral.
+GC-002 continúa siendo dependencia necesaria; resolverla no sustituye la
+aceptación de GC-003. El usuario respondió que no dispone del conjunto de
+aceptación solicitado (muestras autorizadas/políticas revisadas); no inferir
+aceptación de datos reales de esa respuesta ni renombrar el cierre local como
+aceptación integral. Los datos sintéticos verifican código, no legitimidad de
+consentimientos. Continuar con pendientes locales de la activa y registrar el
+bloqueo concreto en el seguimiento existente; no pedir otra vez los mismos
+materiales ya declarados no disponibles. La nueva directriz sustituye el orden
+de implementación histórico para esta secuencia de aceptación, sin alterar
+roles propios, criterios, créditos ni preferencias de Git.

@@ -1,0 +1,10 @@
+{
+  "accepted_as_final_regression": false,
+  "reasons": {
+    "interrupted": "Environment restart before final report",
+    "sandbox-and-source-changing": "Chromium sockets denied and test source changed during run",
+    "source-changing": "All focused suites passed, but a test was added during run; source_stable=false",
+    "pagehide-comparator-error": "The new test referenced textContent instead of invoking textContent(); fixed in the subsequent stable75-check run. Not accepted as a passing attempt."
+  },
+  "final_focused_run": "../quality/report.json"
+}

@@ -166,7 +166,7 @@ export default function ErpAdminPage() {
               <div className="p-4 rounded-xl bg-sky-950/40 border border-sky-400/20 space-y-2">
                 <h4 className="font-bold text-sky-300">2. Motor de Conciliación Bancaria Automático (Skills):</h4>
                 <p>
-                  Integración de reglas heurísticas basadas en <code>skills-contabilidad/shared/bank-sync</code> y <code>Conta-Skills</code> para auto-casar extractos con movimientos de pasarela.
+                  Integración de reglas heurísticas basadas en <code>BACKEND/skills-contabilidad/shared/bank-sync</code> y <code>Conta-Skills</code> para auto-casar extractos con movimientos de pasarela.
                 </p>
               </div>
 

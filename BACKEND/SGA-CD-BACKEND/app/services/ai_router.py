@@ -80,7 +80,7 @@ class AIRouterService:
                 "text_generation": [
                     {"provider": "colibri", "modalities": ["text"], "status": colibri_h["status"], "endpoint": self.colibri_endpoint},
                     {"provider": "ollama", "modalities": ["text"], "status": ollama_h["status"], "endpoint": self.ollama_endpoint},
-                    {"provider": "sga_cd_ai_router", "modalities": ["text"], "status": "online", "endpoint": "internal_fallback"}
+                    {"provider": "sga_cd_ai_router", "modalities": ["text"], "status": "unavailable", "endpoint": None}
                 ],
                 "image_generation": [
                     {"provider": "open_generative_ai", "modalities": ["image"], "status": open_gen_h["status"], "endpoint": self.open_gen_ai_endpoint}
@@ -127,7 +127,7 @@ class AIRouterService:
                         "status": "online",
                         "endpoint": self.colibri_endpoint,
                         "version": data.get("version", "1.0.0"),
-                        "models": data.get("models", ["colibri-spanish-v1"]),
+                        "models": data.get("models", []),
                         "gpu_accelerated": data.get("gpu_accelerated", False)
                     }
         except Exception as e:
@@ -234,26 +234,21 @@ class AIRouterService:
                 with urllib.request.urlopen(req, timeout=10) as resp:
                     res_data = json.loads(resp.read().decode())
                     return {
-                        "status": "success",
+                        "status": "unverified",
                         "provider": "open_generative_ai",
-                        "image_url": res_data.get("image_url")
+                        "image_url": None,
+                        "error": "IMAGE_BYTES_NOT_VERIFIED",
+                        "content_generated": False
                     }
             except Exception as e:
-                logger.error(f"Open Generative AI image generation failed: {e}")
+                logger.error("Open Generative AI generation failed; provider details withheld")
 
-        # Fallback image asset response
-        return {
-            "status": "success",
-            "provider": "open_generative_ai_adapter",
-            "format": format_type,
-            "image_url": f"/assets/generated/img_opengen_{inquilino_id or 1}_{int(time.time())}.png",
-            "prompt": prompt
-        }
+        return {"status":"unavailable","provider":None,"error":"IMAGE_PROVIDER_UNAVAILABLE","image_url":None,"content_generated":False}
 
     def generate_text(self, prompt: str, task: str = "general", preferred_provider: str = "auto") -> Dict[str, Any]:
         """
         Route text generation requests across local and cloud providers with fallback handling.
-        Priority order (auto): Colibrí (if online) -> Ollama (if online) -> OpenAI -> Structured Fallback.
+        Priority order (auto): Colibrí (if online) -> Ollama (if online); otherwise explicit unavailability.
         """
         # 1. Try Colibrí if requested or auto
         if preferred_provider in ["auto", "colibri"]:
@@ -272,6 +267,8 @@ class AIRouterService:
                     )
                     with urllib.request.urlopen(req, timeout=10) as resp:
                         res_data = json.loads(resp.read().decode())
+                        output=res_data.get("text",res_data.get("choices",[{}])[0].get("text",""))
+                        if not isinstance(output,str) or not output.strip():raise ValueError("Empty model result")
                         return {
                             "status": "success",
                             "provider": "colibri_local",
@@ -279,7 +276,7 @@ class AIRouterService:
                             "text": res_data.get("text", res_data.get("choices", [{}])[0].get("text", ""))
                         }
                 except Exception as e:
-                    logger.error(f"Colibrí generation failed: {e}")
+                    logger.error("Colibrí generation failed; provider details withheld")
 
         # 2. Try Ollama if requested or auto
         if preferred_provider in ["auto", "ollama"]:
@@ -298,6 +295,7 @@ class AIRouterService:
                     )
                     with urllib.request.urlopen(req, timeout=10) as resp:
                         res_data = json.loads(resp.read().decode())
+                        if not isinstance(res_data.get("response"),str) or not res_data["response"].strip():raise ValueError("Empty model result")
                         return {
                             "status": "success",
                             "provider": "ollama_local",
@@ -305,13 +303,8 @@ class AIRouterService:
                             "text": res_data.get("response", "")
                         }
                 except Exception as e:
-                    logger.error(f"Ollama generation failed: {e}")
+                    logger.error("Ollama generation failed; provider details withheld")
 
-        # 3. Structured Fallback Response
-        return {
-            "status": "fallback",
-            "provider": "sga_cd_ai_router",
-            "text": f"SGA-CD AI Router generated response for task '{task}': {prompt[:100]}..."
-        }
+        return {"status":"unavailable","provider":None,"error":"TEXT_PROVIDER_UNAVAILABLE","text":None,"content_generated":False}
 
 ai_router = AIRouterService()

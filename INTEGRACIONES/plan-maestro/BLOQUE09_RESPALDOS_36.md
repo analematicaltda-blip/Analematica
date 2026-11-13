@@ -28,8 +28,8 @@ La bandera `application_keys_included=false` indica que no se añadieron archivo
 La evidencia original está en `/tmp/sgacd-backup-release-36`; resumen verificable de resultados en `backup-evidence-36.json` y `evidencias/respaldos-36/local-report.json`. Los registros privados, claves y bases de fixture no se copiaron al repositorio. El resumen público no contiene el paquete privado completo necesario para `--verify`.
 
 ```bash
-python INTEGRACIONES/operacion/verify_local.py --profile backup --profile postgres --output /tmp/sgacd-respaldos-nuevos
-python INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-respaldos-nuevos
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile backup --profile postgres --output /tmp/sgacd-respaldos-nuevos
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-respaldos-nuevos
 ```
 
 ## Pendientes que no se cierran

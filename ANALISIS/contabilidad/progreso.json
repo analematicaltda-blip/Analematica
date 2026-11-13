@@ -1217,9 +1217,9 @@
         "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/financial_orchestration.py",
         "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py",
         "BACKEND/SGA-CD-BACKEND/app/services/financial_rehearsal_contract.py",
+        "BACKEND/WALLET-BACKEND/apps/wallet/services/funded_refund.py",
         "FRONTEND/ANALEMATICA-FRONTEND/js/financial-rehearsal.js",
-        "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/FinancialRehearsal.tsx",
-        "WALLET-BACKEND/apps/wallet/services/funded_refund.py"
+        "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/FinancialRehearsal.tsx"
       ],
       "remaining": ""
     },
@@ -1238,14 +1238,14 @@
         "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
         "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_acc021.py",
         "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_financial_rehearsal.py",
+        "BACKEND/WALLET-BACKEND/tests/recovery_check.py",
         "BACKEND/deployment/tests/accounting_acc021_postgres.py",
         "BACKEND/deployment/tests/accounting_acc021_state_check.py",
         "BACKEND/deployment/tests/accounting_agent_army_check.py",
         "BACKEND/deployment/tests/accounting_army_http_check.py",
         "BACKEND/deployment/tests/accounting_army_staff_check.py",
         "BACKEND/deployment/tests/accounting_financial_orchestration_check.py",
-        "FRONTEND/deployment/tests/financial_rehearsal_browser.cjs",
-        "WALLET-BACKEND/tests/recovery_check.py"
+        "FRONTEND/deployment/tests/financial_rehearsal_browser.cjs"
       ],
       "remaining": ""
     },

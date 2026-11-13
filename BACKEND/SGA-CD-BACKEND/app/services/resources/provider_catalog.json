@@ -1,7 +1,7 @@
 {
   "schema": "sgacd-provider-discovery-v1",
   "source_commit": "0c78ad5ccc6a2658e434e465c53fa2bea83605b7",
-  "source": "llm/free-ai-apis/README.md",
+  "source": "BACKEND/IA/llm/free-ai-apis/README.md",
   "notice": "Directorio de opciones: cuotas y acceso son afirmaciones de la fuente, no verificadas con los proveedores. No activa API ni garantiza gratuidad.",
   "categories": [
     {

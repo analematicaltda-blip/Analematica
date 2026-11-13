@@ -87,6 +87,8 @@ class PredisMediaResponse(BaseModel):
     dimensions: str
     target_platforms: list[str]
     scheduled_time: str
+    rendering_performed: bool = False
+    scheduling_performed: bool = False
 
 
 @router.get("/settings/api_keys", response_model=ApiSettings)
@@ -364,14 +366,16 @@ def generate_predis_media(
     poster = posters.get(payload.area, "https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800")
 
     # Invocación al AIRouterService para optimizar el copy publicitario
-    prompt_text = f"Genera un título y copy promocional para {payload.area.replace('_', ' ')}. Prompt: {payload.prompt}"
+    prompt_text = f"Genera un título y copy promocional para {payload.area.replace('_', ' ').upper()}. Prompt: {payload.prompt}"
     try:
         router_res = ai_router.generate_text(prompt=prompt_text, task="crm_marketing")
+        if router_res.get("status")!="success" or not isinstance(router_res.get("text"),str) or not router_res["text"].strip():
+            raise HTTPException(status_code=503,detail="AI_PROVIDER_UNAVAILABLE: no se generó contenido.")
     except Exception:
         PlanCapabilityService.release_quota(db=db, inquilino_id=current_user.inquilino_id, capability_name=required_cap, amount=1)
         raise
 
-    title = f"¡INSCRIPCIONES ABIERTAS EN {payload.area.replace('_', ' ').upper()} 2025!"
+    title = f"Borrador comercial · {payload.area.replace('_', ' ').upper()}"
     copy = f"{router_res.get('text', '')} — Formación integral en SGA-CD."
 
     dimensions_map = {
@@ -383,12 +387,12 @@ def generate_predis_media(
     dimensions = dimensions_map.get(payload.format, payload.custom_dimensions or "1080x1920 (9:16)")
 
     return PredisMediaResponse(
-        status="scheduled" if payload.scheduled_time else "rendered",
+        status="draft",
         title=title,
         copy=copy,
         poster_url=poster,
         video_path="FRONTEND/SGA-CD-WEB.git/assets/video/sga_cd_institutional_5min.mp4",
         dimensions=dimensions,
         target_platforms=payload.target_platforms or ["instagram", "tiktok", "youtube_shorts", "facebook"],
-        scheduled_time=payload.scheduled_time or "Inmediato (Automático Simultáneo)"
+        scheduled_time=payload.scheduled_time or "Sin programación ejecutada"
     )

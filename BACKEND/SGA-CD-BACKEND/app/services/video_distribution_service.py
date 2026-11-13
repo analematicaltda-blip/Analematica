@@ -49,86 +49,16 @@ class VideoDistributionService:
         return service
 
     def publish_video_to_youtube(self, video_path: str, title: str, description: str) -> Dict[str, Any]:
-        """
-        Uploads a video from a local file path to YouTube.
-        """
-        try:
-            youtube = self._get_youtube_service()
-            body = {
-                "snippet": { "title": title, "description": description, "tags": [], "categoryId": "22" },
-                "status": { "privacyStatus": "private" }
-            }
-            insert_request = youtube.videos().insert(
-                part=",".join(body.keys()),
-                body=body,
-                media_body=MediaFileUpload(video_path, chunksize=-1, resumable=True)
-            )
-            response = insert_request.execute()
-            video_id = response.get("id")
-            if not video_id:
-                raise ValueError("YouTube API did not return a video ID.")
-            return {
-                "status": "success",
-                "platform": "youtube",
-                "post_url": f"https://www.youtube.com/watch?v={video_id}"
-            }
-        except Exception as e:
-            print(f"An error occurred during YouTube upload: {e}")
-            raise
+        """Legacy uploads lack publication review and durable recovery."""
+        raise RuntimeError("LEGACY_PUBLISH_DISABLED_USE_POOL08_CALENDAR")
 
     def publish_video(self, platform: str, video_url: str, title: str, description: str) -> Dict[str, Any]:
-        """
-        Downloads a video from a URL and publishes it to the specified platform.
-        """
-        if platform.lower() == "youtube":
-            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp_file:
-                try:
-                    print(f"Downloading video from {video_url} to {tmp_file.name}...")
-                    response = requests.get(video_url, stream=True)
-                    response.raise_for_status()
-                    for chunk in response.iter_content(chunk_size=8192):
-                        tmp_file.write(chunk)
-                    print("Download complete.")
-
-                    # Get the full path of the temporary file
-                    video_path = tmp_file.name
-
-                    return self.publish_video_to_youtube(video_path, title, description)
-                finally:
-                    # Ensure the temporary file is deleted
-                    os.unlink(video_path)
-                    print(f"Deleted temporary file: {video_path}")
-        elif platform.lower() in ["facebook", "instagram"]:
-            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp_file:
-                try:
-                    print(f"Downloading video from {video_url} for Meta upload...")
-                    response = requests.get(video_url, stream=True)
-                    response.raise_for_status()
-                    for chunk in response.iter_content(chunk_size=8192):
-                        tmp_file.write(chunk)
-                    print("Download complete.")
-                    video_path = tmp_file.name
-                    return self._publish_video_to_meta(video_path, title, description)
-                finally:
-                    os.unlink(video_path)
-                    print(f"Deleted temporary file: {video_path}")
-        else:
-            raise NotImplementedError(f"Platform '{platform}' is not supported for video distribution.")
+        """Legacy uploads lack publication review and durable recovery."""
+        raise RuntimeError("LEGACY_PUBLISH_DISABLED_USE_POOL08_CALENDAR")
 
     def _publish_video_to_meta(self, video_path: str, title: str, description: str) -> Dict[str, Any]:
-        """
-        Publishes a video to the connected Meta (Facebook/Instagram) page.
-        """
-        from .meta_uploader import MetaUploader
-
-        page_id = self.settings.get("meta_page_id")
-        page_access_token = self.settings.get("meta_page_access_token")
-
-        if not page_id or not page_access_token:
-            raise ValueError("Meta Page ID or Page Access Token not configured.")
-
-        uploader = MetaUploader(page_id=page_id, page_access_token=page_access_token)
-        return uploader.upload_video(video_path=video_path, title=title, description=description)
+        """Legacy uploads lack publication review and durable recovery."""
+        raise RuntimeError("LEGACY_PUBLISH_DISABLED_USE_POOL08_CALENDAR")
 
 
 def get_distribution_service(db_session) -> VideoDistributionService:

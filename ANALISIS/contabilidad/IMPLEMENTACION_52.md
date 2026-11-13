@@ -44,6 +44,6 @@ La evidencia final de regresión y recuentos se conserva en [implementacion-52.j
 - Controles de progreso/plan, pendientes de billetera y git diff --check aprobados.
 - Perfil final con fuentes estables en `/tmp/sgacd-remediation-52-final`; reporte/log hashes conservados en evidencia52. Los ensayos intermedios con fuentes cambiantes no se presentan como cierre de regresión.
 
-Para repetir: ejecutar `INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output <directorio_nuevo>` con el Python del entorno de integración. Las pruebas usan bases aisladas y no deben apuntar a bases de clientes.
+Para repetir: ejecutar `BACKEND/INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output <directorio_nuevo>` con el Python del entorno de integración. Las pruebas usan bases aisladas y no deben apuntar a bases de clientes.
 
 No se crearon commits ni se actualizó main. El 47,22 % corresponde a 34 de 72 hitos de la base original, no al porcentaje de paquetes cerrados ni a una aceptación productiva.

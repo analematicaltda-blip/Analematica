@@ -1,0 +1,122 @@
+[
+  {
+    "id": "crm.prospect.manage",
+    "implementation_evidence": "LOCAL_CASES_VERIFIED",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "quote.prepare",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "booking.availability.read",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "media.image.generate",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "media.reel.render",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "media.image.resize",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "media.video.resize",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "channel.video.publish",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "channel.private_message.reply",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "channel.public_comment.reply",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "channel.email.reply",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "ads.campaign.manage",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "ledger.sale.post",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "vault.document.persist",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "agents.process.optimize",
+    "implementation_evidence": "LOCAL_CASES_VERIFIED",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "landing.page.manage",
+    "implementation_evidence": "PARTIAL_CORPORATE_SITE",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "landing.lead.capture",
+    "implementation_evidence": "PARTIAL_CORPORATE_SITE",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "campaign.email.bulk.send",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "campaign.sms_mms.send",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  },
+  {
+    "id": "campaign.whatsapp.multimedia.send",
+    "implementation_evidence": "REQUIRES_IMPLEMENTATION_OR_QUALIFICATION",
+    "pool08_execution_enabled": false,
+    "tool_binding_status": "NOT_BOUND_TO_POOL08"
+  }
+]

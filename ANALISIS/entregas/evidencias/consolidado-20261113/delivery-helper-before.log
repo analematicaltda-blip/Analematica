@@ -1,0 +1,182 @@
+test_check_has_no_side_effects_and_preserves_source_git_head (test_entrega_segura.SafeDeliveryTests.test_check_has_no_side_effects_and_preserves_source_git_head) ... ERROR
+test_conflict_refuses_entire_delivery_before_any_change (test_entrega_segura.SafeDeliveryTests.test_conflict_refuses_entire_delivery_before_any_change) ... ERROR
+test_deletion_is_explicit_and_original_is_backed_up (test_entrega_segura.SafeDeliveryTests.test_deletion_is_explicit_and_original_is_backed_up) ... ERROR
+test_existing_archive_is_never_overwritten (test_entrega_segura.SafeDeliveryTests.test_existing_archive_is_never_overwritten) ... ERROR
+test_full_modified_and_untracked_delivery_applies_and_replays (test_entrega_segura.SafeDeliveryTests.test_full_modified_and_untracked_delivery_applies_and_replays) ... ERROR
+test_generated_tracked_bytecode_is_explicitly_excluded (test_entrega_segura.SafeDeliveryTests.test_generated_tracked_bytecode_is_explicitly_excluded) ... ERROR
+test_interrupted_application_rolls_back_and_keeps_recovery_journal (test_entrega_segura.SafeDeliveryTests.test_interrupted_application_rolls_back_and_keeps_recovery_journal) ... ERROR
+test_private_runtime_paths_and_private_key_material_are_not_packaged (test_entrega_segura.SafeDeliveryTests.test_private_runtime_paths_and_private_key_material_are_not_packaged) ... ok
+test_rollback_preserves_newer_concurrent_edit (test_entrega_segura.SafeDeliveryTests.test_rollback_preserves_newer_concurrent_edit) ... ERROR
+test_symlink_and_traversal_cannot_write_outside_destination (test_entrega_segura.SafeDeliveryTests.test_symlink_and_traversal_cannot_write_outside_destination) ... ERROR
+test_tampered_payload_is_rejected_before_writing (test_entrega_segura.SafeDeliveryTests.test_tampered_payload_is_rejected_before_writing) ... ERROR
+test_zipapp_is_directly_executable_for_dry_run (test_entrega_segura.SafeDeliveryTests.test_zipapp_is_directly_executable_for_dry_run) ... ERROR
+
+======================================================================
+ERROR: test_check_has_no_side_effects_and_preserves_source_git_head (test_entrega_segura.SafeDeliveryTests.test_check_has_no_side_effects_and_preserves_source_git_head)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 17, in test_check_has_no_side_effects_and_preserves_source_git_head
+    head=self.git('rev-parse','HEAD').stdout;manifest,_=self.package();rows=tool.check(self.dest,manifest);self.assertEqual([r['state'] for r in rows],['READY','READY']);self.assertFalse((self.dest/'nested').exists());self.assertEqual(self.git('rev-parse','HEAD').stdout,head)
+                                                        ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_conflict_refuses_entire_delivery_before_any_change (test_entrega_segura.SafeDeliveryTests.test_conflict_refuses_entire_delivery_before_any_change)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 19, in test_conflict_refuses_entire_delivery_before_any_change
+    manifest,blobs=self.package();(self.dest/'existing.py').write_text('a newer independent change\n')
+                   ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_deletion_is_explicit_and_original_is_backed_up (test_entrega_segura.SafeDeliveryTests.test_deletion_is_explicit_and_original_is_backed_up)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 60, in test_deletion_is_explicit_and_original_is_backed_up
+    (self.root/'existing.py').unlink();manifest,blobs=self.package();r=tool.apply(self.dest,manifest,blobs);self.addCleanup(shutil.rmtree,r['backup']);self.assertFalse((self.dest/'existing.py').exists());self.assertEqual((Path(r['backup'])/'files/existing.py').read_text(),'base\n')
+                                                      ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_existing_archive_is_never_overwritten (test_entrega_segura.SafeDeliveryTests.test_existing_archive_is_never_overwritten)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 64, in test_existing_archive_is_never_overwritten
+    self.package();before=self.archive.read_bytes()
+    ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_full_modified_and_untracked_delivery_applies_and_replays (test_entrega_segura.SafeDeliveryTests.test_full_modified_and_untracked_delivery_applies_and_replays)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 15, in test_full_modified_and_untracked_delivery_applies_and_replays
+    manifest,blobs=self.package();result=tool.apply(self.dest,manifest,blobs);self.addCleanup(shutil.rmtree,result['backup']);self.assertEqual(result['applied'],2);self.assertEqual((self.dest/'nested/new.py').read_text(),'new\n');self.assertEqual((self.dest/'existing.py').read_text(),'updated\n');self.assertEqual(tool.apply(self.dest,manifest,blobs)['applied'],0)
+                   ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_generated_tracked_bytecode_is_explicitly_excluded (test_entrega_segura.SafeDeliveryTests.test_generated_tracked_bytecode_is_explicitly_excluded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 62, in test_generated_tracked_bytecode_is_explicitly_excluded
+    (self.root/'__pycache__/cache.pyc').write_bytes(b'changed generated cache');manifest,_=self.package();self.assertEqual(manifest['excluded_generated_files'],['__pycache__/cache.pyc']);self.assertEqual(len(manifest['entries']),2)
+                                                                                           ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_interrupted_application_rolls_back_and_keeps_recovery_journal (test_entrega_segura.SafeDeliveryTests.test_interrupted_application_rolls_back_and_keeps_recovery_journal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 23, in test_interrupted_application_rolls_back_and_keeps_recovery_journal
+    manifest,blobs=self.package();original=tool.write_atomic;backups=[]
+                   ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_rollback_preserves_newer_concurrent_edit (test_entrega_segura.SafeDeliveryTests.test_rollback_preserves_newer_concurrent_edit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 32, in test_rollback_preserves_newer_concurrent_edit
+    manifest,blobs=self.package();original=tool.write_atomic;backups=[]
+                   ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_symlink_and_traversal_cannot_write_outside_destination (test_entrega_segura.SafeDeliveryTests.test_symlink_and_traversal_cannot_write_outside_destination)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 42, in test_symlink_and_traversal_cannot_write_outside_destination
+    manifest,blobs=self.package();outside=Path(self.tmp.name)/'outside';outside.mkdir();(self.dest/'nested').symlink_to(outside,target_is_directory=True)
+                   ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_tampered_payload_is_rejected_before_writing (test_entrega_segura.SafeDeliveryTests.test_tampered_payload_is_rejected_before_writing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 48, in test_tampered_payload_is_rejected_before_writing
+    self.package();changed=Path(self.tmp.name)/'tampered.pyz'
+    ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+======================================================================
+ERROR: test_zipapp_is_directly_executable_for_dry_run (test_entrega_segura.SafeDeliveryTests.test_zipapp_is_directly_executable_for_dry_run)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 58, in test_zipapp_is_directly_executable_for_dry_run
+    self.package();result=subprocess.run([__import__('sys').executable,str(self.archive),'check','--root',str(self.dest)],check=True,capture_output=True,text=True);self.assertEqual(json.loads(result.stdout)['ready'],2)
+    ^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/tests/test_entrega_segura.py", line 13, in package
+    def package(self):tool.build(self.root,self.archive);return tool.load(self.archive)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/SGA-CD-conectado/BACKEND/INTEGRACIONES/operacion/entrega_segura.py", line 55, in build
+    runner=Path(__file__).resolve().parents[3] / 'BACKEND/INTEGRACIONES/operacion/entrega_segura.py'.read_bytes()
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.428s
+
+FAILED (errors=11)

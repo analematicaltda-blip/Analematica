@@ -1,0 +1,108 @@
+{
+  "task": "GC-002",
+  "plan_step": 2,
+  "date_colombia": "2026-11-12",
+  "verified_task_ids": [
+    "GC-002"
+  ],
+  "accepted_task_ids": [],
+  "accepted_milestones": [
+    "GCH-005"
+  ],
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "functional_scope_complete": true,
+  "tests_complete": true,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "fixes": [
+    {
+      "problem": "Revocar el registro administrativo dejaba vigente su declaración CRM.",
+      "solution": "Revocación restrictiva del CRM y política, sus historias y recibos en la misma transacción; el fallo del evento de política revierte ambos dominios.",
+      "evidence": "test_consent_revocation_reaches_crm_and_is_idempotent; test_consent_and_crm_revoke_roll_back_if_policy_event_fails; prueba HTTP y los tres formularios propios."
+    },
+    {
+      "problem": "Importar crm_api directamente encontraba un ciclo de importación con access_api de SGA-CD.",
+      "solution": "Resolver las funciones CRM dentro de la dependencia y del manejador de errores; mantener un router propio.",
+      "evidence": "Importación y 26 casos ORM/API de SGA-CD, más el arranque HTTP real."
+    },
+    {
+      "problem": "La autoridad nativa podía propagar AccountingError para un administrador desactivado.",
+      "solution": "Traducir únicamente ese fallo de autoridad a rechazo 403 y considerar inválido al otorgante; las excepciones desconocidas no se ocultan.",
+      "evidence": "test_owner_revocation_blocks_stale_admin_object_and_replay en ambos backends nativos."
+    },
+    {
+      "problem": "Los formularios de revocación de consentimiento/referencia empezaban con revisión cero.",
+      "solution": "Tomar la revisión del registro seleccionado y actualizarla al cambiar selección o recargar; el servidor conserva CAS.",
+      "evidence": "Aserciones de revisión automática antes de enviar desde las interfaces reales."
+    }
+  ],
+  "coverage": {
+    "companies": "Dos empresas activas verificadas por ORM/API en cada sistema; denegación cruzada de usuarios, recibos, contactos y miembros.",
+    "roles": "Cambio de rol, inactividad, otorgante revocado, roles institucionales y reclamación JWT falsificada no elevan permisos.",
+    "expiry": "Reloj controlado comprueba caducidad de permisos, consentimientos y referencias sin prolongar vigencia ni autorizar envíos.",
+    "writes": "Dos conexiones SQLite independientes disputan la misma revisión: una confirmación y un conflicto; fallos inyectados comprueban rollback de datos e historial. No cualifica PostgreSQL.",
+    "receipts": "Repetición exacta, cuerpo cambiado, recuperación tras pérdida de respuesta y recarga; repetir un recibo antiguo no restaura permisos revocados.",
+    "wallet": "Capacidades de billetera/administración y no delegables rechazadas; acceso personal general no modificado.",
+    "consents": "Todos los canales/finalidades, fuente/revisión/soporte, caducidad, bajas y revocación transversal; evidencia de origen declarada, sin autenticidad inferida.",
+    "browser_commands": [
+      "grant",
+      "revoke_grant",
+      "record_consent",
+      "revoke_consent",
+      "link_identity",
+      "revoke_alias"
+    ],
+    "browser_failures": "Carga inicial fallida y recuperación; doble submit; respuesta perdida; recarga y recibo; denegación 403 limpia el panel."
+  },
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso2-20261112/quality/report.json",
+    "sha256": "d390a2442e2de7d5191369d8d9dc6b1f174773c440b40e22a6b369d1b7b9c95f",
+    "tests": 263,
+    "suites": 12,
+    "source_stable": true,
+    "source_digest": "6027def680027ed21af3c96a031372721d9db8f5c3a2a3b88915977114cb2737"
+  },
+  "browser": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso2-20261112/browser/report.json",
+    "sha256": "8e78486c5d98ca37b006695e7f56d4945d2c1ffa70347cc1d4b41712b97bca56",
+    "checks": 336,
+    "targets": 4,
+    "widths": [
+      1280,
+      390,
+      320
+    ],
+    "actual_http": true,
+    "real_provider_actions": false,
+    "physical_devices_qualified": false
+  },
+  "crm_browser_regression": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso2-20261112/crm-browser/report.json",
+    "sha256": "13d932d1c37ebf01852cb0f5231282e995b632f95a4307a4ce5d4dccd6b4c20a",
+    "checks": 88
+  },
+  "pending": [
+    "GCH-006/paso 3: aceptación con usuarios y políticas legítimos y revisados, no disponibles según el usuario. No se atribuye esa aceptación a fixtures.",
+    "PostgreSQL, datos/roles reales, infraestructura objetivo y dispositivos físicos no cualificados por estas pruebas locales.",
+    "La revisión completa de toda la base comercial sigue pendiente; crédito de hitos no equivale a preparación productiva."
+  ],
+  "git": {
+    "commit_created": false,
+    "push_performed": false,
+    "main_updated": false
+  },
+  "prior_followups_preserved": 80,
+  "prior_followups_manifest": "ANALISIS/gestion-comercial/evidencias/gc002-paso2-20261112/prior-followups.json",
+  "credited_milestones_before": 36,
+  "credited_milestones_after": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null,
+  "entry": "followups.gc002_step2_identity_isolation_20261112",
+  "entry_sha256": "fd9f78d8cab39366bf0cf045f63e58306094b403ffc2698ad0bd26aded41d4be"
+}

@@ -34,3 +34,6 @@ langchain-openai>=1,<2
 
 # Native backend army adapters; disabled until explicitly assigned/configured.
 httpx>=0.27,<1
+
+# POOL-08 strict commercial contract validation.
+jsonschema>=4.23,<5

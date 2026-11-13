@@ -8,3 +8,5 @@ export * from './organisms/TerritorialAnalytics';
 export * from './organisms/ProviderMonitoring';
 export * from './organisms/AlertSystem';
 export * from './layouts/UnifiedGovernmentDashboard';
+
+export * from './legacy-presentations';

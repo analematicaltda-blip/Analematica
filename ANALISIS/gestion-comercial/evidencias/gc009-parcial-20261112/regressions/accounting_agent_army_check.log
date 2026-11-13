@@ -1,0 +1,173 @@
+INFO Suscriptor registrado para el evento: RESERVATION_CREATED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: RESERVATION_CANCELLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECEIVED
+INFO Suscriptor registrado para el evento: SALE_COMPLETED
+INFO Suscriptor registrado para el evento: PURCHASE_ORDER_POSTED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED
+INFO Suscriptor registrado para el evento: INVENTORY_ADJUSTED
+INFO Suscriptor registrado para el evento: ASSET_DEPRECIATED
+INFO Suscriptor registrado para el evento: LIQUIDATION
+INFO Suscriptor registrado para el evento: SALE_CREATED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED_V2
+INFO Suscriptor registrado para el evento: SaaS_INVOICE_GENERATED
+INFO Suscriptor registrado para el evento: BANK_FEE_REGISTERED
+INFO Standard Accounting Handlers registered.
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: FINANCIAL_PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: SUBSIDIARY_CREATED
+INFO EOS CONSOLIDATION: Event handlers registered.
+INFO Suscriptor registrado para el evento: TENANT_PROVISIONING_REQUESTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_EXPIRED
+INFO TENANT LIFECYCLE ENGINE: Listening for lifecycle events.
+INFO Suscriptor registrado para el evento: FINANCIAL_IMPACT_REQUESTED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: PAYMENT_FAILED
+INFO Control Tower Monitoring Handlers registered.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: ANOMALY_DETECTED
+INFO CONTROL TOWER: Metric Listener active.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Enterprise Policy Engine registered.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Global Holding Orchestrator registered.
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Capital Markets Orchestrator registered.
+INFO Suscriptor registrado para el evento: EQUITY_BUYBACK_TRIGGERED
+INFO Tokenization Orchestrator registered.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: LEAD_CONVERTED
+INFO COMMERCIAL ENGINE: Suscriptores de eventos registrados.
+INFO Suscriptor registrado para el evento: USAGE_CYCLE_CLOSED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO TREASURY AUTOMATION: Orquestación de eventos configurada.
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_CANCELLED
+INFO Suscriptor registrado para el evento: PLAN_UPGRADED
+INFO Suscriptor registrado para el evento: PLAN_DOWNGRADED
+INFO Suscriptor registrado para el evento: USAGE_BILLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO Suscriptor registrado para el evento: INVOICE_CREATED
+INFO Suscriptor registrado para el evento: USAGE_RECORDED
+INFO OPERATIONAL INTELLIGENCE: DataCollector initialized.
+/workspace/.integration-venv/lib/python3.12/site-packages/django/db/backends/utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+INFO KERNEL: Intención 'PLATFORM_CREATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_SUSPEND_USER' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ERP_CONFIRM_SALE' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_GENERATE_BALANCE' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'OPTIMIZE_TENANT_RETENTION' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ADAPTIVE_PRICING_ADJUSTMENT' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'SYSTEMIC_EVOLUTION_STEP' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'MANAGE_WORKSHOP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'REGISTER_PRODUCTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'UPDATE_ARTISAN_INVENTORY' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'PROCESS_COMMAND' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'VOID_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CREATE_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CANCEL_PACKAGE_COMPONENT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_AGENCY_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'SCHEDULE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_TRANSPORT_SEAT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'ASSIGN_GUIDE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_GUIDE_COMMISSION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BILL_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'NIGHT_CASH_CLOSE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'WALLET_DEPOSIT' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_PAY' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_REFUND' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_LIQUIDATE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_FREEZE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'DELIVERY_REQUEST' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_ASSIGN' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_COMPLETE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_RATE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'VEHICLE_REGISTER' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'GENERATE_LEGACY_BUNDLE' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PLATFORM_TRANSFER_OWNERSHIP' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'SYSTEM_EVOLUTION_HARDENING' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'QUERY_META_STANDARD' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PUBLIC_BUDGET_OPTIMIZATION' registrada en el dominio 'hacienda'.
+INFO KERNEL: Intención 'TERRITORIAL_IMPACT_SIMULATION' registrada en el dominio 'planeacion'.
+INFO KERNEL: Intención 'CIVIL_DEFENSE_ALERT' registrada en el dominio 'seguridad_civil'.
+INFO KERNEL: Intención 'LAND_USE_AUDIT' registrada en el dominio 'gestion_territorial'.
+INFO KERNEL: Intención 'ERP_CREATE_VOUCHER' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'ERP_VIEW_SALES_STATS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'PRIORITIZE_CRITICAL_LEADS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'OPTIMIZE_MARKETING_BUDGET' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_VIEW_CASH_FLOW' registrada en el dominio 'financiero'.
+INFO KERNEL: Intención 'ERP_MANAGE_RESOURCES' registrada en el dominio 'operativo'.
+INFO KERNEL: Intención 'ERP_SEARCH_DOCUMENT' registrada en el dominio 'archivistico'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_OPTIMIZE_RESOURCES' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_WEB_CMS' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_LEGAL' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ONBOARDING_PRESTADOR' registrada en el dominio 'prestadores'.
+INFO KERNEL: Intención 'AUDITORIA_GLOBAL' registrada en el dominio 'administrador_general'.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO EOS DECISION ENGINE: Metric Listener active.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO SAAS ORCHESTRATOR: Listening for onboarding signals.
+INFO Suscriptor registrado para el evento: WALLET_PAYMENT_REQUESTED
+INFO Wallet event boundary registered; payment execution requires explicit approvals.
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_FROM_TURISMO
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_DIRECT
+INFO Delivery Event Handlers registrados.
+test_actual_reports_and_full_rank_trace_without_ledger_writes (__main__.ArmyChecks.test_actual_reports_and_full_rank_trace_without_ledger_writes) ... /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tempfile.py:940: ResourceWarning: Implicitly cleaning up <TemporaryDirectory '/tmp/tmpuu8od97s'>
+  _warnings.warn(warn_message, ResourceWarning)
+INFO Journal Entry created: 3e882813-6a61-4c23-a61d-b84ce87066ef (Verified manual fixture)
+ok
+test_all_tasks_propagate_review_without_fiscal_or_chain_certification (__main__.ArmyChecks.test_all_tasks_propagate_review_without_fiscal_or_chain_certification) ... INFO Journal Entry created: cd82a59a-217d-4170-a7cf-2978e358e156 (Verified manual fixture)
+ok
+test_caller_decimal_context_does_not_change_report (__main__.ArmyChecks.test_caller_decimal_context_does_not_change_report) ... INFO Journal Entry created: 6033628e-a29b-4028-af4b-4d24d3c0d3b1 (Verified manual fixture)
+ok
+test_combined_report_bound_does_not_persist_partial_success (__main__.ArmyChecks.test_combined_report_bound_does_not_persist_partial_success) ... ok
+test_delegated_agent_cannot_impersonate_owner (__main__.ArmyChecks.test_delegated_agent_cannot_impersonate_owner) ... ok
+test_each_mission_really_delegates_through_all_internal_ranks (__main__.ArmyChecks.test_each_mission_really_delegates_through_all_internal_ranks) ... ok
+test_engine_calls_are_outside_transaction_and_not_automatically_repeated (__main__.ArmyChecks.test_engine_calls_are_outside_transaction_and_not_automatically_repeated) ... ok
+test_engine_configuration_is_separate_and_requires_owner_company (__main__.ArmyChecks.test_engine_configuration_is_separate_and_requires_owner_company) ... ok
+test_engine_metadata_has_no_financial_values_or_company_identity (__main__.ArmyChecks.test_engine_metadata_has_no_financial_values_or_company_identity) ... ok
+test_engine_share_consent_cannot_be_boolean_alias (__main__.ArmyChecks.test_engine_share_consent_cannot_be_boolean_alias) ... ok
+test_failed_reader_does_not_claim_checker_executed (__main__.ArmyChecks.test_failed_reader_does_not_claim_checker_executed) ... ok
+test_foreign_or_false_arithmetic_source_does_not_leak_data (__main__.ArmyChecks.test_foreign_or_false_arithmetic_source_does_not_leak_data) ... ok
+test_independence_from_sga_cd_source_packages (__main__.ArmyChecks.test_independence_from_sga_cd_source_packages) ... ok
+test_missing_policy_is_blocked_not_fabricated (__main__.ArmyChecks.test_missing_policy_is_blocked_not_fabricated) ... ok
+test_namespace_isolation_even_same_company_and_request_uuid (__main__.ArmyChecks.test_namespace_isolation_even_same_company_and_request_uuid) ... ok
+test_native_apis_are_separate_and_permission_bound (__main__.ArmyChecks.test_native_apis_are_separate_and_permission_bound) ... ok
+test_persisted_malformed_request_rejected_cleanly (__main__.ArmyChecks.test_persisted_malformed_request_rejected_cleanly) ... ok
+test_persisted_report_tampering_rejected (__main__.ArmyChecks.test_persisted_report_tampering_rejected) ... ok
+test_real_jwt_routes_for_both_owned_api_modules (__main__.ArmyChecks.test_real_jwt_routes_for_both_owned_api_modules) ... /workspace/.integration-venv/lib/python3.12/site-packages/django/core/handlers/base.py:61: UserWarning: No directory at: /state/static/
+  mw_instance = middleware(adapted_handler)
+WARNING Unauthorized: /erp/
+ok
+test_recomputed_hash_cannot_enable_financial_actions (__main__.ArmyChecks.test_recomputed_hash_cannot_enable_financial_actions) ... ok
+test_recomputed_hash_cannot_rewrite_chain_of_command (__main__.ArmyChecks.test_recomputed_hash_cannot_rewrite_chain_of_command) ... ok
+test_replay_and_recovery_verify_with_independent_decimal_context (__main__.ArmyChecks.test_replay_and_recovery_verify_with_independent_decimal_context) ... INFO Journal Entry created: 2c8ba9f9-98bd-4cb8-8392-5505750fc0da (Verified manual fixture)
+ok
+test_replay_uses_stored_snapshot_without_running_tools (__main__.ArmyChecks.test_replay_uses_stored_snapshot_without_running_tools) ... ok
+test_same_request_conflict_is_rejected (__main__.ArmyChecks.test_same_request_conflict_is_rejected) ... ok
+test_two_owned_structures_have_full_six_ranks_no_shared_agent_ids (__main__.ArmyChecks.test_two_owned_structures_have_full_six_ranks_no_shared_agent_ids) ... ok
+test_uncertain_engine_outcome_is_durable_and_not_retried (__main__.ArmyChecks.test_uncertain_engine_outcome_is_durable_and_not_retried) ... ok
+test_unexpected_failure_rolls_back_mission_and_audit (__main__.ArmyChecks.test_unexpected_failure_rolls_back_mission_and_audit) ... ok
+test_untrusted_write_tools_dates_scope_or_shell_fields_rejected (__main__.ArmyChecks.test_untrusted_write_tools_dates_scope_or_shell_fields_rejected) ... ok
+test_withdrawn_authority_rolls_back_mission_audit (__main__.ArmyChecks.test_withdrawn_authority_rolls_back_mission_audit) ... ok
+test_wrong_owner_foreign_provider_and_revocation_denied (__main__.ArmyChecks.test_wrong_owner_foreign_provider_and_revocation_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 3.450s
+
+OK

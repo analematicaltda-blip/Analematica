@@ -14,7 +14,7 @@ type Line={product_id:string;quantity:number};
 type Draft={id:string;status:string;digest:string;created_at:string;expires_at:string;preview:{currency:string;subtotal:string}};
 const initialLine=():Line=>({product_id:'',quantity:1});
 
-export default function QuotationWorkspace(){
+function LegacyQuotationWorkspace(){
  const session=useErpSession();
  const {user,challenge,verifyCode,loading:sessionLoading,error:sessionError,logoutUnconfirmed,login,logout,request:sessionRequest}=session;
  const identity=user?String(user.id):null;
@@ -157,3 +157,5 @@ export default function QuotationWorkspace(){
   </section>
  </main>;
 }
+
+export default function QuotationWorkspace(){return <><nav style={{background:"#071b30",color:"white",padding:"1rem"}}><a href="/dashboard/prestador/mi-negocio/gestion-comercial/cotizaciones-dinamicas" style={{color:"#bce3f9"}}>Abrir cotizaciones dinámicas con tarifas revisadas</a></nav><LegacyQuotationWorkspace/></>;}

@@ -1,0 +1,93 @@
+[
+  {
+    "name": "corporate",
+    "exit_code": 0,
+    "tests": 4,
+    "command": [
+      "/workspace/.integration-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "BACKEND/SGA-CD-BACKEND/tests",
+      "-p",
+      "test_corporate_node.py",
+      "-v"
+    ]
+  },
+  {
+    "name": "runner",
+    "exit_code": 0,
+    "tests": 19,
+    "command": [
+      "/workspace/.integration-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "BACKEND/INTEGRACIONES/operacion/tests",
+      "-p",
+      "test_verify_local.py",
+      "-v"
+    ]
+  },
+  {
+    "name": "accounting_agent_army_check",
+    "exit_code": 0,
+    "tests": 30,
+    "command": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/accounting_agent_army_check.py"
+    ]
+  },
+  {
+    "name": "workspace",
+    "exit_code": 0,
+    "tests": 11,
+    "command": [
+      "/workspace/.integration-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "BACKEND/tests/workspace",
+      "-p",
+      "test_workspace.py",
+      "-v"
+    ]
+  },
+  {
+    "name": "accounting_army_staff_check",
+    "exit_code": 0,
+    "tests": 17,
+    "command": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/accounting_army_staff_check.py"
+    ]
+  },
+  {
+    "name": "campaigns",
+    "exit_code": 0,
+    "tests": 18,
+    "command": [
+      "/workspace/.integration-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "BACKEND/tests/workspace",
+      "-p",
+      "test_campaigns.py",
+      "-v"
+    ]
+  },
+  {
+    "name": "accounting_army_http_check",
+    "exit_code": 0,
+    "tests": 5,
+    "command": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/accounting_army_http_check.py"
+    ]
+  }
+]

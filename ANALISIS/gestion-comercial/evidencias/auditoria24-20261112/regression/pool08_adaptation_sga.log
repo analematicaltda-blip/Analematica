@@ -1,0 +1,22 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_anamorphic_video_respects_display_aspect (__main__.Checks.test_anamorphic_video_respects_display_aspect) ... ok
+test_crop_explicit_upscale_and_center_pixels (__main__.Checks.test_crop_explicit_upscale_and_center_pixels) ... ok
+test_decoder_or_audit_failure_does_not_append (__main__.Checks.test_decoder_or_audit_failure_does_not_append) ... ok
+test_existing_public_version_is_not_replaced_by_adaptation (__main__.Checks.test_existing_public_version_is_not_replaced_by_adaptation) ... ok
+test_existing_revision_limit_cannot_be_bypassed_by_adaptation (__main__.Checks.test_existing_revision_limit_cannot_be_bypassed_by_adaptation) ... ok
+test_image_profiles_real_dimensions_and_original_unchanged (__main__.Checks.test_image_profiles_real_dimensions_and_original_unchanged) ... ok
+test_invalid_contracts_stale_source_and_wrong_kind_never_append (__main__.Checks.test_invalid_contracts_stale_source_and_wrong_kind_never_append) ... ok
+test_output_limit_and_quota_fail_without_new_version (__main__.Checks.test_output_limit_and_quota_fail_without_new_version) ... ok
+test_real_mp4_profiles_keep_mute_and_subtitle_policy (__main__.Checks.test_real_mp4_profiles_keep_mute_and_subtitle_policy) ... ok
+test_revoked_real_identity_cannot_adapt_or_read (__main__.Checks.test_revoked_real_identity_cannot_adapt_or_read) ... ok
+test_same_request_cannot_change_profile_and_source_review_is_invalidated (__main__.Checks.test_same_request_cannot_change_profile_and_source_review_is_invalidated) ... ok
+test_source_changed_during_processing_is_not_committed (__main__.Checks.test_source_changed_during_processing_is_not_committed) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 20.248s
+
+OK

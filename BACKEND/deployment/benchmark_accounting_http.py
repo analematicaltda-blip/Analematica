@@ -32,7 +32,7 @@ def run(samples=10,clients=1,*,combined_context=False):
     if type(samples) is not int or not 5<=samples<=100 or type(clients) is not int or not 1<=clients<=min(8,samples):raise ValueError('Use5..100 samples per flow and1..8 bounded clients.')
     if type(combined_context) is not bool:raise ValueError('Explicit context mode required.')
     if 'django' in sys.modules:raise ValueError('Use a fresh process and disposable fixture.')
-    spec=importlib.util.spec_from_file_location('quality',ROOT/'INTEGRACIONES/operacion/verify_local.py');quality=importlib.util.module_from_spec(spec);spec.loader.exec_module(quality);before=quality.digest(quality.source_manifest())
+    spec=importlib.util.spec_from_file_location('quality',Path(__file__).resolve().parents[2] / 'BACKEND/INTEGRACIONES/operacion/verify_local.py');quality=importlib.util.module_from_spec(spec);spec.loader.exec_module(quality);before=quality.digest(quality.source_manifest())
     with tempfile.TemporaryDirectory(prefix='acc023-http-') as directory,tempfile.TemporaryFile() as diagnostics:
         private=Path(directory);private.chmod(0o700)
         env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','ACCOUNTING_HTTP_BENCHMARK_SERIAL':'1','LEDGER_BROWSER':'1','CORPORATE_LEDGER_COMBINED_CONTEXT_ENABLED':'1' if combined_context else '0'}

@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "checks": 12,
+  "real_browser": true,
+  "real_webcrypto": true,
+  "before_bug_reproduced": 3,
+  "after_bug_prevented": 3,
+  "results": [
+    {
+      "folder": "SGA-CD-WEB.git",
+      "version": "before",
+      "editor_sha256": "6bcf97b11a5bb446a7c6625135332a0ae1398e40a42786ac87eea567790f02be",
+      "late_plaintext_reappeared": true,
+      "password_cleared": true
+    },
+    {
+      "folder": "SGA-CD-WEB.git",
+      "version": "after",
+      "editor_sha256": "8632251aa05cb7b5d7c1b8d08018e29a496cebaedde4432ee44e14fc55f33b7d",
+      "late_plaintext_reappeared": false,
+      "password_cleared": true
+    },
+    {
+      "folder": "ANALEMATICA-FRONTEND",
+      "version": "before",
+      "editor_sha256": "a028e15f0dd149e50aecaf179932cafabd9b2a8eb464c54c123a044b8b885336",
+      "late_plaintext_reappeared": true,
+      "password_cleared": true
+    },
+    {
+      "folder": "ANALEMATICA-FRONTEND",
+      "version": "after",
+      "editor_sha256": "471e8aeb36b5c842f00bd8e00a1661c2ed7d9cc44aed28984d9b28630d9b5b2b",
+      "late_plaintext_reappeared": false,
+      "password_cleared": true
+    },
+    {
+      "folder": "SGA-ERP-TUR-FRONTEND/public",
+      "version": "before",
+      "editor_sha256": "4285fa545ce6ab974a016859e941ec86684adbedd74ede29575f291ebebdcbcb",
+      "late_plaintext_reappeared": true,
+      "password_cleared": true
+    },
+    {
+      "folder": "SGA-ERP-TUR-FRONTEND/public",
+      "version": "after",
+      "editor_sha256": "bf86a6d1d7aab154918fdb75eae0d71c6a7ac449300e3822afe1d3b7bc7c0281",
+      "late_plaintext_reappeared": false,
+      "password_cleared": true
+    }
+  ],
+  "scope": "Lifecycle comparison using original editor bytes from verified local source archive versus corrected own editors. Service workers blocked for this comparison; offline installation/reload tested separately in75-check regression.",
+  "production_ready": false
+}

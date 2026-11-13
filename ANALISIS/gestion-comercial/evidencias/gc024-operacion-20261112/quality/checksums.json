@@ -1,0 +1,12 @@
+{
+  "source-manifest.json": "eeaff800f0163d1828f5bd28198b6a8bc9db0107349f659e454738525d637366",
+  "commercial_gate.log": "0e0ce5e5b88016b4f122902cb722e2398b958cb0b2cfdbab2e7c2cf27b6db347",
+  "offline_asset_regression.log": "b4b9a0dbd18cfc919c5d7a0d8efa09c6b0db113566b67b9e0f5427ddc4293768",
+  "pool08_operations_http.log": "e5616a0bf1f8742b16a084275d59f68343f63303ba88c654e7cad3110c294466",
+  "report.json": "8112e57d77a1cd4df58c4d35c3b4cdbc760e4f228cb5adc0422807556d6d7466",
+  "pool08_operations_native.log": "1dff37510282a73ab88719532f9082fa1ae0d023e32a074ed96726e9535378bf",
+  "pool08_recovery_native.log": "f77ec2e620fe32e252e983062db34c0f4038ee5ccb3e2736d19549c6234330d4",
+  "pool08_offline_browser.log": "c0bc1ab67d9bd1649e14348e75fa009b41373890eae00d5c22e25eaee3045f4d",
+  "pool08_operations_sga.log": "11231419c50710b68aeb2836c1c3614c5d2d0e6989a2a9f85a144e84122bb6f8",
+  "pool08_recovery_sga.log": "dc8de7f109cc3b7206552f041f48c02e92d118b27752ba1db2a9a7b01cabdc21"
+}

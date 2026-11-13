@@ -1,0 +1,76 @@
+{
+  "task": "GC-002",
+  "plan_step": 1,
+  "date_colombia": "2026-11-12",
+  "verified_task_ids": [
+    "GC-002"
+  ],
+  "accepted_task_ids": [],
+  "accepted_milestones": [
+    "GCH-004"
+  ],
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "functional_scope_complete": true,
+  "tests_complete": false,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "functionality": [
+    "APIs propias y pantalla administrativa en los tres CRM, autenticadas por roles/empresa nativos vigentes.",
+    "Asignación limitada al techo del rol, revocación efectiva, revisiones optimistas, historial y recibos idempotentes; sin roles comunes ni privilegios de billetera.",
+    "Consentimiento ligado atómicamente a contacto/revisión/canal/finalidad/soporte/vigencia presentes en CRM; no autentica la evidencia ni autoriza envíos.",
+    "Referencias externas explícitas por sistema, empresa y cuenta; revocables, sin inferir igualdad de IDs ni conceder acceso remoto.",
+    "Recuperación tras respuesta perdida y recarga con metadatos mínimos por sistema/empresa/actor; el navegador no conserva soportes ni cuerpos de comandos."
+  ],
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso1-20261112/quality/report.json",
+    "sha256": "e759ba138320c2a3f25fe0d987ffc8e75f179304c9dbb101edc7ac9c97cc9ec1",
+    "tests": 183,
+    "suites": 10,
+    "source_stable": true,
+    "source_digest": "d73b04c5355890b75341d0db3a96a9be148776d9fd00dbc2103c9e3a90e81f4e"
+  },
+  "browser": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso1-20261112/browser/report.json",
+    "sha256": "6610c1f3449248b609c5a5af987c8aebe87d7d3954e51ca397744041b9d20009",
+    "checks": 156,
+    "targets": 4,
+    "widths": [
+      1280,
+      390,
+      320
+    ],
+    "actual_http": true,
+    "real_provider_actions": false,
+    "physical_devices_qualified": false
+  },
+  "crm_browser_regression": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso1-20261112/crm-browser/report.json",
+    "sha256": "13d932d1c37ebf01852cb0f5231282e995b632f95a4307a4ce5d4dccd6b4c20a",
+    "checks": 88
+  },
+  "pending": [
+    "Paso 2/GCH-005: cualificación exhaustiva de caducidad, cambios de roles/propietario, fallos/concurrencia y todas las operaciones administrativas desde cada interfaz. Las regresiones ejecutadas en paso 1 son evidencia de desarrollo, no aceptación de ese siguiente hito.",
+    "Paso 3/GCH-006: usuarios y políticas de autorización/consentimiento legítimos y revisados; el usuario indicó que no dispone de ese conjunto.",
+    "Sin aceptación productiva, revisión jurídica ni PostgreSQL/dispositivos físicos cualificados. La autenticidad de referencias externas y soportes no se deduce del registro local."
+  ],
+  "git": {
+    "commit_created": false,
+    "push_performed": false,
+    "main_updated": false
+  },
+  "prior_followups_preserved": 79,
+  "prior_followups_manifest": "ANALISIS/gestion-comercial/evidencias/gc002-paso1-20261112/prior-followups.json",
+  "credited_milestones_before": 35,
+  "credited_milestones_after": 36,
+  "total_milestones": 72,
+  "credited_milestone_percent": "50.00",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null,
+  "implementation_measurement_note": "Crédito de hitos; no es porcentaje de producción ni se ha completado la revisión de toda la base.",
+  "entry": "followups.gc002_step1_identity_administration_20261112",
+  "entry_sha256": "4a438d33d91347befbaf7eff39eae618adcfbded1e714e88a9b0e477ebf931d0"
+}

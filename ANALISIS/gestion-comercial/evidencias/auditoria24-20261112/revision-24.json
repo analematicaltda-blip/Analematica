@@ -1,0 +1,2004 @@
+{
+  "schema": "commercial24-review-v1",
+  "plan_sha256": "de9e2a4e6cb2b4f826956212c77e8abe987c0549cee31c2194f2024cff97356d",
+  "source_digest_current": "1dd13bc36be5f9c013ee5e7281e12f026e294866ba03fa91b72fb5720729fa37",
+  "progress": {
+    "tasks": 24,
+    "milestones": 72,
+    "fully_accepted_tasks": 1,
+    "accepted_task_ids": [
+      "GC-001"
+    ],
+    "completed_milestones": 35,
+    "completed_milestone_ids": [
+      "GCH-001",
+      "GCH-002",
+      "GCH-003",
+      "GCH-007",
+      "GCH-008",
+      "GCH-010",
+      "GCH-011",
+      "GCH-013",
+      "GCH-014",
+      "GCH-016",
+      "GCH-017",
+      "GCH-019",
+      "GCH-020",
+      "GCH-028",
+      "GCH-029",
+      "GCH-031",
+      "GCH-032",
+      "GCH-034",
+      "GCH-035",
+      "GCH-043",
+      "GCH-044",
+      "GCH-046",
+      "GCH-047",
+      "GCH-049",
+      "GCH-050",
+      "GCH-052",
+      "GCH-053",
+      "GCH-055",
+      "GCH-056",
+      "GCH-061",
+      "GCH-062",
+      "GCH-064",
+      "GCH-065",
+      "GCH-067",
+      "GCH-068"
+    ],
+    "credited_milestone_percent": "48.61",
+    "production_enabled": false,
+    "meaning": "Explicitly accepted milestones of this scope, not a production readiness or code-volume percentage."
+  },
+  "tasks": [
+    {
+      "id": "GC-001",
+      "title": "Contratos, capacidades y DAG POOL-08",
+      "declared_state": "COMPLETADA",
+      "milestones": [
+        {
+          "id": "GCH-001",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-002",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-003",
+          "stage": "A",
+          "state": "VERIFICADO"
+        }
+      ],
+      "full_acceptance_evidenced": true,
+      "scope_still_pending": "Sin pendientes del contrato/API y DAG definidos para GC-001. Las funciones de negocio y proveedores permanecen en las tareas correspondientes.",
+      "external_requirements": [],
+      "dependencies_without_full_acceptance": [],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/contract.py",
+          "present": true,
+          "sha256": "4e7c15929e65398d45b00c64632af17bf91afe5f92e58dfba47e2be638a9a6b3"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/contract.py",
+          "present": true,
+          "sha256": "72e8943a59b98dea5de21a864c19df3145b5d585cd8cf114b14bb8664b67094a"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/contract.py",
+          "present": true,
+          "sha256": "6dd706b1ac106872856206352f6e050957bdbc107dadbe12404ec57a8148b49c"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_contract",
+          "state": "PASSED",
+          "log_sha256": "d6e7e480aeef306a2824da84279480dff9fa0a7f3577f9dc682d5923d299f535"
+        },
+        {
+          "id": "pool08_native_http",
+          "state": "PASSED",
+          "log_sha256": "8cd2fb9824bc18dbcb7ee6f9ab039105cbf13ceaa4a3a633172cf7fe9bfb7756"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-002",
+      "title": "Identidad empresarial, roles, permisos y consentimientos",
+      "declared_state": "PENDIENTE_DE_NIVELACION",
+      "milestones": [
+        {
+          "id": "GCH-004",
+          "stage": "F",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-005",
+          "stage": "T",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-006",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Pendiente de desarrollo: APIs e interfaz propias de administración de permisos/consentimientos, mapeo explícito de identidades entre sistemas y fuente revisada de consentimientos. Existen controles de acceso usados por los módulos; no constituyen cierre del recorrido de administración. Preservar roles nativos distintos y exclusión de Turismo Nacional institucional. Aceptación con usuarios y políticas revisadas pendiente.",
+      "external_requirements": [
+        "Usuarios y políticas de autorización revisados para aceptación final."
+      ],
+      "dependencies_without_full_acceptance": [],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm.py",
+          "present": true,
+          "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm.py",
+          "present": true,
+          "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm.py",
+          "present": true,
+          "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_contract",
+          "state": "PASSED",
+          "log_sha256": "d6e7e480aeef306a2824da84279480dff9fa0a7f3577f9dc682d5923d299f535"
+        },
+        {
+          "id": "pool08_native_http",
+          "state": "PASSED",
+          "log_sha256": "8cd2fb9824bc18dbcb7ee6f9ab039105cbf13ceaa4a3a633172cf7fe9bfb7756"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-003",
+      "title": "CRM común de prospectos, contactos y clientes",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-007",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-008",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-009",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación de uso con muestras consentidas y cierre de revisión de usuarios/políticas GC-002. Las migraciones se validaron solo en SQLite desechable; habilitación de servidor, datos históricos y producción requieren su cualificación.",
+      "external_requirements": [
+        "Muestras de clientes consentidas para aceptación de uso."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm.py",
+          "present": true,
+          "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm.py",
+          "present": true,
+          "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm.py",
+          "present": true,
+          "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_crm_browser",
+          "state": "PASSED",
+          "log_sha256": "e8e169decf8043debe96d8da0dc9dd1710878be10ceb87137b25789ff0232e9e"
+        },
+        {
+          "id": "pool08_crm_recovery_browser",
+          "state": "PASSED",
+          "log_sha256": "4ba5a9bd32a25f22709e2bb533fd0cc57e3b95d483352750884d25f72ac0fd1b"
+        },
+        {
+          "id": "pool08_crm_http",
+          "state": "PASSED",
+          "log_sha256": "92d6a2e3d968ff1d47e9c52526d810c2685ddf44159de24650e30c0e630e1e06"
+        },
+        {
+          "id": "pool08_crm_native",
+          "state": "PASSED",
+          "log_sha256": "359e572a359f0940338ace3667c275d917bc2a40834ce63c7574e979e32ff14c"
+        },
+        {
+          "id": "pool08_crm_sga",
+          "state": "PASSED",
+          "log_sha256": "af1dea9c8d0e294ccc99a738104abd34661a91069578156ed9a10cc431269cb4"
+        },
+        {
+          "id": "pool08_crm_domain",
+          "state": "PASSED",
+          "log_sha256": "1f82c56643a77ef9e7045f4e772ef692e6a8f07c865bdf3c5e66f4f515ef96d2"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-004",
+      "title": "Oportunidades, embudo, seguimiento y scoring",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-010",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-011",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-012",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación integral pendiente: dataset consentido y evaluación para scoring predictivo; validación con usuarios/datos y dependencias GC-002/GC-003. La prioridad por reglas se declara no calibrada; migración histórica y PostgreSQL/concurrencia productiva sin cualificar.",
+      "external_requirements": [
+        "Dataset consentido y evaluación para scoring predictivo."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/opportunities.py",
+          "present": true,
+          "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/opportunities.py",
+          "present": true,
+          "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/opportunities.py",
+          "present": true,
+          "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_opportunities_native",
+          "state": "PASSED",
+          "log_sha256": "25c6c04ad99cace4808fe3d95b0cfd28ff7a6a72f4d5b7444b51a9aea5d61b67"
+        },
+        {
+          "id": "pool08_opportunities_sga",
+          "state": "PASSED",
+          "log_sha256": "559fdbe4840f1ef17c5eacdd8aa3cea70d852ea11a8acf663c60d6bf06eb14c5"
+        },
+        {
+          "id": "pool08_opportunities_http",
+          "state": "PASSED",
+          "log_sha256": "873ec2e5527dde0b53add6fae9a224a9681c9782105ddc39cd3e6601b829e05c"
+        },
+        {
+          "id": "pool08_opportunities_browser",
+          "state": "PASSED",
+          "log_sha256": "1ca2dfe07cc3f8a354bd6f20badd53fd1cb365d30e17585fb3e99d3f42f33103"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-005",
+      "title": "Catálogo, tarifas, descuentos e impuestos de oferta",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-013",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-014",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-015",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación integral pendiente: precios/condiciones/soportes legítimos y revisión tributaria profesional; usuarios y políticas de GC-002, revisión de migración histórica y cualificación productiva. El cálculo actual es estimación comercial y no acredita factura, pago ni aceptación fiscal.",
+      "external_requirements": [
+        "Precios/condiciones legítimos y revisión tributaria."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/pricing.py",
+          "present": true,
+          "sha256": "727c6b46196bb7e17dc6893ca5d43e31238e55a8e250580b53a98cf118faeda7"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/pricing.py",
+          "present": true,
+          "sha256": "727c6b46196bb7e17dc6893ca5d43e31238e55a8e250580b53a98cf118faeda7"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/pricing.py",
+          "present": true,
+          "sha256": "727c6b46196bb7e17dc6893ca5d43e31238e55a8e250580b53a98cf118faeda7"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_pricing_native",
+          "state": "PASSED",
+          "log_sha256": "7df2dc0ed7141c389c269bce7500a994fdd30969d571643459cdcf6939c08346"
+        },
+        {
+          "id": "pool08_pricing_sga",
+          "state": "PASSED",
+          "log_sha256": "e4a09eb2cbc95a959c358c08aefab780de76a7205f982c919438ff72cd44d525"
+        },
+        {
+          "id": "pool08_pricing_http",
+          "state": "PASSED",
+          "log_sha256": "32d8e73c01b21e5a97a5014e9979bf530cc8ad93146b5e416db850eeafee3c74"
+        },
+        {
+          "id": "pool08_pricing_browser",
+          "state": "PASSED",
+          "log_sha256": "39b528169a81ad02e507200628ab61f717b391aaf6fcd2c7f8178112dae37bc1"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-006",
+      "title": "Cotizaciones dinámicas, vigencia y aceptación",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-016",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-017",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-018",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación integral pendiente: condiciones/precios legítimos aprobados por empresa y revisión de aceptación/entrega al destinatario; dependencias GC-004/GC-005 y cualificación productiva de custodia/rotación, infraestructura, datos/concurrencia y restauración. La aceptación actual acredita posesión del enlace, no identidad verificada ni pago/reserva.",
+      "external_requirements": [
+        "Condiciones comerciales aprobadas por cada empresa."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-004",
+        "GC-005"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotations.py",
+          "present": true,
+          "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotations.py",
+          "present": true,
+          "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotations.py",
+          "present": true,
+          "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_quotations_native",
+          "state": "PASSED",
+          "log_sha256": "8ddc9853a408fb265c721839cf13f1f3bc766a90400baff1bf85e44b46237271"
+        },
+        {
+          "id": "pool08_quotations_sga",
+          "state": "PASSED",
+          "log_sha256": "3e77151b7d84db61038e77fcee65c9284f767b72bbb831a57a25568aea4e4292"
+        },
+        {
+          "id": "pool08_quotations_http",
+          "state": "PASSED",
+          "log_sha256": "238865742b66d69efa542e0cd09546b97b18e523f33d77ae301c554caf3c0738"
+        },
+        {
+          "id": "pool08_quotations_browser",
+          "state": "PASSED",
+          "log_sha256": "5ccd6cd62f013888e4691f18bd225cd662e433ecd4b0672298829ba17f8169cc"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-007",
+      "title": "Venta confirmada, operación y contabilidad",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-019",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-020",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-021",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Flujo local de confirmación, operación, outbox/asiento y recuperación acreditado por su evidencia F/T. Pendientes aceptación de condiciones/soportes y reglas contables/laborales por actividad, identidad GC-002 y cualificación productiva/concurrencia. Factura DIAN y custodia auténticas pertenecen a sus integraciones; venta confirmada no acredita cobro.",
+      "external_requirements": [
+        "Revisión contable/laboral según actividad; DIAN y custodia reales para aceptación fiscal/documental."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-006"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales.py",
+          "present": true,
+          "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales.py",
+          "present": true,
+          "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales.py",
+          "present": true,
+          "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_sales_native",
+          "state": "PASSED",
+          "log_sha256": "25c46964e7be8dd517c0a376c56ba8c1a5c82894a55d2d6ce2aaf85202d1dba5"
+        },
+        {
+          "id": "pool08_sales_http",
+          "state": "PASSED",
+          "log_sha256": "5c11e3893d524e2f71107f4a1b7d710057e522a48caf43e264fe50d9f17798e2"
+        },
+        {
+          "id": "pool08_sales_source",
+          "state": "PASSED",
+          "log_sha256": "afb8f0a7e8451d079c0ff3499252ea89c43ba4b1ceed393f9813194ec3b2ffc6"
+        },
+        {
+          "id": "pool08_sales_saga",
+          "state": "PASSED",
+          "log_sha256": "0df3414845d7230a098d6fa198ceb53ce94d861dd172030e157914edfdcf3e10"
+        },
+        {
+          "id": "pool08_sales_saga_http",
+          "state": "PASSED",
+          "log_sha256": "b3dc11b3df020d8fbf6c501c11c6b1328815288a1112bc3876761e549cedaa58"
+        },
+        {
+          "id": "pool08_sales_bridge",
+          "state": "PASSED",
+          "log_sha256": "4c979c0d06f0e9e2109df48cae7f69ac5d403754045b4cfe404fe744e7390b47"
+        },
+        {
+          "id": "pool08_sales_labor",
+          "state": "PASSED",
+          "log_sha256": "bc7dc28626a76f26a3cbf5674611a644724a1b4d23c41b715054d15061f73272"
+        },
+        {
+          "id": "pool08_sales_browser",
+          "state": "PASSED",
+          "log_sha256": "e792b851b52a26d5940b6201d5eee48c042ba371ea38abf63c5d63fdeb7969fc"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-008",
+      "title": "Bold: checkout, intención de pago y confirmación",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-022",
+          "stage": "F",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-023",
+          "stage": "T",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-024",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Checkout e intenciones locales parciales, con importes canónicos y estados diferenciados. Pendiente de desarrollo: verificador del acuse Bold según contrato auténtico, consulta de estado del proveedor y conciliación/liquidación enlazada al asiento. Pendiente externo: contrato/accesos sandbox y acuses auténticos configurados por canal seguro. Retorno del navegador, hash declarado o enlace creado no prueban dinero.",
+      "external_requirements": [
+        "Acceso Bold de pruebas y contrato/firmas/acuses legítimos por canal seguro."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-007"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/payments.py",
+          "present": true,
+          "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/payments.py",
+          "present": true,
+          "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/payments.py",
+          "present": true,
+          "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_payments_gateway",
+          "state": "PASSED",
+          "log_sha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371"
+        },
+        {
+          "id": "pool08_payments_native",
+          "state": "PASSED",
+          "log_sha256": "1b517c1033dd1937ad06a3ea674faa4f7864899a95d6eb7c77973b42843fceda"
+        },
+        {
+          "id": "pool08_payments_sga",
+          "state": "PASSED",
+          "log_sha256": "efd7654a1ee588dacc3e2c93b6f974a097bf41d7bcfd7266a29709f4f04c1a4b"
+        },
+        {
+          "id": "pool08_payments_legacy",
+          "state": "PASSED",
+          "log_sha256": "dec5673ee7ead0e86a249ea046dba60aab31a8206a43fedeb035ab8449b4e26d"
+        },
+        {
+          "id": "pool08_payments_http",
+          "state": "PASSED",
+          "log_sha256": "5a9600f7c3770ec446ea28fdaf56f7333e7dbb065f7f5a904eb1d000c1fb5c80"
+        },
+        {
+          "id": "pool08_payments_browser",
+          "state": "FAILED",
+          "log_sha256": "07b4087845f076f33cf6eb009a95ac8166c5910457603cb577d9c350f5858ded"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": [
+        {
+          "id": "pool08_payments_lifecycle",
+          "state": "PASSED",
+          "log_sha256": "b5c0a3f802bbe6f8be91ae1421efb5703e3ec2422b7771df150a8306191bf3d3"
+        },
+        {
+          "id": "pool08_payments_gateway",
+          "state": "PASSED",
+          "log_sha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371"
+        },
+        {
+          "id": "pool08_payments_native",
+          "state": "PASSED",
+          "log_sha256": "1ece4ce476261174bb0c0f06b41a3a1bf906682f8112e29a68b68c4d8274812d"
+        },
+        {
+          "id": "pool08_payments_sga",
+          "state": "PASSED",
+          "log_sha256": "bc811a155f895e0e3c445ec5c351c15c49e99871794d1343b4136a51436274b9"
+        },
+        {
+          "id": "pool08_payments_legacy",
+          "state": "PASSED",
+          "log_sha256": "ad61be9b74efb8a4b8ae7d0427622d79c722d44dc55c2f4aeb51140568dfc278"
+        },
+        {
+          "id": "pool08_payments_http",
+          "state": "PASSED",
+          "log_sha256": "7ffc3b7cb0ad920ed7f2c167df3bcdf11568e2a345cb507d841499d9755944b9"
+        },
+        {
+          "id": "pool08_payments_browser",
+          "state": "PASSED",
+          "log_sha256": "e48bc659b8a9d3dab6d038cae7f3c2638c0bba950ffed331cb7efdf6125e7d6a"
+        }
+      ]
+    },
+    {
+      "id": "GC-009",
+      "title": "Cancelaciones, retención, devoluciones y posventa",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-025",
+          "stage": "F",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-026",
+          "stage": "T",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-027",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Políticas versionadas y reembolso financiado interno parcial disponibles. Pendiente de desarrollo: vinculación verificable CRM/contacto/venta/reserva/destinatario, cancelación efectiva completa, recorrido de firma y fidelización integral. El reembolso bancario depende del cierre GC-008 y del proveedor. Pendientes políticas legítimas y aceptación de usuarios; el acceso personal a billetera no exige afiliación turística.",
+      "external_requirements": [
+        "Políticas aprobadas y validación del proveedor para devolución bancaria real."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-007",
+        "GC-008"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_bridge.py",
+          "present": true,
+          "sha256": "b1676c90c01bc1b353c6230832a7e0feb1687906e485f26e098a334d84ec6689"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/after_sales.py",
+          "present": true,
+          "sha256": "2e35c59eaa33a5d535e0eec207c73da7338470fb99bcf5cb8e2fd8bc04762e9e"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/after_sales.py",
+          "present": true,
+          "sha256": "2e35c59eaa33a5d535e0eec207c73da7338470fb99bcf5cb8e2fd8bc04762e9e"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_after_sales_native",
+          "state": "PASSED",
+          "log_sha256": "1fd774144d8af7ed2fdeca08790b3f4f34f621e1f9e585bc0858f5d98f28bb5c"
+        },
+        {
+          "id": "pool08_after_sales_wallet",
+          "state": "PASSED",
+          "log_sha256": "6859c425517fc002516489778ba428f520220294c64583fb9ff89e364e0f798b"
+        },
+        {
+          "id": "pool08_after_sales_sga_http",
+          "state": "PASSED",
+          "log_sha256": "7c3888f84a676eafd107666f8b81c6b442cb81e1cf8c643352464bb74871d90e"
+        },
+        {
+          "id": "pool08_after_sales_browser",
+          "state": "PASSED",
+          "log_sha256": "2e08b6bd83f04577f0ffe63cad2912e54724ae2ef28d1255c7f54c103846b958"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-010",
+      "title": "Constructor de landing pages propias de empresa/prestador",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-028",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-029",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-030",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Constructor, versiones, previsualización, aprobación/publicación y retirada locales acreditados F/T. Pendientes aceptación de titulares/roles GC-002, revisión del contenido y cualificación de datos históricos, concurrencia y despliegue. Dominio/DNS/TLS y autorización si se usa dominio propio.",
+      "external_requirements": [
+        "Dominio/DNS/TLS y autorización del titular si se usa dominio propio."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002",
+        "GC-005"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landings.py",
+          "present": true,
+          "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landings.py",
+          "present": true,
+          "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landings.py",
+          "present": true,
+          "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_landings_domain",
+          "state": "PASSED",
+          "log_sha256": "0df379c869223ab06f1682dc9babb1e5210c8233ecffe9b2fd318b1d9f99bcdc"
+        },
+        {
+          "id": "pool08_landings_native",
+          "state": "PASSED",
+          "log_sha256": "d598d1be1f64f86e46b7a3b61b69b93fd6011293fc5c46f085a788074af93f59"
+        },
+        {
+          "id": "pool08_landings_sga",
+          "state": "PASSED",
+          "log_sha256": "a82af2dcfa4d70867a1e4983f8370f036f31c879a3f87d3af0b0d056ebcf29ec"
+        },
+        {
+          "id": "pool08_landings_http",
+          "state": "PASSED",
+          "log_sha256": "d6774613bdec12e563ed71819e2d8c45a5bf4d2505936c12ac39d477fefe8949"
+        },
+        {
+          "id": "pool08_landings_browser",
+          "state": "PASSED",
+          "log_sha256": "bc6cea725b2b1f29c5b5c21d3a9be38efd7fa4ea8183fc72c8680ab738177b7a"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-011",
+      "title": "Landing: formularios, captación, SEO y atribución CRM",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-031",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-032",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-033",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Captación local enlazada al CRM, origen canónico, consentimiento, baja, antispam, SEO y métricas de envíos aceptados acreditados F/T. Pendientes contenido/políticas de publicación legítimos, aceptación de titulares, retención y despliegue. No acredita titularidad del email, autorización de campañas, métricas de anuncios ni registro institucional/RNT.",
+      "external_requirements": [
+        "Contenido autorizado y reglas de publicación de la empresa."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-010"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landing_capture.py",
+          "present": true,
+          "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landing_capture.py",
+          "present": true,
+          "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landing_capture.py",
+          "present": true,
+          "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_capture_browser",
+          "state": "PASSED",
+          "log_sha256": "51963bdf5dc57031befeaec969f163196d37ff66cd550232a44541af62abf153"
+        },
+        {
+          "id": "pool08_capture_http",
+          "state": "PASSED",
+          "log_sha256": "6877390b12119aca74b81b2a5d20d892635b45a201fd0b4b85c0bbd48adc397f"
+        },
+        {
+          "id": "pool08_capture_native",
+          "state": "PASSED",
+          "log_sha256": "943907ab3337a0cf500e3d61c491df097c405d3163c2f71b4a6fe7670b8bcf69"
+        },
+        {
+          "id": "pool08_capture_sga",
+          "state": "PASSED",
+          "log_sha256": "1a7750b134b3a6bc64ad040bcc37591512de9d29dcd87a69bcfbdbba5605505a"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-012",
+      "title": "Biblioteca multimedia, derechos, marca y activos",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-034",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-035",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-036",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Biblioteca local privada con originales exactos, copias procesadas, versiones, derechos declarados, marca y cuotas acreditada F/T. Pendientes licencias/contenido auténticos revisados, almacenamiento autorizado, política de retención y protección en reposo, restauración y cualificación PostgreSQL/concurrencia/decodificadores en infraestructura objetivo. Plantillas actuales son composición de vista previa, no exportación renderizada.",
+      "external_requirements": [
+        "Derechos/licencias de activos y destino de almacenamiento autorizado."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/media_library.py",
+          "present": true,
+          "sha256": "9c06819f21c65953204b5268ba445a61a8996ae3d7f2cdcb9e6486a1849b7b6a"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/media_library.py",
+          "present": true,
+          "sha256": "9c06819f21c65953204b5268ba445a61a8996ae3d7f2cdcb9e6486a1849b7b6a"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/media_library.py",
+          "present": true,
+          "sha256": "9c06819f21c65953204b5268ba445a61a8996ae3d7f2cdcb9e6486a1849b7b6a"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_library_native",
+          "state": "PASSED",
+          "log_sha256": "de26774438970a1efab33ea216182a722d8b96af3447d386d207aee5bf5e255d"
+        },
+        {
+          "id": "pool08_library_sga",
+          "state": "PASSED",
+          "log_sha256": "40ea26bd97627a49dc5f8e4e1b67a5f8096014c5c4e558b1a2bb7124300bd933"
+        },
+        {
+          "id": "pool08_library_sanitize",
+          "state": "PASSED",
+          "log_sha256": "0438a0a8204f1e17660706d82c5524dd9682908b19fd17d058fe362fe2688df3"
+        },
+        {
+          "id": "pool08_library_http",
+          "state": "PASSED",
+          "log_sha256": "1eb4f9fd10a59c79c10c83a6fbe1512360a454b1077be23a8be42394a93af79c"
+        },
+        {
+          "id": "pool08_library_browser",
+          "state": "PASSED",
+          "log_sha256": "4f7887f18074c51cf5e6c499356296eb6be16ef45bc3db0a2889b49a857977c1"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-013",
+      "title": "Generación de guiones, textos e imágenes",
+      "declared_state": "PENDIENTE_DE_NIVELACION",
+      "milestones": [
+        {
+          "id": "GCH-037",
+          "stage": "F",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-038",
+          "stage": "T",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-039",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Incremento parcial existente: perfiles/adaptadores de texto e imagen, trabajos asíncronos persistentes, cuotas/coste declarado, derechos, revisión y resultados privados. Se incorporaron sus pruebas nativas/SGA/HTTP al perfil integral de auditoría. Pendientes recorrido navegador-trabajador completo, arranque/despliegue independiente, tipos ERP, inferencia auténtica Ollama/generador de imágenes y revisión de licencias/calidad/privacidad/costos. No se acredita F/T por incremento parcial ni inferencia mediante transporte controlado.",
+      "external_requirements": [
+        "Modelo local/hardware o proveedor aprobado; presupuesto y datos de evaluación."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/generation.py",
+          "present": true,
+          "sha256": "e384ff920d49ce154b9c73add6529a2f237370e6e9ff5defdd86372872d8b0d6"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/generation.py",
+          "present": true,
+          "sha256": "e384ff920d49ce154b9c73add6529a2f237370e6e9ff5defdd86372872d8b0d6"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/generation.py",
+          "present": true,
+          "sha256": "e384ff920d49ce154b9c73add6529a2f237370e6e9ff5defdd86372872d8b0d6"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_generation_native",
+          "state": "PASSED",
+          "log_sha256": "5e31fd2162853b8414e9cdb8b4d284c049c62fd45c0f73b2343f017488090e45"
+        },
+        {
+          "id": "pool08_generation_sga",
+          "state": "PASSED",
+          "log_sha256": "c5547a3376d682ed1b9022cabe35d6aa24d122b9522e5e9a536f59cae7e3b774"
+        },
+        {
+          "id": "pool08_generation_http",
+          "state": "PASSED",
+          "log_sha256": "49f3081c5c0bee8ad34426d5835c96b02a91da557a194eb40336f0095c93b87f"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-014",
+      "title": "Creación de videos, Reels, voz y subtítulos",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-040",
+          "stage": "F",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-041",
+          "stage": "T",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-042",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Composición local por marca, MP4, textos temporizados y mezcla desde fuentes MP4 revisadas implementados y probados en los tres backends. Falta completar/calificar el adaptador de vídeo generativo, el arranque independiente del trabajador y el recorrido integral navegador-HTTP-trabajador en destino; derechos y aceptación de contenido reales pendientes.",
+      "external_requirements": [
+        "GPU/modelos/proveedores y derechos de voz/audio para generación real."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012",
+        "GC-013"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/video_composition.py",
+          "present": true,
+          "sha256": "50eb6884d81d77bf2299811c5b6cdd532caa60d27471e7c626c6ef7c3a6ffcb3"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/video_composition.py",
+          "present": true,
+          "sha256": "50eb6884d81d77bf2299811c5b6cdd532caa60d27471e7c626c6ef7c3a6ffcb3"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/video_composition.py",
+          "present": true,
+          "sha256": "50eb6884d81d77bf2299811c5b6cdd532caa60d27471e7c626c6ef7c3a6ffcb3"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_video_native",
+          "state": "PASSED",
+          "log_sha256": "42e8328f6b8d891a0e99ca33858e3fdba68796452110dfae5f2a0fd052f92322"
+        },
+        {
+          "id": "pool08_video_sga",
+          "state": "PASSED",
+          "log_sha256": "f18642b09e9902b6a1fc8ad83c12252a2535d21c36024a2c662bd005c6d92aa5"
+        },
+        {
+          "id": "pool08_video_http",
+          "state": "PASSED",
+          "log_sha256": "626588789f1cf25f6722d17c9048de96281b1f6cf3feb030c51b9825954fb65d"
+        },
+        {
+          "id": "pool08_video_browser",
+          "state": "PASSED",
+          "log_sha256": "966a70f6449360035c5760898cfa2188986192bbccc08086725436001aabc01e"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-015",
+      "title": "Tamaños y formatos de imágenes, videos y Reels",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-043",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-044",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-045",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Perfiles locales 1.0 y adaptaciones reales de imagen/vídeo implementados y verificados en los tres sistemas: crop/pad, ampliación explícita, límites, audio y política de subtítulos, originales intactos y revisión privada. Falta aceptación de perfiles vigentes por red y cualificación en hardware/infraestructura objetivo, contenidos/derechos y usuarios reales.",
+      "external_requirements": [
+        "Perfiles vigentes de cada red; hardware objetivo para rendimiento."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/media_adaptation.py",
+          "present": true,
+          "sha256": "0539aa782cd3d1f1e54747362213a0be6e563013a9d49b53bb81080ac4b9221a"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/media_adaptation.py",
+          "present": true,
+          "sha256": "0539aa782cd3d1f1e54747362213a0be6e563013a9d49b53bb81080ac4b9221a"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/media_adaptation.py",
+          "present": true,
+          "sha256": "0539aa782cd3d1f1e54747362213a0be6e563013a9d49b53bb81080ac4b9221a"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_adaptation_native",
+          "state": "PASSED",
+          "log_sha256": "eb08ada0b18c0600e4d299dbbbee82bb547f58a44738f674febafaf43c0c5933"
+        },
+        {
+          "id": "pool08_adaptation_sga",
+          "state": "PASSED",
+          "log_sha256": "456857a443f526a5aa6c4fd9d3bd261c2953d60581aa95bb891bcd182bd7b468"
+        },
+        {
+          "id": "pool08_adaptation_http",
+          "state": "PASSED",
+          "log_sha256": "f51748a43ee34eac9899366356b886ee21ba8884fcd16744714d40f3eae4670e"
+        },
+        {
+          "id": "pool08_adaptation_browser",
+          "state": "PASSED",
+          "log_sha256": "66d2a44e8481f7b5b8334db9cb27f401bb2b67828915aad0b1cdc2aacb3a32e2"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-016",
+      "title": "Correos masivos y campañas email",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-046",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-047",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-048",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Flujo local implementado y probado: plantillas HTML/texto escapadas, segmentos estáticos CRM, personalización, exclusiones, agenda UTC, cuota, dos confirmaciones, bajas firmadas y recibos por destinatario. SMTP limitado a loopback; faltan remitente/dominio y proveedor/OAuth o relay autorizados, consentimientos legítimos, mapeo/validación de recibos auténticos, reputación y cualificación productiva.",
+      "external_requirements": [
+        "Remitente/dominio autorizado, proveedor/OAuth, cuotas y reputación de envío."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-012",
+        "GC-015"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/email_campaigns.py",
+          "present": true,
+          "sha256": "bfdee0da89141e6b64fea19dcd6be413c46e8e29dd35abaa6d0fd9d19a0716eb"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/email_campaigns.py",
+          "present": true,
+          "sha256": "bfdee0da89141e6b64fea19dcd6be413c46e8e29dd35abaa6d0fd9d19a0716eb"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/email_campaigns.py",
+          "present": true,
+          "sha256": "bfdee0da89141e6b64fea19dcd6be413c46e8e29dd35abaa6d0fd9d19a0716eb"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_email_campaign_browser",
+          "state": "PASSED",
+          "log_sha256": "598a6e5af47430296e3d5bb9bcc1caad029e6d98bb1de3e0527b7a81accfe8fc"
+        },
+        {
+          "id": "pool08_email_campaign_native",
+          "state": "PASSED",
+          "log_sha256": "7e4020c0004d2211841e37f4fce112b9ceffee03da85f7120a8aab3e97483887"
+        },
+        {
+          "id": "pool08_email_campaign_sga",
+          "state": "PASSED",
+          "log_sha256": "c7687235c596f4dc52d8d246e83878579c3131687d8a1a50895d7eeba88b79db"
+        },
+        {
+          "id": "pool08_email_campaign_http",
+          "state": "PASSED",
+          "log_sha256": "4f400522a17062acb5361386d0f45cafa73e33141b31057695957ca67e976663"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-017",
+      "title": "SMS, MMS y mensajería multimedia por WhatsApp",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-049",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-050",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-051",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Código y contratos locales verificados: SMS/MMS/WhatsApp separados, consentimiento por canal, plantilla declarada, multimedia revisada, estimación/límites, confirmaciones y recibos. Falta demostrar capacidades con proveedor real, MMS hacia Colombia, cuenta/plantillas WhatsApp legítimas, firmas nativas/mapeo, costes/cuotas y destinatarios autorizados; no se afirma envío físico ni aceptación productiva.",
+      "external_requirements": [
+        "Proveedor telefónico y soporte MMS en Colombia; cuenta/plantillas WhatsApp y destinatarios autorizados."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-012",
+        "GC-015"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/mobile_messages.py",
+          "present": true,
+          "sha256": "aa0a7eab40550a6dd47d4e812d56b1b4827c14b80e286b8818b6f1adc796b1ad"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/mobile_messages.py",
+          "present": true,
+          "sha256": "aa0a7eab40550a6dd47d4e812d56b1b4827c14b80e286b8818b6f1adc796b1ad"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/mobile_messages.py",
+          "present": true,
+          "sha256": "aa0a7eab40550a6dd47d4e812d56b1b4827c14b80e286b8818b6f1adc796b1ad"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_mobile_native",
+          "state": "PASSED",
+          "log_sha256": "661806554cb0239fc74969005f659029df105fa42f897b8abfe4bb4eff0c94b5"
+        },
+        {
+          "id": "pool08_mobile_sga",
+          "state": "PASSED",
+          "log_sha256": "2d61056927f052980a9b3d26c16e6470dd3672de57cd5e1f51a020ee63b04edd"
+        },
+        {
+          "id": "pool08_mobile_http",
+          "state": "PASSED",
+          "log_sha256": "ac5467a53188d5fe0ebbf21a6efcf578e0205fd4da62d9ac42d0a73746284b38"
+        },
+        {
+          "id": "pool08_mobile_browser",
+          "state": "PASSED",
+          "log_sha256": "12d8c6fa53ed6711b13f896d8945eb191a6a7eb93e02b4448b8a04f72328569d"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-018",
+      "title": "Publicación orgánica y calendario multicanal",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-052",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-053",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-054",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Calendario, APIs/interfaces propias, confirmaciones y etapas de publicación verificados localmente para Facebook foto, Instagram Reel, YouTube vídeo y TikTok vídeo orgánico no patrocinado. Adaptadores probados con transporte simulado, sin publicaciones reales. Pendientes OAuth/cuentas/dominio propios, permisos/aprobación de aplicaciones, cualificación de API/formatos/visibilidad/cuotas y recibos auténticos; aceptación productiva no acreditada.",
+      "external_requirements": [
+        "OAuth, cuentas propias, aprobación de aplicaciones y permisos de publicación."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012",
+        "GC-015"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/publishing.py",
+          "present": true,
+          "sha256": "1166eea291e480b35776f5ab82c626a875f54edbcdeaa74653af50e880a9cbf1"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/publishing.py",
+          "present": true,
+          "sha256": "1166eea291e480b35776f5ab82c626a875f54edbcdeaa74653af50e880a9cbf1"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/publishing.py",
+          "present": true,
+          "sha256": "1166eea291e480b35776f5ab82c626a875f54edbcdeaa74653af50e880a9cbf1"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_publishing_browser",
+          "state": "PASSED",
+          "log_sha256": "b5b80d0cd812ea4c47d90c35a019b9d108a117d6aa27f5014a46a30ef979d1f8"
+        },
+        {
+          "id": "pool08_publishing_http",
+          "state": "PASSED",
+          "log_sha256": "b67d895aec8cd93db308eade2106a0bcba3a65299222248069b2255ef79f37dc"
+        },
+        {
+          "id": "pool08_publishing_native",
+          "state": "PASSED",
+          "log_sha256": "ed9a47a8765879fd35b20b880258b625fa112d5309c9684150fe2bcd5a67c831"
+        },
+        {
+          "id": "pool08_publishing_sga",
+          "state": "PASSED",
+          "log_sha256": "f25197af44f52e8d7dea80792698b928fca37fc0ddad62da9efe136c5642f9b9"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-019",
+      "title": "Bandeja omnicanal y respuestas: mensajes y comentarios",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-055",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-056",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-057",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Hilos, vínculo CRM revisado, asignación, borradores/confirmaciones, respuestas de texto y derivación propios verificados localmente. Firma nativa Meta y lecturas acotadas Gmail/YouTube implementadas con transporte simulado. Faltan puente/cuentas/permisos/webhooks/recibos auténticos y cualificación de APIs; lotes/no-texto, backfill y respuestas anidadas quedan explícitamente fuera del incremento acotado. TikTok sin API cualificada se deriva, sin fingir respuesta.",
+      "external_requirements": [
+        "Permisos/webhooks y alcance de recepción/respuesta de cada proveedor."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-016",
+        "GC-017",
+        "GC-018"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/inbox.py",
+          "present": true,
+          "sha256": "2a28cff37efb826aee3040bd97d33a9c87cdb8e6e768d17d036fc6d01bee4d68"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/inbox.py",
+          "present": true,
+          "sha256": "2a28cff37efb826aee3040bd97d33a9c87cdb8e6e768d17d036fc6d01bee4d68"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/inbox.py",
+          "present": true,
+          "sha256": "2a28cff37efb826aee3040bd97d33a9c87cdb8e6e768d17d036fc6d01bee4d68"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_inbox_browser",
+          "state": "PASSED",
+          "log_sha256": "9ed77ca9562d68717f7db05b5c9b38d1dc8c2965b1b9dd3e1fc13d8c579548c9"
+        },
+        {
+          "id": "pool08_inbox_http",
+          "state": "PASSED",
+          "log_sha256": "9516d264f59708904e05cf5705739024186ece778597208144bc9a4923f10560"
+        },
+        {
+          "id": "pool08_inbox_native",
+          "state": "PASSED",
+          "log_sha256": "20fc055c1f861118a38887156cff9e3cbadcefbba0448fcfa8d8c59b48f46fb1"
+        },
+        {
+          "id": "pool08_inbox_sga",
+          "state": "PASSED",
+          "log_sha256": "271cb2708d29dbe271daf944781ddc92ba1dc6f0c0fb204e99c38abb21a84ed5"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-020",
+      "title": "Anuncios y pauta: Meta, TikTok y Google/YouTube Ads",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-058",
+          "stage": "F",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-059",
+          "stage": "T",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-060",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Incremento parcial implementado/probado en los tres sistemas: planes Meta/TikTok/Google-YouTube, creativos A/B revisados, presupuestos exactos y reservas locales agregadas por empresa, dos confirmaciones, auditoría y propuestas manuales sin aplicación automática. Propuesta para contrato Open Duet/agent-desktop existente, sin permiso ni envío al motor. Faltan ejecución/provisión de campañas/conjuntos/creativos y recibos/métricas auténticos mediante adaptadores o flujo de dispositivo real, vínculo completo con control supervisado y recuperación remota. No se habilita gasto ni se acredita F/T por este incremento parcial.",
+      "external_requirements": [
+        "Cuentas Ads, permisos, facturación y autorización explícita antes de gasto real."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012",
+        "GC-018"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/ads.py",
+          "present": true,
+          "sha256": "754ff4143ce109e4cdc8d34a6cc79eb8b2ccd25f80a780f322c00986017b438f"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/ads.py",
+          "present": true,
+          "sha256": "754ff4143ce109e4cdc8d34a6cc79eb8b2ccd25f80a780f322c00986017b438f"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/ads.py",
+          "present": true,
+          "sha256": "754ff4143ce109e4cdc8d34a6cc79eb8b2ccd25f80a780f322c00986017b438f"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_ads_http",
+          "state": "PASSED",
+          "log_sha256": "2028352fb421f20e18fe4c33c92622e6539811d9f36d05b21566271b6a6dce08"
+        },
+        {
+          "id": "pool08_ads_browser",
+          "state": "PASSED",
+          "log_sha256": "7e5cff3d9dcbc5453f86298114331e58d841a7a6f912b4c2c66bb373b1677ac6"
+        },
+        {
+          "id": "pool08_ads_native",
+          "state": "PASSED",
+          "log_sha256": "f4aeae9dff583df6874c0dd83926b2b9093a2be6e5a19f6cacd039fbb759e266"
+        },
+        {
+          "id": "pool08_ads_sga",
+          "state": "PASSED",
+          "log_sha256": "b2d60ea0e656b5b48d717ee9f874fe4b19f445af06801c2ffc7490d4ebeceb41"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-021",
+      "title": "Cadena de agentes, herramientas reales y motores",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-061",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-062",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-063",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Cadena y adaptadores propios, ocho consultas de dominio reales, bloqueos explícitos para acciones que exigen su flujo autorizado, misiones persistentes, permisos actuales, evaluación de SOUP y motores PLAN_ONLY/STATUS_ONLY verificados localmente. Corregido falso COMPLETED_SUCCESS y rol administrativo implícito heredados. Pendientes configuración y evaluación real de modelos/motores, equipos objetivo, voz fluida separada y aceptación productiva; no se habilitan gastos ni acciones de dispositivo.",
+      "external_requirements": [
+        "Motores/modelos configurados, equipo objetivo y evaluación de calidad/privacidad."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/army.py",
+          "present": true,
+          "sha256": "a61922bf2768bda491cc813a21cbb59781e65afb7030ddcd8b4f65ac77aeb478"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/army.py",
+          "present": true,
+          "sha256": "a61922bf2768bda491cc813a21cbb59781e65afb7030ddcd8b4f65ac77aeb478"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/army.py",
+          "present": true,
+          "sha256": "a61922bf2768bda491cc813a21cbb59781e65afb7030ddcd8b4f65ac77aeb478"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_army_browser",
+          "state": "PASSED",
+          "log_sha256": "988b9714c3079683fc4f35c1ad9ebd8d254666f024a5ff33613307d90c915b6f"
+        },
+        {
+          "id": "commercial_staff_truth",
+          "state": "PASSED",
+          "log_sha256": "fd3429f6a39b0337f73fcc2e93bc92cfa556334244053e19baf5f74b054988a4"
+        },
+        {
+          "id": "pool08_army_native",
+          "state": "PASSED",
+          "log_sha256": "5d8c684fd96ed7796fe4721268561a020f15439939233ce4803409231e7deb57"
+        },
+        {
+          "id": "pool08_army_sga",
+          "state": "PASSED",
+          "log_sha256": "8b5ac3fcfe0d5f2504cd93d01a253045be0d2bb1c1b384a6fbc15704225af447"
+        },
+        {
+          "id": "pool08_army_http",
+          "state": "PASSED",
+          "log_sha256": "b50cf510e1b0359c3e7d19d5093b554d2ea8c74abbb80ebc79ea5085864afc7c"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-022",
+      "title": "Indicadores, embudo, atribución y predicción",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-064",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-065",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-066",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Implementados y probados paneles propios, embudo actual, ingresos/reversiones del ledger, atribución declarada con captura/consentimiento, costes de cuentas configuradas, CAC de alcance limitado, escenario LTV con política revisada explícita y pronóstico temporal evaluado. No inventa ceros, costes ni series. Faltan fuentes/cuentas auténticas y series consentidas para cualificar proveedores y calibrar; revisión de supuestos/soportes, carga/concurrencia productiva y aceptación integral. Las proyecciones no garantizan rentabilidad y la atribución UTM no es causal.",
+      "external_requirements": [
+        "Series consentidas y datos auténticos de campañas/operación para calibración."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-004",
+        "GC-007",
+        "GC-016",
+        "GC-018",
+        "GC-020"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/analytics.py",
+          "present": true,
+          "sha256": "34c9fd76477a6894d6f5e60d878a4bb1c74950754fda6c1d4b0762c6e67b6b8e"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/analytics.py",
+          "present": true,
+          "sha256": "34c9fd76477a6894d6f5e60d878a4bb1c74950754fda6c1d4b0762c6e67b6b8e"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/analytics.py",
+          "present": true,
+          "sha256": "34c9fd76477a6894d6f5e60d878a4bb1c74950754fda6c1d4b0762c6e67b6b8e"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_analytics_browser",
+          "state": "PASSED",
+          "log_sha256": "aab8fc1f261585b4bf209fc3a8a2113321d3abac29f3a3c2bd29921e62f08f1d"
+        },
+        {
+          "id": "pool08_analytics_ui",
+          "state": "PASSED",
+          "log_sha256": "73813bdd3b8c67e2525f662c43bfef57e1ee42d29a10c66628e72cffda1bf556"
+        },
+        {
+          "id": "pool08_analytics_sga",
+          "state": "PASSED",
+          "log_sha256": "4a7e006f7cd54f4e40936661561a87cb52ed34e59586ec99caeca08dc8984864"
+        },
+        {
+          "id": "pool08_analytics_native",
+          "state": "PASSED",
+          "log_sha256": "175a7c812c37d5cfe46cbf9f57b50feffe6e6da99bff9ffbf58f5206d2f956b1"
+        },
+        {
+          "id": "pool08_analytics_capture",
+          "state": "PASSED",
+          "log_sha256": "f03e79b56b05cd8d3e06a3c2297ef8db52d257a300dbfca828ed2257c1c89daf"
+        },
+        {
+          "id": "pool08_analytics_ledger",
+          "state": "PASSED",
+          "log_sha256": "3ac2fdf23c3ffdd4e63de15f1894119bb853c25905446fb988ec1932822ad880"
+        },
+        {
+          "id": "pool08_analytics_saga_http",
+          "state": "PASSED",
+          "log_sha256": "625bc876d7831a2daea52124e741e63243473684accf1520a362f7e419e84ade"
+        },
+        {
+          "id": "pool08_analytics_http",
+          "state": "PASSED",
+          "log_sha256": "40f5c09a8ac48074cb76b2801b0a0078826260fae3ed61810eb70efe3c2d18cd"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-023",
+      "title": "Nivelación de frontends y recorridos de los tres módulos",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-067",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-068",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-069",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Nivelados los17 accesos de los tres clientes propios, región activa, carga/reintento, errores y vacíos, bloqueo combinado/paginación, sesión nativa y accesibilidad de teclado/foco/tamaño/paleta. Recorridos HTTP/Chromium reproducibles en páginas reales y320/390/1280px. Pendientes aceptación de usuarios/roles y dispositivos físicos, revisión completa de accesibilidad y cualificación de release/Next.js; los límites externos de cada proveedor y módulo no se cierran por paridad visual.",
+      "external_requirements": [
+        "Aceptación de usuarios/roles y dispositivos objetivo."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-006",
+        "GC-010",
+        "GC-016",
+        "GC-018",
+        "GC-019",
+        "GC-021"
+      ],
+      "source_observations": [
+        {
+          "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-crm.js",
+          "present": true,
+          "sha256": "a07bcc4620d8240900a9ac0edc84a548503f96c5bf0e6837efa9014ba31c552d"
+        },
+        {
+          "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-crm.js",
+          "present": true,
+          "sha256": "a07bcc4620d8240900a9ac0edc84a548503f96c5bf0e6837efa9014ba31c552d"
+        },
+        {
+          "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-crm.js",
+          "present": true,
+          "sha256": "a07bcc4620d8240900a9ac0edc84a548503f96c5bf0e6837efa9014ba31c552d"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_workspace_browser",
+          "state": "PASSED",
+          "log_sha256": "8b1f433c88456122972197f29aedaaba496f600aafcc45a1f2a2e98e9d42d51b"
+        },
+        {
+          "id": "pool08_native_ui",
+          "state": "PASSED",
+          "log_sha256": "34295eb681b4899373785c83895ec8321d1882d2e96004111fc1c237e9aa38ec"
+        },
+        {
+          "id": "pool08_workspace_types",
+          "state": "PASSED",
+          "log_sha256": "73813bdd3b8c67e2525f662c43bfef57e1ee42d29a10c66628e72cffda1bf556"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": []
+    },
+    {
+      "id": "GC-024",
+      "title": "Calidad, seguridad, rendimiento, operación y cierre",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-070",
+          "stage": "F",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-071",
+          "stage": "T",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-072",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Incremento parcial operativo: sondas/trazas de16 dominios incluidos pagos y captación; lectura estable por registro con reintento limitado y conteos de la revisión comprobada; borradores cifrados offline, restauración SQLite aislada y gate de72 hitos. Perfil integral comercial-audit y revisión por24 tareas disponibles. Siguen pendientes compilación estricta (966 diagnósticos ERP/938 Turismo), sincronización por dominio, carga/telemetría y reversión/restauración integrales, dependencias sin cerrar y aceptación auténtica. El muestreo no establece un snapshot transversal entre dominios ni saldos financieros.",
+      "external_requirements": [
+        "Infraestructura objetivo, proveedores, restauración real y aceptación profesional/productiva."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002",
+        "GC-003",
+        "GC-004",
+        "GC-005",
+        "GC-006",
+        "GC-007",
+        "GC-008",
+        "GC-009",
+        "GC-010",
+        "GC-011",
+        "GC-012",
+        "GC-013",
+        "GC-014",
+        "GC-015",
+        "GC-016",
+        "GC-017",
+        "GC-018",
+        "GC-019",
+        "GC-020",
+        "GC-021",
+        "GC-022",
+        "GC-023"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/operations.py",
+          "present": true,
+          "sha256": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/operations.py",
+          "present": true,
+          "sha256": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/operations.py",
+          "present": true,
+          "sha256": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_recovery_browser",
+          "state": "PASSED",
+          "log_sha256": "78d7e1bfb91a29ccb710c4451fe4b15b91929d5cb4aa444c82b363a0050c2338"
+        },
+        {
+          "id": "pool08_operations_sga",
+          "state": "PASSED",
+          "log_sha256": "7defa8d0394039bdb1897c47c503ca46f434469a56377531ca09d8f08164f96b"
+        },
+        {
+          "id": "pool08_operations_native",
+          "state": "PASSED",
+          "log_sha256": "22556e33296e237cb7b4ed588b1f4b84e3feca6c6cbb61c0ad51bce70c443c82"
+        },
+        {
+          "id": "pool08_operations_http",
+          "state": "PASSED",
+          "log_sha256": "08c9bb3ffc255e9a0d8c901055c5d738a3546c89d393af56d1a0bfff9fb8ade0"
+        },
+        {
+          "id": "pool08_recovery_sga",
+          "state": "PASSED",
+          "log_sha256": "d7a499515106ec887a07067307aec2874a6a59f5468ad2e8289e7bff5a3c7f28"
+        },
+        {
+          "id": "pool08_recovery_native",
+          "state": "PASSED",
+          "log_sha256": "b235f15855363daf295350023c7e7c9dcf5c7e88e1d893cf6d462af237a99d3c"
+        },
+        {
+          "id": "pool08_offline_browser",
+          "state": "PASSED",
+          "log_sha256": "c0bc1ab67d9bd1649e14348e75fa009b41373890eae00d5c22e25eaee3045f4d"
+        },
+        {
+          "id": "offline_asset_regression",
+          "state": "PASSED",
+          "log_sha256": "6ea0df8d4112436e5e8af27aa8a0922cabf3356232ccc0b9420c6e7d2e179bee"
+        },
+        {
+          "id": "commercial_gate",
+          "state": "PASSED",
+          "log_sha256": "0e0ce5e5b88016b4f122902cb722e2398b958cb0b2cfdbab2e7c2cf27b6db347"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false,
+      "post_fix_tests": [
+        {
+          "id": "pool08_operations_sga",
+          "state": "PASSED",
+          "log_sha256": "98e6005f16b80ea1fdd264aab674142541df04bf9eb5ae46419fa40649b95191"
+        },
+        {
+          "id": "pool08_operations_native",
+          "state": "PASSED",
+          "log_sha256": "c011a79f2507df951a307f90c5579c40aa1d9177e2799f345c7bc1b3c31b12f0"
+        },
+        {
+          "id": "pool08_operations_http",
+          "state": "PASSED",
+          "log_sha256": "11561c836d322db9211f8d30a19782ac340596c8b037847b4257116b186c5336"
+        },
+        {
+          "id": "pool08_recovery_sga",
+          "state": "PASSED",
+          "log_sha256": "9dcb4495d7fb1267f17c7a02d5cc5c048393e6b9e2216178c80d216e99ebe0d2"
+        },
+        {
+          "id": "pool08_recovery_native",
+          "state": "PASSED",
+          "log_sha256": "ec2427232b634c93e853cb4497782ad8b62fd737755ec5181e858313a3679eb5"
+        },
+        {
+          "id": "pool08_offline_browser",
+          "state": "PASSED",
+          "log_sha256": "c0bc1ab67d9bd1649e14348e75fa009b41373890eae00d5c22e25eaee3045f4d"
+        },
+        {
+          "id": "offline_asset_regression",
+          "state": "PASSED",
+          "log_sha256": "ae30afcc2d35a42113977c3a32df236624c327f6601e1bf6af3699d2e55b2f46"
+        },
+        {
+          "id": "commercial_gate",
+          "state": "PASSED",
+          "log_sha256": "0e0ce5e5b88016b4f122902cb722e2398b958cb0b2cfdbab2e7c2cf27b6db347"
+        }
+      ]
+    }
+  ],
+  "quality": {
+    "provided": true,
+    "current_sources_match": false,
+    "source_stable": true,
+    "local_checks_complete": false,
+    "missing_mapped_tests": [],
+    "non_passed": [
+      {
+        "id": "pool08_payments_browser",
+        "status": "FAILED"
+      }
+    ],
+    "scope": "INITIAL_FULL_REGRESSION_BEFORE_PAYMENT_FIX"
+  },
+  "new_progress_credit": 0,
+  "production_enabled": false,
+  "limitations": [
+    "Test mapping identifies related executions, not complete acceptance or all business cases.",
+    "Source files and passing laboratory tests never establish provider, hardware or professional acceptance.",
+    "Historical state remains historical; current source compatibility is reported separately."
+  ],
+  "post_fix_recheck": {
+    "source_stable": true,
+    "source_digest": "1dd13bc36be5f9c013ee5e7281e12f026e294866ba03fa91b72fb5720729fa37",
+    "current_sources_match": true,
+    "suites": 15,
+    "all_passed": true,
+    "full_integral_rerun": false,
+    "scope": "Payment initialization/lifecycle/HTTP and operational closeout after the detected UI race; real-page navigation rechecked separately",
+    "python_tests": 72,
+    "real_page_navigation_checks": 804,
+    "payment_http_browser_checks": 150,
+    "isolated_lifecycle_checks": 27
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "scope": "GC-001 through GC-024: source inventory, declared evidence, current regression, build failures and unresolved acceptance",
+  "tasks_reviewed": 24,
+  "fully_accepted_tasks": 1,
+  "completed_milestones": 35,
+  "profile": "commercial-audit",
+  "suites": 123,
+  "suites_passed": 122,
+  "baseline_non_passed": [
+    {
+      "id": "pool08_payments_browser",
+      "state": "FAILED"
+    }
+  ],
+  "python_tests_in_passed_suites": 1258,
+  "baseline_source_stable": true,
+  "baseline_source_digest": "5a0a77b10afc5429c7aeb5d9531491716f7a5cabaa065f622c561d8e2edee602",
+  "source_stable": true,
+  "source_digest": "1dd13bc36be5f9c013ee5e7281e12f026e294866ba03fa91b72fb5720729fa37",
+  "post_fix_suites": 15,
+  "post_fix_python_tests": 72,
+  "post_fix_all_passed": true,
+  "full_integral_rerun_after_fix": false,
+  "source_files_changed_since_prior_delivery": 15,
+  "task_families_without_mapped_execution": [],
+  "ci_config_validation": {
+    "passed": true,
+    "scope": "Local YAML, shell syntax and dependency-order verification; no package installation or GitHub execution",
+    "actual_github_actions_run": false,
+    "production_qualified": false,
+    "results": [
+      {
+        "workflow": ".github/workflows/master-integration.yml",
+        "sha256": "ada98bb81c054428f59542ba0f3b44111377b8336820da64a0b8d68b65686929",
+        "yaml_parsed": true,
+        "shell_syntax_valid": true,
+        "commercial_runtime_precedes_tests": true
+      },
+      {
+        "workflow": ".github/workflows/local-operation-audit.yml",
+        "sha256": "1681ac8dece8dfb8e0697c325f62816096c2b49dcdb9d2b951fd720955a94420",
+        "yaml_parsed": true,
+        "shell_syntax_valid": true,
+        "commercial_runtime_precedes_tests": true
+      }
+    ]
+  },
+  "fixed": [
+    "Payment initialization overlapped user recovery/checkout and allowed stale UI; initialization now serialized, new controls inherit busy state, and failed startup has explicit retry in each own client",
+    "CI ran commercial probes before Node/Playwright setup and omitted required runtime paths; dependency order, pinned runtime preparation, profile selection and path triggers corrected; locally syntax/order checked, GitHub execution pending",
+    "Operational trace could report false corruption when a real revision committed between document and event reads; retries only changed records, twice maximum; stable corruption still blocked",
+    "Probe counts previously used initial list documents instead of the verified current revision",
+    "Payment and landing-capture stores were omitted from operational probes; now16 domains",
+    "Previous combined test profile omitted generation-specific suites; commercial-audit covers all24 task families and adds native command-staff checks"
+  ],
+  "scope_limits": [
+    "Regression uses disposable SQLite, HTTP and real Chromium, controlled model/provider transports; no production acceptance",
+    "Concurrency reproduction commits a real ORM revision at the read boundary; it is not a PostgreSQL parallel-load qualification",
+    "Per-record stable sampling does not establish a cross-domain atomic snapshot or financial closing",
+    "Test-family mapping is nonadditive and not full acceptance of all business cases"
+  ],
+  "local_pending": [
+    "GC-002 permission/consent administration and explicit identity mapping",
+    "GC-008 authentic-contract Bold receipt verifier, status query and ledger reconciliation",
+    "GC-009 verified contact/sale/reservation/recipient link, complete cancellation/signing and loyalty",
+    "GC-013/014 worker startup and complete UI-to-worker flow; generative-video adapter",
+    "GC-020 supervised execution, provisioning, authentic receipts and recovery",
+    "GC-024 strict builds, domain offline synchronization, full observability/load and integral rollback/restore"
+  ],
+  "external_requirements": "See explicit per-task external_requirements in revision-24.json; providers/accounts/OAuth, legitimate datasets/policies/licences, target hardware and professional/productive acceptance remain separate",
+  "new_progress_credit": 0,
+  "production_enabled": false,
+  "git_mutation": false,
+  "workspace_browser_checks": 804,
+  "payment_http_browser_checks": 150,
+  "payment_lifecycle_checks": 27,
+  "original_payment_bug_reproduction_checks": 9,
+  "test_counts_are_nonadditive": true
+}

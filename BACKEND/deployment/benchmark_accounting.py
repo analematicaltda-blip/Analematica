@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[2]
 def run(samples):
     if type(samples) is not int or not 5<=samples<=100:raise ValueError('Use5 to100 measured transactions.')
     if 'django' in sys.modules:raise ValueError('Run in a new process; do not reuse a configured application database.')
-    spec=importlib.util.spec_from_file_location('quality',ROOT/'INTEGRACIONES/operacion/verify_local.py');quality=importlib.util.module_from_spec(spec);spec.loader.exec_module(quality)
+    spec=importlib.util.spec_from_file_location('quality',Path(__file__).resolve().parents[2] / 'BACKEND/INTEGRACIONES/operacion/verify_local.py');quality=importlib.util.module_from_spec(spec);spec.loader.exec_module(quality)
     before=quality.digest(quality.source_manifest())
     fixture=runpy.run_path(str(ROOT/'BACKEND/deployment/tests/accounting_commercial_tax_check.py'),run_name='isolated_benchmark_fixture')
     from django.db import connection

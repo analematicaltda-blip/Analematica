@@ -79,7 +79,7 @@ Resumen persistente: `evidencias/implementacion-02.json`; informe de grupos: `ev
 ```bash
 python BACKEND/deployment/tests/accounting_posting_check.py -v
 python BACKEND/deployment/tests/accounting_adapter_check.py -v
-python INTEGRACIONES/operacion/verify_local.py --profile core --profile postgres --output /tmp/sgacd-contabilidad-evidencia-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile core --profile postgres --output /tmp/sgacd-contabilidad-evidencia-nueva
 ```
 
 No hubo cambios de diseño visual. Las automatizaciones y funciones todavía no implementadas permanecen en la matriz; no se declara el módulo completo al100%.

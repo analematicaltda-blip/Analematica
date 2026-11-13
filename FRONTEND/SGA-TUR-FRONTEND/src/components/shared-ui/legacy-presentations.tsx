@@ -1,0 +1,9 @@
+/* Legacy views have no authenticated metric source. Presentation never certifies data. */
+import React from 'react';
+export function WebLayout({children}:{children:React.ReactNode}){return <main style={{background:'#0a1128',color:'#fff',padding:'1rem',minHeight:'100vh'}}><p role="status">Vista heredada pendiente de conexión a fuentes verificadas. No acredita operación productiva.</p>{children}</main>;}
+export function KpiCard({title}:{title:string;value?:string|number;trend?:string}){return <section style={{background:'#142850',color:'#fff',padding:'1rem',border:'1px solid #7dd3fc'}}><h2>{title}</h2><p>No disponible · fuente pendiente</p></section>;}
+export function LineChart(_props:{data:unknown[];dataKey:string}){return <p role="status">Serie no verificada. Gráfico pendiente de fuente y corte.</p>;}
+export function DataTable(_props:{columns:{header:string;accessor:string}[];data:unknown[]}){return <p role="status">Registros no verificados. Consulta pendiente de conexión a la fuente.</p>;}
+export function AttractionCard({attraction}:{attraction:{name:string;category:string;description:string;imageUrl?:string}}){return <article style={{background:'#142850',color:'#fff',padding:'1rem',border:'1px solid #7dd3fc'}}><h3>{attraction.name}</h3><p>{attraction.category}</p><p>{attraction.description}</p><p>Información ilustrativa sin validación de disponibilidad.</p></article>;}
+export function EventCalendar(_props:{events:unknown[]}){return <p role="status">Calendario pendiente de fuente vigente.</p>;}
+export function InteractiveRouteMap({routeName,points}:{routeName:string;points:{label:string;type:string}[]}){return <section><h3>{routeName}</h3><p>Itinerario ilustrativo. No hay coordenadas verificadas para dibujar un mapa.</p><ol>{points.map((p,i)=><li key={i}>{p.label} · {p.type}</li>)}</ol></section>;}

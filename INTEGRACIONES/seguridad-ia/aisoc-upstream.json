@@ -2,7 +2,7 @@
   "source": "https://github.com/beenuar/AiSOC",
   "commit": "010a3981bfc791266d62aaa31531f05798531efd",
   "license": "MIT",
-  "destination": "SEGURIDAD/AiSOC",
+  "destination": "BACKEND/SEGURIDAD/AiSOC",
   "files": [
     {
       "path": ".devcontainer/Dockerfile",

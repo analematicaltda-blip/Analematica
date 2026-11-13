@@ -1,0 +1,10 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ {}
+- {
+-   password: 'not-a-real-password',
+-   username: 'synthetic-ledger-user'
+- }
+
+    at /tmp/gc007-before-login.cjs:2:1243

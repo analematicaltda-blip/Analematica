@@ -1,0 +1,10 @@
+test_failed_account_check_invalidates_flow (test_broker.BrokerTests.test_failed_account_check_invalidates_flow) ... ok
+test_pkce_cookie_single_use_proof_and_roles (test_broker.BrokerTests.test_pkce_cookie_single_use_proof_and_roles) ... ok
+test_signed_identities_and_rejections (test_broker.BrokerTests.test_signed_identities_and_rejections) ... ok
+test_unconfigured_provider (test_broker.BrokerTests.test_unconfigured_provider) ... ok
+test_unknown_email_and_expiry_fail_closed (test_broker.BrokerTests.test_unknown_email_and_expiry_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.721s
+
+OK

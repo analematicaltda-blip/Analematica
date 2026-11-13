@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "checks": 9,
+  "systems": 3,
+  "delayed_media": true,
+  "controlled_transport": true,
+  "backend_acceptance": false
+}

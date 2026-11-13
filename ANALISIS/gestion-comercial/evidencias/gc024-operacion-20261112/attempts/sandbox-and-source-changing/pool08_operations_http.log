@@ -1,0 +1,17 @@
+setUpClass (__main__.Checks) ... ERROR
+
+======================================================================
+ERROR: setUpClass (__main__.Checks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/pool08_native_http_check.py", line 12, in setUpClass
+    fixture['NativeArmiesHTTP'].setUpClass.__func__(cls)
+  File "/workspace/SGA-CD-conectado/BACKEND/deployment/tests/accounting_army_http_check.py", line 26, in setUpClass
+    except queue.Empty:raise RuntimeError('Native backend fixture did not start; private diagnostics retained') from None
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Native backend fixture did not start; private diagnostics retained
+
+----------------------------------------------------------------------
+Ran 0 tests in 35.099s
+
+FAILED (errors=1)

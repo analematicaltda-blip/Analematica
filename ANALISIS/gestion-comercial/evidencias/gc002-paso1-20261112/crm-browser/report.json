@@ -1,0 +1,13 @@
+{
+  "checks": 88,
+  "targets": [
+    "sga-cd",
+    "erp-tur",
+    "analematica",
+    "gateway"
+  ],
+  "actual_http": true,
+  "synthetic_customers": true,
+  "native_password_mfa_qualified": false,
+  "production_ready": false
+}

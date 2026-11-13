@@ -128,12 +128,19 @@ def leads(db=Depends(deps.get_db),access=Depends(context)):
 
 @router.post('/crm/leads',status_code=201)
 def create_lead(body:Lead,db=Depends(deps.get_db),access=Depends(context)):
-    access.require('crm');row=WorkspaceLead(id=str(uuid.uuid4()),scope=access.scope,created_by=access.user.id,**body.model_dump());db.add(row);db.commit();return {'id':row.id}
+    access.require('crm')
+    if body.email and db.query(WorkspaceLead).filter(WorkspaceLead.scope==access.scope,WorkspaceLead.email.ilike(body.email.strip())).first():
+        raise HTTPException(409,'Revisa el contacto coincidente en CRM antes de crear otro.')
+    row=WorkspaceLead(id=str(uuid.uuid4()),scope=access.scope,created_by=access.user.id,**body.model_dump());db.add(row);db.commit();return {'id':row.id}
 
 @router.put('/crm/leads/{lead_id}')
 def edit_lead(lead_id:str,body:Lead,db=Depends(deps.get_db),access=Depends(context)):
     access.require('crm');row=db.query(WorkspaceLead).filter(WorkspaceLead.id==lead_id,WorkspaceLead.scope==access.scope).first()
     if not row:raise HTTPException(404,'Contacto no encontrado en tu espacio.')
+    from sqlalchemy import inspect
+    from app.commercial.pool08.crm_models import CRMContact
+    if inspect(db.get_bind()).has_table(CRMContact.__tablename__) and db.query(CRMContact).filter_by(id=lead_id,scope=access.scope).first():
+        raise HTTPException(409,'Este contacto tiene seguimiento protegido. Actualízalo desde CRM y contactos.')
     for key,value in body.model_dump().items():setattr(row,key,value)
     db.commit();return {'saved':True}
 

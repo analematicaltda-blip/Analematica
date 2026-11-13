@@ -1,0 +1,112 @@
+[
+  {
+    "path": "BACKEND/INTEGRACIONES/operacion/verify_local.py",
+    "before": "52bdbb4464de8aba8fa142b89456a28b631ebee18e898407dba55da6be657b39",
+    "after": "5845f18538b4a0162a64f7ed6d9d3e6bf1b4c65f80342671bdfdd5ca6a6de57e"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_crm_recovery_browser_check.py",
+    "before": null,
+    "after": "8eb022775697a38180bf7d7bd0a818be7220f5ad214969e497ba5e77b550db6e"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_quotation_busy_browser_check.py",
+    "before": null,
+    "after": "72d431a4a8d214d35d6fca6d397490141cdccdf31e1e23d140396eb7d6290f6e"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_recovery_browser_check.py",
+    "before": null,
+    "after": "a416575ad922d11def646ad397f23999d19ed847e59ac9d63ef270d8217953a4"
+  },
+  {
+    "path": "DESKTOP/tools/flet_preview/web-manifest.json",
+    "before": "5830c710673b41c7e838e68020e8b9acbc1e6a87ec38bb290b46732f48662733",
+    "after": "e2f761fe89a84773b6c24bc89fbd80c48fb5c7434fd44c9d601c8bc2821da85b"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-crm.js",
+    "before": "ca362f7c499bb0812a8d0749aeb0f4f59866f37c2ae77a1a2463340ab1bad407",
+    "after": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-landings.js",
+    "before": "fae36fe6a3f0a86afb4fb659592727e33a2de5d1639fbfdb6db85930506e0e06",
+    "after": "efa09331b114f3c2717b2a7d410bbf8bdb899f8414062baf307017e2280fa139"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-library.js",
+    "before": "089bc9968f071f9b4a77301fb7ab89e30e55ebc30265a9f017593222026f92c2",
+    "after": "2e1cb13c5663a549dac6e446a648ea49b49a2c8132e8f88f9c54d2f5212fb35d"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-quotations.js",
+    "before": "883f294cf42f73b3af8bde6f8b03f9e0c722e1b1b8d0da90e144bde1a725d525",
+    "after": "3cddce4185c06c57f69bef9a5f291562c6e2032bd1f27033cbe0b69d4e9abd97"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/deployment/manifest.json",
+    "before": "f327de964f09f6d2ff240ba26519aac8bf6a8db89cda6f55759ee099b8e54d13",
+    "after": "d20bd1bda3341559312ddb5e665f911c7ba19045d319091fff8acabe2a9bfbee"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-crm.js",
+    "before": "ca362f7c499bb0812a8d0749aeb0f4f59866f37c2ae77a1a2463340ab1bad407",
+    "after": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-landings.js",
+    "before": "fae36fe6a3f0a86afb4fb659592727e33a2de5d1639fbfdb6db85930506e0e06",
+    "after": "efa09331b114f3c2717b2a7d410bbf8bdb899f8414062baf307017e2280fa139"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-library.js",
+    "before": "089bc9968f071f9b4a77301fb7ab89e30e55ebc30265a9f017593222026f92c2",
+    "after": "2e1cb13c5663a549dac6e446a648ea49b49a2c8132e8f88f9c54d2f5212fb35d"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-quotations.js",
+    "before": "883f294cf42f73b3af8bde6f8b03f9e0c722e1b1b8d0da90e144bde1a725d525",
+    "after": "3cddce4185c06c57f69bef9a5f291562c6e2032bd1f27033cbe0b69d4e9abd97"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-crm.js",
+    "before": "ca362f7c499bb0812a8d0749aeb0f4f59866f37c2ae77a1a2463340ab1bad407",
+    "after": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-landings.js",
+    "before": "fae36fe6a3f0a86afb4fb659592727e33a2de5d1639fbfdb6db85930506e0e06",
+    "after": "efa09331b114f3c2717b2a7d410bbf8bdb899f8414062baf307017e2280fa139"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-library.js",
+    "before": "089bc9968f071f9b4a77301fb7ab89e30e55ebc30265a9f017593222026f92c2",
+    "after": "2e1cb13c5663a549dac6e446a648ea49b49a2c8132e8f88f9c54d2f5212fb35d"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-quotations.js",
+    "before": "883f294cf42f73b3af8bde6f8b03f9e0c722e1b1b8d0da90e144bde1a725d525",
+    "after": "3cddce4185c06c57f69bef9a5f291562c6e2032bd1f27033cbe0b69d4e9abd97"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_crm_browser.cjs",
+    "before": "3e7d791d0bad6f8e83198910c0e16324ea9f8e5465832ba540df8cd7ce5ad046",
+    "after": "0fbba9e1f09053f7fcffa78656d7ac6a6ce81fbe3b9afe8dd3d0d9c60e2177ee"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_crm_recovery_browser.cjs",
+    "before": null,
+    "after": "9ed01217ad1de518b8de86030fb090e0786a91fde4c8abfc8707261c854aad7c"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_quotation_busy_browser.cjs",
+    "before": null,
+    "after": "f8994281ff6a2097b5a5e5e51676d970c1f12a0fd5a42f99ea1c98fd9bd4b8f4"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_recovery_browser.cjs",
+    "before": null,
+    "after": "8b064f160d489b45640b429889b62fdf2dbe74dd2fcc35dfa5ffa9c1a4c9d2db"
+  }
+]

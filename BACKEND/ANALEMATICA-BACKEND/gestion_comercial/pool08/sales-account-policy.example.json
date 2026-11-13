@@ -1,0 +1,23 @@
+{
+  "COMPANY_UUID": {
+    "version": "REPLACE_WITH_REVIEWED_VERSION",
+    "valid_from": "REVIEWED_ISO_TIME",
+    "valid_until": "REVIEWED_ISO_TIME",
+    "reviewer_ref": "ACTIVE_REVIEWER_ID",
+    "support_digest": "REVIEWED_SHA256",
+    "roles": {
+      "receivable": [
+        "REVIEWED_AR_ACCOUNT_UUID"
+      ],
+      "revenue": [
+        "REVIEWED_REVENUE_ACCOUNT_UUID"
+      ],
+      "contract_liability": [
+        "REVIEWED_CONTRACT_LIABILITY_ACCOUNT_UUID"
+      ],
+      "tax_liability": [
+        "REVIEWED_TAX_LIABILITY_ACCOUNT_UUID"
+      ]
+    }
+  }
+}

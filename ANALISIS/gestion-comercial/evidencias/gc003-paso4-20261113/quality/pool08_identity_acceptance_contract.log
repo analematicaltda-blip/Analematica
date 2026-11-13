@@ -1,0 +1,17 @@
+test_altered_log_is_rejected (test_identity_acceptance.AcceptanceChecks.test_altered_log_is_rejected) ... ok
+test_another_task_cannot_be_silently_evaluated_as_identity (test_identity_acceptance.AcceptanceChecks.test_another_task_cannot_be_silently_evaluated_as_identity) ... ok
+test_command_has_no_acceptance_override (test_identity_acceptance.AcceptanceChecks.test_command_has_no_acceptance_override) ... ok
+test_crm_cannot_skip_identity_acceptance (test_identity_acceptance.AcceptanceChecks.test_crm_cannot_skip_identity_acceptance) ... ok
+test_crm_checklist_contains_every_acceptance_journey (test_identity_acceptance.AcceptanceChecks.test_crm_checklist_contains_every_acceptance_journey) ... ok
+test_crm_uses_actual_crm_regression_not_just_identity_tests (test_identity_acceptance.AcceptanceChecks.test_crm_uses_actual_crm_regression_not_just_identity_tests) ... ok
+test_current_real_repository_is_blocked_without_legitimate_acceptance (test_identity_acceptance.AcceptanceChecks.test_current_real_repository_is_blocked_without_legitimate_acceptance) ... ok
+test_external_declarations_do_not_auto_accept (test_identity_acceptance.AcceptanceChecks.test_external_declarations_do_not_auto_accept) ... ok
+test_missing_quality_stops_readiness (test_identity_acceptance.AcceptanceChecks.test_missing_quality_stops_readiness) ... ok
+test_paths_and_symlinks_cannot_read_outside_root (test_identity_acceptance.AcceptanceChecks.test_paths_and_symlinks_cannot_read_outside_root) ... ok
+test_rewritten_quality_cannot_pass_even_with_all_passed_claim (test_identity_acceptance.AcceptanceChecks.test_rewritten_quality_cannot_pass_even_with_all_passed_claim) ... ok
+test_source_changed_after_verified_tests_is_reported (test_identity_acceptance.AcceptanceChecks.test_source_changed_after_verified_tests_is_reported) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 8.153s
+
+OK

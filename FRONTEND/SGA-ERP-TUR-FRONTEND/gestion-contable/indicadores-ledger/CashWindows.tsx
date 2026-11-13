@@ -1,6 +1,6 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/cash-windows.js';
+import '../runtime/cash-windows.js';
 declare global {interface Window {SGACDCashWindows:{mount:(root:HTMLElement,options:{request:(payload:Record<string,unknown>,signal:AbortSignal)=>Promise<unknown>})=>{destroy:()=>void;clear:()=>void}}}}
 export function CashWindows({identity,providerId,request}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>}){
  const root=useRef<HTMLElement|null>(null),requester=useRef(request);requester.current=request;

@@ -1,0 +1,16 @@
+{
+  "pool08_publishing_sga.log": "959a3573f57b2df56dda16c1ba6746c372f6ebf8b39bbe4eac49b071e3512d00",
+  "pool08_crm_http.log": "3a0b0dc00a2f6ab938da30657e215d437883c8965e2f8251b6d208e768a46ffc",
+  "source-manifest.json": "7b446d9373ce2712ed302c1297221e3bf8b6cacf0bf00345b02d2346f9fbe293",
+  "pool08_publishing_http.log": "babfd953ede3cacadbf4c2309f8b026cfbeded35232ab499c54666e8d277a6d7",
+  "web_preparation.log": "29f87df36da6176cf5ae1df4f0c15253e8027ba0642612d541ce71f6832482dd",
+  "publication_legacy_truth.log": "24cefc2bc38a1c71e18591075993695fc72546b32ff6b5baab3d98032ce96fb5",
+  "pool08_publishing_browser.log": "b5b80d0cd812ea4c47d90c35a019b9d108a117d6aa27f5014a46a30ef979d1f8",
+  "pool08_mobile_sga.log": "cc2d294026ff07d05fea73060e7362c60b40e149a57034f7e405cfb2a1627880",
+  "pool08_crm_browser.log": "e8e169decf8043debe96d8da0dc9dd1710878be10ceb87137b25789ff0232e9e",
+  "report.json": "ae7e41cbb803a959f0d8e139040f582976d6a2b4073366501a9cc6df35b9974f",
+  "pool08_mobile_native.log": "27429b3379516e87c7a1d7d1ec003883272bf4898beac410ca51750ea1527010",
+  "runner.log": "e73b2f5d94fd05d6954c3f8f2feacea3b8c4d537a608ec6866c33debc76eda47",
+  "pool08_plan_registry.log": "75e8f51171257ecf378c1de7b1cc10a9edf9c389c425f74bd63928c2722455ac",
+  "pool08_publishing_native.log": "22876c4b353178a8d2b85e58ee2822b9aa0fd4671a535becc3db7b919ae8b6e3"
+}

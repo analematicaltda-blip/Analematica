@@ -1,6 +1,6 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/payroll-costs.js';
+import '../runtime/payroll-costs.js';
 declare global {interface Window {SGACDPayrollCosts:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>,signal:AbortSignal)=>Promise<unknown>})=>{destroy:()=>void;clear:()=>void}}}}
 const actions:Record<string,string>={payroll_sources:'fuentes-nomina-revisada',payroll_cost_sources:'fuentes-costos-operativos-nomina',review_payroll_costs:'revisar-costos-operativos-nomina',record_payroll_costs:'registrar-costos-operativos-nomina',payroll_cost_state:'estado-costos-operativos-nomina'};
 export function PayrollCosts({identity,providerId,request}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>}){

@@ -80,3 +80,7 @@ api_router.include_router(platform.router,prefix="/platform",tags=["Shared admin
 
 from app.api.v1.endpoints import assistance_content
 api_router.include_router(assistance_content.router, prefix="/assistance/content", tags=["Editorial content"])
+
+# POOL-08: own authenticated validation boundary, no external execution.
+from app.commercial.pool08.api import router as commercial_unified_router
+api_router.include_router(commercial_unified_router, prefix="/commercial-unified", tags=["Commercial unified contract"])

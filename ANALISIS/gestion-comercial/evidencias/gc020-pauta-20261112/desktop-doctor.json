@@ -1,0 +1,9 @@
+{
+  "node": "v24.22.1",
+  "platform": "linux",
+  "kind": "desktop",
+  "paired": false,
+  "needs": [
+    "Chrome local y perfil de navegador separado"
+  ]
+}

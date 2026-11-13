@@ -43,6 +43,6 @@ No se modificó el diseño visual ni se habilitaron pagos o automatizaciones sob
 Resumen: `evidencias/implementacion-03.json`; informe de grupos: `evidencias/implementacion-03-verificacion.json`. Evidencia privada en `/tmp/sgacd-accounting-final-scope-39`; no se copiaron claves, bases ni registros completos al repositorio. El paquete público resumido no contiene todos los registros privados necesarios para `--verify`.
 
 ```bash
-python INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output /tmp/sgacd-contabilidad-nueva
-python INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-contabilidad-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile accounting --profile postgres --output /tmp/sgacd-contabilidad-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-contabilidad-nueva
 ```

@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:analematica:pool08:commercial-intent:1",
+  "title": "POOL-08 Commercial Intent v1 — preparation only",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "system": {
+      "enum": [
+        "sga-cd",
+        "erp-tur",
+        "analematica"
+      ]
+    },
+    "orchestration_id": {
+      "type": "string",
+      "format": "uuid",
+      "maxLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "format": "uuid",
+      "maxLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "tenant_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+    },
+    "actor_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 96,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 40
+    },
+    "lead_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "customer_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+        },
+        "consent_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+        },
+        "origin_channel": {
+          "enum": [
+            "TIKTOK_AD",
+            "META_DM",
+            "WHATSAPP",
+            "YOUTUBE_COMMENT",
+            "GMAIL",
+            "WEB",
+            "IN_PERSON"
+          ]
+        }
+      },
+      "required": [
+        "customer_ref",
+        "consent_ref",
+        "origin_channel"
+      ]
+    },
+    "agent_chain_attribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "orchestrator": {
+          "const": "JARVI"
+        },
+        "conversation": {
+          "const": "NEKO"
+        },
+        "optimizer": {
+          "const": "SOUP"
+        },
+        "creative_role": {
+          "const": "CREATIVE_DIVISION"
+        }
+      },
+      "required": [
+        "orchestrator",
+        "conversation",
+        "optimizer",
+        "creative_role"
+      ]
+    },
+    "transaction_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offering_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+        },
+        "offering_kind": {
+          "enum": [
+            "CULTURAL_SPORTS_SERVICE",
+            "TOURISM_SERVICE",
+            "PLATFORM_SERVICE"
+          ]
+        },
+        "gross_fiat_amount": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16,
+          "pattern": "^(0|[1-9][0-9]{0,11})\\.[0-9]{2}$"
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3,
+          "pattern": "^[A-Z]{3}$"
+        },
+        "pax_refs": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          }
+        }
+      },
+      "required": [
+        "offering_ref",
+        "offering_kind",
+        "gross_fiat_amount",
+        "currency"
+      ]
+    },
+    "sovereign_storage_dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target_storage": {
+          "enum": [
+            "GOOGLE_DRIVE",
+            "MICROSOFT_ONEDRIVE",
+            "ON_PREMISE_DB"
+          ]
+        },
+        "encryption_algorithm": {
+          "const": "AES-256-GCM"
+        },
+        "client_kms_key_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$"
+        }
+      },
+      "required": [
+        "target_storage",
+        "encryption_algorithm",
+        "client_kms_key_reference"
+      ]
+    },
+    "task_graph": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "maxLength": 36,
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "capability": {
+            "enum": [
+              "crm.prospect.manage",
+              "quote.prepare",
+              "booking.availability.read",
+              "media.image.generate",
+              "media.reel.render",
+              "media.image.resize",
+              "media.video.resize",
+              "channel.video.publish",
+              "channel.private_message.reply",
+              "channel.public_comment.reply",
+              "channel.email.reply",
+              "ads.campaign.manage",
+              "ledger.sale.post",
+              "vault.document.persist",
+              "agents.process.optimize"
+            ]
+          },
+          "depends_on": {
+            "type": "array",
+            "maxItems": 15,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36,
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "capability",
+          "depends_on"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "system",
+    "orchestration_id",
+    "idempotency_key",
+    "tenant_ref",
+    "actor_ref",
+    "expires_at",
+    "lead_profile",
+    "agent_chain_attribution",
+    "transaction_payload",
+    "sovereign_storage_dispatch",
+    "task_graph"
+  ]
+}

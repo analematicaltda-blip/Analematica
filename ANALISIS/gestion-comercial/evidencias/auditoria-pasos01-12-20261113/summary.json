@@ -1,0 +1,91 @@
+{
+  "date_colombia": "2026-11-13",
+  "scope": "Remaining commercial plan steps 1 through 12; not accounting or all 24 commercial tasks",
+  "suites": 54,
+  "python_tests": 578,
+  "browser_checks": 1320,
+  "browser_suites": [
+    {
+      "suite": "pool08_opportunity_recovery_browser",
+      "checks": 21
+    },
+    {
+      "suite": "pool08_after_sales_lifecycle",
+      "checks": 54
+    },
+    {
+      "suite": "pool08_after_sales_browser",
+      "checks": 58
+    },
+    {
+      "suite": "pool08_sales_lifecycle",
+      "checks": 32
+    },
+    {
+      "suite": "pool08_sales_browser",
+      "checks": 112
+    },
+    {
+      "suite": "pool08_pricing_browser",
+      "checks": 104
+    },
+    {
+      "suite": "pool08_opportunities_browser",
+      "checks": 120
+    },
+    {
+      "suite": "pool08_crm_browser",
+      "checks": 88
+    },
+    {
+      "suite": "pool08_quotation_lifecycle",
+      "checks": 33
+    },
+    {
+      "suite": "pool08_quotation_busy_browser",
+      "checks": 9
+    },
+    {
+      "suite": "pool08_quotations_browser",
+      "checks": 176
+    },
+    {
+      "suite": "pool08_access_browser",
+      "checks": 336
+    },
+    {
+      "suite": "pool08_payments_lifecycle",
+      "checks": 27
+    },
+    {
+      "suite": "pool08_payments_browser",
+      "checks": 150
+    }
+  ],
+  "source_stable": true,
+  "all_reviewed_steps_complete": false,
+  "global_implementation_percent": null,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "credit_before": 37,
+  "credit_after": 37,
+  "denominator": 72,
+  "credit_percent": "51.39",
+  "fixes": [
+    "Unreadable or malformed followup retry metadata blocks a new request until explicit history review/discard.",
+    "Concurrent contact loads are locked and parent workspace stays busy during initialization.",
+    "Failed storage deletion cannot silently discard a pending reference.",
+    "Acceptance tests no longer assume historical source evidence is current; stale evidence remains blocked."
+  ],
+  "counterexample": "Previous client issued request number 3 where the new regression requires the counter to remain 2; controlled transport only.",
+  "pending_development": [
+    "GC-008 authentic confirmation, settlement and real-provider regression",
+    "GC-009 verified contact/sale/reservation/beneficiary binding, effective cancellation and full signing/loyalty journey"
+  ],
+  "external_requirements": [
+    "Legitimate administrators, reviewed role/consent policies and authorized acceptance samples",
+    "Company-approved tariffs, terms and professional accounting/tax validation",
+    "Authorized Bold sandbox, current contract, securely bound credentials and authentic acknowledgments"
+  ],
+  "git_history_changed": false
+}

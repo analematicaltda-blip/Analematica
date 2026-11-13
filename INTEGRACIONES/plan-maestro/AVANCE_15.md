@@ -42,7 +42,7 @@ antes los cambios exclusivos de esa carpeta no activaban esas pruebas.
 
 ## Repetición local
 
-`python INTEGRACIONES/plan-maestro/verify_local.py --output /tmp/informe-nuevo.json`
+`python BACKEND/INTEGRACIONES/plan-maestro/verify_local.py --output /tmp/informe-nuevo.json`
 ejecuta suites fijas y aisladas con límite por proceso, conserva solo resultados
 sin logs sensibles y falla si una suite no acredita pruebas. No migra bases,
 no instala software, no despliega ni utiliza cuentas externas. Utilizar el Python

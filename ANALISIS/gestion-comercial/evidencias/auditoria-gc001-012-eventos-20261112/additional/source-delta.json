@@ -1,0 +1,207 @@
+[
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/capture_store.py",
+    "before": "abffb8ecab46fe8ca4f404dc8ff19cdc86ad0d4598b006740686191d4500c252",
+    "after": "f114e1d6639ae4575cd81590c49e7e82370a8c63491aa1765d1c7cea5dbecab4"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landing_store.py",
+    "before": "31a7fa345461e4f813207ce502dea7ece386c8640b531f68a1ec92c03d144516",
+    "after": "937febf39155406d613159885217e5e93e288287bd256b6192128c6ba55ed5e6"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/library_store.py",
+    "before": "58bb4ae506ffc0d3c34a16dfc44d0a8c5136778f32fc2fee9f83e530210de772",
+    "after": "1884a5e6fe7f01a29ac17d7650d0950d8b7260e11dd68bab6c89d5e021496e3e"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/opportunity_store.py",
+    "before": "4a1fa3942f35014f8434f1af0e6f37bce208718de27fa9cac2fb86e8e5787052",
+    "after": "fd87f2e0b3ea19162dc7368e43b5116a39dd327f0f1b790a318b9060e469bb9e"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/payment_store.py",
+    "before": "38e4381f64117baa5354d3f34e3073e64709a9f094410fb7560a399f693455f3",
+    "after": "90df7fb1892770014bb02ef09b599df954b724f42c061ec69c3b72ccf429150c"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/pricing_store.py",
+    "before": "ea64b64937d5c7a185f906b7c68a6ea9514ec802a59c16f0b295cc0862da7627",
+    "after": "92bc1dd9990e72a6931a6fa216f5923410b0c226e1dabcfd3394e3681453b800"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotation_store.py",
+    "before": "7765694279dd7f9bd1675a0c8363dff887b2723f4bdd7ca319d8f339e9ba8b58",
+    "after": "4ccaf30e0e42e2d80a749f93d57f554c6ac6b7d2f79a47171695f1ff55b6a118"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales_store.py",
+    "before": "8d66b9e4e02eb961be5f0bb0664227fd0102c293e3185f423b056cc86e555b13",
+    "after": "dd2f02d2f765d3227816237c6b537f229f8998c424ffccd3b5fbb7d106bc6332"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/state_integrity.py",
+    "before": "cc9907b6f03ac595ae15bd75420c994263ea1234853c8caaa30972dee2f68ebb",
+    "after": "33ed5504e65bdd7b2491acdcc80b9b9b4a6f40e92dfd4edf6f6c39d5d8515bc2"
+  },
+  {
+    "path": "BACKEND/INTEGRACIONES/operacion/verify_local.py",
+    "before": "5845f18538b4a0162a64f7ed6d9d3e6bf1b4c65f80342671bdfdd5ca6a6de57e",
+    "after": "d53ab1aaea6772444b72da22fa82173fef55bd6582648dbdb9fb22449bd6210b"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/capture_store.py",
+    "before": "98697d93bd58e0647e14e3122f385411faceeb9ed75012d54b7ae880999bc322",
+    "after": "33fdf6422ec7b38e4a74bed88cb016cdb8f2a774d3c5d9bc13a451c411ad75bf"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landing_store.py",
+    "before": "82658ea032bff1b6fff5b6ed7d63855fa7cae70c52ab18614c943cb5cf772d02",
+    "after": "06caf4a693414c1239b71bfb189c48c3759c2722b5f01e99ad28dc905fd0596d"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/library_store.py",
+    "before": "d76768291410e7b16eaf6a2ef305b9f49401eba0a390f3d034c00f53b77efbea",
+    "after": "60cd094b1ab68224bedca78c265b3fb837f4b82d444f9d47f5b6edc18662a346"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/opportunity_store.py",
+    "before": "431e8217a1e56564a2298252a33f59ccf9814e473693eb93a56f6930af15d451",
+    "after": "17a842f07370ccac1788004849d656b51aa20f63167b809744769afd14274cc9"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/payment_store.py",
+    "before": "eab8f376c4394dd18d59ddca26c1b9bcba7c07693a8e4fa630eac32835dec7ec",
+    "after": "3d2cbf8bd57a0d21754c5d78fc6bf37ebea876c63b8aabf8b91363080e223d3a"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/pricing_store.py",
+    "before": "875a229ff0a5ff48783b58799e498816ea55991376010c664e85d90afc2abd87",
+    "after": "eb57d42f03aaf7ff1b4a42330e11ffb2b8a44963fa8bfd9051c7f18b94c728cd"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotation_store.py",
+    "before": "c6fe78f1ab4d630aca9b21d7609b16d2e26e1b679567848d9b59b856c81f1c66",
+    "after": "05894a08b5832c8a06112d9a8d2b23a8dd7449d897e7517c8538de21fb50f3c2"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_store.py",
+    "before": "508fceb2ad5d4a6c5b545f51579606c938a1eb82563ab4221362ec6e788b4467",
+    "after": "eee2aee049858b105c2878f58beb748174adae3bb9aab78980c20d839f6ad8df"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/state_integrity.py",
+    "before": "cc9907b6f03ac595ae15bd75420c994263ea1234853c8caaa30972dee2f68ebb",
+    "after": "33ed5504e65bdd7b2491acdcc80b9b9b4a6f40e92dfd4edf6f6c39d5d8515bc2"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/tests/test_pool08_event_integrity.py",
+    "before": null,
+    "after": "38abdb626a392a7cf2dd81ab315df741c625657e765846aff63a05a9b83c855a"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/capture_store.py",
+    "before": "abffb8ecab46fe8ca4f404dc8ff19cdc86ad0d4598b006740686191d4500c252",
+    "after": "f114e1d6639ae4575cd81590c49e7e82370a8c63491aa1765d1c7cea5dbecab4"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landing_store.py",
+    "before": "31a7fa345461e4f813207ce502dea7ece386c8640b531f68a1ec92c03d144516",
+    "after": "937febf39155406d613159885217e5e93e288287bd256b6192128c6ba55ed5e6"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/library_store.py",
+    "before": "58bb4ae506ffc0d3c34a16dfc44d0a8c5136778f32fc2fee9f83e530210de772",
+    "after": "1884a5e6fe7f01a29ac17d7650d0950d8b7260e11dd68bab6c89d5e021496e3e"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/opportunity_store.py",
+    "before": "4a1fa3942f35014f8434f1af0e6f37bce208718de27fa9cac2fb86e8e5787052",
+    "after": "fd87f2e0b3ea19162dc7368e43b5116a39dd327f0f1b790a318b9060e469bb9e"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/payment_store.py",
+    "before": "38e4381f64117baa5354d3f34e3073e64709a9f094410fb7560a399f693455f3",
+    "after": "90df7fb1892770014bb02ef09b599df954b724f42c061ec69c3b72ccf429150c"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/pricing_store.py",
+    "before": "ea64b64937d5c7a185f906b7c68a6ea9514ec802a59c16f0b295cc0862da7627",
+    "after": "92bc1dd9990e72a6931a6fa216f5923410b0c226e1dabcfd3394e3681453b800"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotation_store.py",
+    "before": "7765694279dd7f9bd1675a0c8363dff887b2723f4bdd7ca319d8f339e9ba8b58",
+    "after": "4ccaf30e0e42e2d80a749f93d57f554c6ac6b7d2f79a47171695f1ff55b6a118"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales_store.py",
+    "before": "8d66b9e4e02eb961be5f0bb0664227fd0102c293e3185f423b056cc86e555b13",
+    "after": "dd2f02d2f765d3227816237c6b537f229f8998c424ffccd3b5fbb7d106bc6332"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/state_integrity.py",
+    "before": "cc9907b6f03ac595ae15bd75420c994263ea1234853c8caaa30972dee2f68ebb",
+    "after": "33ed5504e65bdd7b2491acdcc80b9b9b4a6f40e92dfd4edf6f6c39d5d8515bc2"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_event_cases.py",
+    "before": null,
+    "after": "ab31641daf82dad71cbcf1b5fa5a99356e0c6773556ffbebcb13aa6ac2cb8482"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_event_native_check.py",
+    "before": null,
+    "after": "fd292e387bce723bd40390ae879e184cd564db9e7e55a5675758ff8129bb6ab8"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_opportunity_recovery_browser_check.py",
+    "before": null,
+    "after": "704eaddc4365ff607fe1687ed2b76edaa33fd7d13ca6dbe65b0b1dcbf2949bd4"
+  },
+  {
+    "path": "DESKTOP/tools/flet_preview/web-manifest.json",
+    "before": "e2f761fe89a84773b6c24bc89fbd80c48fb5c7434fd44c9d601c8bc2821da85b",
+    "after": "cde62cdd89da98ef5cd67f8182602bcb5fa5a06daba2f20c74cd893ae9abcc2e"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-crm.js",
+    "before": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4",
+    "after": "ef0c6aa3bca2192afc3e63386c6eb783e5f3391af54d4afec6a1eacf54b69e2a"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-opportunities.js",
+    "before": "6f2f4f704562b40139fe4139386ebab9b96786c5b0d029ac0539d13d7254fe3a",
+    "after": "bafa99c4fff932e6a6063670b000db00557dd30cd5b28c4142d19d731aa10a35"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/deployment/manifest.json",
+    "before": "d20bd1bda3341559312ddb5e665f911c7ba19045d319091fff8acabe2a9bfbee",
+    "after": "422f02e0664fb1cfa18f6262502454539b01526156f8e2b51d543f265ed49f1c"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-crm.js",
+    "before": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4",
+    "after": "ef0c6aa3bca2192afc3e63386c6eb783e5f3391af54d4afec6a1eacf54b69e2a"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-opportunities.js",
+    "before": "6f2f4f704562b40139fe4139386ebab9b96786c5b0d029ac0539d13d7254fe3a",
+    "after": "bafa99c4fff932e6a6063670b000db00557dd30cd5b28c4142d19d731aa10a35"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-crm.js",
+    "before": "b44d620e681758c13a9e94661ff1181b4cb6f4baa2b8ba9298c7574d302e04a4",
+    "after": "ef0c6aa3bca2192afc3e63386c6eb783e5f3391af54d4afec6a1eacf54b69e2a"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-opportunities.js",
+    "before": "6f2f4f704562b40139fe4139386ebab9b96786c5b0d029ac0539d13d7254fe3a",
+    "after": "bafa99c4fff932e6a6063670b000db00557dd30cd5b28c4142d19d731aa10a35"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_opportunity_recovery_browser.cjs",
+    "before": null,
+    "after": "8e7527a82eb4b1612d6271cc1504f4f6087fc89e09059fc144317ae752b73d2d"
+  }
+]

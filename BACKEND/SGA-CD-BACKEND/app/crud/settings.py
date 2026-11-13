@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 # Add SGA-CD-DB.git to path if needed for settings model
-db_git_path = Path(__file__).resolve().parents[4] / "DB" / "SGA-CD-DB.git"
+db_git_path = Path(__file__).resolve().parents[4] / 'BACKEND/DB/SGA-CD-DB.git'
 if str(db_git_path) not in sys.path:
     sys.path.insert(0, str(db_git_path))
 

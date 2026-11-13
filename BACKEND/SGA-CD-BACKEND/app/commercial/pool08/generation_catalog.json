@@ -1,0 +1,122 @@
+{
+  "schema": "commercial-generation-catalog-v1",
+  "source_manifest": "BACKEND/IA/llm/manifest.json",
+  "source_manifest_sha256": "1165601e7774b054c4c5c9615b1dfe6925de4a3986609f69d6b98e3e3be2b2e7",
+  "runtime_qualified_here": false,
+  "models": [
+    {
+      "id": "gemma3-4b-desktop",
+      "name": "Gemma 3 4B Instruct",
+      "variant": "gemma3:4b",
+      "runtime": "Ollama v0.40+",
+      "platform": "Desktop (Windows, Linux, macOS)",
+      "historical_verification_status": "inferencia_verificada",
+      "declared_artifact_hash": "sha256:68ceab7e468a356230f4a8bdf496884148b17b6a7182fb0671607f2ef8c1e403",
+      "live_runtime_verified": false,
+      "automatic_activation": false
+    },
+    {
+      "id": "phi3-mini-onnx-lab",
+      "name": "Phi-3 Mini 4K Instruct ONNX",
+      "variant": "cpu-int4-rtn-block-32-acc-level-4",
+      "runtime": "onnxruntime_genai 0.6.0",
+      "platform": "AI-Lab / Android PoC",
+      "historical_verification_status": "inferencia_verificada_en_laboratorio",
+      "declared_artifact_hash": "sha256:385cd1b908a0d2f8634e86d30236f6dbb7ae660eb3943fd1ef5bdc3847326480",
+      "live_runtime_verified": false,
+      "automatic_activation": false
+    },
+    {
+      "id": "phi3-mini-gguf-mobile",
+      "name": "Phi-3 Mini 4K Instruct GGUF",
+      "variant": "Phi-3-mini-4k-instruct.Q4_K_M.gguf",
+      "runtime": "LlamaCpp / Flet Mobile",
+      "platform": "Android Mobile App",
+      "historical_verification_status": "disponible",
+      "declared_artifact_hash": "sha256:e839e557b49bd11ff5a43ff32906bb187b5a8e03e5cbb463690d56b026850d99",
+      "live_runtime_verified": false,
+      "automatic_activation": false
+    }
+  ],
+  "engines": [
+    {
+      "id": "ollama",
+      "adapters": [
+        "ollama"
+      ],
+      "tasks": [
+        "SCRIPT",
+        "COPY"
+      ],
+      "source": "BACKEND/SGA-CD-BACKEND/app/services/ai_router.py"
+    },
+    {
+      "id": "colibri",
+      "adapters": [
+        "colibri"
+      ],
+      "tasks": [
+        "SCRIPT",
+        "COPY"
+      ],
+      "source": "BACKEND/infra/node6/engine.py"
+    },
+    {
+      "id": "gemini-node6",
+      "adapters": [
+        "node6-text",
+        "node6-image"
+      ],
+      "tasks": [
+        "SCRIPT",
+        "COPY",
+        "IMAGE"
+      ],
+      "requires_explicit_remote_approval": true,
+      "declared_models": [
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-image"
+      ],
+      "source": "docs/NODO6.md"
+    },
+    {
+      "id": "open-generative-ai",
+      "adapters": [
+        "open-gen-ai"
+      ],
+      "tasks": [
+        "IMAGE"
+      ],
+      "requires_explicit_remote_approval": true,
+      "source": "BACKEND/SGA-CD-BACKEND/app/services/ai_router.py"
+    },
+    {
+      "id": "skyreels-v2",
+      "adapters": [],
+      "tasks": [
+        "VIDEO",
+        "REEL"
+      ],
+      "state": "GC-014_OUTSIDE_THIS_TASK",
+      "source": "BACKEND/SGA-CD-BACKEND/app/services/skyreels_service.py"
+    }
+  ],
+  "additional_documented_models": [
+    {
+      "model": "phi3:mini",
+      "state": "ROUTER_CONFIGURATION_NOT_LIVE_VALIDATION",
+      "source": "BACKEND/SGA-TUR-BAKEND/ai_models/llm_router.py"
+    },
+    {
+      "model": "phi-4",
+      "state": "ROUTER_CONFIGURATION_NOT_LIVE_VALIDATION",
+      "source": "BACKEND/SGA-TUR-BAKEND/ai_models/llm_router.py"
+    }
+  ],
+  "openai_declaration": {
+    "source": "BACKEND/SGA-CD-BACKEND/app/services/ai_router.py",
+    "implementation_verified": false,
+    "automatic_fallback": false
+  },
+  "not_a_model_installation": true
+}

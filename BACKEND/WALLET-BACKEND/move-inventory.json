@@ -1,0 +1,2029 @@
+{
+  "version": 1,
+  "notice": "Tracked wallet sources moved; imports/tests may be adapted afterward. No databases, credentials or upstream desktop engine copies moved.",
+  "files": [
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/__init__.py",
+      "to": "WALLET-BACKEND/apps/wallet/__init__.py",
+      "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/admin.py",
+      "to": "WALLET-BACKEND/apps/wallet/admin.py",
+      "sha256_before": "f9831002e3b28cfc21b4ee528d9dabea0d59f5ca3004d69e913985c8274fd244"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/agents/__init__.py",
+      "to": "WALLET-BACKEND/apps/wallet/agents/__init__.py",
+      "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/agents/capitanes.py",
+      "to": "WALLET-BACKEND/apps/wallet/agents/capitanes.py",
+      "sha256_before": "30f06b2437f47a98cf8336ac93ce46aaadf01097ddc1ef632c466c9da4c2ca8e"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/agents/coronel.py",
+      "to": "WALLET-BACKEND/apps/wallet/agents/coronel.py",
+      "sha256_before": "e15180389ee93599a0e510c16563c7eeffa271aeff391ac0d96660acb4229f81"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/agents/sargentos.py",
+      "to": "WALLET-BACKEND/apps/wallet/agents/sargentos.py",
+      "sha256_before": "42f2888a688fe150f559ffe978d50be75235f8be82812f1b1451766a850de2f1"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/agents/soldados.py",
+      "to": "WALLET-BACKEND/apps/wallet/agents/soldados.py",
+      "sha256_before": "ca1585e5738d236c0fd6ffef6e1644da2b2b76b0cd314d83c6ff151ba99bc425"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/agents/tenientes.py",
+      "to": "WALLET-BACKEND/apps/wallet/agents/tenientes.py",
+      "sha256_before": "23ee6a7c0f69e4efb3a6542b4b4c9904828509917ecfad623437ae7f05219ca4"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/apps.py",
+      "to": "WALLET-BACKEND/apps/wallet/apps.py",
+      "sha256_before": "02eb4db9dde79e7e290743ea25a94eda02feb2ad7bdfdb263a2637ba5a3fa79f"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/commissions_engine.py",
+      "to": "WALLET-BACKEND/apps/wallet/commissions_engine.py",
+      "sha256_before": "e65f13c6cf7a1c4f86893653d5617e05e1a755b9daee66a77b13454959f721e3"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/handlers.py",
+      "to": "WALLET-BACKEND/apps/wallet/handlers.py",
+      "sha256_before": "79827e5a08eedbbdce8b9f34e17043e96750ff814e2fd17bc09fec43e745075d"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/migrations/0001_full_reset.py",
+      "to": "WALLET-BACKEND/apps/wallet/migrations/0001_full_reset.py",
+      "sha256_before": "8047d14ad05679d9c54fef6152f6f061aec25890343b9e41ded0c47f4916711e"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/migrations/__init__.py",
+      "to": "WALLET-BACKEND/apps/wallet/migrations/__init__.py",
+      "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/models.py",
+      "to": "WALLET-BACKEND/apps/wallet/models.py",
+      "sha256_before": "019ef0e9bec55b04095e82e2b4bfcaadc9f9a42c6662b665d05f8505c6fb38e8"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/reality_test_17_wallet.py",
+      "to": "WALLET-BACKEND/apps/wallet/reality_test_17_wallet.py",
+      "sha256_before": "70f5acf10a66c6b1ad0ee0b8490cec404ecc3824497afbca817c74ea5ba06777"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/serializers.py",
+      "to": "WALLET-BACKEND/apps/wallet/serializers.py",
+      "sha256_before": "4f0731ff0ec904f6918dfdd25025acd4127550aadfdee79efa898df137a30158"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services.py",
+      "to": "WALLET-BACKEND/apps/wallet/services.py",
+      "sha256_before": "a4efc96546f3c5cbd7977b3da8dcaa490ed4dbeef71a3db0f47e3c97571025dd"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/__init__.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/__init__.py",
+      "sha256_before": "cf352f79e5656e35e51d64396231b660a517db339732ffc12e018073081e6023"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/android_attestation.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/android_attestation.py",
+      "sha256_before": "c3347da7647cafddcc81091ef1208e8e4bca4303b23ea14869d3f1571c62da5d"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/attestation_config.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/attestation_config.py",
+      "sha256_before": "53a1afa1581f77412dd66cb90c085aba5002df7b7c4ca3ffd2853952e199e8db"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/device_approvals.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/device_approvals.py",
+      "sha256_before": "61935136c5a5bddd0c0869e0b76faeb328265d304146ab3551e73561479ad199"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/enrollment_authorization.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/enrollment_authorization.py",
+      "sha256_before": "5955219fdc6f1581a99f04830dbceadaf4aa4a5037b3ad1bfa25f2c6d4b45fbb"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/internal_transfer.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/internal_transfer.py",
+      "sha256_before": "6103e2a95faee397dba6d416785dabad7edb3605df2d17befc93db2e0e181644"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/wallet_interface.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/wallet_interface.py",
+      "sha256_before": "7da32406c944d637d6cd75aaddfd88a787ffd2456e7e9a7eff8a03c6d623d069"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/services/wallet_service.py",
+      "to": "WALLET-BACKEND/apps/wallet/services/wallet_service.py",
+      "sha256_before": "1b3601a974205ba2bb2874d2d651ded15532890499c0c4311fef58735bbc3870"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/signals.py",
+      "to": "WALLET-BACKEND/apps/wallet/signals.py",
+      "sha256_before": "99b6d038a1ede32e6a535702e1ed85abe54d4b68a68b7eb4b03b9f3395e17147"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/tests.py",
+      "to": "WALLET-BACKEND/apps/wallet/tests.py",
+      "sha256_before": "495cdef9a0293cdf1edbb0690fe74f37bebe53b2a6f3f46ec20c4cf2dccd1ae6"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/urls.py",
+      "to": "WALLET-BACKEND/apps/wallet/urls.py",
+      "sha256_before": "570137ae79a4941c589aa9976e9559188307b2b0a16dbed9f5a072b51c008d05"
+    },
+    {
+      "from": "BACKEND/SGA-TUR-BAKEND/apps/wallet/views.py",
+      "to": "WALLET-BACKEND/apps/wallet/views.py",
+      "sha256_before": "0db9c61e2c128e9d5339a620aa886063be49caa91308d247322bd5258b54bb2c"
+    },
+    {
+      "from": "BACKEND/deployment/fresh_migrations/wallet/0001_initial.py",
+      "to": "WALLET-BACKEND/fresh_migrations/wallet/0001_initial.py",
+      "sha256_before": "dfa69d07004cc663486a8fc12bda39fe6f863a71952ac8ae7c780b69284588e3"
+    },
+    {
+      "from": "BACKEND/deployment/fresh_migrations/wallet/0002_wallet_currency_wallettransferintent.py",
+      "to": "WALLET-BACKEND/fresh_migrations/wallet/0002_wallet_currency_wallettransferintent.py",
+      "sha256_before": "5258900559bfba7e5fb224094f775154ed572ab6210c9b4bc6428d465241062b"
+    },
+    {
+      "from": "BACKEND/deployment/fresh_migrations/wallet/0003_walletdevicecredential_walletdevicechallenge_and_more.py",
+      "to": "WALLET-BACKEND/fresh_migrations/wallet/0003_walletdevicecredential_walletdevicechallenge_and_more.py",
+      "sha256_before": "28d34aa9b45acf12ea898795edfa5979afdad3c73e7ec1041edac9a0ac13456b"
+    },
+    {
+      "from": "BACKEND/deployment/fresh_migrations/wallet/0004_device_trust_and_independent_enrollment.py",
+      "to": "WALLET-BACKEND/fresh_migrations/wallet/0004_device_trust_and_independent_enrollment.py",
+      "sha256_before": "2ac2bdf3f03acc5505d678b4d0939d6134789e3eea7f2da893acb676a51901ec"
+    },
+    {
+      "from": "BACKEND/deployment/fresh_migrations/wallet/__init__.py",
+      "to": "WALLET-BACKEND/fresh_migrations/wallet/__init__.py",
+      "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "from": "pool-01-cryptography/README.md",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/README.md",
+      "sha256_before": "efc04f7d6eb84a42fef820652a48b451d8cab71b2bed82eca9dfe9dc975d885a"
+    },
+    {
+      "from": "pool-01-cryptography/android/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/android/build.gradle.kts",
+      "sha256_before": "a056d9ed4f03de520620c32a09797792ab8374f5855a6fb1c221759d5bdf7b6f"
+    },
+    {
+      "from": "pool-01-cryptography/android/src/main/AndroidManifest.xml",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/AndroidManifest.xml",
+      "sha256_before": "867489096c069cdeee7959751ef1ac2006bf02f2fb2e59360704d346d79f2406"
+    },
+    {
+      "from": "pool-01-cryptography/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+      "sha256_before": "dcfda0ad1a67ec17be1173e543486da52f5113a9091cde1a87f60b870113d443"
+    },
+    {
+      "from": "pool-01-cryptography/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+      "sha256_before": "6896afa1d02112e1819938d5f9d13a97b55701ed220d6f00ce2914eba52a67fc"
+    },
+    {
+      "from": "pool-01-cryptography/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+      "sha256_before": "96604bf50e3f28ea5e311c4f2b12a73b42e1631572bb5c06e9f9e8d56ffebc49"
+    },
+    {
+      "from": "pool-01-cryptography/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+      "sha256_before": "4e3381b6835181fd70425ba42ae5717bd30dab34867030e13837e8a0817b2856"
+    },
+    {
+      "from": "pool-01-cryptography/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/build.gradle.kts",
+      "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/README.md",
+      "to": "WALLET-FRONTEND/native_bridge/README.md",
+      "sha256_before": "d61faa54b32d00fee954412ff5aac2d8cbb746473b3d31ff7cf6246aec111891"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/example/main.py",
+      "to": "WALLET-FRONTEND/native_bridge/example/main.py",
+      "sha256_before": "ca4273b94d83dd00f0ed71c6366c4f4be0be172ab0fa60bf8cf4f3ae11a8e8a8"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/example/pyproject.toml",
+      "to": "WALLET-FRONTEND/native_bridge/example/pyproject.toml",
+      "sha256_before": "66768bcdf2f0439e5999d38b12067c11f468bcb508aaa3a872383047e6294f9b"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/make_flutter_host.py",
+      "to": "WALLET-FRONTEND/native_bridge/make_flutter_host.py",
+      "sha256_before": "3a31694b448f528c046fa654d0336a9367849721659ea26785edb46112d33a5e"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/prepare_flet_template.py",
+      "to": "WALLET-FRONTEND/native_bridge/prepare_flet_template.py",
+      "sha256_before": "6ff69df1222d5cac5aa849ea54df1c95647235c4571035b514e5051cfdba106d"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/pyproject.toml",
+      "to": "WALLET-FRONTEND/native_bridge/pyproject.toml",
+      "sha256_before": "712183488e983200cfc34705f2b22f15c99bc4fb033773894b04cee2cafed768"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/build.gradle",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/build.gradle",
+      "sha256_before": "35c10a33707d810e7922fec69575b1b16647c65e2b3992a10e94c0adf0cf1f6a"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/AndroidManifest.xml",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/AndroidManifest.xml",
+      "sha256_before": "867489096c069cdeee7959751ef1ac2006bf02f2fb2e59360704d346d79f2406"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+      "sha256_before": "52a3fabec2675ca210c0d60a59363f90d4a15e3bc3f6a07f164e2e39cc5a548e"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+      "sha256_before": "78ea7114e81a3806a13312df7d6d37bd2577fd0e533e17b20de178cdd5a80df1"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+      "sha256_before": "df6250465ec64f73ca40ceab4c8c6994fd4ef33d94a78565ecb5ad41adc081e9"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+      "sha256_before": "76222f4312591b0f3e57cebc2238b14b9291b37656e8fb2bef6e3c043ed60124"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+      "sha256_before": "d831b33d760382ec0d8ca3c1c92859c858dbefd7e80de7048dba384afb86b53f"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+      "sha256_before": "f4518a05a23e19a30d5b9d91975129460a5f15ac8615f8f6df7325778b77eb82"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+      "sha256_before": "dcfda0ad1a67ec17be1173e543486da52f5113a9091cde1a87f60b870113d443"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+      "sha256_before": "6896afa1d02112e1819938d5f9d13a97b55701ed220d6f00ce2914eba52a67fc"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+      "sha256_before": "96604bf50e3f28ea5e311c4f2b12a73b42e1631572bb5c06e9f9e8d56ffebc49"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+      "sha256_before": "4e3381b6835181fd70425ba42ae5717bd30dab34867030e13837e8a0817b2856"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/bridge/SGAVaultPlugin.java",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/bridge/SGAVaultPlugin.java",
+      "sha256_before": "6723f83027a21b67a027357911821abab6de0bda4621f6f63549f48e37b19705"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Core/Envelope.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/Envelope.swift",
+      "sha256_before": "3697c2829f3f07f8c4f315275aac0695c82462d781036b2b33392be15665ebfe"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Core/PasswordKdf.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/PasswordKdf.swift",
+      "sha256_before": "1dd1dbeed4367e1882f13ab3f3a5e695b851cc7b43b782464e7b40067fb6a97b"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Core/SecureEnclaveVault.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/SecureEnclaveVault.swift",
+      "sha256_before": "5fe654f59e4b75622c814d6a08f0f239fc96d24b95523bd6867f2d51bb16a69e"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/AppleIntegrityGuard.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/AppleIntegrityGuard.swift",
+      "sha256_before": "0eeaee10429deaf4328aa31cf73dbfa90ab1103b39227b5637aa294a8fb705b5"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/IntegrityPolicy.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/IntegrityPolicy.swift",
+      "sha256_before": "1e88a86798ff0b4b8485a4f02bec328542334f3d02ac09a3ab8730ea8e54149d"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/AppleSensitiveScreen.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/AppleSensitiveScreen.swift",
+      "sha256_before": "fac5d64108dc8ab93f0ca28c81c26b727dd06bd8f1725708459f0060765788b7"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/OriginPinPolicy.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/OriginPinPolicy.swift",
+      "sha256_before": "002ccd5bf80e4c39c27df32b01d1fda897e920cd622ab30b21d6f593e2cb46d5"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/PinnedHTTPSClient.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/PinnedHTTPSClient.swift",
+      "sha256_before": "45471c6120ba96a9376269f1f17ad00d433a345af146d0efad510b52e4f758b8"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/Classes/SGAVaultPlugin.swift",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/SGAVaultPlugin.swift",
+      "sha256_before": "738f4682924bd1d97dc5210351f5c3d5e6c8fcf859386a4051c64a28be9c203e"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/ios/sgacd_vault.podspec",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/sgacd_vault.podspec",
+      "sha256_before": "46e3930d125a5e8b19dcaf1371175706b19ea7ab474ea338019cb6793e29c7f4"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/lib/sgacd_vault.dart",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/lib/sgacd_vault.dart",
+      "sha256_before": "8802658b86d93fa298ee1c06a3c359b1973f84bc868ad8a14d436523e456750e"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/lib/src/metadata_contract.dart",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/lib/src/metadata_contract.dart",
+      "sha256_before": "2889d4fa0ae269f44f62e0002b92f00ebd46f14a609a87062971456aede822d9"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/pubspec.yaml",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/pubspec.yaml",
+      "sha256_before": "c1f4545ad9237e4505c6bbd9da0c5e6c438d299c0c5214e7037ba5ef43ce1513"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/flutter/sgacd_vault/test/metadata_contract_test.dart",
+      "to": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/test/metadata_contract_test.dart",
+      "sha256_before": "a518b998ff907debb1e934c3b116882c2d325feb90baf5fbf78dfdd3a3f2a3c0"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/src/sgacd_vault/__init__.py",
+      "to": "WALLET-FRONTEND/native_bridge/src/sgacd_vault/__init__.py",
+      "sha256_before": "948e8842f4b92cf6e31d4b6a1bb7bfaf60ec7954296dc28a414e268c0a3eec53"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/sync_native.py",
+      "to": "WALLET-FRONTEND/native_bridge/sync_native.py",
+      "sha256_before": "e2df22a86c7247cb089ff42a6e9bc973821ef6be1f0b5070aad2a9fbaebc0815"
+    },
+    {
+      "from": "pool-01-cryptography/flet_bridge/tests/test_control.py",
+      "to": "WALLET-FRONTEND/native_bridge/tests/test_control.py",
+      "sha256_before": "067b11f4a242551b884542515b311362487bb4f89b3f842eacaa589d9a6d90cd"
+    },
+    {
+      "from": "pool-01-cryptography/ios/HostInfo.example.plist",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/ios/HostInfo.example.plist",
+      "sha256_before": "927ccdaa1a01c58ba829c4afdf7a033fe8f94f4b1f3364ad8b7cd622a0b0b5e0"
+    },
+    {
+      "from": "pool-01-cryptography/ios/Package.swift",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/ios/Package.swift",
+      "sha256_before": "e2993753cbc1972cfb01d4a44bcb4c40f20055783e63d4165c71ca35fb8c2010"
+    },
+    {
+      "from": "pool-01-cryptography/ios/Sources/SGAVault/Envelope.swift",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/Envelope.swift",
+      "sha256_before": "3697c2829f3f07f8c4f315275aac0695c82462d781036b2b33392be15665ebfe"
+    },
+    {
+      "from": "pool-01-cryptography/ios/Sources/SGAVault/PasswordKdf.swift",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/PasswordKdf.swift",
+      "sha256_before": "1dd1dbeed4367e1882f13ab3f3a5e695b851cc7b43b782464e7b40067fb6a97b"
+    },
+    {
+      "from": "pool-01-cryptography/ios/Sources/SGAVault/SecureEnclaveVault.swift",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/SecureEnclaveVault.swift",
+      "sha256_before": "5fe654f59e4b75622c814d6a08f0f239fc96d24b95523bd6867f2d51bb16a69e"
+    },
+    {
+      "from": "pool-01-cryptography/ios/Tests/SGAVaultTests/CryptoTests.swift",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/ios/Tests/SGAVaultTests/CryptoTests.swift",
+      "sha256_before": "bdf1032280fea2ea5908408e86b7d6e5243d2e7a234b76287c2db902916fe817"
+    },
+    {
+      "from": "pool-01-cryptography/settings.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/settings.gradle.kts",
+      "sha256_before": "fe60375c754d608fb284122b042027fd2b2717df7cfad5bee0666bbd42deb53b"
+    },
+    {
+      "from": "pool-01-cryptography/tests/java/co/analematica/vault/VaultCryptoCheck.java",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/tests/java/co/analematica/vault/VaultCryptoCheck.java",
+      "sha256_before": "42258ab0a53d2b9899fa1c1393c97b10d618a8cd9596392190a6ffcd89f65b24"
+    },
+    {
+      "from": "pool-01-cryptography/tests/verify.py",
+      "to": "WALLET-MOVIL/native/pool-01-cryptography/tests/verify.py",
+      "sha256_before": "e13c4114daec897a3b42b83c20c9b02fa5d6d7c6fb1d1e50ebc675495040c698"
+    },
+    {
+      "from": "pool-02-biometrics/DEVICE_BOUND_FINTECH.md",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/DEVICE_BOUND_FINTECH.md",
+      "sha256_before": "f5ed0377a7962ab7ee178c4aa24b78f1bf7339d5954303a5bbf77ea2b5a51f2a"
+    },
+    {
+      "from": "pool-02-biometrics/README.md",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/README.md",
+      "sha256_before": "7d4009e94717ab96c48802f6edde8e68053cb473a7dee4fb6c2ce626a654cc2f"
+    },
+    {
+      "from": "pool-02-biometrics/android/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/android/build.gradle.kts",
+      "sha256_before": "5fdec48e4c19b3016b8419e7fe9413ef9d9f7d6551ca60ef889f75199da0b620"
+    },
+    {
+      "from": "pool-02-biometrics/android/src/main/AndroidManifest.xml",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/android/src/main/AndroidManifest.xml",
+      "sha256_before": "2a5e012b9c29cd7c829458c364d2ca6e4b56a1e4af67fca22d37d4a8cbfec40e"
+    },
+    {
+      "from": "pool-02-biometrics/android/src/main/java/co/analematica/approval/AndroidApprovalKey.java",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/android/src/main/java/co/analematica/approval/AndroidApprovalKey.java",
+      "sha256_before": "5274cdc478268cb2465cf81ceee4ad44e921f97d7e2a6f42aacc56dda252de9a"
+    },
+    {
+      "from": "pool-02-biometrics/android/src/main/java/co/analematica/approval/ApprovalMessage.java",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/android/src/main/java/co/analematica/approval/ApprovalMessage.java",
+      "sha256_before": "a5c567f16db4f8e4d58418f1925546eef54ed22f14a42a0d6850dbdf64112cdc"
+    },
+    {
+      "from": "pool-02-biometrics/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/build.gradle.kts",
+      "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+    },
+    {
+      "from": "pool-02-biometrics/ios/Package.swift",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/ios/Package.swift",
+      "sha256_before": "02d50a54dc63e49ad93fa68ec04e4f1bf1248ced32adefea7b49c741f50e9b3d"
+    },
+    {
+      "from": "pool-02-biometrics/ios/Sources/SGAApproval/AppleApprovalKey.swift",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/ios/Sources/SGAApproval/AppleApprovalKey.swift",
+      "sha256_before": "b3c982740d3b0a4c013202a2bb802ba57bec55ff8bda555766b310e0936c3342"
+    },
+    {
+      "from": "pool-02-biometrics/ios/Sources/SGAApproval/ApprovalMessage.swift",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/ios/Sources/SGAApproval/ApprovalMessage.swift",
+      "sha256_before": "f9eb5908d1784e2d774069cb57b4d95afd10d2fc1fbd7a3af9cb54ea9a0d42a6"
+    },
+    {
+      "from": "pool-02-biometrics/ios/Tests/SGAApprovalTests/MessageTests.swift",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/ios/Tests/SGAApprovalTests/MessageTests.swift",
+      "sha256_before": "3464376abf963a5333fde2059f03021f932d2e8fc7c3cc5b751a9cf05d8e808f"
+    },
+    {
+      "from": "pool-02-biometrics/settings.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/settings.gradle.kts",
+      "sha256_before": "4735c7950ec928cae1a2d0e652276cbeab74eb09ed90533d059db1e60e57dd51"
+    },
+    {
+      "from": "pool-02-biometrics/tests/java/co/analematica/approval/ApprovalCheck.java",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/tests/java/co/analematica/approval/ApprovalCheck.java",
+      "sha256_before": "6159ac79a722227affea29b61fd853a2f3b01a33a0813e4426aa5dea5b9349cf"
+    },
+    {
+      "from": "pool-02-biometrics/tests/verify.py",
+      "to": "WALLET-MOVIL/native/pool-02-biometrics/tests/verify.py",
+      "sha256_before": "51931a81d9878960db50f2fe0c6d9de03f20dfd903aa1490150aa3c1d1303031"
+    },
+    {
+      "from": "pool-03-integrity/README.md",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/README.md",
+      "sha256_before": "a193e48e169f5357d0ba6bf5a090f7de3498412a619a52edb5d189797d54b873"
+    },
+    {
+      "from": "pool-03-integrity/android/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/android/build.gradle.kts",
+      "sha256_before": "f66c65ed2278b71c9afbf4acb197c8a324a746d055c0a5fd53d7cc16fc368992"
+    },
+    {
+      "from": "pool-03-integrity/android/src/main/AndroidManifest.xml",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/android/src/main/AndroidManifest.xml",
+      "sha256_before": "343d5be1ac17cdd45d1a2f2ddc616c509290e655869125a9422a96d88aa66066"
+    },
+    {
+      "from": "pool-03-integrity/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+      "sha256_before": "52a3fabec2675ca210c0d60a59363f90d4a15e3bc3f6a07f164e2e39cc5a548e"
+    },
+    {
+      "from": "pool-03-integrity/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+      "sha256_before": "78ea7114e81a3806a13312df7d6d37bd2577fd0e533e17b20de178cdd5a80df1"
+    },
+    {
+      "from": "pool-03-integrity/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/build.gradle.kts",
+      "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+    },
+    {
+      "from": "pool-03-integrity/ios/SGAIntegrity/Package.swift",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Package.swift",
+      "sha256_before": "4686946b3d1187881e72d56ffbb527a052fc889c823f697c99a400ef193d34df"
+    },
+    {
+      "from": "pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/AppleIntegrityGuard.swift",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/AppleIntegrityGuard.swift",
+      "sha256_before": "0eeaee10429deaf4328aa31cf73dbfa90ab1103b39227b5637aa294a8fb705b5"
+    },
+    {
+      "from": "pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/IntegrityPolicy.swift",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/IntegrityPolicy.swift",
+      "sha256_before": "1e88a86798ff0b4b8485a4f02bec328542334f3d02ac09a3ab8730ea8e54149d"
+    },
+    {
+      "from": "pool-03-integrity/ios/SGAIntegrity/Tests/SGAIntegrityTests/PolicyTests.swift",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Tests/SGAIntegrityTests/PolicyTests.swift",
+      "sha256_before": "18b521d4a4435a083e72a51184a9325142b0a6d2b11375f8fb9fbaffa5fc5607"
+    },
+    {
+      "from": "pool-03-integrity/release/README.md",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/release/README.md",
+      "sha256_before": "2694469f2f1262b1e7466cbec3ea5b8c0e231408eb8f121f727f0f57e502e310"
+    },
+    {
+      "from": "pool-03-integrity/release/verify_release.py",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/release/verify_release.py",
+      "sha256_before": "d705af3970e3708af2f83e79695235f1e22afa933598b569782e8a486020f615"
+    },
+    {
+      "from": "pool-03-integrity/settings.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/settings.gradle.kts",
+      "sha256_before": "558650f48427e5facf353499ecebdeafbc941b0b552fcf79b98c13b92ca2fcf9"
+    },
+    {
+      "from": "pool-03-integrity/tests/java/co/analematica/integrity/IntegrityCheck.java",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/tests/java/co/analematica/integrity/IntegrityCheck.java",
+      "sha256_before": "70d370f1bc89cca6215cdc20e1b2398aafdb66c89cb7428aaf3670d828ae4464"
+    },
+    {
+      "from": "pool-03-integrity/tests/test_release.py",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/tests/test_release.py",
+      "sha256_before": "039597c6a2ee5a0184819cab77855d73f502e336f6faa6eede176a7bd3026224"
+    },
+    {
+      "from": "pool-03-integrity/tests/verify.py",
+      "to": "WALLET-MOVIL/native/pool-03-integrity/tests/verify.py",
+      "sha256_before": "1f013b5be93d6e5f1eab9c41007752f96d337f0afe2d04400df1b06d50599aaf"
+    },
+    {
+      "from": "pool-04-anti-phishing/README.md",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/README.md",
+      "sha256_before": "32ef38391187d4d17bb9dae68fe2ae0449c0991df6f8dab2fb2283ffdbaf45c2"
+    },
+    {
+      "from": "pool-04-anti-phishing/android/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/android/build.gradle.kts",
+      "sha256_before": "bbd689b2585dfb131a5969c7ecdcd27df53765a3cb51b0e0fed2301bf35947b0"
+    },
+    {
+      "from": "pool-04-anti-phishing/android/src/main/AndroidManifest.xml",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/AndroidManifest.xml",
+      "sha256_before": "91fb6bdc80a3a8cba5ed4027fefbc59cce5b72d21d441a495a74893a5594c53c"
+    },
+    {
+      "from": "pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+      "sha256_before": "df6250465ec64f73ca40ceab4c8c6994fd4ef33d94a78565ecb5ad41adc081e9"
+    },
+    {
+      "from": "pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+      "sha256_before": "76222f4312591b0f3e57cebc2238b14b9291b37656e8fb2bef6e3c043ed60124"
+    },
+    {
+      "from": "pool-04-anti-phishing/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+      "sha256_before": "d831b33d760382ec0d8ca3c1c92859c858dbefd7e80de7048dba384afb86b53f"
+    },
+    {
+      "from": "pool-04-anti-phishing/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+      "sha256_before": "f4518a05a23e19a30d5b9d91975129460a5f15ac8615f8f6df7325778b77eb82"
+    },
+    {
+      "from": "pool-04-anti-phishing/build.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/build.gradle.kts",
+      "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+    },
+    {
+      "from": "pool-04-anti-phishing/ios/SGAProtection/Package.swift",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Package.swift",
+      "sha256_before": "fba27ecc99c0eaca2f1cf917d61027967d181ba744fd28501f5d6af862b3922a"
+    },
+    {
+      "from": "pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/AppleSensitiveScreen.swift",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/AppleSensitiveScreen.swift",
+      "sha256_before": "fac5d64108dc8ab93f0ca28c81c26b727dd06bd8f1725708459f0060765788b7"
+    },
+    {
+      "from": "pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/OriginPinPolicy.swift",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/OriginPinPolicy.swift",
+      "sha256_before": "002ccd5bf80e4c39c27df32b01d1fda897e920cd622ab30b21d6f593e2cb46d5"
+    },
+    {
+      "from": "pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/PinnedHTTPSClient.swift",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/PinnedHTTPSClient.swift",
+      "sha256_before": "45471c6120ba96a9376269f1f17ad00d433a345af146d0efad510b52e4f758b8"
+    },
+    {
+      "from": "pool-04-anti-phishing/ios/SGAProtection/Tests/SGAProtectionTests/ProtectionTests.swift",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Tests/SGAProtectionTests/ProtectionTests.swift",
+      "sha256_before": "c49f32cf0da84c64d44651890ba2ff4ce17f19947f944299e7c364760379bed7"
+    },
+    {
+      "from": "pool-04-anti-phishing/settings.gradle.kts",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/settings.gradle.kts",
+      "sha256_before": "ead6d0fb4044f1daf728ca92372cdf9fa8490d83eeaa541b8031c647d1656c75"
+    },
+    {
+      "from": "pool-04-anti-phishing/tests/java/co/analematica/protection/LocalTLSCheck.java",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/java/co/analematica/protection/LocalTLSCheck.java",
+      "sha256_before": "63e0f1f4aca382527476416cef9e5ad833a879b0bc7bea51da0fe1266954ef2e"
+    },
+    {
+      "from": "pool-04-anti-phishing/tests/java/co/analematica/protection/ProtectionCheck.java",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/java/co/analematica/protection/ProtectionCheck.java",
+      "sha256_before": "aa9c741dc1acd5018b58b6da86f960838a4035acb695139a2f06b396c1786f5c"
+    },
+    {
+      "from": "pool-04-anti-phishing/tests/local_tls.py",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/local_tls.py",
+      "sha256_before": "5f67dd58f5387b63ea253db8548cfec66d598626ecc0f47304b8f3e9d02bd545"
+    },
+    {
+      "from": "pool-04-anti-phishing/tests/verify.py",
+      "to": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/verify.py",
+      "sha256_before": "a63b6c40ade3e9daf7cef8edc64227bc86130566de3565db6375d7da68fad816"
+    },
+    {
+      "from": "BACKEND/deployment/tests/wallet_security_check.py",
+      "to": "WALLET-BACKEND/tests/wallet_security_check.py",
+      "sha256_before": "87ad210aa4a3f380ffa6e874f2c066380cf0f748ab8c4a6e4e9bfe0d6e769051"
+    },
+    {
+      "from": "BACKEND/deployment/tests/device_approval_check.py",
+      "to": "WALLET-BACKEND/tests/device_approval_check.py",
+      "sha256_before": "49eff90f24aa39adecef713091c1ee527605f8f264870a25cd9939510647372e"
+    },
+    {
+      "from": "BACKEND/deployment/tests/attestation_security_check.py",
+      "to": "WALLET-BACKEND/tests/attestation_security_check.py",
+      "sha256_before": "0595bced3ef1818c52b48053a8139822075897601e91361d38e1d888e46dca46"
+    }
+  ],
+  "layer_relocation_2026_11_11": {
+    "destinations": {
+      "WALLET-BACKEND": "BACKEND/WALLET-BACKEND",
+      "WALLET-DESKTOP": "DESKTOP/WALLET-DESKTOP",
+      "WALLET-FRONTEND": "FRONTEND/WALLET-FRONTEND",
+      "WALLET-MOVIL": "MOVILES/WALLET-MOVIL"
+    },
+    "verified_before_adaptations": true,
+    "files": [
+      {
+        "from": "WALLET-BACKEND/ACCESS-MODEL.md",
+        "to": "BACKEND/WALLET-BACKEND/ACCESS-MODEL.md",
+        "sha256_before": "ae885d22e6886b5f46a34c9e07938ee9837526bacb2780ab0506f8f55b117480"
+      },
+      {
+        "from": "WALLET-BACKEND/README.md",
+        "to": "BACKEND/WALLET-BACKEND/README.md",
+        "sha256_before": "1883f4e23fa30fb6faf5b9ddf3e649f7eb579252d09809725b4a8569881c380f"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__init__.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__init__.py",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/admin.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/admin.cpython-312.pyc",
+        "sha256_before": "a1aa3851dc08b8e6f86633656c290d930fafecc2f798cf96137717cdd7a3fc9a"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/apps.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/apps.cpython-312.pyc",
+        "sha256_before": "60abfa0455e76a4f536553a491a067f68ba869c3627e7f7beef63d48aac99e23"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/handlers.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/handlers.cpython-312.pyc",
+        "sha256_before": "930166a585c6c7287e8d5cdf7dbe25f1eba0649794efb5b0e234593ccf66e76d"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/models.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/models.cpython-312.pyc",
+        "sha256_before": "458a248265e80534381af13d7371c03e6ee53c485a0b98e54e3bdee54c707f22"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/serializers.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/serializers.cpython-312.pyc",
+        "sha256_before": "40b1191c7d8eadec96cd10bfd84ec44efdde55fc25223a472ac35184008f2457"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/signals.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/signals.cpython-312.pyc",
+        "sha256_before": "7259f42d18d5484baf546c0ecc5efb012c11769f005724a194934783e34fd7f4"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/urls.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/urls.cpython-312.pyc",
+        "sha256_before": "62ca1584d43c3c08db8af23ff80ab606c5b142ade634209550ab9310b32078e8"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/__pycache__/views.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/__pycache__/views.cpython-312.pyc",
+        "sha256_before": "1dec145ab14285f696d7d22c8ab11c9784b2255a95a45304f42ec1537bb4cd3f"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/admin.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/admin.py",
+        "sha256_before": "dfe43e9ecbd2431ac21c958d0ab0b1969436b4aa71a33493c321d76f4cd34018"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/agents/__init__.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/agents/__init__.py",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/agents/capitanes.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/agents/capitanes.py",
+        "sha256_before": "30f06b2437f47a98cf8336ac93ce46aaadf01097ddc1ef632c466c9da4c2ca8e"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/agents/coronel.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/agents/coronel.py",
+        "sha256_before": "e15180389ee93599a0e510c16563c7eeffa271aeff391ac0d96660acb4229f81"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/agents/sargentos.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/agents/sargentos.py",
+        "sha256_before": "42f2888a688fe150f559ffe978d50be75235f8be82812f1b1451766a850de2f1"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/agents/soldados.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/agents/soldados.py",
+        "sha256_before": "ca1585e5738d236c0fd6ffef6e1644da2b2b76b0cd314d83c6ff151ba99bc425"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/agents/tenientes.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/agents/tenientes.py",
+        "sha256_before": "23ee6a7c0f69e4efb3a6542b4b4c9904828509917ecfad623437ae7f05219ca4"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/apps.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/apps.py",
+        "sha256_before": "02eb4db9dde79e7e290743ea25a94eda02feb2ad7bdfdb263a2637ba5a3fa79f"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/commissions_engine.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/commissions_engine.py",
+        "sha256_before": "e65f13c6cf7a1c4f86893653d5617e05e1a755b9daee66a77b13454959f721e3"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/handlers.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/handlers.py",
+        "sha256_before": "79827e5a08eedbbdce8b9f34e17043e96750ff814e2fd17bc09fec43e745075d"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/migrations/0001_full_reset.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/migrations/0001_full_reset.py",
+        "sha256_before": "8047d14ad05679d9c54fef6152f6f061aec25890343b9e41ded0c47f4916711e"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/migrations/__init__.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/migrations/__init__.py",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/models.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/models.py",
+        "sha256_before": "7e963be8e85f0ea862c9092e8784f467b6204b76ea6879d4997ff53650cc373b"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/reality_test_17_wallet.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/reality_test_17_wallet.py",
+        "sha256_before": "70f5acf10a66c6b1ad0ee0b8490cec404ecc3824497afbca817c74ea5ba06777"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/serializers.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/serializers.py",
+        "sha256_before": "f0bd0711e10a1aa5df463cd1e1a54e7906c37d4051e4cefdcaeed72795f3de93"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__init__.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__init__.py",
+        "sha256_before": "cf352f79e5656e35e51d64396231b660a517db339732ffc12e018073081e6023"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/__init__.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/__init__.cpython-312.pyc",
+        "sha256_before": "046b98d61f80c96cf21b8a28540c0522f2ef266b719c8776fadf183b0f2751bf"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/access_policy.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/access_policy.cpython-312.pyc",
+        "sha256_before": "21ed18be8103c079f9667c34d9e1a0cb9853ac0c95035128978a2f9e86b72e41"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/android_attestation.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/android_attestation.cpython-312.pyc",
+        "sha256_before": "33f895814ea0eb014a63ecab7d0bdfd5f99890a22b1b8958aca0c4569283f103"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/company_administrator.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/company_administrator.cpython-312.pyc",
+        "sha256_before": "6207c167dab1195c35ec8d417ff2be2bee67384ef7d37661aed9c3163e3c6296"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/device_approvals.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/device_approvals.cpython-312.pyc",
+        "sha256_before": "f4a464dc310f67986a8cb271b4b6edee04ef51f8542e1899144e71ee106e1b87"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/funded_refund.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/funded_refund.cpython-312.pyc",
+        "sha256_before": "adcea25491d5f39877f55454425f3c051172d3461a1893ed427d085ae56f7be1"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/internal_transfer.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/internal_transfer.cpython-312.pyc",
+        "sha256_before": "e7b133effd84c021c2af06058ddc1a8ab5a16f49b765cc40664427ca039e9ac4"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/refund_guard.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/refund_guard.cpython-312.pyc",
+        "sha256_before": "81fe9871742b4911752d9b366606fd654750fe3df141a156d06c5d5cf9fde43f"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/wallet_interface.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/wallet_interface.cpython-312.pyc",
+        "sha256_before": "cb072c0d29d53edf7769492d6c60e7194f868cc0492d49ef4637103483cf20bd"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/__pycache__/wallet_service.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/__pycache__/wallet_service.cpython-312.pyc",
+        "sha256_before": "bbc87b443cbc0a7e4e24bb1e26116faf339a2959c9b0151d6093ab844eac77c0"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/access_policy.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/access_policy.py",
+        "sha256_before": "cdd758ec60e4409e5ea2e1f729f32fbe8921c1356e3c245501eca1e7e4923d33"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/android_attestation.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/android_attestation.py",
+        "sha256_before": "c3347da7647cafddcc81091ef1208e8e4bca4303b23ea14869d3f1571c62da5d"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/attestation_config.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/attestation_config.py",
+        "sha256_before": "53a1afa1581f77412dd66cb90c085aba5002df7b7c4ca3ffd2853952e199e8db"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/company_administrator.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/company_administrator.py",
+        "sha256_before": "227cd74f980a70ae9209fab961521940fea751ec00b2ee28cb3332b57d476297"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/device_approvals.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/device_approvals.py",
+        "sha256_before": "d97a86e3bd7a99428ce2047e8b0d7fb14afa7d663059c7ff40c84350a49566b2"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/enrollment_authorization.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/enrollment_authorization.py",
+        "sha256_before": "5955219fdc6f1581a99f04830dbceadaf4aa4a5037b3ad1bfa25f2c6d4b45fbb"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/funded_refund.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/funded_refund.py",
+        "sha256_before": "6ab1f4fc5c4916dbd01ad9bc6a888a6c1cea3ad4448e101d8137c9086b30cb77"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/internal_transfer.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/internal_transfer.py",
+        "sha256_before": "a4f493174717150c46ef1c306df78ca308e5b8df7f78df1b84c5a673131a2ba3"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/refund_guard.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/refund_guard.py",
+        "sha256_before": "514b21f8b0b008ceb2b0ffedb1dd7f9f50abe2b6beccf55267d2b796d9d853a5"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/wallet_interface.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/wallet_interface.py",
+        "sha256_before": "7da32406c944d637d6cd75aaddfd88a787ffd2456e7e9a7eff8a03c6d623d069"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services/wallet_service.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services/wallet_service.py",
+        "sha256_before": "1b3601a974205ba2bb2874d2d651ded15532890499c0c4311fef58735bbc3870"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/services.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/services.py",
+        "sha256_before": "a4efc96546f3c5cbd7977b3da8dcaa490ed4dbeef71a3db0f47e3c97571025dd"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/signals.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/signals.py",
+        "sha256_before": "99b6d038a1ede32e6a535702e1ed85abe54d4b68a68b7eb4b03b9f3395e17147"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/tests.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/tests.py",
+        "sha256_before": "495cdef9a0293cdf1edbb0690fe74f37bebe53b2a6f3f46ec20c4cf2dccd1ae6"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/urls.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/urls.py",
+        "sha256_before": "570137ae79a4941c589aa9976e9559188307b2b0a16dbed9f5a072b51c008d05"
+      },
+      {
+        "from": "WALLET-BACKEND/apps/wallet/views.py",
+        "to": "BACKEND/WALLET-BACKEND/apps/wallet/views.py",
+        "sha256_before": "66683a9c238cbc5fd8a9aa38793383861a0ddc077385996b01079034e26045c3"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/0001_initial.py",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/0001_initial.py",
+        "sha256_before": "dfa69d07004cc663486a8fc12bda39fe6f863a71952ac8ae7c780b69284588e3"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/0002_wallet_currency_wallettransferintent.py",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/0002_wallet_currency_wallettransferintent.py",
+        "sha256_before": "5258900559bfba7e5fb224094f775154ed572ab6210c9b4bc6428d465241062b"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/0003_walletdevicecredential_walletdevicechallenge_and_more.py",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/0003_walletdevicecredential_walletdevicechallenge_and_more.py",
+        "sha256_before": "28d34aa9b45acf12ea898795edfa5979afdad3c73e7ec1041edac9a0ac13456b"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/0004_device_trust_and_independent_enrollment.py",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/0004_device_trust_and_independent_enrollment.py",
+        "sha256_before": "2ac2bdf3f03acc5505d678b4d0939d6134789e3eea7f2da893acb676a51901ec"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/0005_consent_refund_lifecycle.py",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/0005_consent_refund_lifecycle.py",
+        "sha256_before": "51024a8fb3442e32f121424c05dab3b43dc33865151a827bece0658b17b29be2"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/__init__.py",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/__init__.py",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0001_initial.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0001_initial.cpython-312.pyc",
+        "sha256_before": "09d5e21f482368b7689b5080b070cedfbf50c8b45632c60b5827cd2a156e1ccf"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0002_wallet_currency_wallettransferintent.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0002_wallet_currency_wallettransferintent.cpython-312.pyc",
+        "sha256_before": "e61da00501ace45d6f70435e4644126e8d57613fa0c8032e6f91445b56d8e363"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0003_walletdevicecredential_walletdevicechallenge_and_more.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0003_walletdevicecredential_walletdevicechallenge_and_more.cpython-312.pyc",
+        "sha256_before": "8b46022492b4d141213eac261eba63a15fb10cdd0bf2fc25a00c6e97da0964a6"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0004_device_trust_and_independent_enrollment.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0004_device_trust_and_independent_enrollment.cpython-312.pyc",
+        "sha256_before": "976e167f200fa0f489a5694a74b76dddf3875a077708bbec8405b37db967fb67"
+      },
+      {
+        "from": "WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0005_consent_refund_lifecycle.cpython-312.pyc",
+        "to": "BACKEND/WALLET-BACKEND/fresh_migrations/wallet/__pycache__/0005_consent_refund_lifecycle.cpython-312.pyc",
+        "sha256_before": "ea28fc8a4eb26816b3ce744be6f6df6855e14ea72720ebdb2e7d87d057899a63"
+      },
+      {
+        "from": "WALLET-BACKEND/move-inventory.json",
+        "to": "BACKEND/WALLET-BACKEND/move-inventory.json",
+        "sha256_before": "5dc8dc9bb89b89c81b2746a3c4aad14efcaf310db0eceecc93b1b9011f42efef"
+      },
+      {
+        "from": "WALLET-BACKEND/offline/pyproject.toml",
+        "to": "BACKEND/WALLET-BACKEND/offline/pyproject.toml",
+        "sha256_before": "1bf186347d506d93a8bd8004af868117bd218973cef90daf8a07d4b73663099e"
+      },
+      {
+        "from": "WALLET-BACKEND/offline/src/sgacd_wallet_offline/__init__.py",
+        "to": "BACKEND/WALLET-BACKEND/offline/src/sgacd_wallet_offline/__init__.py",
+        "sha256_before": "35111cd8530da8c9d511a805bd564a4833ee0264a0d84c8e9651e6dab8d76a62"
+      },
+      {
+        "from": "WALLET-BACKEND/offline/src/sgacd_wallet_offline/army.py",
+        "to": "BACKEND/WALLET-BACKEND/offline/src/sgacd_wallet_offline/army.py",
+        "sha256_before": "f49d1760b711704251831f4e492aa15dea858132201c03e30cb4ca95f98ec9d5"
+      },
+      {
+        "from": "WALLET-BACKEND/offline/src/sgacd_wallet_offline/production_pending.json",
+        "to": "BACKEND/WALLET-BACKEND/offline/src/sgacd_wallet_offline/production_pending.json",
+        "sha256_before": "158a6b66891bcb538f0fb94666f3bd410dea9e7b4d50208e47c38e2bcf34fe5d"
+      },
+      {
+        "from": "WALLET-BACKEND/offline/src/sgacd_wallet_offline/readiness.py",
+        "to": "BACKEND/WALLET-BACKEND/offline/src/sgacd_wallet_offline/readiness.py",
+        "sha256_before": "718ee92f66a142cd36e1531d55ddf2f1090735b9bc7caea408ba689215e1088b"
+      },
+      {
+        "from": "WALLET-BACKEND/offline/src/sgacd_wallet_offline/workspace.py",
+        "to": "BACKEND/WALLET-BACKEND/offline/src/sgacd_wallet_offline/workspace.py",
+        "sha256_before": "c5bff5684f2bd36e1e04c6f20d901498b80edffe5b0550ca55386fcd90e3b782"
+      },
+      {
+        "from": "WALLET-BACKEND/offline/tests/test_workspace.py",
+        "to": "BACKEND/WALLET-BACKEND/offline/tests/test_workspace.py",
+        "sha256_before": "9260f98fb291d43a4ba714f2789471426e7e077bae10ba3a092a79e14a83dc6e"
+      },
+      {
+        "from": "WALLET-BACKEND/tests/access_policy_check.py",
+        "to": "BACKEND/WALLET-BACKEND/tests/access_policy_check.py",
+        "sha256_before": "b5c38ef5a5793344158e9df28b0929f4eec1cc5079747a6a9b166106e135fe66"
+      },
+      {
+        "from": "WALLET-BACKEND/tests/attestation_security_check.py",
+        "to": "BACKEND/WALLET-BACKEND/tests/attestation_security_check.py",
+        "sha256_before": "70d9a9eb9398982e66a673ca8463abdb608935feb3ccf90b5f871c0214b2247a"
+      },
+      {
+        "from": "WALLET-BACKEND/tests/device_approval_check.py",
+        "to": "BACKEND/WALLET-BACKEND/tests/device_approval_check.py",
+        "sha256_before": "a21c533b893cde35e17f600492a9acfdc90fe4210775e337f4547791ff63b29b"
+      },
+      {
+        "from": "WALLET-BACKEND/tests/recovery_check.py",
+        "to": "BACKEND/WALLET-BACKEND/tests/recovery_check.py",
+        "sha256_before": "0c4965fcc6fe45145cce6230662471f10fbb88bfe1c1d559b0d4cfe4bfacd988"
+      },
+      {
+        "from": "WALLET-BACKEND/tests/wallet_security_check.py",
+        "to": "BACKEND/WALLET-BACKEND/tests/wallet_security_check.py",
+        "sha256_before": "1b9e642e0f632174531666833e69f779845c5cbaee5fa744a6b7a53fb16e9a4e"
+      },
+      {
+        "from": "WALLET-BACKEND/tools/update_pending_doc.py",
+        "to": "BACKEND/WALLET-BACKEND/tools/update_pending_doc.py",
+        "sha256_before": "f71e07c813e6b065b99402af959f1f43c74fac2cbe1f1bf4e4f70e87596ae7e0"
+      },
+      {
+        "from": "WALLET-DESKTOP/README.md",
+        "to": "DESKTOP/WALLET-DESKTOP/README.md",
+        "sha256_before": "5c16f4a5e6ecb7fced28e3337e5ea065a094aacb1b1a4a6e022471b3cb8ae106"
+      },
+      {
+        "from": "WALLET-DESKTOP/agents/bridge.mjs",
+        "to": "DESKTOP/WALLET-DESKTOP/agents/bridge.mjs",
+        "sha256_before": "7301da394884cf93be77c3a183f937296e359bba5af6393475aef069443ff2d6"
+      },
+      {
+        "from": "WALLET-DESKTOP/agents/mcp.mjs",
+        "to": "DESKTOP/WALLET-DESKTOP/agents/mcp.mjs",
+        "sha256_before": "f4790559f1b5821e944902c484985e1770e3ad1749a6b86935fd0e8c24712f7c"
+      },
+      {
+        "from": "WALLET-DESKTOP/agents/prepare_profiles.mjs",
+        "to": "DESKTOP/WALLET-DESKTOP/agents/prepare_profiles.mjs",
+        "sha256_before": "d710b08cc4d6e9e10712d9cba88007d0bc6b588fb7e18ed17035cf1174e920ae"
+      },
+      {
+        "from": "WALLET-DESKTOP/agents/tests/bridge.test.mjs",
+        "to": "DESKTOP/WALLET-DESKTOP/agents/tests/bridge.test.mjs",
+        "sha256_before": "3d4a1bce271ec45b7e9e3c860f5b36637be8242b84050ad9584282352b3a4f2b"
+      },
+      {
+        "from": "WALLET-DESKTOP/pyproject.toml",
+        "to": "DESKTOP/WALLET-DESKTOP/pyproject.toml",
+        "sha256_before": "f6e21b06b53a50fea8051fed728435228ac01341d8c13f30ab3bf94d43729f73"
+      },
+      {
+        "from": "WALLET-DESKTOP/src/main.py",
+        "to": "DESKTOP/WALLET-DESKTOP/src/main.py",
+        "sha256_before": "c1921b664377ebc3f81745a371ed351554bd3d5e6f57e3fd6fa7677bda858c5a"
+      },
+      {
+        "from": "WALLET-FRONTEND/README.md",
+        "to": "FRONTEND/WALLET-FRONTEND/README.md",
+        "sha256_before": "ddd3ba235423ca0850d6e9b6938b3849e224aeb2bc053c7126b0d4fdfe62325b"
+      },
+      {
+        "from": "WALLET-FRONTEND/main.py",
+        "to": "FRONTEND/WALLET-FRONTEND/main.py",
+        "sha256_before": "dfb18fa0344f9e77ac4a4008ea19f3ebda2e8e84b7ea3d168b10512c1ddfaeb6"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/README.md",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/README.md",
+        "sha256_before": "f3fedc4541df130bcb89144dda0208b396b51e085668b3eaa35a4ff9e994a945"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/example/main.py",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/example/main.py",
+        "sha256_before": "ca4273b94d83dd00f0ed71c6366c4f4be0be172ab0fa60bf8cf4f3ae11a8e8a8"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/example/pyproject.toml",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/example/pyproject.toml",
+        "sha256_before": "877849bdbc806b3fb552c08055040f4298507912a45925b887ef057bbad7ea14"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/make_flutter_host.py",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/make_flutter_host.py",
+        "sha256_before": "3a31694b448f528c046fa654d0336a9367849721659ea26785edb46112d33a5e"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/prepare_flet_template.py",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/prepare_flet_template.py",
+        "sha256_before": "6ff69df1222d5cac5aa849ea54df1c95647235c4571035b514e5051cfdba106d"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/pyproject.toml",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/pyproject.toml",
+        "sha256_before": "eabd7884c35df1d9aeaa2e1f4060f64e395ec6da00f21a1addebc724897eaba5"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/build.gradle",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/build.gradle",
+        "sha256_before": "be6a8bfcb7d5d3a541a8fefb26a7eaa2373f4dd29b0cec0eeca41e814423ef6a"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/AndroidManifest.xml",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/AndroidManifest.xml",
+        "sha256_before": "867489096c069cdeee7959751ef1ac2006bf02f2fb2e59360704d346d79f2406"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+        "sha256_before": "52a3fabec2675ca210c0d60a59363f90d4a15e3bc3f6a07f164e2e39cc5a548e"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+        "sha256_before": "78ea7114e81a3806a13312df7d6d37bd2577fd0e533e17b20de178cdd5a80df1"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+        "sha256_before": "df6250465ec64f73ca40ceab4c8c6994fd4ef33d94a78565ecb5ad41adc081e9"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+        "sha256_before": "76222f4312591b0f3e57cebc2238b14b9291b37656e8fb2bef6e3c043ed60124"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+        "sha256_before": "d831b33d760382ec0d8ca3c1c92859c858dbefd7e80de7048dba384afb86b53f"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+        "sha256_before": "f4518a05a23e19a30d5b9d91975129460a5f15ac8615f8f6df7325778b77eb82"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+        "sha256_before": "dcfda0ad1a67ec17be1173e543486da52f5113a9091cde1a87f60b870113d443"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+        "sha256_before": "6896afa1d02112e1819938d5f9d13a97b55701ed220d6f00ce2914eba52a67fc"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+        "sha256_before": "96604bf50e3f28ea5e311c4f2b12a73b42e1631572bb5c06e9f9e8d56ffebc49"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+        "sha256_before": "4e3381b6835181fd70425ba42ae5717bd30dab34867030e13837e8a0817b2856"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/bridge/SGAVaultPlugin.java",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/android/src/main/java/co/analematica/vault/bridge/SGAVaultPlugin.java",
+        "sha256_before": "b5ae6dbe0b6f0801937cdff7d473b43190b7c836cfb209a27162ccab6da0cac1"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/Envelope.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/Envelope.swift",
+        "sha256_before": "3697c2829f3f07f8c4f315275aac0695c82462d781036b2b33392be15665ebfe"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/PasswordKdf.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/PasswordKdf.swift",
+        "sha256_before": "1dd1dbeed4367e1882f13ab3f3a5e695b851cc7b43b782464e7b40067fb6a97b"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/SecureEnclaveVault.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Core/SecureEnclaveVault.swift",
+        "sha256_before": "5fe654f59e4b75622c814d6a08f0f239fc96d24b95523bd6867f2d51bb16a69e"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/AppleIntegrityGuard.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/AppleIntegrityGuard.swift",
+        "sha256_before": "0eeaee10429deaf4328aa31cf73dbfa90ab1103b39227b5637aa294a8fb705b5"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/IntegrityPolicy.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Integrity/IntegrityPolicy.swift",
+        "sha256_before": "1e88a86798ff0b4b8485a4f02bec328542334f3d02ac09a3ab8730ea8e54149d"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/AppleSensitiveScreen.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/AppleSensitiveScreen.swift",
+        "sha256_before": "fac5d64108dc8ab93f0ca28c81c26b727dd06bd8f1725708459f0060765788b7"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/OriginPinPolicy.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/OriginPinPolicy.swift",
+        "sha256_before": "002ccd5bf80e4c39c27df32b01d1fda897e920cd622ab30b21d6f593e2cb46d5"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/PinnedHTTPSClient.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/Protection/PinnedHTTPSClient.swift",
+        "sha256_before": "45471c6120ba96a9376269f1f17ad00d433a345af146d0efad510b52e4f758b8"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/SGAVaultPlugin.swift",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/Classes/SGAVaultPlugin.swift",
+        "sha256_before": "93fa6515585b16016084c38a250324eec63e511d830e4475777d84ff2142e5fb"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/sgacd_vault.podspec",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/ios/sgacd_vault.podspec",
+        "sha256_before": "02785a57dae25ab10132efb737d2aca2b72da7fb7f823c7642603c25b7210c64"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/lib/sgacd_vault.dart",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/lib/sgacd_vault.dart",
+        "sha256_before": "c04990d935300201d33e807e1ae27a467551791dc99710b713a11da5e1a36eaf"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/lib/src/metadata_contract.dart",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/lib/src/metadata_contract.dart",
+        "sha256_before": "2889d4fa0ae269f44f62e0002b92f00ebd46f14a609a87062971456aede822d9"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/pubspec.yaml",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/pubspec.yaml",
+        "sha256_before": "2934c0d6f1e325c7164e2ae2c5e7e4ede11bae2a077fcde001e6eecb79a518a2"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/test/metadata_contract_test.dart",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/flutter/sgacd_vault/test/metadata_contract_test.dart",
+        "sha256_before": "a518b998ff907debb1e934c3b116882c2d325feb90baf5fbf78dfdd3a3f2a3c0"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/src/sgacd_vault/__init__.py",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/src/sgacd_vault/__init__.py",
+        "sha256_before": "b51a5fb16ca223943ff1084d5fe31c726afa6de04f017c3d5f728091a9b1cb0c"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/sync_native.py",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/sync_native.py",
+        "sha256_before": "0175edc4915614040e2c57a8ce574ec7867f7ac1a4d84334c5212f3684b7f6a7"
+      },
+      {
+        "from": "WALLET-FRONTEND/native_bridge/tests/test_control.py",
+        "to": "FRONTEND/WALLET-FRONTEND/native_bridge/tests/test_control.py",
+        "sha256_before": "067b11f4a242551b884542515b311362487bb4f89b3f842eacaa589d9a6d90cd"
+      },
+      {
+        "from": "WALLET-FRONTEND/preview.py",
+        "to": "FRONTEND/WALLET-FRONTEND/preview.py",
+        "sha256_before": "413fe6a6388f86ce810341b811db9faea8b65baeca080b1d72f2af8cb5b88d5a"
+      },
+      {
+        "from": "WALLET-FRONTEND/pyproject.toml",
+        "to": "FRONTEND/WALLET-FRONTEND/pyproject.toml",
+        "sha256_before": "1eebc5b7f19d6fd97e37bdc2556232b0228ffc4129b7d17c3384b6b26bd969a7"
+      },
+      {
+        "from": "WALLET-FRONTEND/src/sgacd_wallet_ui/__init__.py",
+        "to": "FRONTEND/WALLET-FRONTEND/src/sgacd_wallet_ui/__init__.py",
+        "sha256_before": "3142c3a094e5b7818497a8f30950cc3bf4150a96bb845cda6036c96534b819e9"
+      },
+      {
+        "from": "WALLET-FRONTEND/src/sgacd_wallet_ui/app.py",
+        "to": "FRONTEND/WALLET-FRONTEND/src/sgacd_wallet_ui/app.py",
+        "sha256_before": "138eb6e4b5367657048c1ff535b8f44e466d0cb7073cd56cf8e86f8ecc78bc41"
+      },
+      {
+        "from": "WALLET-FRONTEND/tests/browser.cjs",
+        "to": "FRONTEND/WALLET-FRONTEND/tests/browser.cjs",
+        "sha256_before": "65fc3eec780d9f2648b2451e2ded3d1f183a5a935692157a06ce18d46d68a6f7"
+      },
+      {
+        "from": "WALLET-FRONTEND/tests/test_app.py",
+        "to": "FRONTEND/WALLET-FRONTEND/tests/test_app.py",
+        "sha256_before": "8a06a80d454f40d35038ec9395bed8287ff5490c5e152f5648a5d0d39e29b7a4"
+      },
+      {
+        "from": "WALLET-FRONTEND/tools/sync_public_assets.py",
+        "to": "FRONTEND/WALLET-FRONTEND/tools/sync_public_assets.py",
+        "sha256_before": "baa8249920e42983133ebbce9ed1819f192ccbeee0ae63e0bcfd5eb3d37a0a4d"
+      },
+      {
+        "from": "WALLET-FRONTEND/web/app.js",
+        "to": "FRONTEND/WALLET-FRONTEND/web/app.js",
+        "sha256_before": "576fc468bee97c5d38f34afa072cc6d7edf6f53fd4575105739e1bfbb4d994f3"
+      },
+      {
+        "from": "WALLET-FRONTEND/web/index.html",
+        "to": "FRONTEND/WALLET-FRONTEND/web/index.html",
+        "sha256_before": "2b0b2ba7484544722b396bc9ca09eac7b3d5fce41747e5893c45b20b10e9ba0f"
+      },
+      {
+        "from": "WALLET-FRONTEND/web/pending.json",
+        "to": "FRONTEND/WALLET-FRONTEND/web/pending.json",
+        "sha256_before": "a52d11d1305e978a212ec5d2abb33df8b567a68ece535ae32a2021d177db168c"
+      },
+      {
+        "from": "WALLET-FRONTEND/web/styles.css",
+        "to": "FRONTEND/WALLET-FRONTEND/web/styles.css",
+        "sha256_before": "715429f2bf4d00c8bf313d5c489fa93d76ae43ba57335761f06b2ee3d8e1aff6"
+      },
+      {
+        "from": "WALLET-FRONTEND/web/team.json",
+        "to": "FRONTEND/WALLET-FRONTEND/web/team.json",
+        "sha256_before": "f61300618e607b4d9e2d45273bf2a5849c2d8691e54abfa65bc6319d7ad7c39f"
+      },
+      {
+        "from": "WALLET-MOVIL/README.md",
+        "to": "MOVILES/WALLET-MOVIL/README.md",
+        "sha256_before": "7705a6e5422af54e788dd0c0e6865668b7469f5a1df809409cf025a23cf7fcef"
+      },
+      {
+        "from": "WALLET-MOVIL/native/README.md",
+        "to": "MOVILES/WALLET-MOVIL/native/README.md",
+        "sha256_before": "4ace287930a40c4737bd656cc348842a7a9ca5540b68ca16cf103e687e017c8e"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/README.md",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/README.md",
+        "sha256_before": "e15069cfff49331268837ed08b3978da921f0ed742f69d37547e2059f2265b1f"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/android/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/android/build.gradle.kts",
+        "sha256_before": "a056d9ed4f03de520620c32a09797792ab8374f5855a6fb1c221759d5bdf7b6f"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/AndroidManifest.xml",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/android/src/main/AndroidManifest.xml",
+        "sha256_before": "867489096c069cdeee7959751ef1ac2006bf02f2fb2e59360704d346d79f2406"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/AndroidDocumentVault.java",
+        "sha256_before": "dcfda0ad1a67ec17be1173e543486da52f5113a9091cde1a87f60b870113d443"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/EncryptedDocumentStore.java",
+        "sha256_before": "6896afa1d02112e1819938d5f9d13a97b55701ed220d6f00ce2914eba52a67fc"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/PasswordKdf.java",
+        "sha256_before": "96604bf50e3f28ea5e311c4f2b12a73b42e1631572bb5c06e9f9e8d56ffebc49"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/android/src/main/java/co/analematica/vault/VaultEnvelope.java",
+        "sha256_before": "4e3381b6835181fd70425ba42ae5717bd30dab34867030e13837e8a0817b2856"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/build.gradle.kts",
+        "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/ios/HostInfo.example.plist",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/ios/HostInfo.example.plist",
+        "sha256_before": "927ccdaa1a01c58ba829c4afdf7a033fe8f94f4b1f3364ad8b7cd622a0b0b5e0"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/ios/Package.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/ios/Package.swift",
+        "sha256_before": "e2993753cbc1972cfb01d4a44bcb4c40f20055783e63d4165c71ca35fb8c2010"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/Envelope.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/Envelope.swift",
+        "sha256_before": "3697c2829f3f07f8c4f315275aac0695c82462d781036b2b33392be15665ebfe"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/PasswordKdf.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/PasswordKdf.swift",
+        "sha256_before": "1dd1dbeed4367e1882f13ab3f3a5e695b851cc7b43b782464e7b40067fb6a97b"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/SecureEnclaveVault.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/ios/Sources/SGAVault/SecureEnclaveVault.swift",
+        "sha256_before": "5fe654f59e4b75622c814d6a08f0f239fc96d24b95523bd6867f2d51bb16a69e"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/ios/Tests/SGAVaultTests/CryptoTests.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/ios/Tests/SGAVaultTests/CryptoTests.swift",
+        "sha256_before": "bdf1032280fea2ea5908408e86b7d6e5243d2e7a234b76287c2db902916fe817"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/settings.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/settings.gradle.kts",
+        "sha256_before": "fe60375c754d608fb284122b042027fd2b2717df7cfad5bee0666bbd42deb53b"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/tests/java/co/analematica/vault/VaultCryptoCheck.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/tests/java/co/analematica/vault/VaultCryptoCheck.java",
+        "sha256_before": "42258ab0a53d2b9899fa1c1393c97b10d618a8cd9596392190a6ffcd89f65b24"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-01-cryptography/tests/verify.py",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/tests/verify.py",
+        "sha256_before": "e13c4114daec897a3b42b83c20c9b02fa5d6d7c6fb1d1e50ebc675495040c698"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/DEVICE_BOUND_FINTECH.md",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/DEVICE_BOUND_FINTECH.md",
+        "sha256_before": "8b4253828ce4cddc99af0189b7a6458d4bc9326495f6d089b4b8bccb31b4c4be"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/README.md",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/README.md",
+        "sha256_before": "c82df9a31206ef5abfb1255cf6ef540986337ff7ef24a39521b7983d19895f9a"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/android/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/android/build.gradle.kts",
+        "sha256_before": "5fdec48e4c19b3016b8419e7fe9413ef9d9f7d6551ca60ef889f75199da0b620"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/android/src/main/AndroidManifest.xml",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/android/src/main/AndroidManifest.xml",
+        "sha256_before": "2a5e012b9c29cd7c829458c364d2ca6e4b56a1e4af67fca22d37d4a8cbfec40e"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/android/src/main/java/co/analematica/approval/AndroidApprovalKey.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/android/src/main/java/co/analematica/approval/AndroidApprovalKey.java",
+        "sha256_before": "5274cdc478268cb2465cf81ceee4ad44e921f97d7e2a6f42aacc56dda252de9a"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/android/src/main/java/co/analematica/approval/ApprovalMessage.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/android/src/main/java/co/analematica/approval/ApprovalMessage.java",
+        "sha256_before": "a5c567f16db4f8e4d58418f1925546eef54ed22f14a42a0d6850dbdf64112cdc"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/build.gradle.kts",
+        "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/ios/Package.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/ios/Package.swift",
+        "sha256_before": "02d50a54dc63e49ad93fa68ec04e4f1bf1248ced32adefea7b49c741f50e9b3d"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/ios/Sources/SGAApproval/AppleApprovalKey.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/ios/Sources/SGAApproval/AppleApprovalKey.swift",
+        "sha256_before": "b3c982740d3b0a4c013202a2bb802ba57bec55ff8bda555766b310e0936c3342"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/ios/Sources/SGAApproval/ApprovalMessage.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/ios/Sources/SGAApproval/ApprovalMessage.swift",
+        "sha256_before": "f9eb5908d1784e2d774069cb57b4d95afd10d2fc1fbd7a3af9cb54ea9a0d42a6"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/ios/Tests/SGAApprovalTests/MessageTests.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/ios/Tests/SGAApprovalTests/MessageTests.swift",
+        "sha256_before": "3464376abf963a5333fde2059f03021f932d2e8fc7c3cc5b751a9cf05d8e808f"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/settings.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/settings.gradle.kts",
+        "sha256_before": "4735c7950ec928cae1a2d0e652276cbeab74eb09ed90533d059db1e60e57dd51"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/tests/java/co/analematica/approval/ApprovalCheck.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/tests/java/co/analematica/approval/ApprovalCheck.java",
+        "sha256_before": "6159ac79a722227affea29b61fd853a2f3b01a33a0813e4426aa5dea5b9349cf"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-02-biometrics/tests/verify.py",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/tests/verify.py",
+        "sha256_before": "71ba187fdb163611a1b4eb2b95d65d35ad3490d46732035c70b8bc47ebd98a5e"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/README.md",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/README.md",
+        "sha256_before": "9a93812650c5feb2d3fb92e2394d506a6a03055dfbcff7684aefbfab40deae78"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/android/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/android/build.gradle.kts",
+        "sha256_before": "f66c65ed2278b71c9afbf4acb197c8a324a746d055c0a5fd53d7cc16fc368992"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/android/src/main/AndroidManifest.xml",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/android/src/main/AndroidManifest.xml",
+        "sha256_before": "343d5be1ac17cdd45d1a2f2ddc616c509290e655869125a9422a96d88aa66066"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/android/src/main/java/co/analematica/integrity/AndroidIntegrityGuard.java",
+        "sha256_before": "52a3fabec2675ca210c0d60a59363f90d4a15e3bc3f6a07f164e2e39cc5a548e"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/android/src/main/java/co/analematica/integrity/IntegrityPolicy.java",
+        "sha256_before": "78ea7114e81a3806a13312df7d6d37bd2577fd0e533e17b20de178cdd5a80df1"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/build.gradle.kts",
+        "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Package.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Package.swift",
+        "sha256_before": "4686946b3d1187881e72d56ffbb527a052fc889c823f697c99a400ef193d34df"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/AppleIntegrityGuard.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/AppleIntegrityGuard.swift",
+        "sha256_before": "0eeaee10429deaf4328aa31cf73dbfa90ab1103b39227b5637aa294a8fb705b5"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/IntegrityPolicy.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Sources/SGAIntegrity/IntegrityPolicy.swift",
+        "sha256_before": "1e88a86798ff0b4b8485a4f02bec328542334f3d02ac09a3ab8730ea8e54149d"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Tests/SGAIntegrityTests/PolicyTests.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/ios/SGAIntegrity/Tests/SGAIntegrityTests/PolicyTests.swift",
+        "sha256_before": "18b521d4a4435a083e72a51184a9325142b0a6d2b11375f8fb9fbaffa5fc5607"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/release/README.md",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/release/README.md",
+        "sha256_before": "6f5e5771035f2ee852f37d43b7b8389afc23e2fc2788b806c8c1de952c410af3"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/release/verify_release.py",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/release/verify_release.py",
+        "sha256_before": "d705af3970e3708af2f83e79695235f1e22afa933598b569782e8a486020f615"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/settings.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/settings.gradle.kts",
+        "sha256_before": "558650f48427e5facf353499ecebdeafbc941b0b552fcf79b98c13b92ca2fcf9"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/tests/java/co/analematica/integrity/IntegrityCheck.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests/java/co/analematica/integrity/IntegrityCheck.java",
+        "sha256_before": "70d370f1bc89cca6215cdc20e1b2398aafdb66c89cb7428aaf3670d828ae4464"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/tests/test_release.py",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests/test_release.py",
+        "sha256_before": "039597c6a2ee5a0184819cab77855d73f502e336f6faa6eede176a7bd3026224"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-03-integrity/tests/verify.py",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests/verify.py",
+        "sha256_before": "1f013b5be93d6e5f1eab9c41007752f96d337f0afe2d04400df1b06d50599aaf"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/README.md",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/README.md",
+        "sha256_before": "0d21d6c1e1dbd43659a7c1d3b69f749a18eb1b4b6b7dc34e789d58264a721b6d"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/android/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/android/build.gradle.kts",
+        "sha256_before": "bbd689b2585dfb131a5969c7ecdcd27df53765a3cb51b0e0fed2301bf35947b0"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/AndroidManifest.xml",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/AndroidManifest.xml",
+        "sha256_before": "91fb6bdc80a3a8cba5ed4027fefbc59cce5b72d21d441a495a74893a5594c53c"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidPinnedProfile.java",
+        "sha256_before": "df6250465ec64f73ca40ceab4c8c6994fd4ef33d94a78565ecb5ad41adc081e9"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/AndroidSensitiveScreen.java",
+        "sha256_before": "76222f4312591b0f3e57cebc2238b14b9291b37656e8fb2bef6e3c043ed60124"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/OriginPinPolicy.java",
+        "sha256_before": "d831b33d760382ec0d8ca3c1c92859c858dbefd7e80de7048dba384afb86b53f"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/android/src/main/java/co/analematica/protection/PinnedHttpsClient.java",
+        "sha256_before": "f4518a05a23e19a30d5b9d91975129460a5f15ac8615f8f6df7325778b77eb82"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/build.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/build.gradle.kts",
+        "sha256_before": "e34d8bfdd22504484c49e7f735d2d187b3af0c3a675bc8e2c100ef2e51602876"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Package.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Package.swift",
+        "sha256_before": "fba27ecc99c0eaca2f1cf917d61027967d181ba744fd28501f5d6af862b3922a"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/AppleSensitiveScreen.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/AppleSensitiveScreen.swift",
+        "sha256_before": "fac5d64108dc8ab93f0ca28c81c26b727dd06bd8f1725708459f0060765788b7"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/OriginPinPolicy.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/OriginPinPolicy.swift",
+        "sha256_before": "002ccd5bf80e4c39c27df32b01d1fda897e920cd622ab30b21d6f593e2cb46d5"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/PinnedHTTPSClient.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Sources/SGAProtection/PinnedHTTPSClient.swift",
+        "sha256_before": "45471c6120ba96a9376269f1f17ad00d433a345af146d0efad510b52e4f758b8"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Tests/SGAProtectionTests/ProtectionTests.swift",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/ios/SGAProtection/Tests/SGAProtectionTests/ProtectionTests.swift",
+        "sha256_before": "c49f32cf0da84c64d44651890ba2ff4ce17f19947f944299e7c364760379bed7"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/settings.gradle.kts",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/settings.gradle.kts",
+        "sha256_before": "ead6d0fb4044f1daf728ca92372cdf9fa8490d83eeaa541b8031c647d1656c75"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/java/co/analematica/protection/LocalTLSCheck.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/tests/java/co/analematica/protection/LocalTLSCheck.java",
+        "sha256_before": "63e0f1f4aca382527476416cef9e5ad833a879b0bc7bea51da0fe1266954ef2e"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/java/co/analematica/protection/ProtectionCheck.java",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/tests/java/co/analematica/protection/ProtectionCheck.java",
+        "sha256_before": "aa9c741dc1acd5018b58b6da86f960838a4035acb695139a2f06b396c1786f5c"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/local_tls.py",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/tests/local_tls.py",
+        "sha256_before": "5f67dd58f5387b63ea253db8548cfec66d598626ecc0f47304b8f3e9d02bd545"
+      },
+      {
+        "from": "WALLET-MOVIL/native/pool-04-anti-phishing/tests/verify.py",
+        "to": "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/tests/verify.py",
+        "sha256_before": "a63b6c40ade3e9daf7cef8edc64227bc86130566de3565db6375d7da68fad816"
+      },
+      {
+        "from": "WALLET-MOVIL/pyproject.toml",
+        "to": "MOVILES/WALLET-MOVIL/pyproject.toml",
+        "sha256_before": "43ec801e2ac7fee26543fd1d93a708a15b9c4ca375e35e0a3526837ebe059dd9"
+      },
+      {
+        "from": "WALLET-MOVIL/src/main.py",
+        "to": "MOVILES/WALLET-MOVIL/src/main.py",
+        "sha256_before": "73076475864ab2b5909c0c1f3d0ae8a439ad493afe8c3e9ddd17176d8c399f24"
+      }
+    ],
+    "updated_reference_files": [
+      ".github/workflows/master-integration.yml",
+      ".github/workflows/mobile-biometric.yml",
+      ".github/workflows/mobile-vault.yml",
+      ".github/workflows/wallet-offline.yml",
+      "AGENTS.md",
+      "ANALISIS/contabilidad/progress-registry.json",
+      "BACKEND/SGA-CD-BACKEND/Dockerfile.dockerignore",
+      "BACKEND/SGA-TUR-BAKEND/apps/wallet/__init__.py",
+      "BACKEND/WALLET-BACKEND/README.md",
+      "BACKEND/WALLET-BACKEND/tools/update_pending_doc.py",
+      "BACKEND/deployment/Dockerfile",
+      "BACKEND/deployment/Dockerfile.dockerignore",
+      "BACKEND/deployment/fresh_migrations/wallet/__init__.py",
+      "BACKEND/deployment/tests/attestation_security_check.py",
+      "BACKEND/deployment/tests/device_approval_check.py",
+      "BACKEND/deployment/tests/wallet_security_check.py",
+      "DESKTOP/WALLET-DESKTOP/README.md",
+      "DESKTOP/WALLET-DESKTOP/agents/bridge.mjs",
+      "FRONTEND/WALLET-FRONTEND/README.md",
+      "FRONTEND/WALLET-FRONTEND/native_bridge/README.md",
+      "FRONTEND/WALLET-FRONTEND/native_bridge/sync_native.py",
+      "INTEGRACIONES/operacion/verify_local.py",
+      "INTEGRACIONES/plan-maestro/verify_local.py",
+      "MOVILES/WALLET-MOVIL/README.md",
+      "MOVILES/WALLET-MOVIL/native/README.md",
+      "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/README.md",
+      "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/DEVICE_BOUND_FINTECH.md",
+      "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/README.md",
+      "MOVILES/WALLET-MOVIL/native/pool-03-integrity/README.md",
+      "MOVILES/WALLET-MOVIL/native/pool-03-integrity/release/README.md",
+      "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/README.md",
+      "README.md"
+    ],
+    "validation": {
+      "results": [
+        {
+          "name": "wallet_security",
+          "exit_code": 0,
+          "unittest_count": 15,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/WALLET-BACKEND/tests/wallet_security_check.py"
+          ]
+        },
+        {
+          "name": "access_policy",
+          "exit_code": 0,
+          "unittest_count": 7,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/WALLET-BACKEND/tests/access_policy_check.py"
+          ]
+        },
+        {
+          "name": "attestation_security",
+          "exit_code": 0,
+          "unittest_count": 28,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/WALLET-BACKEND/tests/attestation_security_check.py"
+          ]
+        },
+        {
+          "name": "device_approval",
+          "exit_code": 0,
+          "unittest_count": 13,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/WALLET-BACKEND/tests/device_approval_check.py"
+          ]
+        },
+        {
+          "name": "flet_ui",
+          "exit_code": 0,
+          "unittest_count": 10,
+          "command": [
+            "/tmp/sgacd-flet-vault-venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "FRONTEND/WALLET-FRONTEND/tests",
+            "-p",
+            "test*.py",
+            "-v"
+          ]
+        },
+        {
+          "name": "flet_bridge",
+          "exit_code": 0,
+          "unittest_count": 11,
+          "command": [
+            "/tmp/sgacd-flet-vault-venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "FRONTEND/WALLET-FRONTEND/native_bridge/tests",
+            "-p",
+            "test*.py",
+            "-v"
+          ]
+        },
+        {
+          "name": "release",
+          "exit_code": 0,
+          "unittest_count": 14,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests",
+            "-p",
+            "test_release.py",
+            "-v"
+          ]
+        },
+        {
+          "name": "progress",
+          "exit_code": 0,
+          "unittest_count": 21,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "ANALISIS/contabilidad/tools",
+            "-p",
+            "test_progress.py",
+            "-v"
+          ]
+        },
+        {
+          "name": "runner",
+          "exit_code": 0,
+          "unittest_count": 19,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "INTEGRACIONES/operacion/tests",
+            "-p",
+            "test_verify_local.py",
+            "-v"
+          ]
+        },
+        {
+          "name": "offline",
+          "exit_code": 0,
+          "unittest_count": 15,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "BACKEND/WALLET-BACKEND/offline/tests",
+            "-p",
+            "test*.py",
+            "-v"
+          ]
+        },
+        {
+          "name": "01-cryptography",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "MOVILES/WALLET-MOVIL/native/pool-01-cryptography/tests/verify.py"
+          ]
+        },
+        {
+          "name": "recovery",
+          "exit_code": 0,
+          "unittest_count": 15,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/WALLET-BACKEND/tests/recovery_check.py"
+          ]
+        },
+        {
+          "name": "03-integrity",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "MOVILES/WALLET-MOVIL/native/pool-03-integrity/tests/verify.py"
+          ]
+        },
+        {
+          "name": "04-anti-phishing",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "MOVILES/WALLET-MOVIL/native/pool-04-anti-phishing/tests/verify.py"
+          ]
+        },
+        {
+          "name": "02-biometrics",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "MOVILES/WALLET-MOVIL/native/pool-02-biometrics/tests/verify.py"
+          ]
+        },
+        {
+          "name": "desktop_bridge",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "node",
+            "--test",
+            "DESKTOP/WALLET-DESKTOP/agents/tests/bridge.test.mjs"
+          ]
+        },
+        {
+          "name": "sync_native",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "FRONTEND/WALLET-FRONTEND/native_bridge/sync_native.py"
+          ]
+        },
+        {
+          "name": "pending",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/WALLET-BACKEND/tools/update_pending_doc.py",
+            "--check"
+          ]
+        },
+        {
+          "name": "public_assets",
+          "exit_code": 0,
+          "unittest_count": null,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "FRONTEND/WALLET-FRONTEND/tools/sync_public_assets.py",
+            "--check"
+          ],
+          "initial_exit_code": 1,
+          "initial_finding": "Public pending.json was stale; regenerated from canonical registry."
+        },
+        {
+          "name": "refunds",
+          "exit_code": 0,
+          "unittest_count": 23,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/deployment/tests/accounting_wallet_refund_check.py"
+          ]
+        },
+        {
+          "name": "refund_lifecycle",
+          "exit_code": 0,
+          "unittest_count": 21,
+          "command": [
+            "/workspace/.integration-venv/bin/python",
+            "BACKEND/deployment/tests/accounting_wallet_refund_lifecycle_check.py"
+          ]
+        }
+      ],
+      "passed": true,
+      "fresh": [
+        {
+          "service": "erp-tur",
+          "phase": "install",
+          "exit_code": 0
+        },
+        {
+          "service": "erp-tur",
+          "phase": "schema",
+          "exit_code": 0
+        },
+        {
+          "service": "turismo",
+          "phase": "install",
+          "exit_code": 0
+        },
+        {
+          "service": "turismo",
+          "phase": "schema",
+          "exit_code": 0
+        }
+      ],
+      "fresh_unittest_count": 26,
+      "desktop_node_tests": 4,
+      "browser": "Passed: responsive, white text, eight agents, pending register, no private routes, no external requests.",
+      "native_resources_verified": 19,
+      "physical_devices_verified": false
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "source-manifest.json": "163ee968aa898f5435230d6b9df84b12a45c92a7479bd97076f910c727a8cf28",
+  "web_preparation.log": "1673b026c9a54cd6ef3e175b3662143530e957478cf6746b6543c85ad9b606f6",
+  "pool08_library_browser.log": "4f7887f18074c51cf5e6c499356296eb6be16ef45bc3db0a2889b49a857977c1",
+  "pool08_library_sga.log": "23a5d17b743c9cf21bef3a4a40b0e1499064432b232adf85ec7131f855d45c66",
+  "pool08_video_sga.log": "659850044cfb6b14eb6ce74ab4dfb6c78fd759b29585aa4cecf9de0d56ecc749",
+  "report.json": "77f059f45a16152c74547b800558348428a4caed8e3e640a3b8893e7172270f5",
+  "pool08_library_http.log": "8ffab91d46ac7e8720ffd84d53d9e243005219bdc1000eda6a8565b3bc24af3c",
+  "runner.log": "45460203d75730618aaf867e92fba5afce214e7ea12776d15cf437edfad88e5c",
+  "pool08_plan_registry.log": "3224de485324ff97019296146d6339f6b6b8fa6ff1b9e06f7b8236b0b7445059",
+  "pool08_adaptation_http.log": "dae5e7f7ed15f3cd594b2b6731fc1bbff734c5ab55d77151c6f34b257593e973",
+  "pool08_video_native.log": "a7824860eb795ab4e8a0082f0e0b3ee1ff1a5b9ce822ac94eb8bf159330fa943",
+  "pool08_adaptation_native.log": "4048e5890eb506bde397f18f0c49bb98813e7be00e92b450082af51d48e3cd9f",
+  "pool08_library_native.log": "361c42f1de6fd303aab1cd79883dbffaca7c3cd782022951602f864d9657bb34",
+  "pool08_adaptation_sga.log": "5507bafa5bc42585ba8d92a365afb21458f3abf8897a38d0c897cb093a91db77",
+  "pool08_adaptation_browser.log": "66d2a44e8481f7b5b8334db9cb27f401bb2b67828915aad0b1cdc2aacb3a32e2",
+  "pool08_library_sanitize.log": "5d9147d112ff1edb6f110ba8ab1bd0661e2bc2332d638e4281516e6752badbe0"
+}

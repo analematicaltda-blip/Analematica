@@ -3,7 +3,7 @@ import json
 import flet as ft
 
 def load_design_tokens():
-    tokens_path = os.path.join(os.path.dirname(__file__), "..", "assets", "design_tokens.json")
+    tokens_path = os.path.join(os.path.dirname(__file__), "..", "assets", "FRONTEND/design_tokens.json")
     if os.path.exists(tokens_path):
         try:
             with open(tokens_path, "r", encoding="utf-8") as f:

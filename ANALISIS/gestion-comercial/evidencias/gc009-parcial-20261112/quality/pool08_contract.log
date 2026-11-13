@@ -1,0 +1,42 @@
+test_all_capability_sets_match_without_claiming_execution (__main__.ContractChecks.test_all_capability_sets_match_without_claiming_execution) ... ok
+test_all_twenty_capabilities_fit_bounded_latest_graph (__main__.ContractChecks.test_all_twenty_capabilities_fit_bounded_latest_graph) ... ok
+test_body_and_nesting_limits (__main__.ContractChecks.test_body_and_nesting_limits) ... ok
+test_boundary_limits_dag_size_and_expiry_edge (__main__.ContractChecks.test_boundary_limits_dag_size_and_expiry_edge) ... ok
+test_catalog_cannot_be_mutated_by_callers (__main__.ContractChecks.test_catalog_cannot_be_mutated_by_callers) ... ok
+test_currency_is_explicit_and_not_assumed_usd (__main__.ContractChecks.test_currency_is_explicit_and_not_assumed_usd) ... ok
+test_cycle_rejected (__main__.ContractChecks.test_cycle_rejected) ... ok
+test_decimal_amount_cannot_be_float_boolean_negative_zero_or_exponent (__main__.ContractChecks.test_decimal_amount_cannot_be_float_boolean_negative_zero_or_exponent) ... ok
+test_declared_hash_is_not_a_payment_verifier (__main__.ContractChecks.test_declared_hash_is_not_a_payment_verifier) ... ok
+test_deterministic_topology_and_fingerprint (__main__.ContractChecks.test_deterministic_topology_and_fingerprint) ... ok
+test_duplicate_dag_nodes_rejected (__main__.ContractChecks.test_duplicate_dag_nodes_rejected) ... ok
+test_duplicate_fields_nonfinite_and_invalid_utf8_rejected (__main__.ContractChecks.test_duplicate_fields_nonfinite_and_invalid_utf8_rejected) ... ok
+test_expiry_past_or_excessive_rejected (__main__.ContractChecks.test_expiry_past_or_excessive_rejected) ... ok
+test_foreign_company_actor_or_system_rejected (__main__.ContractChecks.test_foreign_company_actor_or_system_rejected) ... ok
+test_latest_cycle_and_false_payment_or_token_claims_are_rejected (__main__.ContractChecks.test_latest_cycle_and_false_payment_or_token_claims_are_rejected) ... ok
+test_latest_financial_contract_requires_business_payload (__main__.ContractChecks.test_latest_financial_contract_requires_business_payload) ... ok
+test_latest_version_requires_explicit_intent_kind (__main__.ContractChecks.test_latest_version_requires_explicit_intent_kind) ... ok
+test_legacy_schema_and_catalog_remain_available (__main__.ContractChecks.test_legacy_schema_and_catalog_remain_available) ... ok
+test_naive_expiry_rejected (__main__.ContractChecks.test_naive_expiry_rejected) ... ok
+test_new_capability_is_not_silently_added_to_legacy_version (__main__.ContractChecks.test_new_capability_is_not_silently_added_to_legacy_version) ... ok
+test_no_auth_token_in_storage_event (__main__.ContractChecks.test_no_auth_token_in_storage_event) ... ok
+test_no_passport_or_names_in_event (__main__.ContractChecks.test_no_passport_or_names_in_event) ... ok
+test_nonfinancial_landing_and_campaign_plans_need_no_fake_sale (__main__.ContractChecks.test_nonfinancial_landing_and_campaign_plans_need_no_fake_sale) ... ok
+test_nonfinancial_plan_cannot_smuggle_financial_payload (__main__.ContractChecks.test_nonfinancial_plan_cannot_smuggle_financial_payload) ... ok
+test_protocol_documents_cannot_be_mutated_by_client (__main__.ContractChecks.test_protocol_documents_cannot_be_mutated_by_client) ... ok
+test_reassigning_soup_is_not_silently_accepted (__main__.ContractChecks.test_reassigning_soup_is_not_silently_accepted) ... ok
+test_retries_are_deterministic_without_issuing_execution_grants (__main__.ContractChecks.test_retries_are_deterministic_without_issuing_execution_grants) ... ok
+test_safe_audit_records_no_body_customer_or_token (__main__.ContractChecks.test_safe_audit_records_no_body_customer_or_token) ... ok
+test_schema_hashes_and_semantics_match_in_three_systems (__main__.ContractChecks.test_schema_hashes_and_semantics_match_in_three_systems) ... ok
+test_self_and_missing_dependency_rejected (__main__.ContractChecks.test_self_and_missing_dependency_rejected) ... ok
+test_soup_keeps_agent_optimization_and_not_creative_production (__main__.ContractChecks.test_soup_keeps_agent_optimization_and_not_creative_production) ... ok
+test_three_schemas_are_identical_valid_and_in_own_backends (__main__.ContractChecks.test_three_schemas_are_identical_valid_and_in_own_backends) ... ok
+test_unknown_roles_and_success_flags_rejected (__main__.ContractChecks.test_unknown_roles_and_success_flags_rejected) ... ok
+test_unknown_tool_not_accepted (__main__.ContractChecks.test_unknown_tool_not_accepted) ... ok
+test_unsupported_and_conflicting_versions_rejected (__main__.ContractChecks.test_unsupported_and_conflicting_versions_rejected) ... ok
+test_uuid_casing_cannot_create_aliases_for_idempotency (__main__.ContractChecks.test_uuid_casing_cannot_create_aliases_for_idempotency) ... ok
+test_valid_draft_never_grants_execution_or_provider_certification (__main__.ContractChecks.test_valid_draft_never_grants_execution_or_provider_certification) ... ok
+
+----------------------------------------------------------------------
+Ran 37 tests in 0.114s
+
+OK

@@ -1,0 +1,77 @@
+{
+  "SYSTEM:SCOPE:PROVIDER_OR_-": {
+    "SMS": {
+      "version": "REPLACE_AFTER_REVIEW",
+      "adapter": "twilio-sms",
+      "from_id": "+15550000001",
+      "credential_env": "COMMERCIAL_MOBILE_SECRET_TWILIO",
+      "limit_daily": 10,
+      "max_segments": 3,
+      "estimate_minor": 0,
+      "currency": "COP",
+      "co_support_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "allow_dispatch": false,
+      "media_max_bytes": 5000000,
+      "public_base_url": "https://REPLACE-WITH-CLIENT-DOMAIN.example",
+      "wa_template_name": "",
+      "wa_language": "",
+      "wa_template_digest": "",
+      "allow_sms_link": false,
+      "allowed_media_kinds": [
+        "IMAGE",
+        "VIDEO"
+      ],
+      "wa_header_kind": "",
+      "media_max_seconds": 60,
+      "wa_template_body": ""
+    },
+    "MMS": {
+      "version": "REPLACE_AFTER_REVIEW",
+      "adapter": "twilio-mms",
+      "from_id": "+15550000001",
+      "credential_env": "COMMERCIAL_MOBILE_SECRET_TWILIO",
+      "limit_daily": 10,
+      "max_segments": 3,
+      "estimate_minor": 0,
+      "currency": "COP",
+      "co_support_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "allow_dispatch": false,
+      "media_max_bytes": 300000,
+      "public_base_url": "https://REPLACE-WITH-CLIENT-DOMAIN.example",
+      "wa_template_name": "",
+      "wa_language": "",
+      "wa_template_digest": "",
+      "allow_sms_link": false,
+      "allowed_media_kinds": [
+        "IMAGE"
+      ],
+      "wa_header_kind": "",
+      "media_max_seconds": 30,
+      "wa_template_body": ""
+    },
+    "WHATSAPP": {
+      "version": "REPLACE_AFTER_REVIEW",
+      "adapter": "meta-whatsapp",
+      "from_id": "0",
+      "credential_env": "COMMERCIAL_MOBILE_SECRET_META",
+      "limit_daily": 10,
+      "max_segments": 3,
+      "estimate_minor": 0,
+      "currency": "COP",
+      "co_support_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "allow_dispatch": false,
+      "media_max_bytes": 5000000,
+      "public_base_url": "https://REPLACE-WITH-CLIENT-DOMAIN.example",
+      "wa_template_name": "replace_after_review",
+      "wa_language": "es_CO",
+      "wa_template_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "allow_sms_link": false,
+      "allowed_media_kinds": [
+        "IMAGE"
+      ],
+      "wa_header_kind": "IMAGE",
+      "media_max_seconds": 60,
+      "wa_template_body": "Texto declarado pendiente de revisión: {{body}}"
+    }
+  }
+}

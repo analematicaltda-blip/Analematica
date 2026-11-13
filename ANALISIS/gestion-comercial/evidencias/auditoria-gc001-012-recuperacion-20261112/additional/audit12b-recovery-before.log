@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: Receipt reference must survive committed operation followed by read failure
+
+0 !== 1
+
+    at /workspace/SGA-CD-conectado/FRONTEND/deployment/tests/pool08_recovery_browser.cjs:27:9

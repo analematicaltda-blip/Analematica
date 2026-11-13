@@ -1,9 +1,9 @@
 name: Wallet clients and offline rules
 on:
   push:
-    paths: ['WALLET-BACKEND/**', 'WALLET-FRONTEND/**', 'WALLET-MOVIL/**', 'WALLET-DESKTOP/**', 'PENDIENTES-PRODUCCION-BILLETERA.md', '.github/workflows/wallet-offline.yml']
+    paths: ['BACKEND/WALLET-BACKEND/**', 'FRONTEND/WALLET-FRONTEND/**', 'MOVILES/WALLET-MOVIL/**', 'DESKTOP/WALLET-DESKTOP/**', 'ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md', '.github/workflows/wallet-offline.yml']
   pull_request:
-    paths: ['WALLET-BACKEND/**', 'WALLET-FRONTEND/**', 'WALLET-MOVIL/**', 'WALLET-DESKTOP/**', 'PENDIENTES-PRODUCCION-BILLETERA.md', '.github/workflows/wallet-offline.yml']
+    paths: ['BACKEND/WALLET-BACKEND/**', 'FRONTEND/WALLET-FRONTEND/**', 'MOVILES/WALLET-MOVIL/**', 'DESKTOP/WALLET-DESKTOP/**', 'ANALISIS/produccion/PENDIENTES-PRODUCCION-BILLETERA.md', '.github/workflows/wallet-offline.yml']
 permissions:
   contents: read
 jobs:
@@ -19,15 +19,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: python -m pip install -e WALLET-BACKEND/offline -e WALLET-FRONTEND -e WALLET-FRONTEND/native_bridge
-      - run: python -m unittest discover -s WALLET-BACKEND/offline/tests -v
-      - run: python -m unittest discover -s WALLET-FRONTEND/tests -v
-      - run: python -m unittest discover -s WALLET-FRONTEND/native_bridge/tests -v
-      - run: python WALLET-FRONTEND/native_bridge/sync_native.py
-      - run: python WALLET-FRONTEND/tools/sync_public_assets.py --check
-      - run: python WALLET-BACKEND/tools/update_pending_doc.py --check
-      - run: node --test WALLET-DESKTOP/agents/tests/bridge.test.mjs
+      - run: python -m pip install -e BACKEND/WALLET-BACKEND/offline -e FRONTEND/WALLET-FRONTEND -e FRONTEND/WALLET-FRONTEND/native_bridge
+      - run: python -m unittest discover -s BACKEND/WALLET-BACKEND/offline/tests -v
+      - run: python -m unittest discover -s FRONTEND/WALLET-FRONTEND/tests -v
+      - run: python -m unittest discover -s FRONTEND/WALLET-FRONTEND/native_bridge/tests -v
+      - run: python FRONTEND/WALLET-FRONTEND/native_bridge/sync_native.py
+      - run: python FRONTEND/WALLET-FRONTEND/tools/sync_public_assets.py --check
+      - run: python BACKEND/WALLET-BACKEND/tools/update_pending_doc.py --check
+      - run: node --test DESKTOP/WALLET-DESKTOP/agents/tests/bridge.test.mjs
       - run: npm install --prefix "$RUNNER_TEMP/wallet-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
       - run: '"$RUNNER_TEMP/wallet-browser/node_modules/.bin/playwright" install --with-deps chromium'
-      - run: python WALLET-FRONTEND/preview.py --port 8556 > /tmp/wallet-preview.log 2>&1 &
-      - run: NODE_PATH="$RUNNER_TEMP/wallet-browser/node_modules" node WALLET-FRONTEND/tests/browser.cjs
+      - run: python FRONTEND/WALLET-FRONTEND/preview.py --port 8556 > /tmp/wallet-preview.log 2>&1 &
+      - run: NODE_PATH="$RUNNER_TEMP/wallet-browser/node_modules" node FRONTEND/WALLET-FRONTEND/tests/browser.cjs

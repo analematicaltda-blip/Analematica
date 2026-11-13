@@ -13,11 +13,11 @@ Entorno de validación local, separado del Codespace privado del usuario.
 Reproducir pruebas locales:
 
 ```bash
-python -m unittest discover -s tests/workspace -v
-NODE6_OUTPUT=/tmp/sgacd-node6-tests python -m unittest discover -s tests/node6 -v
-python tests/frontend/publisher.py
-node tests/frontend/service-worker.cjs
-SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE=/ruta/node_modules/playwright GSAP_DIST=/ruta/node_modules/gsap/dist node tests/frontend/workspace.cjs
+python -m unittest discover -s BACKEND/tests/workspace -v
+NODE6_OUTPUT=/tmp/sgacd-node6-tests python -m unittest discover -s BACKEND/tests/node6 -v
+python FRONTEND/tests/publisher.py
+node FRONTEND/tests/service-worker.cjs
+SGA_WEB_URL=http://127.0.0.1:18090 PLAYWRIGHT_MODULE=/ruta/node_modules/playwright GSAP_DIST=/ruta/node_modules/gsap/dist node FRONTEND/tests/workspace.cjs
 ```
 
 El backend conserva avisos previos de modelos dinámicos SQLAlchemy y configuraciones Pydantic antiguas; no impidieron las pruebas. No se modificaron para ampliar el alcance de esta entrega.

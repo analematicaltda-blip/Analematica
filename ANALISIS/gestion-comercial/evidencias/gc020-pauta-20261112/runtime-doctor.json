@@ -1,0 +1,13 @@
+{
+  "platform": "linux",
+  "arch": "x64",
+  "source_commit": "b43ac4f6e892ef608f8851428613c4009f0e84c7",
+  "release_version": "1.2.0",
+  "runtime": {
+    "ready": false,
+    "reason": "Ejecuta node DESKTOP/agent-desktop-sgacd/install.mjs en este equipo."
+  },
+  "remote_runtime": false,
+  "graphical_session_hint": false,
+  "note": "El proceso controla el equipo donde se ejecuta. Codespaces no equivale al escritorio del portátil. La respuesta nativa de status determina las capacidades."
+}

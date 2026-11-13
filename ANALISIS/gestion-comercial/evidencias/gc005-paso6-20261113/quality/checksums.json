@@ -1,0 +1,10 @@
+{
+  "pool08_pricing_native.log": "0925304c77c06dd88c20e6e31aeaa30bb72d29dec3bd19181e7f416af85064aa",
+  "pool08_pricing_http.log": "f205c6a932ec7bfe989a250e7d7b1665a314fdf6df065c3c2a4f2c7fdfd65fb0",
+  "source-manifest.json": "13f97fd88dd733c1599ae1200cc31c762738a18e48c96c44e1ffa52b848827f0",
+  "pool08_pricing_browser.log": "39b528169a81ad02e507200628ab61f717b391aaf6fcd2c7f8178112dae37bc1",
+  "report.json": "207bb2d0f7c6e5a1641433edb3766ba090216613412990bc25b5e12043b177be",
+  "runner.log": "428e99c10a5c778d8690c1057d2f0d452865650c23143a69b31cf6841de5522d",
+  "pool08_pricing_sga.log": "f05e2ca8061456ead62a5c1c60df29332f686e0089ea9b06fc23041f136236bf",
+  "pool08_quote_delivery.log": "3c26063b695d15c0b46165f2f8f521170275a59afe51b40e99cf70cd9b5a74d9"
+}

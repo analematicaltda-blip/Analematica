@@ -1,8 +1,8 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/purchase-returns.js';
-import '../../../ANALEMATICA-FRONTEND/js/purchase-item-returns.js';
-import '../../../ANALEMATICA-FRONTEND/js/native-purchases.js';
+import '../runtime/purchase-returns.js';
+import '../runtime/purchase-item-returns.js';
+import '../runtime/native-purchases.js';
 declare global {interface Window {SGACDNativePurchases:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>,signal:AbortSignal)=>Promise<unknown>;onPosted:()=>void})=>{destroy:()=>void;clear:()=>void}}}}
 const actions:Record<string,string>={review_purchase_item_return:'revisar-devolucion-conceptos',post_purchase_item_return:'contabilizar-devolucion-conceptos',purchase_item_return_state:'estado-devolucion-conceptos',review_purchase_item_return_void:'revisar-correccion-devolucion-conceptos',void_purchase_item_return:'corregir-devolucion-conceptos',review_purchase_return_void:'revisar-correccion-devolucion-compra',void_purchase_return:'corregir-devolucion-compra',review_purchase_return:'revisar-devolucion-compra',post_purchase_return:'contabilizar-devolucion-compra',purchase_return_state:'estado-devoluciones-compra',native_purchase_history:'historial-compras-nativas',accounts:'cuentas-compras-nativas',native_supplier_sources:'proveedores-compras-nativas',native_purchase_sources:'fuentes-compras-nativas',record_native_supplier:'registrar-proveedor-nativo',record_native_purchase:'registrar-factura-compra-nativa',review_native_purchase:'revisar-compra-nativa',post_native_purchase:'contabilizar-compra-nativa',native_purchase_state:'estado-compra-nativa',review_native_purchase_reversal:'revisar-contrapartida-compra-nativa',reverse_native_purchase:'contrapartida-compra-nativa'};
 export function NativePurchases({identity,providerId,request,onPosted}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>;onPosted:()=>void}){

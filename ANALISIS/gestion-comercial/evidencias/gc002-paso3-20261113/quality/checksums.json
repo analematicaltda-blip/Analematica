@@ -1,0 +1,7 @@
+{
+  "source-manifest.json": "caa6fece637960d217ce6376728eea5fa1aa67c660731461c58bbb49ded48048",
+  "identity-acceptance.json": "ca74726469448b45e57ec4b1e0bceaa713194552a84893ff026b921176496a05",
+  "report.json": "798ec2bd2c17a03f7b1ead8e1a5b9c28c530499f9bf5fbcd8f0e9c0e593a0730",
+  "pool08_identity_acceptance_readiness.log": "22beb6545b7b3ff9bcc33c3fab282583fc26aaf0da05b2542a472033478720ec",
+  "pool08_identity_acceptance_contract.log": "66bdbd7dd815f204716cf820e6e794ba1efc511b99adf753a79cc3f364bd8bc1"
+}

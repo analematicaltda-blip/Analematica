@@ -1,0 +1,52 @@
+[
+  {
+    "path": "DESKTOP/tools/flet_preview/web-manifest.json",
+    "before": "a0d8ab831ec3a15da5807af6e8bec702e70ee9d07f166b4ccdbd68f68c382997",
+    "after": "d2dc3c22dc4f5f7f2da8ef2a1e414cbc3e3c7a160011c38c4287a7c58c27f31c"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/commercial-offline/editor.js",
+    "before": "a028e15f0dd149e50aecaf179932cafabd9b2a8eb464c54c123a044b8b885336",
+    "after": "471e8aeb36b5c842f00bd8e00a1661c2ed7d9cc44aed28984d9b28630d9b5b2b"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/commercial-offline/worker.js",
+    "before": "098d1a28418577cdd29169b5f7c257e750324a2696ba65fdc093226b2131bf46",
+    "after": "0c0ff4c8617c678a811ab36776ac868b5c41eb7c2381c8f24f0ec1532f17e861"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/commercial-offline/editor.js",
+    "before": "6bcf97b11a5bb446a7c6625135332a0ae1398e40a42786ac87eea567790f02be",
+    "after": "8632251aa05cb7b5d7c1b8d08018e29a496cebaedde4432ee44e14fc55f33b7d"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/commercial-offline/worker.js",
+    "before": "cf4e4ea95e3fbd2cf59c6dd0baff2f2955fd34496cca1d6d85330d5b38d313f8",
+    "after": "2748898c2250b73114f840cd8a586300fb5e758d8758bf2b964a501e12706226"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/deployment/manifest.json",
+    "before": "ed06936a2660911e13b2008607d0ee7eb98ed7f5bae833bb74f2523bb8588a23",
+    "after": "33ac7080fd85b0e3410e01f12f85235e7258af66ffe74b516403e0c957759995"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/commercial-offline/editor.js",
+    "before": "4285fa545ce6ab974a016859e941ec86684adbedd74ede29575f291ebebdcbcb",
+    "after": "bf86a6d1d7aab154918fdb75eae0d71c6a7ac449300e3822afe1d3b7bc7c0281"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/commercial-offline/worker.js",
+    "before": "35b2894a420c301b817b364b820bf9109c4193b141d6040408d156055fce2e47",
+    "after": "97b39d86555a0e62ac1f264340925d443344fe30f07a1805d5543d7078817af0"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_offline_browser.cjs",
+    "before": "7bc5c2e82ce75409765573e26da8fd847de2e9dd4f9c996754bbf4e2e14c218e",
+    "after": "87eb936898128258b16d530f43ebd7232f4e3848544b2760f3e7aa8ed3607012"
+  },
+  {
+    "path": "FRONTEND/deployment/tests/pool08_payments_browser.cjs",
+    "before": "a9e3fabd06e1b328013ddf2a82d1085a1d770204b3dbeb870ab2aae225d5511a",
+    "after": "41be34caef92158742cac2a094ef9677f751a13b06a7cf6ad77c47ab72ec3e76"
+  }
+]

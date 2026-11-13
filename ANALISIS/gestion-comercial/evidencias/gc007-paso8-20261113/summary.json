@@ -1,0 +1,62 @@
+{
+  "task": "GC-007",
+  "plan_step": 8,
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+  "implemented": [
+    "Carga de ventas bloqueada hasta completar cotizaciones, lista y recuperación; fallo recuperable mediante reintento.",
+    "Respuestas descartadas al cerrar el panel; generaciones de listado/detalle/cuentas/vínculos protegen la selección.",
+    "Controles recién renderizados conservan bloqueo, incluso mientras llegan cuentas.",
+    "Campos del login del ledger capturados antes de deshabilitar el formulario; contraseña borrada en finally y sin persistir credenciales.",
+    "Referencias de recuperación JSON/UUID malformadas se descartan con aviso para revisar el servidor; no se envían rutas arbitrarias.",
+    "Tres interfaces propias y manifiestos web/Flet actualizados, sin relajar revisiones, confirmaciones o permisos."
+  ],
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc007-paso8-20261113/quality/report.json",
+    "sha256": "4e9f4a81312257ed3ee4f869d9e8b795c190724c6f60cc4e8f2d9a29afc9fdea",
+    "suites": 10,
+    "tests": 89,
+    "source_stable": true,
+    "source_digest": "b72843f0a1b8d30ebcbbb69c3f8bb270e3037694e14333891340d6738cbb5acb"
+  },
+  "browser_checks": {
+    "sales": 112,
+    "lifecycle": 32
+  },
+  "login_regression": {
+    "before": "Formulario lleno enviaba objeto vacío al ledger porque FormData se leía después de deshabilitar controles.",
+    "after": "El cuerpo contiene los campos sintéticos revisados y la contraseña del formulario queda vacía.",
+    "baseline_archive": "gc006-paso7-20261113.tar.gz",
+    "log_sha256": "375d37d9fdacfc29f3f65f8c72e33b8957a8a67edf7a94ef6b9a8e753c57d06d",
+    "real_credentials_or_accounts_used": false
+  },
+  "dependencies_without_acceptance": [
+    "GC-006"
+  ],
+  "pending": [
+    "Aceptación de cotizaciones GC-006 y sus dependencias.",
+    "Revisión contable/laboral legítima de la actividad y soportes de los casos de uso reales.",
+    "DIAN/custodia reales para la aceptación fiscal/documental aplicable; una venta/asiento de prueba no acredita factura fiscal ni movimiento bancario."
+  ],
+  "prior_followups_preserved": 86,
+  "git": {
+    "commit_created": false,
+    "push_performed": false,
+    "main_updated": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

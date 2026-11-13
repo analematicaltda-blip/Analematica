@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": 75,
+  "systems": 3,
+  "real_browser_crypto": true,
+  "real_indexeddb": true,
+  "offline_reload": true,
+  "server_actions": false,
+  "hardware_attestation": false
+}

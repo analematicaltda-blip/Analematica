@@ -1,0 +1,17 @@
+{
+  "pool08_crm_sga.log": "e9e0a2ef7be393eec31d2e0b3c4d6b7a61c159883b3480d7ad65392c61b9a03a",
+  "pool08_mobile_http.log": "98cb268638cdf06ccae63b198ecc3171ea136147f25129c7909878d40ce8f693",
+  "pool08_crm_http.log": "741500641db68c1b2411aa1a5aa25850d82a16116ddc4e7a678b96ad86fbd9d4",
+  "source-manifest.json": "015a3356b740b74bcc7998f7e5e009987be211606ff6f1557fc0b1f80b30a312",
+  "web_preparation.log": "6181fe595fe01bd47a94ac18c2e2f2e701a59e1ca699b11ceaf756720d6b461c",
+  "pool08_mobile_sga.log": "0fbe9b3ff11f7832bb7fe9b16382ca3d22ccec0ba2baa17ddd60f9be66ad4804",
+  "pool08_crm_native.log": "976e18f25924326c0a4165d6c0253f0b2aa7b4d8e772e3c910c7bc529eb28190",
+  "pool08_crm_browser.log": "e8e169decf8043debe96d8da0dc9dd1710878be10ceb87137b25789ff0232e9e",
+  "pool08_email_campaign_native.log": "9c46c5e64318636b410bb7c6ca5474695033b3c08d214dd28f93ed9cdb7a9030",
+  "report.json": "d6ef69fef0c2db39e1f50fe6c6799c2724594c735350e18fbb04debe2f94755c",
+  "pool08_mobile_native.log": "378ee4e564bc1cb828427fe385f1501a4575f81698489eb00acf71792a3bb744",
+  "runner.log": "9e6a563ee52fad96804d8fd99e368e0f5781271451587314d713850ab0b8aef8",
+  "pool08_email_campaign_sga.log": "d376cba959671f8ceae928bf30c4c249f4fa4bc02b37875faccbe5826f45a8ee",
+  "pool08_plan_registry.log": "9f66ba4fed7f8ac78b8f7639d40d106b0461e4c02a4f6bbf19e06cf14e6adace",
+  "pool08_mobile_browser.log": "609ca612bc513c86f6aef118e4453b1c942484ad62dd6ba5bdd62377cc771cb3"
+}

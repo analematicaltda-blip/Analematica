@@ -2,14 +2,15 @@
 from pathlib import Path
 import hashlib,json
 ROOT=Path(__file__).resolve().parents[2]
-def install_assets(destination):
+def install_assets(destination,source=None,prefix="sgacd-offline-capture"):
     destination=Path(destination)
     if destination.is_symlink():raise ValueError('Offline destination cannot be a symlink.')
     destination.mkdir(parents=True,exist_ok=True)
     destination.chmod(0o755)
-    source=ROOT/'FRONTEND/ANALEMATICA-FRONTEND/contabilidad-offline'
-    assets={name:(source/name).read_bytes() for name in ['index.html','editor.css','editor.js']}
-    assets['vault.js']=(ROOT/'FRONTEND/ANALEMATICA-FRONTEND/js/accounting-offline.js').read_bytes()
+    source=Path(source) if source else ROOT/'FRONTEND/ANALEMATICA-FRONTEND/contabilidad-offline'
+    commercial=(source/'vault.js').is_file()
+    assets={name:(source/name).read_bytes() for name in ['index.html','style.css' if commercial else 'editor.css','editor.js']}
+    assets['vault.js']=(source/'vault.js' if commercial else ROOT/'FRONTEND/ANALEMATICA-FRONTEND/js/accounting-offline.js').read_bytes()
     manifest={name:hashlib.sha256(body).hexdigest() for name,body in assets.items()}
     version=hashlib.sha256(json.dumps(manifest,sort_keys=True).encode()).hexdigest()[:20]
     worker="""/* Static capture assets only. Never cache sessions, APIs or authorization. */
@@ -32,11 +33,11 @@ self.addEventListener('fetch',event=>{
  if(!Object.hasOwn(ASSETS,name))return;
  event.respondWith((async()=>{const response=await (await caches.open(CACHE)).match(new URL(name,BASE).href);return response||new Response('Capturador no disponible: reinstala con conexión.',{status:503,headers:{'Content-Type':'text/plain;charset=utf-8'}});})());
 });
-""".replace('MANIFEST',json.dumps(manifest,sort_keys=True)).replace('VERSION',version)
+""".replace('MANIFEST',json.dumps(manifest,sort_keys=True)).replace('VERSION',version).replace('sgacd-offline-capture',prefix)
     assets['worker.js']=worker.encode()
     for name,body in assets.items():
         path=destination/name
         if path.is_symlink():raise ValueError('Offline asset cannot overwrite a symlink.')
         path.write_bytes(body)
         path.chmod(0o644)
-    return {'version':version,'assets':manifest,'scope':'/contabilidad-offline/','api_cached':False}
+    return {'version':version,'assets':manifest,'scope':'/commercial-offline/' if commercial else '/contabilidad-offline/','api_cached':False}

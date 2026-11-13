@@ -1,0 +1,8 @@
+test_actual_tls_proxy_public_acceptance_and_media (__main__.NginxChecks.test_actual_tls_proxy_public_acceptance_and_media) ... ok
+test_public_shell_does_not_unlock_private_panels (__main__.NginxChecks.test_public_shell_does_not_unlock_private_panels) ... ok
+test_route_body_limits_remain_specific_and_auth_is_not_bypassed (__main__.NginxChecks.test_route_body_limits_remain_specific_and_auth_is_not_bypassed) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 11.121s
+
+OK

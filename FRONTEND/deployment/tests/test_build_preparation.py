@@ -12,6 +12,10 @@ class BuildPreparationTests(unittest.TestCase):
    project=root/'erp'
    self.assertEqual((project/'node_modules').readlink(),root/'deps')
    self.assertTrue((project/'src/app/erp/cotizaciones/page.tsx').is_file())
+   self.assertTrue((project/'public/commercial-crm.html').is_file())
+   self.assertTrue((project/'public/js/commercial-crm.js').is_file())
+   self.assertTrue((project/'public/js/commercial-crm-native.js').is_file())
+   self.assertTrue((project/'src/app/dashboard/prestador/mi-negocio/gestion-comercial/crm/page.tsx').is_file())
    self.assertTrue((project/'src/app/dashboard/prestador/mi-negocio/gestion-comercial/cotizaciones/PasswordRecovery.tsx').is_file())
    config=(project/'next.config.mjs').read_text();self.assertNotIn('ignoreBuildErrors',config);self.assertNotIn('ignoreDuringBuilds',config)
    self.assertTrue(json.loads((project/'tsconfig.json').read_text())['compilerOptions']['strict'])
@@ -26,6 +30,16 @@ class BuildPreparationTests(unittest.TestCase):
    project=root/'turismo'
    self.assertTrue((project/'src/shared/erp/hooks/useMiNegocioApi.ts').is_file())
    self.assertFalse((project/'src/app/dashboard/prestador/mi-negocio').exists())
+   self.assertFalse((project/'public/commercial-crm.html').exists())
    self.assertEqual(json.loads((project/'tsconfig.json').read_text())['compilerOptions']['paths']['@/app/dashboard/prestador/mi-negocio/*'],['./src/shared/erp/*'])
    self.assertNotIn(str(root),(project/'next.config.mjs').read_text())
+
+ def test_public_landing_robot_exception_is_preserved_in_prepared_site(self):
+  with tempfile.TemporaryDirectory() as directory:
+   root=Path(directory)
+   with patch.object(preview,'RUNTIME',root):preview.public_assets()
+   content=(root/'sites/sgacd/robots.txt').read_text()
+   self.assertIn('Allow: /api/v1/commercial-unified/landing-pages/',content)
+   self.assertIn('Disallow: /api/',content)
+
 if __name__=='__main__':unittest.main()

@@ -1166,32 +1166,34 @@
 
             <!-- Pestaña ERP 3: Gestión Comercial & CRM -->
             <section id="tab-comercial" class="tab-pane">
+                <section class="pool08-crm" id="crm-access" aria-label="Acceso CRM de Analemática"><p role="status">Verificando acceso CRM…</p></section>
+                <div id="crm-host" data-crm-base="/api/v1/commercial-unified/crm/"></div>
                 <div class="pane-header">
                     <div>
                         <h2 class="pane-title">
                             <span class="rank-badge">DIVISIÓN COMERCIAL</span> Embudo de Ventas, CRM & Campañas Masivas
                         </h2>
                         <p class="pane-subtitle">
-                            Despacho multicanal de WhatsApp Cloud, Instagram y Gmail por los sargentos ejecutores con métricas CAC y LTV.
+                            Embudo y seguimiento comercial con fuentes verificables. Cada canal de envío conserva sus autorizaciones propias.
                         </p>
                     </div>
                 </div>
 
                 <div class="form-grid-3" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:1.5rem;">
                     <div class="admin-card" style="text-align:center;">
-                        <span class="rank-badge">LEADS CALIFICADOS</span>
-                        <div id="crmLeadsCount" style="font-size:2.2rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.5rem;">142</div>
-                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Prospectos en etapa de propuesta</p>
+                        <span class="rank-badge">OPORTUNIDADES</span>
+                        <div id="crmPipelineSource" style="font-size:2.2rem; font-weight:700; color:var(--sky-bright-300); margin-top:0.5rem;">Consultar embudo</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Estados persistentes en el embudo comercial</p>
                     </div>
                     <div class="admin-card" style="text-align:center;">
-                        <span class="rank-badge">TASA DE APERTURA</span>
-                        <div id="crmOpenRate" style="font-size:2.2rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">94.2%</div>
-                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Envíos masivos WhatsApp HSM</p>
+                        <span class="rank-badge">PRIORIDAD POR REGLAS</span>
+                        <div id="crmScoringStatus" style="font-size:2.2rem; font-weight:700; color:var(--sky-vibrant-400); margin-top:0.5rem;">No calibrado</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Sin evaluación predictiva acreditada</p>
                     </div>
                     <div class="admin-card" style="text-align:center;">
-                        <span class="rank-badge">MÉTRICAS CAC & LTV</span>
-                        <div id="crmCacLtv" style="font-size:1.8rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">CAC $85K · LTV $4.2M</div>
-                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Retorno de inversión institucional</p>
+                        <span class="rank-badge">VERIFICACIÓN FINANCIERA</span>
+                        <div id="crmCollectionStatus" style="font-size:1.8rem; font-weight:700; color:var(--sky-cyan-500); margin-top:0.5rem;">Cobro no verificado</div>
+                        <p style="font-size:0.8rem; color:var(--sky-muted-300); margin:0;">Ganado no confirma factura ni asiento</p>
                     </div>
                 </div>
 
@@ -1510,6 +1512,15 @@
 
     <!-- Ejército de Agentes Tácticos de Analemática (DEAA-V2.1) -->
     <script src="agents/analematica_army.js"></script>
+    <link rel="stylesheet" href="css/commercial-crm.css">
+    <script src="js/commercial-analytics.js"></script><script src="js/commercial-army.js"></script><script src="js/commercial-ads.js"></script><script src="js/commercial-inbox.js"></script><script src="js/commercial-publishing.js"></script><script src="js/commercial-mobile-messages.js"></script>
+<script src="js/commercial-email-campaigns.js"></script>
+<script src="js/commercial-generation.js"></script>
+<script src="js/commercial-library.js"></script>
+<script src="js/commercial-landings.js"></script>
+<script src="js/commercial-after-sales-policy.js"></script><script src="js/commercial-after-sales.js"></script><script src="js/commercial-payments.js"></script><script src="js/commercial-sales.js"></script><script src="js/commercial-quotations.js"></script><script src="js/commercial-pricing.js"></script><script src="js/commercial-opportunities.js"></script>
+    <script src="js/commercial-crm.js"></script>
+    <script src="js/commercial-crm-native.js"></script>
     <script src="js/connection.js"></script>
     <script src="js/fiscal-envelope-runtime.js"></script>
     <script src="js/accounting-fiscal-package.js"></script>

@@ -1,0 +1,62 @@
+{
+  "task": "GC-006",
+  "plan_step": 7,
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+  "implemented": [
+    "Carga inicial bloqueada, reintento visible tras error y acciones protegidas hasta disponer de opciones/contexto.",
+    "Copia única protegida contra reentrada; hubo un solo manejador en el código inspeccionado, no se afirma haber eliminado un duplicado inexistente.",
+    "Generaciones de opciones, listado y detalle: respuestas antiguas o de otra selección descartadas.",
+    "Controles nuevos conservan bloqueo; panel cerrado cancela y descarta respuestas antes/después de leer el cuerpo.",
+    "Una respuesta 400 tardía de un panel cerrado ya no borra el recibo pendiente de otra instancia.",
+    "Tres interfaces propias actualizadas, navegación y paleta conservadas; manifiestos web/Flet actualizados con sus hashes."
+  ],
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc006-paso7-20261113/quality/report.json",
+    "sha256": "6f4b0764e632eac34d88166aaa8f9414fca78b9f1098e1f04947abff0689a007",
+    "suites": 8,
+    "tests": 73,
+    "source_stable": true,
+    "source_digest": "29dae54eb6a6ab7d41f7dbd27a965ecd51ac76992192c3a300dbab437e1a2bac"
+  },
+  "browser_checks": {
+    "quotations": 176,
+    "lifecycle": 33,
+    "busy": 9
+  },
+  "late_receipt_regression": {
+    "before": "Falla reproducida: el identificador nuevo desaparecía tras un 400 tardío.",
+    "after": "La instancia cerrada descarta la respuesta y conserva el identificador nuevo.",
+    "log_sha256": "4c4d8b21161e9312faa4687ec52b42b47c5aa2693e50ae8963cea978a5d9b933"
+  },
+  "dependencies_without_acceptance": [
+    "GC-004",
+    "GC-005"
+  ],
+  "pending": [
+    "Aceptación de oportunidades y catálogo/precios según dependencias originales.",
+    "Condiciones comerciales aprobadas por cada empresa y recorridos aceptados con participantes autorizados.",
+    "La aceptación técnica por posesión de enlace registra versión, no verifica por sí sola la identidad civil del destinatario; no cobra ni reserva definitivamente."
+  ],
+  "prior_followups_preserved": 85,
+  "git": {
+    "commit_created": false,
+    "push_performed": false,
+    "main_updated": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

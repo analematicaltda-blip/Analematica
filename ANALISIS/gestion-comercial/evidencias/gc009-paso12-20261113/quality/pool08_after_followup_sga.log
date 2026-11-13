@@ -1,0 +1,16 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_audit_failure_rolls_back_task_and_event (__main__.FollowupChecks.test_audit_failure_rolls_back_task_and_event) ... ok
+test_foreign_company_cannot_attach_a_task (__main__.FollowupChecks.test_foreign_company_cannot_attach_a_task) ... ok
+test_replay_retains_raw_request_but_new_uuid_cannot_duplicate (__main__.FollowupChecks.test_replay_retains_raw_request_but_new_uuid_cannot_duplicate) ... ok
+test_reusing_uuid_with_another_command_conflicts (__main__.FollowupChecks.test_reusing_uuid_with_another_command_conflicts) ... ok
+test_same_instant_with_another_timezone_encoding_is_duplicate (__main__.FollowupChecks.test_same_instant_with_another_timezone_encoding_is_duplicate) ... ok
+test_two_connections_cannot_create_two_equal_followups (__main__.FollowupChecks.test_two_connections_cannot_create_two_equal_followups) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 11.390s
+
+OK

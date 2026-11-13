@@ -31,3 +31,6 @@ urlpatterns += [path('company-scopes/',CompanyScopeOptions.as_view())]
 
 from .cancellation_views import CancellationPolicyCommand
 urlpatterns += [path('cancellation-policies/<str:operation>/',CancellationPolicyCommand.as_view(),name='commercial-cancellation-policy')]
+
+from django.urls import include
+urlpatterns += [path("unified/", include("apps.prestadores.mi_negocio.gestion_comercial.pool08.urls"))]

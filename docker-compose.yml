@@ -89,7 +89,7 @@ services:
   # 6. Nodo 6: Factoria Multimedia, IA y Video (FFmpeg Worker)
   media-ai:
     build:
-      context: ./infra/media-ai
+      context: ./BACKEND/infra/media-ai
       dockerfile: Dockerfile
     container_name: sgacd_media_ai
     restart: always

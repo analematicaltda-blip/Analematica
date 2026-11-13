@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "scope": "Local YAML, shell syntax and dependency-order verification; no package installation or GitHub execution",
+  "actual_github_actions_run": false,
+  "production_qualified": false,
+  "results": [
+    {
+      "workflow": ".github/workflows/master-integration.yml",
+      "sha256": "ada98bb81c054428f59542ba0f3b44111377b8336820da64a0b8d68b65686929",
+      "yaml_parsed": true,
+      "shell_syntax_valid": true,
+      "commercial_runtime_precedes_tests": true
+    },
+    {
+      "workflow": ".github/workflows/local-operation-audit.yml",
+      "sha256": "1681ac8dece8dfb8e0697c325f62816096c2b49dcdb9d2b951fd720955a94420",
+      "yaml_parsed": true,
+      "shell_syntax_valid": true,
+      "commercial_runtime_precedes_tests": true
+    }
+  ]
+}

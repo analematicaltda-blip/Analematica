@@ -1,0 +1,64 @@
+{
+  "task": "GC-009",
+  "plan_step": 12,
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "functional_scope_complete": false,
+  "tests_complete": false,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "PARTIAL_IMPLEMENTATION_VERIFIED",
+  "implemented": [
+    "Guardia de reentrada antes de hash/lectura asíncrona; una instancia no prepara dos solicitudes concurrentes.",
+    "Metadatos mínimos de reintento por sistema/empresa/actor/proveedor: UUID, revisión original y fingerprint; sin guardar cuerpos de formulario.",
+    "Reapertura del componente conserva el UUID/revisión originales; datos cambiados exigen revisar el intento anterior.",
+    "Sin almacenamiento de reintento disponible no se envía el seguimiento; respuestas de componentes cerrados no tocan la instancia nueva.",
+    "Comandos, carga de contactos y selección de proveedor coordinados; reintento de contactos y descarte local explícito tras revisar historial.",
+    "Guardia transaccional propia en los tres backends rechaza un seguimiento exacto repetido aunque use otro UUID; conserva fingerprint/replay CRM original y rollback."
+  ],
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc009-paso12-20261113/quality/report.json",
+    "sha256": "05641aeb5d2db2030b1313bb53a9efa99c64fc5d51dd5e86cfd3b0e657e40758",
+    "suites": 8,
+    "tests": 68,
+    "source_stable": true,
+    "source_digest": "8933072c8af9e588f939ae7938a8fa03f72c9080b19084b9e635424b29f635f3"
+  },
+  "browser_checks": {
+    "after_sales": 58,
+    "lifecycle": 36
+  },
+  "lifecycle_scope": "Prueba de desmontar/remontar el componente con sessionStorage y transporte controlado; no es una prueba de recarga completa de página ni de proveedor real.",
+  "before_regression": {
+    "result": "Dos eventos de submit generaban dos UUID distintos en el cliente anterior; no se afirma que ambos hubieran confirmado tareas en el backend.",
+    "log_sha256": "5ea51dc256b872bbfd4c1e12e98c8720def858276b7135a29786419057e07d06"
+  },
+  "development_pending": [
+    "Vínculo verificable CRM/contacto/venta/reserva/destinatario: el backend sigue declarando customer_binding_verified=false.",
+    "Cancelación efectiva completa, recorrido integral de firma y fidelización según el alcance original.",
+    "Devolución bancaria auténtica dependiente de GC-008; la devolución financiada interna existente no se presenta como reembolso bancario."
+  ],
+  "external_pending": [
+    "Políticas legítimas/aprobadas y aceptación con participantes autorizados.",
+    "Validación del proveedor para devolución bancaria real y de dispositivos cuando corresponda."
+  ],
+  "wallet_personal_eligibility_changed": false,
+  "prior_followups_preserved": 90,
+  "git": {
+    "commit_created": false,
+    "push_performed": false,
+    "main_updated": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

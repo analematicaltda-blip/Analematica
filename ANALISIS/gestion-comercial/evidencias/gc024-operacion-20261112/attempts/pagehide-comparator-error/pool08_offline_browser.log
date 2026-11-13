@@ -1,0 +1,7 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ [AsyncFunction: textContent]
+- ''
+
+    at /workspace/SGA-CD-conectado/FRONTEND/deployment/tests/pool08_offline_browser.cjs:7:1393

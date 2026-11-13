@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "own_copies": 3,
+  "sha256": {
+    "commercial-after-sales-policy.js": "458e061483f37542e351431ba0d79b99066e444e8d0b245ae9f5c05e19413761",
+    "commercial-after-sales.js": "11b17a380688d37e5b946ef4171036ec80de55be8c9672b353011440f747eb94",
+    "commercial-crm.js": "dc3108c6f7ce365fb84a765d77b69684ba704194eb4f083bd77f4c0f05849e35"
+  }
+}

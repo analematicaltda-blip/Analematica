@@ -1,0 +1,74 @@
+{
+  "task": "GC-002",
+  "plan_step": 3,
+  "date_colombia": "2026-11-13",
+  "systems": [
+    "sga-cd",
+    "erp-tur",
+    "analematica"
+  ],
+  "accepted_milestones": [],
+  "accepted_task_ids": [],
+  "new_progress_credit": 0,
+  "acceptance_complete": false,
+  "production_ready": false,
+  "state": "BLOCKED_EXTERNAL_ACCEPTANCE",
+  "implemented": "Verificador de preparación de aceptación: evidencia F/T, logs, fuentes de identidad actuales y checklist de revisión externa. No importa aprobaciones, no cambia permisos ni acredita aceptación.",
+  "quality": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso3-20261113/quality/report.json",
+    "sha256": "798ec2bd2c17a03f7b1ead8e1a5b9c28c530499f9bf5fbcd8f0e9c0e593a0730",
+    "tests": 8,
+    "suites": 2,
+    "source_stable": true,
+    "source_digest": "7c17083cfb0b874477a88d70af0b411d7efb3c3a3081931d0d65ac70bd0405a7"
+  },
+  "additional_checks": {
+    "runner_tests": 21,
+    "plan_tests": 10
+  },
+  "readiness": {
+    "artifact": "ANALISIS/gestion-comercial/evidencias/gc002-paso3-20261113/quality/identity-acceptance.json",
+    "sha256": "ca74726469448b45e57ec4b1e0bceaa713194552a84893ff026b921176496a05",
+    "identity_source_files_matching_step2": 337,
+    "external_authenticity_verified": false
+  },
+  "external_review_required": [
+    {
+      "id": "LEGITIMATE_ADMINISTRATORS",
+      "required": "Titularidad y autoridad de los administradores de cada sistema y empresa.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "REVIEWED_NATIVE_ROLES",
+      "required": "Matriz revisada de roles propios, permisos y separación entre empresas.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "REVIEWED_CONSENT_POLICIES",
+      "required": "Políticas legítimas de autorización, finalidades, vigencias y revocación.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "AUTHORIZED_ACCEPTANCE_CASES",
+      "required": "Usuarios y muestras autorizados para recorridos positivos y negativos reales.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    },
+    {
+      "id": "TRACEABLE_REVIEW",
+      "required": "Acta de revisión identificable, alcance y versión, decisiones y pendientes de los revisores legítimos.",
+      "state": "NOT_INDEPENDENTLY_VERIFIED"
+    }
+  ],
+  "known_unavailable": "El usuario indicó no disponer del conjunto solicitado de muestras autorizadas de clientes y políticas revisadas; no se vuelve a solicitar ni se sustituye por fixtures.",
+  "prior_followups_preserved": 81,
+  "git": {
+    "commit_created": false,
+    "main_updated": false,
+    "push_performed": false
+  },
+  "credited_milestones": 37,
+  "total_milestones": 72,
+  "credited_milestone_percent": "51.39",
+  "fully_accepted_tasks": 1,
+  "full_implementation_percent": null
+}

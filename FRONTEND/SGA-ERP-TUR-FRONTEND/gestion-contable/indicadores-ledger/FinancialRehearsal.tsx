@@ -1,6 +1,6 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/financial-rehearsal.js';
+import '../runtime/financial-rehearsal.js';
 declare global {interface Window {SGACDFinancialRehearsal:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>,signal:AbortSignal)=>Promise<any>})=>{destroy:()=>void}}}}
 const paths:Record<string,string>={context:'identidad-contable',prepare_financial_rehearsal:'preparar-simulacion-financiera',state_financial_rehearsal:'estado-simulacion-financiera',confirm_financial_rehearsal:'confirmar-simulacion-financiera',simulate_financial_rehearsal:'simular-orden-financiera',cancel_financial_rehearsal:'cancelar-simulacion-financiera'};
 export function FinancialRehearsal({identity,providerId,request}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>}){

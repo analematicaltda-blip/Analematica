@@ -1,0 +1,40 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_audit_corruption_is_detected (__main__.Checks.test_audit_corruption_is_detected) ... ok
+test_bad_signature_future_event_and_channel_manipulation_rejected (__main__.Checks.test_bad_signature_future_event_and_channel_manipulation_rejected) ... ok
+test_contact_withdrawal_and_profile_revocation_block_send (__main__.Checks.test_contact_withdrawal_and_profile_revocation_block_send) ... ok
+test_email_contact_mismatch_and_header_injection_rejected (__main__.Checks.test_email_contact_mismatch_and_header_injection_rejected) ... ok
+test_facebook_comment_reply_is_bound_to_owned_post (__main__.Checks.test_facebook_comment_reply_is_bound_to_owned_post) ... ok
+test_generic_http200_never_claims_acceptance (__main__.Checks.test_generic_http200_never_claims_acceptance) ... ok
+test_gmail_reply_is_bound_to_actual_headers_and_thread (__main__.Checks.test_gmail_reply_is_bound_to_actual_headers_and_thread) ... ok
+test_gmail_source_read_uses_owned_mailbox_plain_text_and_no_mutation (__main__.Checks.test_gmail_source_read_uses_owned_mailbox_plain_text_and_no_mutation) ... ok
+test_instagram_comment_reply_is_bound_to_owned_media (__main__.Checks.test_instagram_comment_reply_is_bound_to_owned_media) ... ok
+test_invalid_unicode_boolean_confirmation_and_unexpected_fields_rejected (__main__.Checks.test_invalid_unicode_boolean_confirmation_and_unexpected_fields_rejected) ... ok
+test_link_assignment_draft_two_reviews_and_acceptance_are_separate (__main__.Checks.test_link_assignment_draft_two_reviews_and_acceptance_are_separate) ... ok
+test_message_rebinding_or_duplicate_payload_change_is_rejected (__main__.Checks.test_message_rebinding_or_duplicate_payload_change_is_rejected) ... ok
+test_native_meta_raw_signature_and_account_mapping_for_all_text_channels (__main__.Checks.test_native_meta_raw_signature_and_account_mapping_for_all_text_channels) ... ok
+test_new_inbound_invalidates_pending_review (__main__.Checks.test_new_inbound_invalidates_pending_review) ... ok
+test_old_dm_window_and_worker_disabled_block_network (__main__.Checks.test_old_dm_window_and_worker_disabled_block_network) ... ok
+test_post_ack_write_failure_retains_claim_and_no_auto_retry (__main__.Checks.test_post_ack_write_failure_retains_claim_and_no_auto_retry) ... ok
+test_received_message_between_claim_and_network_blocks_stale_answer (__main__.Checks.test_received_message_between_claim_and_network_blocks_stale_answer) ... ok
+test_recover_interrupted_claim_never_resends (__main__.Checks.test_recover_interrupted_claim_never_resends) ... ok
+test_revision_conflict_request_replay_and_changed_payload_rejected (__main__.Checks.test_revision_conflict_request_replay_and_changed_payload_rejected) ... ok
+test_role_revocation_blocks_read_history_receipt_and_send (__main__.Checks.test_role_revocation_blocks_read_history_receipt_and_send) ... ok
+test_signature_and_channel_permissions_cannot_be_bypassed (__main__.Checks.test_signature_and_channel_permissions_cannot_be_bypassed) ... ok
+test_signed_ingress_is_idempotent_and_does_not_create_or_reply_to_contact (__main__.Checks.test_signed_ingress_is_idempotent_and_does_not_create_or_reply_to_contact) ... ok
+test_timeout_never_resends (__main__.Checks.test_timeout_never_resends) ... ok
+test_unlinked_contact_and_invalid_assignment_block_reply (__main__.Checks.test_unlinked_contact_and_invalid_assignment_block_reply) ... ok
+test_unsupported_tiktok_is_handoff_only (__main__.Checks.test_unsupported_tiktok_is_handoff_only) ... ok
+test_whatsapp_and_instagram_use_their_own_channel_and_thread (__main__.Checks.test_whatsapp_and_instagram_use_their_own_channel_and_thread) ... ok
+test_worker_skips_blocked_head_without_starving_next_authorized_job (__main__.Checks.test_worker_skips_blocked_head_without_starving_next_authorized_job) ... ok
+test_wrong_recipient_never_claims_acceptance (__main__.Checks.test_wrong_recipient_never_claims_acceptance) ... ok
+test_youtube_reply_requires_owned_parent_and_exact_parent_ack (__main__.Checks.test_youtube_reply_requires_owned_parent_and_exact_parent_ack) ... ok
+test_youtube_source_is_owned_channel_bounded_and_read_only (__main__.Checks.test_youtube_source_is_owned_channel_bounded_and_read_only) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 26.753s
+
+OK

@@ -2,7 +2,7 @@
 
 Producción: **NO HABILITADA**. Registro vivo; una prueba sintética no cierra validaciones físicas o de proveedores.
 
-Actualizar el JSON canónico en `WALLET-BACKEND/offline/src/sgacd_wallet_offline/production_pending.json` y ejecutar `python WALLET-BACKEND/tools/update_pending_doc.py` en cada entrega. Cerrar solo con evidencia verificable, responsable y criterio de aceptación satisfecho.
+Actualizar el JSON canónico en `BACKEND/WALLET-BACKEND/offline/src/sgacd_wallet_offline/production_pending.json` y ejecutar `python BACKEND/WALLET-BACKEND/tools/update_pending_doc.py` en cada entrega. Cerrar solo con evidencia verificable, responsable y criterio de aceptación satisfecho.
 
 Sin internet se permiten apuntes y borradores cifrados. No hay liquidación entre cuentas, retiros o depósitos fuera del servidor. Las dos revisiones locales no son firmas financieras ni permisos de control.
 

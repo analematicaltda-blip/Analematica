@@ -1,0 +1,87 @@
+{
+  "bank-empty-period.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/bank-empty-period.js",
+    "origin_sha256": "c8db9c219dc082d0846fba518d0151c31a7586955a3574f2876705384f042159",
+    "runtime_dependency_on_analematica": false
+  },
+  "fx-settlements.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/fx-settlements.js",
+    "origin_sha256": "c390aff477fb3968289fbc7f2beedb2c61b32dfcd2e04e2be74f827931ad3270",
+    "runtime_dependency_on_analematica": false
+  },
+  "payroll-costs.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/payroll-costs.js",
+    "origin_sha256": "2ab3c7333dec6d9796d06bb46f27831dfb6c4a4bda5818c717e0db8be770859f",
+    "runtime_dependency_on_analematica": false
+  },
+  "opening-chunks.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/opening-chunks.js",
+    "origin_sha256": "e6a7e5b9d863ff3250afa78cbebee924ccae1b2d6042c5b887241b7c7fd6c90c",
+    "runtime_dependency_on_analematica": false
+  },
+  "bank-groups.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/bank-groups.js",
+    "origin_sha256": "46ed482a3a34b35ca47ac0199b28a63cf679621f968dd45eccf5520e7d49dbcb",
+    "runtime_dependency_on_analematica": false
+  },
+  "financial-rehearsal.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/financial-rehearsal.js",
+    "origin_sha256": "bdfedec48f07c386810d446eb741b0a2f6739938c951967522b4917194feaecd",
+    "runtime_dependency_on_analematica": false
+  },
+  "cash-windows.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/cash-windows.js",
+    "origin_sha256": "2079c0d699969bcefd9e091a161f1053ef6dfe68a641912803e5a29f45d6cf2b",
+    "runtime_dependency_on_analematica": false
+  },
+  "purchase-returns.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/purchase-returns.js",
+    "origin_sha256": "a7eba76f781f42bd31ee62cb47a894f03c41275ab75cc3005ca82fe3df1b99f1",
+    "runtime_dependency_on_analematica": false
+  },
+  "purchase-item-returns.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/purchase-item-returns.js",
+    "origin_sha256": "e2ac2e8bacbee4a9c0cfc34743aeb085afcdccde93779f7db3818dd8131ae542",
+    "runtime_dependency_on_analematica": false
+  },
+  "native-purchases.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/native-purchases.js",
+    "origin_sha256": "8797e321f071f1d108598961b3cc0e08bcf0bd1ef42a4cdc5dd327ac0cdfdffc",
+    "runtime_dependency_on_analematica": false
+  },
+  "fiscal-envelope-runtime.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/fiscal-envelope-runtime.js",
+    "origin_sha256": "04f876aed8d515b8f20f346430aa8d2a8cb840d772ef6158725f5abe92d19c4f",
+    "runtime_dependency_on_analematica": false
+  },
+  "accounting-fiscal-package.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-fiscal-package.js",
+    "origin_sha256": "2f71c96cd27959baa09916de4797941aa8fe4a613a82738e0639d8cd961df576",
+    "runtime_dependency_on_analematica": false
+  },
+  "accounting-customer-store.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-customer-store.js",
+    "origin_sha256": "86b85b06cf25ea893152a9cef518a369b8f0ab039926033625c2a45f888fe216",
+    "runtime_dependency_on_analematica": false
+  },
+  "accounting-ubl-draft.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ubl-draft.js",
+    "origin_sha256": "751c45d68b96f767c28359a5d722f5723672b46c36ba684bc6d606bba8421a0f",
+    "runtime_dependency_on_analematica": false
+  },
+  "accounting-offline.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-offline.js",
+    "origin_sha256": "8d4c50ddb6f40ca5ebb50f6d88c278ee48ebcb23e2e557560cacacc1fce02ccb",
+    "runtime_dependency_on_analematica": false
+  },
+  "accounting-remediation.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/accounting-remediation.js",
+    "origin_sha256": "eac73c305451135765379618baf1be4dcbe16c9fb464b8180483cd4815c56299",
+    "runtime_dependency_on_analematica": false
+  },
+  "esg-report.js": {
+    "origin": "FRONTEND/ANALEMATICA-FRONTEND/js/esg-report.js",
+    "origin_sha256": "1cf770389421868e9261c16d0db3a367d7e85f3b7c96f103d9d61b4eb9ff48b5",
+    "runtime_dependency_on_analematica": false
+  }
+}

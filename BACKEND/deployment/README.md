@@ -237,7 +237,7 @@ permanece deshabilitada por defecto y no se activó para cuentas reales.
 
 ### Concurrencia PostgreSQL MFA y recuperación
 
-`tests/mfa_postgres_check.py` comprueba cinco escenarios de consumo/emisión
+`BACKEND/tests/mfa_postgres_check.py` comprueba cinco escenarios de consumo/emisión
 con conexiones independientes, sin caché de protección contra reutilización.
 Incluye recuperación con mismo/diferente desafío y emisión con TOTP compartido.
 Usa PostgreSQL temporal con esquema mínimo; no conecta bases del proyecto.
@@ -324,7 +324,7 @@ Ver INTEGRACIONES/plan-maestro/BLOQUE04_RECUPERACION_31.md.
 
 ## Verificación consolidada y reversión
 
-La herramienta `INTEGRACIONES/operacion/verify_local.py` ejecuta perfiles aislados
+La herramienta `BACKEND/INTEGRACIONES/operacion/verify_local.py` ejecuta perfiles aislados
 `core`, `fresh`, `browser`, `devices`, `postgres` y `web-build`, con informes privados
 y comprobación de hashes. Nunca despliega, modifica Git ni selecciona bases existentes.
 Los perfiles incompletos/omitidos devuelven salida 2, aunque otros grupos pasen.

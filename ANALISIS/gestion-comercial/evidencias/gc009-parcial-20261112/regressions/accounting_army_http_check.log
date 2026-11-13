@@ -1,0 +1,10 @@
+test_jarvi_mission_replay_and_soup_over_actual_http (__main__.NativeArmiesHTTP.test_jarvi_mission_replay_and_soup_over_actual_http) ... ok
+test_national_tourism_remains_institutional_without_erp_army_routes (__main__.NativeArmiesHTTP.test_national_tourism_remains_institutional_without_erp_army_routes) ... ok
+test_native_catalogs_run_without_sga_cd_backend_or_modules (__main__.NativeArmiesHTTP.test_native_catalogs_run_without_sga_cd_backend_or_modules) ... ok
+test_neko_text_or_voice_preview_does_not_execute (__main__.NativeArmiesHTTP.test_neko_text_or_voice_preview_does_not_execute) ... ok
+test_unauthorized_owner_and_unconfigured_engines_do_not_act (__main__.NativeArmiesHTTP.test_unauthorized_owner_and_unconfigured_engines_do_not_act) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 11.158s
+
+OK

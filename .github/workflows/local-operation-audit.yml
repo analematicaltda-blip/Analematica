@@ -6,13 +6,13 @@ on:
         description: Isolated profile to verify (never deploys)
         type: choice
         default: core
-        options: [core, accounting, backup, fresh, browser, devices, postgres]
+        options: [core, accounting, backup, fresh, browser, devices, postgres, commercial-audit]
 permissions:
   contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 90
     env:
       PROFILE: ${{ inputs.profile }}
       PYTHONDONTWRITEBYTECODE: '1'
@@ -35,8 +35,34 @@ jobs:
       - run: npx playwright install --with-deps chromium
         working-directory: DESKTOP/asistencia-sgacd
         if: inputs.profile == 'browser' || inputs.profile == 'devices'
+      - uses: actions/setup-node@v4
+        if: inputs.profile == 'commercial-audit'
+        with:
+          node-version: '24'
+      - name: Install local commercial media tools
+        if: inputs.profile == 'commercial-audit'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: npm ci --prefix FRONTEND/deployment --include=dev --ignore-scripts
+        if: inputs.profile == 'commercial-audit'
+      - run: npx playwright install --with-deps chromium
+        if: inputs.profile == 'commercial-audit'
+        working-directory: FRONTEND/deployment
+      - name: Prepare isolated commercial test runtime
+        if: inputs.profile == 'commercial-audit'
+        run: |
+          mkdir -p /tmp/sgacd-full-web-deps
+          test ! -e /tmp/sgacd-full-web-deps/node_modules
+          test ! -L /tmp/sgacd-full-web-deps/node_modules
+          ln -s "$PWD/FRONTEND/deployment/node_modules" /tmp/sgacd-full-web-deps/node_modules
+          chromium_bin=$(node -e "process.stdout.write(require('./FRONTEND/deployment/node_modules/playwright').chromium.executablePath())")
+          test -x "$chromium_bin"
+          if [ ! -e /usr/bin/chromium ] && [ ! -L /usr/bin/chromium ]; then
+            sudo ln -s "$chromium_bin" /usr/bin/chromium
+          fi
       - name: Run selected isolated checks
-        run: python INTEGRACIONES/operacion/verify_local.py --profile "$PROFILE" --output "$RUNNER_TEMP/operation-evidence"
+        run: python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile "$PROFILE" --output "$RUNNER_TEMP/operation-evidence"
       - name: Preserve summary only (raw logs remain private)
         if: always()
         uses: actions/upload-artifact@v4

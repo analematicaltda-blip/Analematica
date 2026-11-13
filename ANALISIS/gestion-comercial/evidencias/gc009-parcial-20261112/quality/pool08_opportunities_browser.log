@@ -1,0 +1,11 @@
+Opportunity browser sga-cd 1280
+Opportunity browser sga-cd 390
+Opportunity browser erp-tur 1280
+Opportunity browser erp-tur 390
+Opportunity browser analematica 1280
+Opportunity browser analematica 390
+Opportunity browser gateway 1280
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-op-retry]') to be visible[22m
+

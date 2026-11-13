@@ -1,0 +1,15 @@
+test_closed_task_requires_all_stages (test_plan.PlanChecks.test_closed_task_requires_all_stages) ... ok
+test_complete_declared_and_checked_task_has_three_credits (test_plan.PlanChecks.test_complete_declared_and_checked_task_has_three_credits) ... ok
+test_decimal_global_precision_cannot_change_percentage (test_plan.PlanChecks.test_decimal_global_precision_cannot_change_percentage) ... ok
+test_duplicate_milestone_is_rejected (test_plan.PlanChecks.test_duplicate_milestone_is_rejected) ... ok
+test_local_stages_do_not_require_false_external_acceptance (test_plan.PlanChecks.test_local_stages_do_not_require_false_external_acceptance) ... ok
+test_missing_or_duplicate_scope_is_rejected (test_plan.PlanChecks.test_missing_or_duplicate_scope_is_rejected) ... ok
+test_no_credit_for_tests_before_functionality (test_plan.PlanChecks.test_no_credit_for_tests_before_functionality) ... ok
+test_partial_functionality_cannot_credit_local_stage (test_plan.PlanChecks.test_partial_functionality_cannot_credit_local_stage) ... ok
+test_partial_increment_does_not_credit_any_milestone (test_plan.PlanChecks.test_partial_increment_does_not_credit_any_milestone) ... ok
+test_unsubstantiated_credit_is_rejected (test_plan.PlanChecks.test_unsubstantiated_credit_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.059s
+
+OK

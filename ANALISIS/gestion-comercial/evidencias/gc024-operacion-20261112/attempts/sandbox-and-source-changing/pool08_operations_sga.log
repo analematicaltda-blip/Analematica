@@ -1,0 +1,15 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_manager_role_is_rechecked_and_user_cannot_select_modules (__main__.Checks.test_manager_role_is_rechecked_and_user_cannot_select_modules) ... ok
+test_missing_schema_is_unavailable_not_zero_or_qualified (__main__.Checks.test_missing_schema_is_unavailable_not_zero_or_qualified) ... ok
+test_tampered_history_rejected (__main__.Checks.test_tampered_history_rejected) ... ok
+test_trace_respects_creator_private_scope (__main__.Checks.test_trace_respects_creator_private_scope) ... ok
+test_trace_verifies_real_owned_chain_without_contact_content (__main__.Checks.test_trace_verifies_real_owned_chain_without_contact_content) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 4.476s
+
+OK

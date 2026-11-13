@@ -672,7 +672,7 @@
         "functional_increment": [
           "BACKEND/ANALEMATICA-BACKEND/core_erp/accounting/financial_orchestration.py",
           "BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger_commands.py",
-          "WALLET-BACKEND/apps/wallet/services/funded_refund.py",
+          "BACKEND/WALLET-BACKEND/apps/wallet/services/funded_refund.py",
           "BACKEND/SGA-CD-BACKEND/app/services/financial_rehearsal_contract.py",
           "FRONTEND/ANALEMATICA-FRONTEND/js/financial-rehearsal.js",
           "FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/indicadores-ledger/FinancialRehearsal.tsx"
@@ -681,7 +681,7 @@
           "BACKEND/deployment/tests/accounting_financial_orchestration_check.py",
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_financial_rehearsal.py",
           "ANALISIS/contabilidad/evidencias/implementacion-64.json",
-          "WALLET-BACKEND/tests/recovery_check.py",
+          "BACKEND/WALLET-BACKEND/tests/recovery_check.py",
           "ANALISIS/contabilidad/evidencias/recuperacion-2026-11-10.json",
           "BACKEND/deployment/tests/accounting_acc021_state_check.py",
           "BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger_acc021.py",

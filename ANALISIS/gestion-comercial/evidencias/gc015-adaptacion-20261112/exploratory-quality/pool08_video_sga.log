@@ -1,0 +1,17 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_actual_private_mp4_and_human_review (__main__.Checks.test_actual_private_mp4_and_human_review) ... ok
+test_audio_bytes_require_matching_authorized_reference (__main__.Checks.test_audio_bytes_require_matching_authorized_reference) ... ok
+test_foreign_audio_cannot_be_read_or_processed (__main__.Checks.test_foreign_audio_cannot_be_read_or_processed) ... ok
+test_reject_invalid_scene_tool_url_and_audio_authorization (__main__.Checks.test_reject_invalid_scene_tool_url_and_audio_authorization) ... ok
+test_render_deadline_error_is_explicit (__main__.Checks.test_render_deadline_error_is_explicit) ... ok
+test_renderer_change_fails_without_fake_video (__main__.Checks.test_renderer_change_fails_without_fake_video) ... ok
+test_reviewed_audio_sources_mix_and_revoked_source_is_rejected (__main__.Checks.test_reviewed_audio_sources_mix_and_revoked_source_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 8.307s
+
+OK

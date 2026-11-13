@@ -1,0 +1,9 @@
+{
+  "source-manifest.json": "8f0e14ec9f7d3a122eb25584799ac744b4842a0289df9dbe35a2f94fd4cab6a6",
+  "identity-acceptance.json": "32e36047339717752407813c648b91e8803f58f763bd2e1d34ccb5e5901a116e",
+  "report.json": "bda8d4b377cdb86acc19cdf13629480502594d4ad92252ee9e62b428ee7f292d",
+  "pool08_crm_acceptance_readiness.log": "63e6e6c2b2770ca8952c10c2ce296bb281fd949d40d8fc6374fa7ebc68427e8a",
+  "pool08_identity_acceptance_readiness.log": "22beb6545b7b3ff9bcc33c3fab282583fc26aaf0da05b2542a472033478720ec",
+  "pool08_identity_acceptance_contract.log": "a336abe9c90344e1072014a3125e653b6fcac028587d91ab174c1c8f5344aeb6",
+  "crm-acceptance.json": "de80c3ebd20c9f7f692fae3277ad09b598bbb58fd9029d66dfec29005040e3e0"
+}

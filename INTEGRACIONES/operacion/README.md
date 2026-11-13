@@ -9,11 +9,11 @@ Usar un entorno virtual dedicado y las instrucciones de dependencias existentes 
 Desde la raíz del repositorio, con ese Python:
 
 ```bash
-python INTEGRACIONES/operacion/verify_local.py --profile core --output /tmp/sgacd-core-nuevo
-python INTEGRACIONES/operacion/verify_local.py --profile fresh --output /tmp/sgacd-instalacion-nueva
-python INTEGRACIONES/operacion/verify_local.py --profile browser --profile devices --profile postgres --output /tmp/sgacd-integracion-nueva
-python INTEGRACIONES/operacion/verify_local.py --profile web-build --web-dependencies /ruta/node_modules --output /tmp/sgacd-build-nuevo
-python INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-core-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile core --output /tmp/sgacd-core-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile fresh --output /tmp/sgacd-instalacion-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile browser --profile devices --profile postgres --output /tmp/sgacd-integracion-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile web-build --web-dependencies /ruta/node_modules --output /tmp/sgacd-build-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-core-nuevo
 ```
 
 Se pueden repetir perfiles en una sola invocación; se deduplican. Sin `--profile` se ejecuta `core`. Usar una ruta nueva por ejecución; no se sobrescriben evidencias. Guardar los resultados fuera del repositorio o dentro de `.runtime` ignorado. Los directorios son privados y los archivos 0600 en Unix. No subir bases, claves ni registros crudos a Git.

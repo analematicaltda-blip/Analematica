@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": 112,
+  "widths": [
+    1280,
+    390
+  ],
+  "actual_http": true,
+  "synthetic_data_only": true,
+  "sga_browser_real_ledger_peer": false,
+  "sga_recovery_qualified_by_separate_http_suite": true,
+  "production_ready": false
+}

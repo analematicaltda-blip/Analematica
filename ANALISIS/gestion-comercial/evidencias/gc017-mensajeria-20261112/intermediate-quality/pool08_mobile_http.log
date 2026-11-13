@@ -1,0 +1,7 @@
+test_body_limits_and_no_public_worker_execution (__main__.Checks.test_body_limits_and_no_public_worker_execution) ... ok
+test_draft_review_queue_receipts_and_signed_opt_out_without_dispatch (__main__.Checks.test_draft_review_queue_receipts_and_signed_opt_out_without_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 14.367s
+
+OK

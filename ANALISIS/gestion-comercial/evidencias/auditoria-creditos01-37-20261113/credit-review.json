@@ -1,0 +1,3824 @@
+{
+  "schema": "commercial24-review-v1",
+  "plan_sha256": "233cbeb27b83a3ea126fbcfc9fd377931f399b1fd5b69e3e148e11ec288e71a8",
+  "source_digest_current": "067a47fc0e193fb8d72b462265e569f77e6a00965775bf16a6979adce9eb13b5",
+  "progress": {
+    "tasks": 24,
+    "milestones": 72,
+    "fully_accepted_tasks": 1,
+    "accepted_task_ids": [
+      "GC-001"
+    ],
+    "completed_milestones": 37,
+    "completed_milestone_ids": [
+      "GCH-001",
+      "GCH-002",
+      "GCH-003",
+      "GCH-004",
+      "GCH-005",
+      "GCH-007",
+      "GCH-008",
+      "GCH-010",
+      "GCH-011",
+      "GCH-013",
+      "GCH-014",
+      "GCH-016",
+      "GCH-017",
+      "GCH-019",
+      "GCH-020",
+      "GCH-028",
+      "GCH-029",
+      "GCH-031",
+      "GCH-032",
+      "GCH-034",
+      "GCH-035",
+      "GCH-043",
+      "GCH-044",
+      "GCH-046",
+      "GCH-047",
+      "GCH-049",
+      "GCH-050",
+      "GCH-052",
+      "GCH-053",
+      "GCH-055",
+      "GCH-056",
+      "GCH-061",
+      "GCH-062",
+      "GCH-064",
+      "GCH-065",
+      "GCH-067",
+      "GCH-068"
+    ],
+    "credited_milestone_percent": "51.39",
+    "production_enabled": false,
+    "meaning": "Explicitly accepted milestones of this scope, not a production readiness or code-volume percentage."
+  },
+  "tasks": [
+    {
+      "id": "GC-001",
+      "title": "Contratos, capacidades y DAG POOL-08",
+      "declared_state": "COMPLETADA",
+      "milestones": [
+        {
+          "id": "GCH-001",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-002",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-003",
+          "stage": "A",
+          "state": "VERIFICADO"
+        }
+      ],
+      "full_acceptance_evidenced": true,
+      "scope_still_pending": "Sin pendientes del contrato/API y DAG definidos para GC-001. Las funciones de negocio y proveedores permanecen en las tareas correspondientes.",
+      "external_requirements": [],
+      "dependencies_without_full_acceptance": [],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/contract.py",
+          "present": true,
+          "sha256": "4e7c15929e65398d45b00c64632af17bf91afe5f92e58dfba47e2be638a9a6b3"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/contract.py",
+          "present": true,
+          "sha256": "72e8943a59b98dea5de21a864c19df3145b5d585cd8cf114b14bb8664b67094a"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/contract.py",
+          "present": true,
+          "sha256": "6dd706b1ac106872856206352f6e050957bdbc107dadbe12404ec57a8148b49c"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_contract",
+          "state": "PASSED",
+          "log_sha256": "5d4a00e8b26d58591f1899e100595574bd4416f4f72b0d96ab942bbff473352b"
+        },
+        {
+          "id": "pool08_native_http",
+          "state": "PASSED",
+          "log_sha256": "a7e6b4b256ac4b444cd41945e19fa8c901593ac19b63650ddd18ae6f9adb575e"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-002",
+      "title": "Identidad empresarial, roles, permisos y consentimientos",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-004",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-005",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-006",
+          "stage": "A",
+          "state": "EN_EJECUCION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Administración propia y cualificación local de identidad/permisos/consentimientos completas: empresa A/B, roles, revocación transversal CRM, caducidad, CAS, rollback, reintento y recuperación verificados. Pendiente GCH-006/paso 3: aceptación de usuarios y políticas auténticos revisados. Sin legitimidad inferida de soportes ni cualificación productiva.",
+      "external_requirements": [
+        "Usuarios y políticas de autorización revisados para aceptación final."
+      ],
+      "dependencies_without_full_acceptance": [],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/access_admin.py",
+          "present": true,
+          "sha256": "d1493999be18c451e1d544776192f95d6cd949c6454dcb5b7a1d3e76a4cffb0c"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/access_admin.py",
+          "present": true,
+          "sha256": "d1493999be18c451e1d544776192f95d6cd949c6454dcb5b7a1d3e76a4cffb0c"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/access_admin.py",
+          "present": true,
+          "sha256": "d1493999be18c451e1d544776192f95d6cd949c6454dcb5b7a1d3e76a4cffb0c"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_access_sga",
+          "state": "PASSED",
+          "log_sha256": "e1bf96a4f1b44708b3bad39cb54bf34799add64b11afcc3ae97c47aa1b023247"
+        },
+        {
+          "id": "pool08_access_native",
+          "state": "PASSED",
+          "log_sha256": "0fa31a3ab1183fb6973f42f7d5ceba9b4c66e269cbfc9d3ac9fa2378a0d79566"
+        },
+        {
+          "id": "pool08_access_http",
+          "state": "PASSED",
+          "log_sha256": "eec6b9ad08ab3fb129ab77ae8001480b13103720b9ba60744831126ebdd6e01f"
+        },
+        {
+          "id": "pool08_access_browser",
+          "state": "PASSED",
+          "log_sha256": "a69f89c42407d2f031b67b9e1cac5d08fc83e501d647c3a6d0d336f75e385640"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-003",
+      "title": "CRM común de prospectos, contactos y clientes",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-007",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-008",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-009",
+          "stage": "A",
+          "state": "EN_EJECUCION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación de uso con muestras consentidas y cierre de revisión de usuarios/políticas GC-002. Las migraciones se validaron solo en SQLite desechable; habilitación de servidor, datos históricos y producción requieren su cualificación.",
+      "external_requirements": [
+        "Muestras de clientes consentidas para aceptación de uso."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm.py",
+          "present": true,
+          "sha256": "f4d333cea08c8c00f27632430cb909cc98353f7d6fbdab8a34dc2e7f6b2631dc"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm.py",
+          "present": true,
+          "sha256": "f4d333cea08c8c00f27632430cb909cc98353f7d6fbdab8a34dc2e7f6b2631dc"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm.py",
+          "present": true,
+          "sha256": "f4d333cea08c8c00f27632430cb909cc98353f7d6fbdab8a34dc2e7f6b2631dc"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_crm_browser",
+          "state": "PASSED",
+          "log_sha256": "e8e169decf8043debe96d8da0dc9dd1710878be10ceb87137b25789ff0232e9e"
+        },
+        {
+          "id": "pool08_crm_recovery_browser",
+          "state": "PASSED",
+          "log_sha256": "4ba5a9bd32a25f22709e2bb533fd0cc57e3b95d483352750884d25f72ac0fd1b"
+        },
+        {
+          "id": "pool08_crm_acceptance_readiness",
+          "state": "PASSED",
+          "log_sha256": "63e6e6c2b2770ca8952c10c2ce296bb281fd949d40d8fc6374fa7ebc68427e8a"
+        },
+        {
+          "id": "pool08_crm_http",
+          "state": "PASSED",
+          "log_sha256": "3b586ad494640e675c50a34328cf24ddf7079362388d5c88fe832c2467f7e396"
+        },
+        {
+          "id": "pool08_crm_native",
+          "state": "PASSED",
+          "log_sha256": "aaed6662e6fb089e73d01643bd0cdf0a533fbac664737892be4f7398608be047"
+        },
+        {
+          "id": "pool08_crm_sga",
+          "state": "PASSED",
+          "log_sha256": "434009dd8ba92d0239086e8d9f19a93f39f5cf75776c9e9a92cb565d5533a971"
+        },
+        {
+          "id": "pool08_crm_domain",
+          "state": "PASSED",
+          "log_sha256": "11676562023c4b3efe017beb393a7cdc071dd53879dd935324cf5bd7af07b386"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-004",
+      "title": "Oportunidades, embudo, seguimiento y scoring",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-010",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-011",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-012",
+          "stage": "A",
+          "state": "EN_EJECUCION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación integral pendiente: dataset consentido y evaluación para scoring predictivo; validación con usuarios/datos y dependencias GC-002/GC-003. La prioridad por reglas se declara no calibrada; migración histórica y PostgreSQL/concurrencia productiva sin cualificar.",
+      "external_requirements": [
+        "Dataset consentido y evaluación para scoring predictivo."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/opportunities.py",
+          "present": true,
+          "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/opportunities.py",
+          "present": true,
+          "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/opportunities.py",
+          "present": true,
+          "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_opportunities_native",
+          "state": "PASSED",
+          "log_sha256": "9b386929e816dda3be6b4ab5db0d40a2d4441139fc989fa2a33300f83ace9131"
+        },
+        {
+          "id": "pool08_opportunities_sga",
+          "state": "PASSED",
+          "log_sha256": "9d744414cf5dc85781b354a1c581da5cb6596e38a8405c1e22acd9ecdf9879fb"
+        },
+        {
+          "id": "pool08_opportunities_http",
+          "state": "PASSED",
+          "log_sha256": "eb7fdd9701d191561846ab7c2bea85268861c08298212f261d88f15bfbd436ef"
+        },
+        {
+          "id": "pool08_opportunities_browser",
+          "state": "PASSED",
+          "log_sha256": "1ca2dfe07cc3f8a354bd6f20badd53fd1cb365d30e17585fb3e99d3f42f33103"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-005",
+      "title": "Catálogo, tarifas, descuentos e impuestos de oferta",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-013",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-014",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-015",
+          "stage": "A",
+          "state": "EN_EJECUCION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación integral pendiente: precios/condiciones/soportes legítimos y revisión tributaria profesional; usuarios y políticas de GC-002, revisión de migración histórica y cualificación productiva. El cálculo actual es estimación comercial y no acredita factura, pago ni aceptación fiscal.",
+      "external_requirements": [
+        "Precios/condiciones legítimos y revisión tributaria."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/pricing.py",
+          "present": true,
+          "sha256": "fb4dcde2864104da168288d247b24f652714e50deb6218584f3c572e4a16c8de"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/pricing.py",
+          "present": true,
+          "sha256": "fb4dcde2864104da168288d247b24f652714e50deb6218584f3c572e4a16c8de"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/pricing.py",
+          "present": true,
+          "sha256": "fb4dcde2864104da168288d247b24f652714e50deb6218584f3c572e4a16c8de"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_pricing_native",
+          "state": "PASSED",
+          "log_sha256": "50c6356399063563b11624ecda5f7e3c9dfc1b9bd1c89b4fd63212cd99eb9856"
+        },
+        {
+          "id": "pool08_pricing_sga",
+          "state": "PASSED",
+          "log_sha256": "602229ec2c11141febdbcd11313caecd43639b42fa6ea42f8f7c6700d201f405"
+        },
+        {
+          "id": "pool08_pricing_http",
+          "state": "PASSED",
+          "log_sha256": "5cc0b269d3e734217dba4bcb66932eea7ce1d47f482b530a5390cda4cfd71814"
+        },
+        {
+          "id": "pool08_pricing_browser",
+          "state": "PASSED",
+          "log_sha256": "39b528169a81ad02e507200628ab61f717b391aaf6fcd2c7f8178112dae37bc1"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-006",
+      "title": "Cotizaciones dinámicas, vigencia y aceptación",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-016",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-017",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-018",
+          "stage": "A",
+          "state": "EN_EJECUCION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Aceptación integral pendiente: condiciones/precios legítimos aprobados por empresa y revisión de aceptación/entrega al destinatario; dependencias GC-004/GC-005 y cualificación productiva de custodia/rotación, infraestructura, datos/concurrencia y restauración. La aceptación actual acredita posesión del enlace, no identidad verificada ni pago/reserva.",
+      "external_requirements": [
+        "Condiciones comerciales aprobadas por cada empresa."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-004",
+        "GC-005"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotations.py",
+          "present": true,
+          "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotations.py",
+          "present": true,
+          "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotations.py",
+          "present": true,
+          "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_quotations_native",
+          "state": "PASSED",
+          "log_sha256": "dcb5faef36d8b79ce6fc0d8db150dea17d64ea1ef17dc68a53cc68e30b273dab"
+        },
+        {
+          "id": "pool08_quotations_sga",
+          "state": "PASSED",
+          "log_sha256": "ad1708e34b37d0e04fec0772761dff7e4f22ccff050549ecfc81022587ccf0f4"
+        },
+        {
+          "id": "pool08_quotations_http",
+          "state": "PASSED",
+          "log_sha256": "e0d9e181bcd927fffc5aa3acfe712aeb183570dcabc8aaa986e79cc3b1f8d686"
+        },
+        {
+          "id": "pool08_quotations_browser",
+          "state": "PASSED",
+          "log_sha256": "5ccd6cd62f013888e4691f18bd225cd662e433ecd4b0672298829ba17f8169cc"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-007",
+      "title": "Venta confirmada, operación y contabilidad",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-019",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-020",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-021",
+          "stage": "A",
+          "state": "EN_EJECUCION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Flujo local de confirmación, operación, outbox/asiento y recuperación acreditado por su evidencia F/T. Pendientes aceptación de condiciones/soportes y reglas contables/laborales por actividad, identidad GC-002 y cualificación productiva/concurrencia. Factura DIAN y custodia auténticas pertenecen a sus integraciones; venta confirmada no acredita cobro.",
+      "external_requirements": [
+        "Revisión contable/laboral según actividad; DIAN y custodia reales para aceptación fiscal/documental."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-006"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales.py",
+          "present": true,
+          "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales.py",
+          "present": true,
+          "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales.py",
+          "present": true,
+          "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_sales_lifecycle",
+          "state": "PASSED",
+          "log_sha256": "67865aa646fc14fe2d388b5a2f9331802c26be33f664a9e07badc42a02022781"
+        },
+        {
+          "id": "pool08_sales_native",
+          "state": "PASSED",
+          "log_sha256": "722fc28aa60101f99337a9f1f1b5e2568b7d07da4086c74ead980ecd71561600"
+        },
+        {
+          "id": "pool08_sales_source",
+          "state": "PASSED",
+          "log_sha256": "c0f3a187ed735097331a46dad4df6c14ef185c6353f802249d3be9a5683ba73a"
+        },
+        {
+          "id": "pool08_sales_saga",
+          "state": "PASSED",
+          "log_sha256": "4b1c6500d4ebfd5d5f0ce96ee0992ed0a2c4f84c979df58ebe92a5e25168d219"
+        },
+        {
+          "id": "pool08_sales_saga_http",
+          "state": "PASSED",
+          "log_sha256": "6324dc0fc6ddbf2b69f95ff94eb5bca101d6a662097384f5f52ab3e8e58b64ab"
+        },
+        {
+          "id": "pool08_sales_bridge",
+          "state": "PASSED",
+          "log_sha256": "3507612a5e67de7f909c5daf665e72ae48703638023e5a20bbbf698936a10064"
+        },
+        {
+          "id": "pool08_sales_labor",
+          "state": "PASSED",
+          "log_sha256": "bcb9a14a1a6c6a9ec95c4ca86024b241445d7da15ef526d6a1d1e5617f0a9f1c"
+        },
+        {
+          "id": "pool08_sales_http",
+          "state": "PASSED",
+          "log_sha256": "919f02d6f70983513c5a9cff588991ce20b3b06f263671fb8df60523f3e488bb"
+        },
+        {
+          "id": "pool08_sales_browser",
+          "state": "PASSED",
+          "log_sha256": "e792b851b52a26d5940b6201d5eee48c042ba371ea38abf63c5d63fdeb7969fc"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-008",
+      "title": "Bold: checkout, intención de pago y confirmación",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-022",
+          "stage": "F",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-023",
+          "stage": "T",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-024",
+          "stage": "A",
+          "state": "EN_EJECUCION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Checkout e intenciones locales parciales, con importes canónicos y estados diferenciados. Pendiente de desarrollo: verificador del acuse Bold según contrato auténtico, consulta de estado del proveedor y conciliación/liquidación enlazada al asiento. Pendiente externo: contrato/accesos sandbox y acuses auténticos configurados por canal seguro. Retorno del navegador, hash declarado o enlace creado no prueban dinero.",
+      "external_requirements": [
+        "Acceso Bold de pruebas y contrato/firmas/acuses legítimos por canal seguro."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-007"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/payments.py",
+          "present": true,
+          "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/payments.py",
+          "present": true,
+          "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/payments.py",
+          "present": true,
+          "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_payments_lifecycle",
+          "state": "PASSED",
+          "log_sha256": "b5c0a3f802bbe6f8be91ae1421efb5703e3ec2422b7771df150a8306191bf3d3"
+        },
+        {
+          "id": "pool08_payments_gateway",
+          "state": "PASSED",
+          "log_sha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371"
+        },
+        {
+          "id": "pool08_payments_native",
+          "state": "PASSED",
+          "log_sha256": "be3206e296434c73e489d69a03885cbef21753a43226e6e43fc7647aab01030a"
+        },
+        {
+          "id": "pool08_payments_sga",
+          "state": "PASSED",
+          "log_sha256": "3681e542d66f6f0665cf85be1f54cfd351451d4b733484f5ce41db6c524be40d"
+        },
+        {
+          "id": "pool08_payments_legacy",
+          "state": "PASSED",
+          "log_sha256": "b70aaee4b98aed3c929b11d2edf077f243b297ed21e6fabbffb70bd38d82b0f9"
+        },
+        {
+          "id": "pool08_payments_http",
+          "state": "PASSED",
+          "log_sha256": "bc81ce154b23cab148aabe30912e7a8912c67eb4a7c13f06efaff4ca474c562f"
+        },
+        {
+          "id": "pool08_payments_browser",
+          "state": "PASSED",
+          "log_sha256": "e48bc659b8a9d3dab6d038cae7f3c2638c0bba950ffed331cb7efdf6125e7d6a"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-009",
+      "title": "Cancelaciones, retención, devoluciones y posventa",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-025",
+          "stage": "F",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-026",
+          "stage": "T",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-027",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Políticas versionadas y reembolso financiado interno parcial disponibles. Paso12 corrige seguimiento concurrente, reintento persistente y deduplicación transaccional en los tres backends, sin inferir identidad. Pendiente de desarrollo: vinculación verificable CRM/contacto/venta/reserva/destinatario, cancelación efectiva completa, recorrido de firma y fidelización integral. El reembolso bancario depende de GC-008/proveedor. Pendientes políticas legítimas y aceptación; billetera personal sin afiliación turística.",
+      "external_requirements": [
+        "Políticas aprobadas y validación del proveedor para devolución bancaria real."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-007",
+        "GC-008"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_bridge.py",
+          "present": true,
+          "sha256": "b1676c90c01bc1b353c6230832a7e0feb1687906e485f26e098a334d84ec6689"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/after_sales.py",
+          "present": true,
+          "sha256": "a7ef2b41ac8c4a85094ef0316db5646ad6ba86a1a292655291bc25c06da35cc5"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/after_sales.py",
+          "present": true,
+          "sha256": "a7ef2b41ac8c4a85094ef0316db5646ad6ba86a1a292655291bc25c06da35cc5"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_after_sales_lifecycle",
+          "state": "PASSED",
+          "log_sha256": "143ea1a73dfd81349d8861139b7518bed5c2bc8f5fe91552d9c39282e48c09d6"
+        },
+        {
+          "id": "pool08_after_sales_native",
+          "state": "PASSED",
+          "log_sha256": "619f9b631012fb4af6f88d7547f2ad38e9e1262b8e49d7eac2b14eb878d14009"
+        },
+        {
+          "id": "pool08_after_sales_wallet",
+          "state": "PASSED",
+          "log_sha256": "1d39bd53717cd94ea5d0ef501e51ea475a30f34595720370668fd3ff4922f371"
+        },
+        {
+          "id": "pool08_after_sales_sga_http",
+          "state": "PASSED",
+          "log_sha256": "b94eec07a34672c22c6238b536ac6b416bd88638f1a25870d7542a05398d43fd"
+        },
+        {
+          "id": "pool08_after_sales_browser",
+          "state": "PASSED",
+          "log_sha256": "2e08b6bd83f04577f0ffe63cad2912e54724ae2ef28d1255c7f54c103846b958"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-010",
+      "title": "Constructor de landing pages propias de empresa/prestador",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-028",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-029",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-030",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Constructor, versiones, previsualización, aprobación/publicación y retirada locales acreditados F/T. Pendientes aceptación de titulares/roles GC-002, revisión del contenido y cualificación de datos históricos, concurrencia y despliegue. Dominio/DNS/TLS y autorización si se usa dominio propio.",
+      "external_requirements": [
+        "Dominio/DNS/TLS y autorización del titular si se usa dominio propio."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002",
+        "GC-005"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landings.py",
+          "present": true,
+          "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landings.py",
+          "present": true,
+          "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landings.py",
+          "present": true,
+          "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_landings_domain",
+          "state": "PASSED",
+          "log_sha256": "f6b74eb32f6e830b4d27f54ec7a34077080f93975b42695eab0d6f711d44656b"
+        },
+        {
+          "id": "pool08_landings_native",
+          "state": "PASSED",
+          "log_sha256": "a736d63682671d7eb31492083f9fdbe24971a7cabff960a8c36aca18f14f8c18"
+        },
+        {
+          "id": "pool08_landings_sga",
+          "state": "PASSED",
+          "log_sha256": "4e8a7440e1fa8a116bf6425f3b4ce289a41cf8edad2b4fe22bd1b1d945a9420d"
+        },
+        {
+          "id": "pool08_landings_http",
+          "state": "PASSED",
+          "log_sha256": "dd62c4cbc985e041b8ca1bfb61194978d8f723538c3fe1b9fadefec5c4b97809"
+        },
+        {
+          "id": "pool08_landings_browser",
+          "state": "PASSED",
+          "log_sha256": "bc6cea725b2b1f29c5b5c21d3a9be38efd7fa4ea8183fc72c8680ab738177b7a"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-011",
+      "title": "Landing: formularios, captación, SEO y atribución CRM",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-031",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-032",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-033",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Captación local enlazada al CRM, origen canónico, consentimiento, baja, antispam, SEO y métricas de envíos aceptados acreditados F/T. Pendientes contenido/políticas de publicación legítimos, aceptación de titulares, retención y despliegue. No acredita titularidad del email, autorización de campañas, métricas de anuncios ni registro institucional/RNT.",
+      "external_requirements": [
+        "Contenido autorizado y reglas de publicación de la empresa."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-010"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landing_capture.py",
+          "present": true,
+          "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landing_capture.py",
+          "present": true,
+          "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landing_capture.py",
+          "present": true,
+          "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_capture_browser",
+          "state": "PASSED",
+          "log_sha256": "51963bdf5dc57031befeaec969f163196d37ff66cd550232a44541af62abf153"
+        },
+        {
+          "id": "pool08_capture_http",
+          "state": "PASSED",
+          "log_sha256": "11ad4aa6666800cdcca743fa1933906e91391eb1af243532fded1e9360136c22"
+        },
+        {
+          "id": "pool08_capture_native",
+          "state": "PASSED",
+          "log_sha256": "668da9fdfc04e293acab0a305b32374ef96f1bcc6b23108f4e887435c26e649b"
+        },
+        {
+          "id": "pool08_capture_sga",
+          "state": "PASSED",
+          "log_sha256": "027b3b9eec3cccc2fa108fd9073649e3d129d3dd81f243236835036667431ba6"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-012",
+      "title": "Biblioteca multimedia, derechos, marca y activos",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-034",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-035",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-036",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Biblioteca local privada con originales exactos, copias procesadas, versiones, derechos declarados, marca y cuotas acreditada F/T. Pendientes licencias/contenido auténticos revisados, almacenamiento autorizado, política de retención y protección en reposo, restauración y cualificación PostgreSQL/concurrencia/decodificadores en infraestructura objetivo. Plantillas actuales son composición de vista previa, no exportación renderizada.",
+      "external_requirements": [
+        "Derechos/licencias de activos y destino de almacenamiento autorizado."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/media_library.py",
+          "present": true,
+          "sha256": "9c06819f21c65953204b5268ba445a61a8996ae3d7f2cdcb9e6486a1849b7b6a"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/media_library.py",
+          "present": true,
+          "sha256": "9c06819f21c65953204b5268ba445a61a8996ae3d7f2cdcb9e6486a1849b7b6a"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/media_library.py",
+          "present": true,
+          "sha256": "9c06819f21c65953204b5268ba445a61a8996ae3d7f2cdcb9e6486a1849b7b6a"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_library_native",
+          "state": "PASSED",
+          "log_sha256": "481b3b42e8c71f4ade9562de8003097b046df78fa6cb47ce9025c525259b9383"
+        },
+        {
+          "id": "pool08_library_sga",
+          "state": "PASSED",
+          "log_sha256": "f5b5acd88460661537a70f7509bd77aa7e0b41b439308ac4d9c6c4f7e02bd05f"
+        },
+        {
+          "id": "pool08_library_sanitize",
+          "state": "PASSED",
+          "log_sha256": "3f1bb72c8c609160060dc3c825c3cdb472532d2c0819fc99c1e1eed3030067c1"
+        },
+        {
+          "id": "pool08_library_http",
+          "state": "PASSED",
+          "log_sha256": "482e343c862745d19e2f009e15c072f441ec803e8d758a22e031fc55529b066d"
+        },
+        {
+          "id": "pool08_library_browser",
+          "state": "PASSED",
+          "log_sha256": "4f7887f18074c51cf5e6c499356296eb6be16ef45bc3db0a2889b49a857977c1"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-013",
+      "title": "Generación de guiones, textos e imágenes",
+      "declared_state": "PENDIENTE_DE_NIVELACION",
+      "milestones": [
+        {
+          "id": "GCH-037",
+          "stage": "F",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-038",
+          "stage": "T",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-039",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Incremento parcial existente: perfiles/adaptadores de texto e imagen, trabajos asíncronos persistentes, cuotas/coste declarado, derechos, revisión y resultados privados. Se incorporaron sus pruebas nativas/SGA/HTTP al perfil integral de auditoría. Pendientes recorrido navegador-trabajador completo, arranque/despliegue independiente, tipos ERP, inferencia auténtica Ollama/generador de imágenes y revisión de licencias/calidad/privacidad/costos. No se acredita F/T por incremento parcial ni inferencia mediante transporte controlado.",
+      "external_requirements": [
+        "Modelo local/hardware o proveedor aprobado; presupuesto y datos de evaluación."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/generation.py",
+          "present": true,
+          "sha256": "e384ff920d49ce154b9c73add6529a2f237370e6e9ff5defdd86372872d8b0d6"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/generation.py",
+          "present": true,
+          "sha256": "e384ff920d49ce154b9c73add6529a2f237370e6e9ff5defdd86372872d8b0d6"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/generation.py",
+          "present": true,
+          "sha256": "e384ff920d49ce154b9c73add6529a2f237370e6e9ff5defdd86372872d8b0d6"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_generation_native",
+          "state": "PASSED",
+          "log_sha256": "68fcde0717a51e8f1cdade74a52be12c0ded089ddebfdaa9296796812dddead6"
+        },
+        {
+          "id": "pool08_generation_sga",
+          "state": "PASSED",
+          "log_sha256": "c44e79acd748822b34baf27f740b50f821383fa480a098cea03d144dd9873166"
+        },
+        {
+          "id": "pool08_generation_http",
+          "state": "PASSED",
+          "log_sha256": "1694accd2dec45db5d10f99a6d887330e68f9434cfc0f458afbf5ae3ee0b3628"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-014",
+      "title": "Creación de videos, Reels, voz y subtítulos",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-040",
+          "stage": "F",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-041",
+          "stage": "T",
+          "state": "EN_EJECUCION"
+        },
+        {
+          "id": "GCH-042",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Composición local por marca, MP4, textos temporizados y mezcla desde fuentes MP4 revisadas implementados y probados en los tres backends. Falta completar/calificar el adaptador de vídeo generativo, el arranque independiente del trabajador y el recorrido integral navegador-HTTP-trabajador en destino; derechos y aceptación de contenido reales pendientes.",
+      "external_requirements": [
+        "GPU/modelos/proveedores y derechos de voz/audio para generación real."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012",
+        "GC-013"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/video_composition.py",
+          "present": true,
+          "sha256": "50eb6884d81d77bf2299811c5b6cdd532caa60d27471e7c626c6ef7c3a6ffcb3"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/video_composition.py",
+          "present": true,
+          "sha256": "50eb6884d81d77bf2299811c5b6cdd532caa60d27471e7c626c6ef7c3a6ffcb3"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/video_composition.py",
+          "present": true,
+          "sha256": "50eb6884d81d77bf2299811c5b6cdd532caa60d27471e7c626c6ef7c3a6ffcb3"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_video_native",
+          "state": "PASSED",
+          "log_sha256": "e944e50d29d35d7a110a582d2d853503c3090fc095c998e8eb183f230ca73c94"
+        },
+        {
+          "id": "pool08_video_sga",
+          "state": "PASSED",
+          "log_sha256": "bcf721bb860914dfd3a9266868e7493c54821739de8558d795e5c91f85e23229"
+        },
+        {
+          "id": "pool08_video_http",
+          "state": "PASSED",
+          "log_sha256": "b9d14dc3b7fc038e67f6c1d0702d502ed3fe014bf7c749225930243fd012a7e2"
+        },
+        {
+          "id": "pool08_video_browser",
+          "state": "PASSED",
+          "log_sha256": "966a70f6449360035c5760898cfa2188986192bbccc08086725436001aabc01e"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-015",
+      "title": "Tamaños y formatos de imágenes, videos y Reels",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-043",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-044",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-045",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Perfiles locales 1.0 y adaptaciones reales de imagen/vídeo implementados y verificados en los tres sistemas: crop/pad, ampliación explícita, límites, audio y política de subtítulos, originales intactos y revisión privada. Falta aceptación de perfiles vigentes por red y cualificación en hardware/infraestructura objetivo, contenidos/derechos y usuarios reales.",
+      "external_requirements": [
+        "Perfiles vigentes de cada red; hardware objetivo para rendimiento."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/media_adaptation.py",
+          "present": true,
+          "sha256": "0539aa782cd3d1f1e54747362213a0be6e563013a9d49b53bb81080ac4b9221a"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/media_adaptation.py",
+          "present": true,
+          "sha256": "0539aa782cd3d1f1e54747362213a0be6e563013a9d49b53bb81080ac4b9221a"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/media_adaptation.py",
+          "present": true,
+          "sha256": "0539aa782cd3d1f1e54747362213a0be6e563013a9d49b53bb81080ac4b9221a"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_adaptation_native",
+          "state": "PASSED",
+          "log_sha256": "dbc7cdf4c67d32bd1afd7e156f5735de899434904183add1f3af68a33259ea2d"
+        },
+        {
+          "id": "pool08_adaptation_sga",
+          "state": "PASSED",
+          "log_sha256": "29d058fbb05f59789dfeae03b10637ba19d92f1a3d0b91bdd26414c0573814f2"
+        },
+        {
+          "id": "pool08_adaptation_http",
+          "state": "PASSED",
+          "log_sha256": "ffdb4f37a94be338e7ec18ed2405ed32d5a5457bbe3215e5e27a4bf21d42933c"
+        },
+        {
+          "id": "pool08_adaptation_browser",
+          "state": "PASSED",
+          "log_sha256": "66d2a44e8481f7b5b8334db9cb27f401bb2b67828915aad0b1cdc2aacb3a32e2"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-016",
+      "title": "Correos masivos y campañas email",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-046",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-047",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-048",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Flujo local implementado y probado: plantillas HTML/texto escapadas, segmentos estáticos CRM, personalización, exclusiones, agenda UTC, cuota, dos confirmaciones, bajas firmadas y recibos por destinatario. SMTP limitado a loopback; faltan remitente/dominio y proveedor/OAuth o relay autorizados, consentimientos legítimos, mapeo/validación de recibos auténticos, reputación y cualificación productiva.",
+      "external_requirements": [
+        "Remitente/dominio autorizado, proveedor/OAuth, cuotas y reputación de envío."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-012",
+        "GC-015"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/email_campaigns.py",
+          "present": true,
+          "sha256": "bfdee0da89141e6b64fea19dcd6be413c46e8e29dd35abaa6d0fd9d19a0716eb"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/email_campaigns.py",
+          "present": true,
+          "sha256": "bfdee0da89141e6b64fea19dcd6be413c46e8e29dd35abaa6d0fd9d19a0716eb"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/email_campaigns.py",
+          "present": true,
+          "sha256": "bfdee0da89141e6b64fea19dcd6be413c46e8e29dd35abaa6d0fd9d19a0716eb"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_email_campaign_browser",
+          "state": "PASSED",
+          "log_sha256": "598a6e5af47430296e3d5bb9bcc1caad029e6d98bb1de3e0527b7a81accfe8fc"
+        },
+        {
+          "id": "pool08_email_campaign_native",
+          "state": "PASSED",
+          "log_sha256": "d02bff92727e70579cb75877e11bd75ff4b1057ad98c2a82a7f896d183541d95"
+        },
+        {
+          "id": "pool08_email_campaign_sga",
+          "state": "PASSED",
+          "log_sha256": "eefd5b1f214d6d56635e1ba5292b108730dc59e58fbdbd1c3d19c4dce10713b5"
+        },
+        {
+          "id": "pool08_email_campaign_http",
+          "state": "PASSED",
+          "log_sha256": "5287ebb7e2fc9085c538651a342478aff21288f06e98ee4dafd39670beb12d47"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-017",
+      "title": "SMS, MMS y mensajería multimedia por WhatsApp",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-049",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-050",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-051",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Código y contratos locales verificados: SMS/MMS/WhatsApp separados, consentimiento por canal, plantilla declarada, multimedia revisada, estimación/límites, confirmaciones y recibos. Falta demostrar capacidades con proveedor real, MMS hacia Colombia, cuenta/plantillas WhatsApp legítimas, firmas nativas/mapeo, costes/cuotas y destinatarios autorizados; no se afirma envío físico ni aceptación productiva.",
+      "external_requirements": [
+        "Proveedor telefónico y soporte MMS en Colombia; cuenta/plantillas WhatsApp y destinatarios autorizados."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-012",
+        "GC-015"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/mobile_messages.py",
+          "present": true,
+          "sha256": "aa0a7eab40550a6dd47d4e812d56b1b4827c14b80e286b8818b6f1adc796b1ad"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/mobile_messages.py",
+          "present": true,
+          "sha256": "aa0a7eab40550a6dd47d4e812d56b1b4827c14b80e286b8818b6f1adc796b1ad"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/mobile_messages.py",
+          "present": true,
+          "sha256": "aa0a7eab40550a6dd47d4e812d56b1b4827c14b80e286b8818b6f1adc796b1ad"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_mobile_native",
+          "state": "PASSED",
+          "log_sha256": "8ab535bc7c70c91932656f977725b7ad741fb5d89b3d611d97dfded56ee9ea6b"
+        },
+        {
+          "id": "pool08_mobile_sga",
+          "state": "PASSED",
+          "log_sha256": "5e1e5e2386b945aedc33f56b75888866fa075eee8af7b87a2c9eb258f3c362ed"
+        },
+        {
+          "id": "pool08_mobile_http",
+          "state": "PASSED",
+          "log_sha256": "b84f47c0d6651b4c2c5cc94e0113f44f3298ac4706dfa626249e7a95fe68a3d6"
+        },
+        {
+          "id": "pool08_mobile_browser",
+          "state": "PASSED",
+          "log_sha256": "12d8c6fa53ed6711b13f896d8945eb191a6a7eb93e02b4448b8a04f72328569d"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-018",
+      "title": "Publicación orgánica y calendario multicanal",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-052",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-053",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-054",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Calendario, APIs/interfaces propias, confirmaciones y etapas de publicación verificados localmente para Facebook foto, Instagram Reel, YouTube vídeo y TikTok vídeo orgánico no patrocinado. Adaptadores probados con transporte simulado, sin publicaciones reales. Pendientes OAuth/cuentas/dominio propios, permisos/aprobación de aplicaciones, cualificación de API/formatos/visibilidad/cuotas y recibos auténticos; aceptación productiva no acreditada.",
+      "external_requirements": [
+        "OAuth, cuentas propias, aprobación de aplicaciones y permisos de publicación."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012",
+        "GC-015"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/publishing.py",
+          "present": true,
+          "sha256": "1166eea291e480b35776f5ab82c626a875f54edbcdeaa74653af50e880a9cbf1"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/publishing.py",
+          "present": true,
+          "sha256": "1166eea291e480b35776f5ab82c626a875f54edbcdeaa74653af50e880a9cbf1"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/publishing.py",
+          "present": true,
+          "sha256": "1166eea291e480b35776f5ab82c626a875f54edbcdeaa74653af50e880a9cbf1"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_publishing_browser",
+          "state": "PASSED",
+          "log_sha256": "b5b80d0cd812ea4c47d90c35a019b9d108a117d6aa27f5014a46a30ef979d1f8"
+        },
+        {
+          "id": "pool08_publishing_http",
+          "state": "PASSED",
+          "log_sha256": "4492cbe98e143ef99eb020edd5cf5014823f9ce6915b9cafae7aef82b47580e3"
+        },
+        {
+          "id": "pool08_publishing_native",
+          "state": "PASSED",
+          "log_sha256": "442941290d75adb5a70106240b1b20bb4ae7da96ed301a902b9e62bc1233a159"
+        },
+        {
+          "id": "pool08_publishing_sga",
+          "state": "PASSED",
+          "log_sha256": "489fe916ede7134105e76e251e5ad9f2c8a37bfd7c3e906e1f1ad4b88fdab327"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-019",
+      "title": "Bandeja omnicanal y respuestas: mensajes y comentarios",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-055",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-056",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-057",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Hilos, vínculo CRM revisado, asignación, borradores/confirmaciones, respuestas de texto y derivación propios verificados localmente. Firma nativa Meta y lecturas acotadas Gmail/YouTube implementadas con transporte simulado. Faltan puente/cuentas/permisos/webhooks/recibos auténticos y cualificación de APIs; lotes/no-texto, backfill y respuestas anidadas quedan explícitamente fuera del incremento acotado. TikTok sin API cualificada se deriva, sin fingir respuesta.",
+      "external_requirements": [
+        "Permisos/webhooks y alcance de recepción/respuesta de cada proveedor."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-016",
+        "GC-017",
+        "GC-018"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/inbox.py",
+          "present": true,
+          "sha256": "2a28cff37efb826aee3040bd97d33a9c87cdb8e6e768d17d036fc6d01bee4d68"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/inbox.py",
+          "present": true,
+          "sha256": "2a28cff37efb826aee3040bd97d33a9c87cdb8e6e768d17d036fc6d01bee4d68"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/inbox.py",
+          "present": true,
+          "sha256": "2a28cff37efb826aee3040bd97d33a9c87cdb8e6e768d17d036fc6d01bee4d68"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_inbox_browser",
+          "state": "PASSED",
+          "log_sha256": "9ed77ca9562d68717f7db05b5c9b38d1dc8c2965b1b9dd3e1fc13d8c579548c9"
+        },
+        {
+          "id": "pool08_inbox_http",
+          "state": "PASSED",
+          "log_sha256": "b1cda5bc3881d1cafc33f1d6a18239de2a84c46eb2a253c0879eba0dd9265aac"
+        },
+        {
+          "id": "pool08_inbox_native",
+          "state": "PASSED",
+          "log_sha256": "4244cd9235a26c3d9ab075c6bf8f31473ea49c84e0e83c9f4e1eb6ad1e021262"
+        },
+        {
+          "id": "pool08_inbox_sga",
+          "state": "PASSED",
+          "log_sha256": "254c6fe14ca006bf5c5760c0b41defe747ba919c855cb5ddb1228b0e0015720e"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-020",
+      "title": "Anuncios y pauta: Meta, TikTok y Google/YouTube Ads",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-058",
+          "stage": "F",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-059",
+          "stage": "T",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-060",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Incremento parcial implementado/probado en los tres sistemas: planes Meta/TikTok/Google-YouTube, creativos A/B revisados, presupuestos exactos y reservas locales agregadas por empresa, dos confirmaciones, auditoría y propuestas manuales sin aplicación automática. Propuesta para contrato Open Duet/agent-desktop existente, sin permiso ni envío al motor. Faltan ejecución/provisión de campañas/conjuntos/creativos y recibos/métricas auténticos mediante adaptadores o flujo de dispositivo real, vínculo completo con control supervisado y recuperación remota. No se habilita gasto ni se acredita F/T por este incremento parcial.",
+      "external_requirements": [
+        "Cuentas Ads, permisos, facturación y autorización explícita antes de gasto real."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-012",
+        "GC-018"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/ads.py",
+          "present": true,
+          "sha256": "754ff4143ce109e4cdc8d34a6cc79eb8b2ccd25f80a780f322c00986017b438f"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/ads.py",
+          "present": true,
+          "sha256": "754ff4143ce109e4cdc8d34a6cc79eb8b2ccd25f80a780f322c00986017b438f"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/ads.py",
+          "present": true,
+          "sha256": "754ff4143ce109e4cdc8d34a6cc79eb8b2ccd25f80a780f322c00986017b438f"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_ads_http",
+          "state": "PASSED",
+          "log_sha256": "43a3da3e969d194cb931e9962568725fbe7c4b4328a977c15162b8a7c0dccb80"
+        },
+        {
+          "id": "pool08_ads_browser",
+          "state": "PASSED",
+          "log_sha256": "7e5cff3d9dcbc5453f86298114331e58d841a7a6f912b4c2c66bb373b1677ac6"
+        },
+        {
+          "id": "pool08_ads_native",
+          "state": "PASSED",
+          "log_sha256": "c6a955d207cffea06f39899acd5cb0a8c1eeb0a9f86b993707e8d19c25322be8"
+        },
+        {
+          "id": "pool08_ads_sga",
+          "state": "PASSED",
+          "log_sha256": "15864f5469daea3768f29021195b041ffab2a8fbcf33db08880b8ca9913f99e1"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-021",
+      "title": "Cadena de agentes, herramientas reales y motores",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-061",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-062",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-063",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Cadena y adaptadores propios, ocho consultas de dominio reales, bloqueos explícitos para acciones que exigen su flujo autorizado, misiones persistentes, permisos actuales, evaluación de SOUP y motores PLAN_ONLY/STATUS_ONLY verificados localmente. Corregido falso COMPLETED_SUCCESS y rol administrativo implícito heredados. Pendientes configuración y evaluación real de modelos/motores, equipos objetivo, voz fluida separada y aceptación productiva; no se habilitan gastos ni acciones de dispositivo.",
+      "external_requirements": [
+        "Motores/modelos configurados, equipo objetivo y evaluación de calidad/privacidad."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/army.py",
+          "present": true,
+          "sha256": "a61922bf2768bda491cc813a21cbb59781e65afb7030ddcd8b4f65ac77aeb478"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/army.py",
+          "present": true,
+          "sha256": "a61922bf2768bda491cc813a21cbb59781e65afb7030ddcd8b4f65ac77aeb478"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/army.py",
+          "present": true,
+          "sha256": "a61922bf2768bda491cc813a21cbb59781e65afb7030ddcd8b4f65ac77aeb478"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_army_browser",
+          "state": "PASSED",
+          "log_sha256": "988b9714c3079683fc4f35c1ad9ebd8d254666f024a5ff33613307d90c915b6f"
+        },
+        {
+          "id": "commercial_staff_truth",
+          "state": "PASSED",
+          "log_sha256": "b77b3eecbb8b58408bbf2c56825f5a7e1c3ea451dc9b20633ade6ed8a8a1e8e9"
+        },
+        {
+          "id": "pool08_army_native",
+          "state": "PASSED",
+          "log_sha256": "e715d2e2942445bbfc716fc0a495c39f69e27a8ac3ba2f2ab5cf04bbcacf2096"
+        },
+        {
+          "id": "pool08_army_sga",
+          "state": "PASSED",
+          "log_sha256": "df76ad05edc0aeaee61d25cfc37a7dba06dfce99ea43ce55d19034efb0aaaf2f"
+        },
+        {
+          "id": "pool08_army_http",
+          "state": "PASSED",
+          "log_sha256": "7f434c1c062bb9cd0ac213997fb253e30c0d1e03eaa77fe1c9404ad4f441573a"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-022",
+      "title": "Indicadores, embudo, atribución y predicción",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-064",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-065",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-066",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Implementados y probados paneles propios, embudo actual, ingresos/reversiones del ledger, atribución declarada con captura/consentimiento, costes de cuentas configuradas, CAC de alcance limitado, escenario LTV con política revisada explícita y pronóstico temporal evaluado. No inventa ceros, costes ni series. Faltan fuentes/cuentas auténticas y series consentidas para cualificar proveedores y calibrar; revisión de supuestos/soportes, carga/concurrencia productiva y aceptación integral. Las proyecciones no garantizan rentabilidad y la atribución UTM no es causal.",
+      "external_requirements": [
+        "Series consentidas y datos auténticos de campañas/operación para calibración."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-004",
+        "GC-007",
+        "GC-016",
+        "GC-018",
+        "GC-020"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/analytics.py",
+          "present": true,
+          "sha256": "34c9fd76477a6894d6f5e60d878a4bb1c74950754fda6c1d4b0762c6e67b6b8e"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/analytics.py",
+          "present": true,
+          "sha256": "34c9fd76477a6894d6f5e60d878a4bb1c74950754fda6c1d4b0762c6e67b6b8e"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/analytics.py",
+          "present": true,
+          "sha256": "34c9fd76477a6894d6f5e60d878a4bb1c74950754fda6c1d4b0762c6e67b6b8e"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_analytics_browser",
+          "state": "PASSED",
+          "log_sha256": "aab8fc1f261585b4bf209fc3a8a2113321d3abac29f3a3c2bd29921e62f08f1d"
+        },
+        {
+          "id": "pool08_analytics_ui",
+          "state": "PASSED",
+          "log_sha256": "73813bdd3b8c67e2525f662c43bfef57e1ee42d29a10c66628e72cffda1bf556"
+        },
+        {
+          "id": "pool08_analytics_sga",
+          "state": "PASSED",
+          "log_sha256": "e02e1d650fe1034610f41d28d120b71320e18686c392933790e15d13e042dbb9"
+        },
+        {
+          "id": "pool08_analytics_native",
+          "state": "PASSED",
+          "log_sha256": "3f14a36d323a40b5b4aed8f21232406437ddb96a292fb0079a1eafbcadde1be7"
+        },
+        {
+          "id": "pool08_analytics_capture",
+          "state": "PASSED",
+          "log_sha256": "04ee9728dc62f8fb5e8d75684cd212df711f0953e1ce886d4189625c89a8e5ac"
+        },
+        {
+          "id": "pool08_analytics_ledger",
+          "state": "PASSED",
+          "log_sha256": "2cfdc573a768b709bac9ad3f9499a458768bbb424db4af3036cb6e5e78816dc8"
+        },
+        {
+          "id": "pool08_analytics_saga_http",
+          "state": "PASSED",
+          "log_sha256": "c4cb1059b1f288be769faf1a949c7ddb27c391845ef2ed076ccf7f7146025b18"
+        },
+        {
+          "id": "pool08_analytics_http",
+          "state": "PASSED",
+          "log_sha256": "82c17333b32214d370c0eb91a00bf45fe6699d2fcfac4233ce9704c207195b87"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-023",
+      "title": "Nivelación de frontends y recorridos de los tres módulos",
+      "declared_state": "IMPLEMENTADA_VERIFICADA_LOCALMENTE_PENDIENTE_ACEPTACION",
+      "milestones": [
+        {
+          "id": "GCH-067",
+          "stage": "F",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-068",
+          "stage": "T",
+          "state": "VERIFICADO"
+        },
+        {
+          "id": "GCH-069",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Nivelados los17 accesos de los tres clientes propios, región activa, carga/reintento, errores y vacíos, bloqueo combinado/paginación, sesión nativa y accesibilidad de teclado/foco/tamaño/paleta. Recorridos HTTP/Chromium reproducibles en páginas reales y320/390/1280px. Pendientes aceptación de usuarios/roles y dispositivos físicos, revisión completa de accesibilidad y cualificación de release/Next.js; los límites externos de cada proveedor y módulo no se cierran por paridad visual.",
+      "external_requirements": [
+        "Aceptación de usuarios/roles y dispositivos objetivo."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-003",
+        "GC-006",
+        "GC-010",
+        "GC-016",
+        "GC-018",
+        "GC-019",
+        "GC-021"
+      ],
+      "source_observations": [
+        {
+          "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-crm.js",
+          "present": true,
+          "sha256": "7cb4e77ae6715670aa6bc21c7c4b63a17d4ff01d4504e21f54706754a437598d"
+        },
+        {
+          "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-crm.js",
+          "present": true,
+          "sha256": "7cb4e77ae6715670aa6bc21c7c4b63a17d4ff01d4504e21f54706754a437598d"
+        },
+        {
+          "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-crm.js",
+          "present": true,
+          "sha256": "7cb4e77ae6715670aa6bc21c7c4b63a17d4ff01d4504e21f54706754a437598d"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_workspace_browser",
+          "state": "PASSED",
+          "log_sha256": "8b1f433c88456122972197f29aedaaba496f600aafcc45a1f2a2e98e9d42d51b"
+        },
+        {
+          "id": "pool08_native_ui",
+          "state": "PASSED",
+          "log_sha256": "34295eb681b4899373785c83895ec8321d1882d2e96004111fc1c237e9aa38ec"
+        },
+        {
+          "id": "pool08_workspace_types",
+          "state": "PASSED",
+          "log_sha256": "73813bdd3b8c67e2525f662c43bfef57e1ee42d29a10c66628e72cffda1bf556"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    },
+    {
+      "id": "GC-024",
+      "title": "Calidad, seguridad, rendimiento, operación y cierre",
+      "declared_state": "EN_EJECUCION",
+      "milestones": [
+        {
+          "id": "GCH-070",
+          "stage": "F",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-071",
+          "stage": "T",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        },
+        {
+          "id": "GCH-072",
+          "stage": "A",
+          "state": "PENDIENTE_DE_ACREDITACION"
+        }
+      ],
+      "full_acceptance_evidenced": false,
+      "scope_still_pending": "Incremento parcial operativo: sondas/trazas de16 dominios incluidos pagos y captación; lectura estable por registro con reintento limitado y conteos de la revisión comprobada; borradores cifrados offline, restauración SQLite aislada y gate de72 hitos. Perfil integral comercial-audit y revisión por24 tareas disponibles. Siguen pendientes compilación estricta (966 diagnósticos ERP/938 Turismo), sincronización por dominio, carga/telemetría y reversión/restauración integrales, dependencias sin cerrar y aceptación auténtica. El muestreo no establece un snapshot transversal entre dominios ni saldos financieros.",
+      "external_requirements": [
+        "Infraestructura objetivo, proveedores, restauración real y aceptación profesional/productiva."
+      ],
+      "dependencies_without_full_acceptance": [
+        "GC-002",
+        "GC-003",
+        "GC-004",
+        "GC-005",
+        "GC-006",
+        "GC-007",
+        "GC-008",
+        "GC-009",
+        "GC-010",
+        "GC-011",
+        "GC-012",
+        "GC-013",
+        "GC-014",
+        "GC-015",
+        "GC-016",
+        "GC-017",
+        "GC-018",
+        "GC-019",
+        "GC-020",
+        "GC-021",
+        "GC-022",
+        "GC-023"
+      ],
+      "source_observations": [
+        {
+          "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/operations.py",
+          "present": true,
+          "sha256": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+        },
+        {
+          "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/operations.py",
+          "present": true,
+          "sha256": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+        },
+        {
+          "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/operations.py",
+          "present": true,
+          "sha256": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da"
+        }
+      ],
+      "mapped_tests": [
+        {
+          "id": "pool08_recovery_browser",
+          "state": "PASSED",
+          "log_sha256": "78d7e1bfb91a29ccb710c4451fe4b15b91929d5cb4aa444c82b363a0050c2338"
+        },
+        {
+          "id": "pool08_operations_sga",
+          "state": "PASSED",
+          "log_sha256": "405be9cd3b021f93cac5c2e709450f01be77fa0660e855935eeb9a91acfb7738"
+        },
+        {
+          "id": "pool08_operations_native",
+          "state": "PASSED",
+          "log_sha256": "b98c103cf86588108c3925f52ffdb1d9675def466215bb8304ee8e8841eb04a4"
+        },
+        {
+          "id": "pool08_operations_http",
+          "state": "PASSED",
+          "log_sha256": "774dc347470c728116b4922c636cf83900fa81ba2cbe88706e19c4c5ebd4a0f1"
+        },
+        {
+          "id": "pool08_recovery_sga",
+          "state": "PASSED",
+          "log_sha256": "91946495615587c9cab4b65b798f3e70c52c3a458e443524121dfda092878905"
+        },
+        {
+          "id": "pool08_recovery_native",
+          "state": "PASSED",
+          "log_sha256": "c40f3395b9fb81820845d5933e086ae75218bef3eb96be4ac45a7d2e27d2fa7e"
+        },
+        {
+          "id": "pool08_offline_browser",
+          "state": "PASSED",
+          "log_sha256": "c0bc1ab67d9bd1649e14348e75fa009b41373890eae00d5c22e25eaee3045f4d"
+        },
+        {
+          "id": "offline_asset_regression",
+          "state": "PASSED",
+          "log_sha256": "a2011fed979bb904cefdfde76bec483bc62236f58a3c6851ce980edaa6e16089"
+        },
+        {
+          "id": "commercial_gate",
+          "state": "PASSED",
+          "log_sha256": "1b59d8fe742f23185a8dfdba48224084932c0937532a455a663d467bb6e310d4"
+        }
+      ],
+      "mapped_test_scope_complete": false,
+      "source_presence_awards_credit": false
+    }
+  ],
+  "credited_milestones_review": [
+    {
+      "ordinal": 1,
+      "task_id": "GC-001",
+      "milestone_id": "GCH-001",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REGISTRY_EMBEDDED_REPORT_ONLY",
+          "source_digest": "bc27cad24244761707b0970facc37a7925001945d38518137740ed4c0d5d8e63",
+          "raw_logs_verified": false,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc001_contract_completion_20261111",
+            "entry_sha256": "53a939020a89406229ffcb98fdb1f083f3fb9785c1f12759f99b133ec4f24786"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": true,
+      "development_pending": "Sin pendientes del contrato/API y DAG definidos para GC-001. Las funciones de negocio y proveedores permanecen en las tareas correspondientes.",
+      "external_requirements": []
+    },
+    {
+      "ordinal": 2,
+      "task_id": "GC-001",
+      "milestone_id": "GCH-002",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REGISTRY_EMBEDDED_REPORT_ONLY",
+          "source_digest": "bc27cad24244761707b0970facc37a7925001945d38518137740ed4c0d5d8e63",
+          "raw_logs_verified": false,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc001_contract_completion_20261111",
+            "entry_sha256": "53a939020a89406229ffcb98fdb1f083f3fb9785c1f12759f99b133ec4f24786"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": true,
+      "development_pending": "Sin pendientes del contrato/API y DAG definidos para GC-001. Las funciones de negocio y proveedores permanecen en las tareas correspondientes.",
+      "external_requirements": []
+    },
+    {
+      "ordinal": 3,
+      "task_id": "GC-001",
+      "milestone_id": "GCH-003",
+      "stage": "A",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REGISTRY_EMBEDDED_REPORT_ONLY",
+          "source_digest": "bc27cad24244761707b0970facc37a7925001945d38518137740ed4c0d5d8e63",
+          "raw_logs_verified": false,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc001_contract_completion_20261111",
+            "entry_sha256": "53a939020a89406229ffcb98fdb1f083f3fb9785c1f12759f99b133ec4f24786"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": true,
+      "development_pending": "Sin pendientes del contrato/API y DAG definidos para GC-001. Las funciones de negocio y proveedores permanecen en las tareas correspondientes.",
+      "external_requirements": []
+    },
+    {
+      "ordinal": 4,
+      "task_id": "GC-002",
+      "milestone_id": "GCH-004",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "d73b04c5355890b75341d0db3a96a9be148776d9fd00dbc2103c9e3a90e81f4e",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc002_step1_identity_administration_20261112",
+            "entry_sha256": "4a438d33d91347befbaf7eff39eae618adcfbded1e714e88a9b0e477ebf931d0"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Administración propia y cualificación local de identidad/permisos/consentimientos completas: empresa A/B, roles, revocación transversal CRM, caducidad, CAS, rollback, reintento y recuperación verificados. Pendiente GCH-006/paso 3: aceptación de usuarios y políticas auténticos revisados. Sin legitimidad inferida de soportes ni cualificación productiva.",
+      "external_requirements": [
+        "Usuarios y políticas de autorización revisados para aceptación final."
+      ]
+    },
+    {
+      "ordinal": 5,
+      "task_id": "GC-002",
+      "milestone_id": "GCH-005",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "066eebc65ee80ae5bc8e3318149ae81cec601bbbd977be081c16d0ff5700b6ed",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.commercial_steps01_12_audit_20261113",
+            "entry_sha256": "e5f0f800ae7cfa0b964d319b87d0d429b9010abf27bd93d0a310a64e3710cd92"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Administración propia y cualificación local de identidad/permisos/consentimientos completas: empresa A/B, roles, revocación transversal CRM, caducidad, CAS, rollback, reintento y recuperación verificados. Pendiente GCH-006/paso 3: aceptación de usuarios y políticas auténticos revisados. Sin legitimidad inferida de soportes ni cualificación productiva.",
+      "external_requirements": [
+        "Usuarios y políticas de autorización revisados para aceptación final."
+      ]
+    },
+    {
+      "ordinal": 6,
+      "task_id": "GC-003",
+      "milestone_id": "GCH-007",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "1a6281308b2ebb85e3383d26da03653709ed5b555d10fa7b08effab36b5dd1b2",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc003_crm_integrado_y_ubicacion_20261111",
+            "entry_sha256": "1701a1786a6b960e72468712ba508863193044d71d53a7ae5089df1df674b0f2"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación de uso con muestras consentidas y cierre de revisión de usuarios/políticas GC-002. Las migraciones se validaron solo en SQLite desechable; habilitación de servidor, datos históricos y producción requieren su cualificación.",
+      "external_requirements": [
+        "Muestras de clientes consentidas para aceptación de uso."
+      ]
+    },
+    {
+      "ordinal": 7,
+      "task_id": "GC-003",
+      "milestone_id": "GCH-008",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "1a6281308b2ebb85e3383d26da03653709ed5b555d10fa7b08effab36b5dd1b2",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc003_crm_integrado_y_ubicacion_20261111",
+            "entry_sha256": "1701a1786a6b960e72468712ba508863193044d71d53a7ae5089df1df674b0f2"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación de uso con muestras consentidas y cierre de revisión de usuarios/políticas GC-002. Las migraciones se validaron solo en SQLite desechable; habilitación de servidor, datos históricos y producción requieren su cualificación.",
+      "external_requirements": [
+        "Muestras de clientes consentidas para aceptación de uso."
+      ]
+    },
+    {
+      "ordinal": 8,
+      "task_id": "GC-004",
+      "milestone_id": "GCH-010",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "c2c7cdbcf4d13eef80c3759cea29e732fe5374f037db9c3b19a6375ae8a81d40",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc004_oportunidades_embudo_20261111",
+            "entry_sha256": "617d3be230b290cda7f9f425d36243bddd571074ff34c87149cb90a2ca82088e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación integral pendiente: dataset consentido y evaluación para scoring predictivo; validación con usuarios/datos y dependencias GC-002/GC-003. La prioridad por reglas se declara no calibrada; migración histórica y PostgreSQL/concurrencia productiva sin cualificar.",
+      "external_requirements": [
+        "Dataset consentido y evaluación para scoring predictivo."
+      ]
+    },
+    {
+      "ordinal": 9,
+      "task_id": "GC-004",
+      "milestone_id": "GCH-011",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "c2c7cdbcf4d13eef80c3759cea29e732fe5374f037db9c3b19a6375ae8a81d40",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc004_oportunidades_embudo_20261111",
+            "entry_sha256": "617d3be230b290cda7f9f425d36243bddd571074ff34c87149cb90a2ca82088e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación integral pendiente: dataset consentido y evaluación para scoring predictivo; validación con usuarios/datos y dependencias GC-002/GC-003. La prioridad por reglas se declara no calibrada; migración histórica y PostgreSQL/concurrencia productiva sin cualificar.",
+      "external_requirements": [
+        "Dataset consentido y evaluación para scoring predictivo."
+      ]
+    },
+    {
+      "ordinal": 10,
+      "task_id": "GC-005",
+      "milestone_id": "GCH-013",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "99160d306a66864f59bdea2ebd93f715eb261e40ba033f01239c6c07e0c773ab",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc005_catalogo_tarifas_20261111",
+            "entry_sha256": "e637300ee6e4a031d0b969285ffebba0a889e588ca3d021fc801d795e0cd2c25"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación integral pendiente: precios/condiciones/soportes legítimos y revisión tributaria profesional; usuarios y políticas de GC-002, revisión de migración histórica y cualificación productiva. El cálculo actual es estimación comercial y no acredita factura, pago ni aceptación fiscal.",
+      "external_requirements": [
+        "Precios/condiciones legítimos y revisión tributaria."
+      ]
+    },
+    {
+      "ordinal": 11,
+      "task_id": "GC-005",
+      "milestone_id": "GCH-014",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "99160d306a66864f59bdea2ebd93f715eb261e40ba033f01239c6c07e0c773ab",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc005_catalogo_tarifas_20261111",
+            "entry_sha256": "e637300ee6e4a031d0b969285ffebba0a889e588ca3d021fc801d795e0cd2c25"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación integral pendiente: precios/condiciones/soportes legítimos y revisión tributaria profesional; usuarios y políticas de GC-002, revisión de migración histórica y cualificación productiva. El cálculo actual es estimación comercial y no acredita factura, pago ni aceptación fiscal.",
+      "external_requirements": [
+        "Precios/condiciones legítimos y revisión tributaria."
+      ]
+    },
+    {
+      "ordinal": 12,
+      "task_id": "GC-006",
+      "milestone_id": "GCH-016",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ed120d3064672f0b11c7a13ddba838a7b48e108dceb83dd02fa350657d3bd403",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc006_cotizaciones_dinamicas_20261111",
+            "entry_sha256": "921386692c54984bfa81e93a8179a841c3abae96d58e66f15dd707e060c263dd"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación integral pendiente: condiciones/precios legítimos aprobados por empresa y revisión de aceptación/entrega al destinatario; dependencias GC-004/GC-005 y cualificación productiva de custodia/rotación, infraestructura, datos/concurrencia y restauración. La aceptación actual acredita posesión del enlace, no identidad verificada ni pago/reserva.",
+      "external_requirements": [
+        "Condiciones comerciales aprobadas por cada empresa."
+      ]
+    },
+    {
+      "ordinal": 13,
+      "task_id": "GC-006",
+      "milestone_id": "GCH-017",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ed120d3064672f0b11c7a13ddba838a7b48e108dceb83dd02fa350657d3bd403",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc006_cotizaciones_dinamicas_20261111",
+            "entry_sha256": "921386692c54984bfa81e93a8179a841c3abae96d58e66f15dd707e060c263dd"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Aceptación integral pendiente: condiciones/precios legítimos aprobados por empresa y revisión de aceptación/entrega al destinatario; dependencias GC-004/GC-005 y cualificación productiva de custodia/rotación, infraestructura, datos/concurrencia y restauración. La aceptación actual acredita posesión del enlace, no identidad verificada ni pago/reserva.",
+      "external_requirements": [
+        "Condiciones comerciales aprobadas por cada empresa."
+      ]
+    },
+    {
+      "ordinal": 14,
+      "task_id": "GC-007",
+      "milestone_id": "GCH-019",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "17756282cd3b62cb999e187750a53c97c439bd145023d056ee1b99e0405ed743",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc007_venta_operacion_contabilidad_20261112",
+            "entry_sha256": "7d4e3487686fc1cfb89323029d1a038d063f65d27248391655408ed5a695db8d"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Flujo local de confirmación, operación, outbox/asiento y recuperación acreditado por su evidencia F/T. Pendientes aceptación de condiciones/soportes y reglas contables/laborales por actividad, identidad GC-002 y cualificación productiva/concurrencia. Factura DIAN y custodia auténticas pertenecen a sus integraciones; venta confirmada no acredita cobro.",
+      "external_requirements": [
+        "Revisión contable/laboral según actividad; DIAN y custodia reales para aceptación fiscal/documental."
+      ]
+    },
+    {
+      "ordinal": 15,
+      "task_id": "GC-007",
+      "milestone_id": "GCH-020",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "17756282cd3b62cb999e187750a53c97c439bd145023d056ee1b99e0405ed743",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc007_venta_operacion_contabilidad_20261112",
+            "entry_sha256": "7d4e3487686fc1cfb89323029d1a038d063f65d27248391655408ed5a695db8d"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Flujo local de confirmación, operación, outbox/asiento y recuperación acreditado por su evidencia F/T. Pendientes aceptación de condiciones/soportes y reglas contables/laborales por actividad, identidad GC-002 y cualificación productiva/concurrencia. Factura DIAN y custodia auténticas pertenecen a sus integraciones; venta confirmada no acredita cobro.",
+      "external_requirements": [
+        "Revisión contable/laboral según actividad; DIAN y custodia reales para aceptación fiscal/documental."
+      ]
+    },
+    {
+      "ordinal": 16,
+      "task_id": "GC-010",
+      "milestone_id": "GCH-028",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "b7bd37b4aa127ad90cc1ac8577d95f98974ce4a0727fa06d0d2508ed8df466ab",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc010_landings_locales_20261112",
+            "entry_sha256": "d857ee8c9b48d16f3df58b01bf3f9b483a91a284a491ee997c8260a2c1cc8c80"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Constructor, versiones, previsualización, aprobación/publicación y retirada locales acreditados F/T. Pendientes aceptación de titulares/roles GC-002, revisión del contenido y cualificación de datos históricos, concurrencia y despliegue. Dominio/DNS/TLS y autorización si se usa dominio propio.",
+      "external_requirements": [
+        "Dominio/DNS/TLS y autorización del titular si se usa dominio propio."
+      ]
+    },
+    {
+      "ordinal": 17,
+      "task_id": "GC-010",
+      "milestone_id": "GCH-029",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "b7bd37b4aa127ad90cc1ac8577d95f98974ce4a0727fa06d0d2508ed8df466ab",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc010_landings_locales_20261112",
+            "entry_sha256": "d857ee8c9b48d16f3df58b01bf3f9b483a91a284a491ee997c8260a2c1cc8c80"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Constructor, versiones, previsualización, aprobación/publicación y retirada locales acreditados F/T. Pendientes aceptación de titulares/roles GC-002, revisión del contenido y cualificación de datos históricos, concurrencia y despliegue. Dominio/DNS/TLS y autorización si se usa dominio propio.",
+      "external_requirements": [
+        "Dominio/DNS/TLS y autorización del titular si se usa dominio propio."
+      ]
+    },
+    {
+      "ordinal": 18,
+      "task_id": "GC-011",
+      "milestone_id": "GCH-031",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "8bee7677a9706c992f351ad6514559408a6a8c9a3197d7aee2d91e1d0beeb68a",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc011_captacion_crm_local_20261112",
+            "entry_sha256": "acec6632364ddc233e3abef254191687f5a4971d624b0b5d29874948a858ea0e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Captación local enlazada al CRM, origen canónico, consentimiento, baja, antispam, SEO y métricas de envíos aceptados acreditados F/T. Pendientes contenido/políticas de publicación legítimos, aceptación de titulares, retención y despliegue. No acredita titularidad del email, autorización de campañas, métricas de anuncios ni registro institucional/RNT.",
+      "external_requirements": [
+        "Contenido autorizado y reglas de publicación de la empresa."
+      ]
+    },
+    {
+      "ordinal": 19,
+      "task_id": "GC-011",
+      "milestone_id": "GCH-032",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "8bee7677a9706c992f351ad6514559408a6a8c9a3197d7aee2d91e1d0beeb68a",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc011_captacion_crm_local_20261112",
+            "entry_sha256": "acec6632364ddc233e3abef254191687f5a4971d624b0b5d29874948a858ea0e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Captación local enlazada al CRM, origen canónico, consentimiento, baja, antispam, SEO y métricas de envíos aceptados acreditados F/T. Pendientes contenido/políticas de publicación legítimos, aceptación de titulares, retención y despliegue. No acredita titularidad del email, autorización de campañas, métricas de anuncios ni registro institucional/RNT.",
+      "external_requirements": [
+        "Contenido autorizado y reglas de publicación de la empresa."
+      ]
+    },
+    {
+      "ordinal": 20,
+      "task_id": "GC-012",
+      "milestone_id": "GCH-034",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "b1348c7b45c696819c9ae87be3e2c3dcc5032734bed6a390d68bdfb106f4ba4a",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc012_biblioteca_multimedia_local_20261112",
+            "entry_sha256": "2f531686af962db4abcc156b39156d6d08fd6059e12cb06dc2b109df0aefcab6"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Biblioteca local privada con originales exactos, copias procesadas, versiones, derechos declarados, marca y cuotas acreditada F/T. Pendientes licencias/contenido auténticos revisados, almacenamiento autorizado, política de retención y protección en reposo, restauración y cualificación PostgreSQL/concurrencia/decodificadores en infraestructura objetivo. Plantillas actuales son composición de vista previa, no exportación renderizada.",
+      "external_requirements": [
+        "Derechos/licencias de activos y destino de almacenamiento autorizado."
+      ]
+    },
+    {
+      "ordinal": 21,
+      "task_id": "GC-012",
+      "milestone_id": "GCH-035",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "b1348c7b45c696819c9ae87be3e2c3dcc5032734bed6a390d68bdfb106f4ba4a",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc012_biblioteca_multimedia_local_20261112",
+            "entry_sha256": "2f531686af962db4abcc156b39156d6d08fd6059e12cb06dc2b109df0aefcab6"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Biblioteca local privada con originales exactos, copias procesadas, versiones, derechos declarados, marca y cuotas acreditada F/T. Pendientes licencias/contenido auténticos revisados, almacenamiento autorizado, política de retención y protección en reposo, restauración y cualificación PostgreSQL/concurrencia/decodificadores en infraestructura objetivo. Plantillas actuales son composición de vista previa, no exportación renderizada.",
+      "external_requirements": [
+        "Derechos/licencias de activos y destino de almacenamiento autorizado."
+      ]
+    },
+    {
+      "ordinal": 22,
+      "task_id": "GC-015",
+      "milestone_id": "GCH-043",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "c5d3a88de49be3108a94dbb1ce483522f916ec41a259038661b1bf7ebec2790a",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc015_media_adaptation_20261112",
+            "entry_sha256": "4e2761cac3fbccb12a5d05baadb42910064a6583a279081feea1642d9a439a24"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Perfiles locales 1.0 y adaptaciones reales de imagen/vídeo implementados y verificados en los tres sistemas: crop/pad, ampliación explícita, límites, audio y política de subtítulos, originales intactos y revisión privada. Falta aceptación de perfiles vigentes por red y cualificación en hardware/infraestructura objetivo, contenidos/derechos y usuarios reales.",
+      "external_requirements": [
+        "Perfiles vigentes de cada red; hardware objetivo para rendimiento."
+      ]
+    },
+    {
+      "ordinal": 23,
+      "task_id": "GC-015",
+      "milestone_id": "GCH-044",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "c5d3a88de49be3108a94dbb1ce483522f916ec41a259038661b1bf7ebec2790a",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc015_media_adaptation_20261112",
+            "entry_sha256": "4e2761cac3fbccb12a5d05baadb42910064a6583a279081feea1642d9a439a24"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Perfiles locales 1.0 y adaptaciones reales de imagen/vídeo implementados y verificados en los tres sistemas: crop/pad, ampliación explícita, límites, audio y política de subtítulos, originales intactos y revisión privada. Falta aceptación de perfiles vigentes por red y cualificación en hardware/infraestructura objetivo, contenidos/derechos y usuarios reales.",
+      "external_requirements": [
+        "Perfiles vigentes de cada red; hardware objetivo para rendimiento."
+      ]
+    },
+    {
+      "ordinal": 24,
+      "task_id": "GC-016",
+      "milestone_id": "GCH-046",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "b0c85d0b701f9ae21a9e2642c7abcfcd210e8d3509b93a2267a3716a781a866b",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc016_email_campaigns_20261112",
+            "entry_sha256": "e035f8badde73863e7383a1b6ba2ab41699603b7fc54a5779e5af39a03086b7b"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Flujo local implementado y probado: plantillas HTML/texto escapadas, segmentos estáticos CRM, personalización, exclusiones, agenda UTC, cuota, dos confirmaciones, bajas firmadas y recibos por destinatario. SMTP limitado a loopback; faltan remitente/dominio y proveedor/OAuth o relay autorizados, consentimientos legítimos, mapeo/validación de recibos auténticos, reputación y cualificación productiva.",
+      "external_requirements": [
+        "Remitente/dominio autorizado, proveedor/OAuth, cuotas y reputación de envío."
+      ]
+    },
+    {
+      "ordinal": 25,
+      "task_id": "GC-016",
+      "milestone_id": "GCH-047",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "b0c85d0b701f9ae21a9e2642c7abcfcd210e8d3509b93a2267a3716a781a866b",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc016_email_campaigns_20261112",
+            "entry_sha256": "e035f8badde73863e7383a1b6ba2ab41699603b7fc54a5779e5af39a03086b7b"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Flujo local implementado y probado: plantillas HTML/texto escapadas, segmentos estáticos CRM, personalización, exclusiones, agenda UTC, cuota, dos confirmaciones, bajas firmadas y recibos por destinatario. SMTP limitado a loopback; faltan remitente/dominio y proveedor/OAuth o relay autorizados, consentimientos legítimos, mapeo/validación de recibos auténticos, reputación y cualificación productiva.",
+      "external_requirements": [
+        "Remitente/dominio autorizado, proveedor/OAuth, cuotas y reputación de envío."
+      ]
+    },
+    {
+      "ordinal": 26,
+      "task_id": "GC-017",
+      "milestone_id": "GCH-049",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ce81d5f180fd89ca9e063455d458244d44122516df7c266e0fef22b38ecdc377",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc017_mobile_messaging_20261112",
+            "entry_sha256": "76ba49a80a13a40871ea6f81b0b55a31670c8e66784cc9fb91d2128e85293b4e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Código y contratos locales verificados: SMS/MMS/WhatsApp separados, consentimiento por canal, plantilla declarada, multimedia revisada, estimación/límites, confirmaciones y recibos. Falta demostrar capacidades con proveedor real, MMS hacia Colombia, cuenta/plantillas WhatsApp legítimas, firmas nativas/mapeo, costes/cuotas y destinatarios autorizados; no se afirma envío físico ni aceptación productiva.",
+      "external_requirements": [
+        "Proveedor telefónico y soporte MMS en Colombia; cuenta/plantillas WhatsApp y destinatarios autorizados."
+      ]
+    },
+    {
+      "ordinal": 27,
+      "task_id": "GC-017",
+      "milestone_id": "GCH-050",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ce81d5f180fd89ca9e063455d458244d44122516df7c266e0fef22b38ecdc377",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc017_mobile_messaging_20261112",
+            "entry_sha256": "76ba49a80a13a40871ea6f81b0b55a31670c8e66784cc9fb91d2128e85293b4e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Código y contratos locales verificados: SMS/MMS/WhatsApp separados, consentimiento por canal, plantilla declarada, multimedia revisada, estimación/límites, confirmaciones y recibos. Falta demostrar capacidades con proveedor real, MMS hacia Colombia, cuenta/plantillas WhatsApp legítimas, firmas nativas/mapeo, costes/cuotas y destinatarios autorizados; no se afirma envío físico ni aceptación productiva.",
+      "external_requirements": [
+        "Proveedor telefónico y soporte MMS en Colombia; cuenta/plantillas WhatsApp y destinatarios autorizados."
+      ]
+    },
+    {
+      "ordinal": 28,
+      "task_id": "GC-018",
+      "milestone_id": "GCH-052",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "46aa6469a556c66e594e1c94eb244b79d66c24121708d5108499429db44e54d4",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc018_publicacion_20261112",
+            "entry_sha256": "c4d878c7027d77b1744b879808efc702f9e4453cf373b415df1f45abc27d6e6e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Calendario, APIs/interfaces propias, confirmaciones y etapas de publicación verificados localmente para Facebook foto, Instagram Reel, YouTube vídeo y TikTok vídeo orgánico no patrocinado. Adaptadores probados con transporte simulado, sin publicaciones reales. Pendientes OAuth/cuentas/dominio propios, permisos/aprobación de aplicaciones, cualificación de API/formatos/visibilidad/cuotas y recibos auténticos; aceptación productiva no acreditada.",
+      "external_requirements": [
+        "OAuth, cuentas propias, aprobación de aplicaciones y permisos de publicación."
+      ]
+    },
+    {
+      "ordinal": 29,
+      "task_id": "GC-018",
+      "milestone_id": "GCH-053",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "46aa6469a556c66e594e1c94eb244b79d66c24121708d5108499429db44e54d4",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc018_publicacion_20261112",
+            "entry_sha256": "c4d878c7027d77b1744b879808efc702f9e4453cf373b415df1f45abc27d6e6e"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Calendario, APIs/interfaces propias, confirmaciones y etapas de publicación verificados localmente para Facebook foto, Instagram Reel, YouTube vídeo y TikTok vídeo orgánico no patrocinado. Adaptadores probados con transporte simulado, sin publicaciones reales. Pendientes OAuth/cuentas/dominio propios, permisos/aprobación de aplicaciones, cualificación de API/formatos/visibilidad/cuotas y recibos auténticos; aceptación productiva no acreditada.",
+      "external_requirements": [
+        "OAuth, cuentas propias, aprobación de aplicaciones y permisos de publicación."
+      ]
+    },
+    {
+      "ordinal": 30,
+      "task_id": "GC-019",
+      "milestone_id": "GCH-055",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ac748c981e8e0408d4705fbebf00317b35516c58eadfba4e6cafb26fb9f2f35b",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc019_inbox_20261112",
+            "entry_sha256": "e6f15adea42dd6177ade80c0577709dfb253beb1b0da0d6da54f449cb0f63880"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Hilos, vínculo CRM revisado, asignación, borradores/confirmaciones, respuestas de texto y derivación propios verificados localmente. Firma nativa Meta y lecturas acotadas Gmail/YouTube implementadas con transporte simulado. Faltan puente/cuentas/permisos/webhooks/recibos auténticos y cualificación de APIs; lotes/no-texto, backfill y respuestas anidadas quedan explícitamente fuera del incremento acotado. TikTok sin API cualificada se deriva, sin fingir respuesta.",
+      "external_requirements": [
+        "Permisos/webhooks y alcance de recepción/respuesta de cada proveedor."
+      ]
+    },
+    {
+      "ordinal": 31,
+      "task_id": "GC-019",
+      "milestone_id": "GCH-056",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ac748c981e8e0408d4705fbebf00317b35516c58eadfba4e6cafb26fb9f2f35b",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc019_inbox_20261112",
+            "entry_sha256": "e6f15adea42dd6177ade80c0577709dfb253beb1b0da0d6da54f449cb0f63880"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Hilos, vínculo CRM revisado, asignación, borradores/confirmaciones, respuestas de texto y derivación propios verificados localmente. Firma nativa Meta y lecturas acotadas Gmail/YouTube implementadas con transporte simulado. Faltan puente/cuentas/permisos/webhooks/recibos auténticos y cualificación de APIs; lotes/no-texto, backfill y respuestas anidadas quedan explícitamente fuera del incremento acotado. TikTok sin API cualificada se deriva, sin fingir respuesta.",
+      "external_requirements": [
+        "Permisos/webhooks y alcance de recepción/respuesta de cada proveedor."
+      ]
+    },
+    {
+      "ordinal": 32,
+      "task_id": "GC-021",
+      "milestone_id": "GCH-061",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ee0fd9c1b8c1d01b91745dc9e9b0beda48c8ce45b5ec44b46de2e101e40db9a1",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc021_commercial_army_20261112",
+            "entry_sha256": "650c9e2db6589655cfb684b7a2941a31204af8fdf4777b281e84e13b3495c3e2"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Cadena y adaptadores propios, ocho consultas de dominio reales, bloqueos explícitos para acciones que exigen su flujo autorizado, misiones persistentes, permisos actuales, evaluación de SOUP y motores PLAN_ONLY/STATUS_ONLY verificados localmente. Corregido falso COMPLETED_SUCCESS y rol administrativo implícito heredados. Pendientes configuración y evaluación real de modelos/motores, equipos objetivo, voz fluida separada y aceptación productiva; no se habilitan gastos ni acciones de dispositivo.",
+      "external_requirements": [
+        "Motores/modelos configurados, equipo objetivo y evaluación de calidad/privacidad."
+      ]
+    },
+    {
+      "ordinal": 33,
+      "task_id": "GC-021",
+      "milestone_id": "GCH-062",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "ee0fd9c1b8c1d01b91745dc9e9b0beda48c8ce45b5ec44b46de2e101e40db9a1",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc021_commercial_army_20261112",
+            "entry_sha256": "650c9e2db6589655cfb684b7a2941a31204af8fdf4777b281e84e13b3495c3e2"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Cadena y adaptadores propios, ocho consultas de dominio reales, bloqueos explícitos para acciones que exigen su flujo autorizado, misiones persistentes, permisos actuales, evaluación de SOUP y motores PLAN_ONLY/STATUS_ONLY verificados localmente. Corregido falso COMPLETED_SUCCESS y rol administrativo implícito heredados. Pendientes configuración y evaluación real de modelos/motores, equipos objetivo, voz fluida separada y aceptación productiva; no se habilitan gastos ni acciones de dispositivo.",
+      "external_requirements": [
+        "Motores/modelos configurados, equipo objetivo y evaluación de calidad/privacidad."
+      ]
+    },
+    {
+      "ordinal": 34,
+      "task_id": "GC-022",
+      "milestone_id": "GCH-064",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "a8771f2759de91149b95a0761955ff44d4fb12a53397a234a86042eeb9674260",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc022_commercial_analytics_20261112",
+            "entry_sha256": "7b981dc9f378f590b7f1b8de941d4f92eac53995136db8b13aeec21462b1f640"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Implementados y probados paneles propios, embudo actual, ingresos/reversiones del ledger, atribución declarada con captura/consentimiento, costes de cuentas configuradas, CAC de alcance limitado, escenario LTV con política revisada explícita y pronóstico temporal evaluado. No inventa ceros, costes ni series. Faltan fuentes/cuentas auténticas y series consentidas para cualificar proveedores y calibrar; revisión de supuestos/soportes, carga/concurrencia productiva y aceptación integral. Las proyecciones no garantizan rentabilidad y la atribución UTM no es causal.",
+      "external_requirements": [
+        "Series consentidas y datos auténticos de campañas/operación para calibración."
+      ]
+    },
+    {
+      "ordinal": 35,
+      "task_id": "GC-022",
+      "milestone_id": "GCH-065",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "a8771f2759de91149b95a0761955ff44d4fb12a53397a234a86042eeb9674260",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc022_commercial_analytics_20261112",
+            "entry_sha256": "7b981dc9f378f590b7f1b8de941d4f92eac53995136db8b13aeec21462b1f640"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Implementados y probados paneles propios, embudo actual, ingresos/reversiones del ledger, atribución declarada con captura/consentimiento, costes de cuentas configuradas, CAC de alcance limitado, escenario LTV con política revisada explícita y pronóstico temporal evaluado. No inventa ceros, costes ni series. Faltan fuentes/cuentas auténticas y series consentidas para cualificar proveedores y calibrar; revisión de supuestos/soportes, carga/concurrencia productiva y aceptación integral. Las proyecciones no garantizan rentabilidad y la atribución UTM no es causal.",
+      "external_requirements": [
+        "Series consentidas y datos auténticos de campañas/operación para calibración."
+      ]
+    },
+    {
+      "ordinal": 36,
+      "task_id": "GC-023",
+      "milestone_id": "GCH-067",
+      "stage": "F",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "c49b57d8810ece4090fd21a31e3acc6529ba4ccdbe0ad3713783ca61637b80cf",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc023_commercial_frontends_20261112",
+            "entry_sha256": "86ef6721d95b99199d6fa5d96c3a7aec6e7a5eac7bf659b9c9dea399bc43b567"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Nivelados los17 accesos de los tres clientes propios, región activa, carga/reintento, errores y vacíos, bloqueo combinado/paginación, sesión nativa y accesibilidad de teclado/foco/tamaño/paleta. Recorridos HTTP/Chromium reproducibles en páginas reales y320/390/1280px. Pendientes aceptación de usuarios/roles y dispositivos físicos, revisión completa de accesibilidad y cualificación de release/Next.js; los límites externos de cada proveedor y módulo no se cierran por paridad visual.",
+      "external_requirements": [
+        "Aceptación de usuarios/roles y dispositivos objetivo."
+      ]
+    },
+    {
+      "ordinal": 37,
+      "task_id": "GC-023",
+      "milestone_id": "GCH-068",
+      "stage": "T",
+      "declared_reference_verified": true,
+      "historical_evidence": [
+        {
+          "integrity_verified": true,
+          "mode": "HASHED_REPORT_AND_RAW_ARTIFACTS",
+          "source_digest": "c49b57d8810ece4090fd21a31e3acc6529ba4ccdbe0ad3713783ca61637b80cf",
+          "raw_logs_verified": true,
+          "independent_authenticity_verified": false,
+          "reference": {
+            "artifact": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json",
+            "entry": "followups.gc023_commercial_frontends_20261112",
+            "entry_sha256": "86ef6721d95b99199d6fa5d96c3a7aec6e7a5eac7bf659b9c9dea399bc43b567"
+          }
+        }
+      ],
+      "historical_artifacts_verified": true,
+      "current_related_regression_passed": true,
+      "functional_scope_independently_reaccepted": false,
+      "full_task_acceptance": false,
+      "development_pending": "Nivelados los17 accesos de los tres clientes propios, región activa, carga/reintento, errores y vacíos, bloqueo combinado/paginación, sesión nativa y accesibilidad de teclado/foco/tamaño/paleta. Recorridos HTTP/Chromium reproducibles en páginas reales y320/390/1280px. Pendientes aceptación de usuarios/roles y dispositivos físicos, revisión completa de accesibilidad y cualificación de release/Next.js; los límites externos de cada proveedor y módulo no se cierran por paridad visual.",
+      "external_requirements": [
+        "Aceptación de usuarios/roles y dispositivos objetivo."
+      ]
+    }
+  ],
+  "remaining_plan_steps": [
+    {
+      "step": 1,
+      "task_id": "GC-002",
+      "milestone_id": "GCH-004",
+      "stage": "F",
+      "title": "Administración de identidad y permisos",
+      "work": "Completar APIs y pantallas propias de permisos, consentimientos y vínculos de identidad; conservar los roles nativos y prohibir herencia de acceso a billetera.",
+      "deliverable_and_evidence": "CRUD autorizado en los tres sistemas, revocación efectiva y mapeos explícitos sin equiparar IDs.",
+      "responsible_role": "Backend, frontend y seguridad",
+      "task_dependencies": [
+        "GC-001"
+      ],
+      "original_acceptance": "Pruebas positivas y negativas empresa A/B; revocación efectiva; marketing no obtiene billetera por herencia de rol; contexto privado correcto en cada frontend.",
+      "external_requirements": [
+        "Usuarios y políticas de autorización revisados para aceptación final."
+      ],
+      "state": "COMPLETADO_FUNCIONAL_LOCAL",
+      "execution_started": true,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc002-paso1-20261112/summary.json",
+      "acceptance_complete": false
+    },
+    {
+      "step": 2,
+      "task_id": "GC-002",
+      "milestone_id": "GCH-005",
+      "stage": "T",
+      "title": "Pruebas de identidad y aislamiento",
+      "work": "Verificar empresa A/B, roles distintos, revocación, caducidad, reintento e intento de acceso financiero desde marketing.",
+      "deliverable_and_evidence": "Regresión reproducible de API y navegador; acceso permitido y rechazo entre empresas/roles comprobados.",
+      "responsible_role": "QA y seguridad",
+      "task_dependencies": [
+        "GC-001"
+      ],
+      "original_acceptance": "Pruebas positivas y negativas empresa A/B; revocación efectiva; marketing no obtiene billetera por herencia de rol; contexto privado correcto en cada frontend.",
+      "external_requirements": [
+        "Usuarios y políticas de autorización revisados para aceptación final."
+      ],
+      "state": "COMPLETADO_VERIFICACION_LOCAL",
+      "execution_started": true,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc002-paso2-20261112/summary.json",
+      "acceptance_complete": false
+    },
+    {
+      "step": 3,
+      "task_id": "GC-002",
+      "milestone_id": "GCH-006",
+      "stage": "A",
+      "title": "Aceptación de identidad",
+      "work": "Revisar usuarios, matriz de permisos, políticas y consentimientos con los administradores legítimos.",
+      "deliverable_and_evidence": "Aprobación trazable de políticas y usuarios; no se sustituye por cuentas sintéticas.",
+      "responsible_role": "Administrador titular y revisión de políticas",
+      "task_dependencies": [
+        "GC-001"
+      ],
+      "original_acceptance": "Pruebas positivas y negativas empresa A/B; revocación efectiva; marketing no obtiene billetera por herencia de rol; contexto privado correcto en cada frontend.",
+      "external_requirements": [
+        "Usuarios y políticas de autorización revisados para aceptación final."
+      ],
+      "state": "BLOCKED_EXTERNAL_ACCEPTANCE",
+      "execution_started": true,
+      "local_preparation_complete": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc002-paso3-20261113/summary.json"
+    },
+    {
+      "step": 4,
+      "task_id": "GC-003",
+      "milestone_id": "GCH-009",
+      "stage": "A",
+      "title": "Aceptación del CRM",
+      "work": "Validar alta, búsqueda, actualización, seguimiento, duplicados, conversión y baja con muestras autorizadas, después de GC-002.",
+      "deliverable_and_evidence": "Recorridos aceptados en SGA-CD, ERP y Analemática; consentimiento e historial conservados.",
+      "responsible_role": "Titulares autorizados, QA y administrador",
+      "task_dependencies": [
+        "GC-002"
+      ],
+      "original_acceptance": "Crear, buscar, actualizar y seguir un contacto en los tres sistemas sin duplicar ni mezclar empresas; baja/consentimiento conservados.",
+      "external_requirements": [
+        "Muestras de clientes consentidas para aceptación de uso."
+      ],
+      "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+      "execution_started": true,
+      "local_preparation_complete": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc003-paso4-20261113/summary.json"
+    },
+    {
+      "step": 5,
+      "task_id": "GC-004",
+      "milestone_id": "GCH-012",
+      "stage": "A",
+      "title": "Aceptación de oportunidades",
+      "work": "Validar embudo, responsables, transiciones e historial; evaluar scoring con datos consentidos y mantenerlo no calibrado mientras falte evaluación.",
+      "deliverable_and_evidence": "Casos reales revisados y evaluación documentada; ganado no acredita cobro.",
+      "responsible_role": "Responsable comercial y revisión de datos",
+      "task_dependencies": [
+        "GC-003"
+      ],
+      "original_acceptance": "Transiciones autorizadas e historia íntegra; un cambio a ganado no acredita cobro; scoring identificado como no calibrado mientras no haya evaluación.",
+      "external_requirements": [
+        "Dataset consentido y evaluación para scoring predictivo."
+      ],
+      "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+      "execution_started": true,
+      "local_regression_verified": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc004-paso5-20261113/summary.json"
+    },
+    {
+      "step": 6,
+      "task_id": "GC-005",
+      "milestone_id": "GCH-015",
+      "stage": "A",
+      "title": "Aceptación de catálogo y precios",
+      "work": "Revisar tarifas, descuentos, impuestos y condiciones contra fuentes legítimas.",
+      "deliverable_and_evidence": "Importes exactos del servidor, permisos de descuento y revisión tributaria documentada.",
+      "responsible_role": "Administrador comercial y revisor tributario",
+      "task_dependencies": [
+        "GC-002"
+      ],
+      "original_acceptance": "Precio y total provienen del servidor; descuento fuera de permiso y precio manipulado rechazados; no usar Float para dinero.",
+      "external_requirements": [
+        "Precios/condiciones legítimos y revisión tributaria."
+      ],
+      "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+      "execution_started": true,
+      "local_regression_verified": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc005-paso6-20261113/summary.json"
+    },
+    {
+      "step": 7,
+      "task_id": "GC-006",
+      "milestone_id": "GCH-018",
+      "stage": "A",
+      "title": "Cierre de cotizaciones",
+      "work": "Subsanar copia duplicada, respuestas tardías y carga inicial; validar versiones, vigencia, enlaces y aceptación del destinatario.",
+      "deliverable_and_evidence": "Una acción por clic, reintento idempotente y condiciones aprobadas; aceptar no cobra ni reserva definitivamente.",
+      "responsible_role": "Frontend, QA y administrador comercial",
+      "task_dependencies": [
+        "GC-004",
+        "GC-005"
+      ],
+      "original_acceptance": "Cotización por empresa verificable, sin cobro ni reserva definitiva implícitos; aceptación registra versión y reintento no duplica.",
+      "external_requirements": [
+        "Condiciones comerciales aprobadas por cada empresa."
+      ],
+      "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+      "execution_started": true,
+      "local_regression_verified": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc006-paso7-20261113/summary.json"
+    },
+    {
+      "step": 8,
+      "task_id": "GC-007",
+      "milestone_id": "GCH-021",
+      "stage": "A",
+      "title": "Cierre de venta, operación y ledger",
+      "work": "Subsanar inicialización y respuestas tardías de Ventas; revisar precondiciones, cupos, costos, asiento y recuperación.",
+      "deliverable_and_evidence": "Venta/asiento/cupo sin duplicados, soportes y revisión contable/laboral; factura y pago diferenciados.",
+      "responsible_role": "Backend, frontend y revisión contable/laboral",
+      "task_dependencies": [
+        "GC-006"
+      ],
+      "original_acceptance": "No consumar venta sin reglas/precondiciones; no duplicar asiento ni cupo; reintentos y fallos de proveedor recuperables; borrador/venta/factura diferenciados.",
+      "external_requirements": [
+        "Revisión contable/laboral según actividad; DIAN y custodia reales para aceptación fiscal/documental."
+      ],
+      "state": "BLOCKED_DEPENDENCY_AND_EXTERNAL_ACCEPTANCE",
+      "execution_started": true,
+      "local_regression_verified": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc007-paso8-20261113/summary.json"
+    },
+    {
+      "step": 9,
+      "task_id": "GC-008",
+      "milestone_id": "GCH-022",
+      "stage": "F",
+      "title": "Confirmación auténtica Bold",
+      "work": "Completar verificador de acuses según contrato oficial, consulta de estado, resultados inciertos y conciliación con asiento.",
+      "deliverable_and_evidence": "Pago enlazado a venta/importe/empresa, sin confirmar por retorno del navegador ni hash declarado.",
+      "responsible_role": "Backend de pagos y seguridad",
+      "task_dependencies": [
+        "GC-007"
+      ],
+      "original_acceptance": "Un hash declarado o retorno de navegador no confirma dinero; webhook/consulta auténticos se vinculan al pago; reintento no duplica cobro/asiento.",
+      "external_requirements": [
+        "Acceso Bold de pruebas y contrato/firmas/acuses legítimos por canal seguro."
+      ],
+      "state": "BLOCKED_PROVIDER_CONTRACT_AND_CONFIGURATION",
+      "execution_started": true,
+      "functional_scope_complete": false,
+      "local_regression_verified": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc008-paso9-20261113/summary.json"
+    },
+    {
+      "step": 10,
+      "task_id": "GC-008",
+      "milestone_id": "GCH-023",
+      "stage": "T",
+      "title": "Regresión Bold",
+      "work": "Probar firmas inválidas, repetición de eventos, orden invertido, importes distintos, timeouts, consulta y recuperación idempotente.",
+      "deliverable_and_evidence": "Pruebas automatizadas de los dos backends/puente y clientes; contrato auténtico y sandbox cuando corresponda.",
+      "responsible_role": "QA, backend y seguridad",
+      "task_dependencies": [
+        "GC-007"
+      ],
+      "original_acceptance": "Un hash declarado o retorno de navegador no confirma dinero; webhook/consulta auténticos se vinculan al pago; reintento no duplica cobro/asiento.",
+      "external_requirements": [
+        "Acceso Bold de pruebas y contrato/firmas/acuses legítimos por canal seguro."
+      ],
+      "state": "BLOCKED_FUNCTIONAL_PREREQUISITE",
+      "execution_started": true,
+      "tests_complete": false,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc008-paso10-20261113/summary.json"
+    },
+    {
+      "step": 11,
+      "task_id": "GC-008",
+      "milestone_id": "GCH-024",
+      "stage": "A",
+      "title": "Aceptación Bold",
+      "work": "Validar el ciclo con comercio de pruebas autorizado, acuses auténticos y conciliación; configurar credenciales por canal seguro.",
+      "deliverable_and_evidence": "Evidencia del proveedor y asiento correcto; habilitación productiva y gasto requieren su autorización propia.",
+      "responsible_role": "Administrador del comercio y revisión financiera",
+      "task_dependencies": [
+        "GC-007"
+      ],
+      "original_acceptance": "Un hash declarado o retorno de navegador no confirma dinero; webhook/consulta auténticos se vinculan al pago; reintento no duplica cobro/asiento.",
+      "external_requirements": [
+        "Acceso Bold de pruebas y contrato/firmas/acuses legítimos por canal seguro."
+      ],
+      "state": "BLOCKED_FUNCTIONAL_AND_PROVIDER_ACCEPTANCE",
+      "execution_started": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/entregas/evidencias/recuperacion-originales-20261110/verificacion.json#followups.gc008_step11_provider_acceptance_blocker_20261113"
+    },
+    {
+      "step": 12,
+      "task_id": "GC-009",
+      "milestone_id": "GCH-025",
+      "stage": "F",
+      "title": "Posventa y devolución completas",
+      "work": "Completar vínculo contacto/venta/reserva/destinatario, cancelación, bandas de retención por anticipación, firma y fidelización; impedir seguimiento concurrente duplicado.",
+      "deliverable_and_evidence": "Reglas versionadas, identidad/vínculos comprobables y devolución financiada sin inventar saldo.",
+      "responsible_role": "Backend, frontend y seguridad",
+      "task_dependencies": [
+        "GC-007",
+        "GC-008"
+      ],
+      "original_acceptance": "Retención correcta y topes; consentimiento, fondos y autorizaciones; saldo/movimiento/asiento atómicos; billetera personal accesible sin afiliación turística.",
+      "external_requirements": [
+        "Políticas aprobadas y validación del proveedor para devolución bancaria real."
+      ],
+      "state": "PARTIAL_IMPLEMENTATION_VERIFIED",
+      "execution_started": true,
+      "functional_scope_complete": false,
+      "local_regression_verified": true,
+      "acceptance_complete": false,
+      "evidence": "ANALISIS/gestion-comercial/evidencias/gc009-paso12-20261113/summary.json"
+    },
+    {
+      "step": 13,
+      "task_id": "GC-009",
+      "milestone_id": "GCH-026",
+      "stage": "T",
+      "title": "Regresión de devoluciones",
+      "work": "Probar topes acumulados, límites de fechas, doble solicitud, consentimiento, fondos, autorizaciones y rollback de saldo/movimiento/asiento.",
+      "deliverable_and_evidence": "Atomicidad e idempotencia; ningún usuario necesita pertenecer al turismo para usar su billetera personal.",
+      "responsible_role": "QA y backend financiero",
+      "task_dependencies": [
+        "GC-007",
+        "GC-008"
+      ],
+      "original_acceptance": "Retención correcta y topes; consentimiento, fondos y autorizaciones; saldo/movimiento/asiento atómicos; billetera personal accesible sin afiliación turística.",
+      "external_requirements": [
+        "Políticas aprobadas y validación del proveedor para devolución bancaria real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 14,
+      "task_id": "GC-009",
+      "milestone_id": "GCH-027",
+      "stage": "A",
+      "title": "Aceptación de posventa",
+      "work": "Revisar políticas legítimas y validar los recorridos de devolución interna y bancaria que correspondan al alcance.",
+      "deliverable_and_evidence": "Política aprobada, beneficiario correcto y evidencia auténtica para movimiento bancario.",
+      "responsible_role": "Administrador, titulares y proveedor financiero",
+      "task_dependencies": [
+        "GC-007",
+        "GC-008"
+      ],
+      "original_acceptance": "Retención correcta y topes; consentimiento, fondos y autorizaciones; saldo/movimiento/asiento atómicos; billetera personal accesible sin afiliación turística.",
+      "external_requirements": [
+        "Políticas aprobadas y validación del proveedor para devolución bancaria real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 15,
+      "task_id": "GC-010",
+      "milestone_id": "GCH-030",
+      "stage": "A",
+      "title": "Aceptación del constructor de landing",
+      "work": "Revisar marca, contenido, publicación, retirada y restauración de versión por titular; validar dominio propio si se utiliza.",
+      "deliverable_and_evidence": "Aislamiento entre empresas y autorización de contenido/dominio/DNS/TLS cuando aplique.",
+      "responsible_role": "Titular de la página y QA",
+      "task_dependencies": [
+        "GC-002",
+        "GC-005"
+      ],
+      "original_acceptance": "Cada empresa crea y publica solo su página, restaura una versión y conserva su marca; otra empresa no modifica ni publica; ninguna carpeta comercial se fusiona.",
+      "external_requirements": [
+        "Dominio/DNS/TLS y autorización del titular si se usa dominio propio."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 16,
+      "task_id": "GC-011",
+      "milestone_id": "GCH-033",
+      "stage": "A",
+      "title": "Aceptación de captación y SEO",
+      "work": "Validar formularios con usuarios autorizados, atribución de origen, consentimiento, baja, antispam y retención.",
+      "deliverable_and_evidence": "Un solo prospecto por envío/reintento con empresa/página correctas; no confundir anuncio con RNT.",
+      "responsible_role": "Administrador comercial y revisión de datos",
+      "task_dependencies": [
+        "GC-003",
+        "GC-010"
+      ],
+      "original_acceptance": "Formulario real crea un solo prospecto con origen/página/empresa correctos; baja y consentimiento trazables; anuncio comercial no equivale a registro institucional/RNT.",
+      "external_requirements": [
+        "Contenido autorizado y reglas de publicación de la empresa."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 17,
+      "task_id": "GC-012",
+      "milestone_id": "GCH-036",
+      "stage": "A",
+      "title": "Aceptación de biblioteca multimedia",
+      "work": "Revisar licencias, marca, almacenamiento privado, originales, versiones, retención y restauración.",
+      "deliverable_and_evidence": "Activos legítimos y destino autorizado; ninguna empresa obtiene archivos privados de otra.",
+      "responsible_role": "Titular de derechos, seguridad y operación",
+      "task_dependencies": [
+        "GC-002"
+      ],
+      "original_acceptance": "Una empresa no descarga ni publica archivos de otra; original preservado; marca correcta; secretos y soportes privados no se exponen en landing/CDN.",
+      "external_requirements": [
+        "Derechos/licencias de activos y destino de almacenamiento autorizado."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 18,
+      "task_id": "GC-013",
+      "milestone_id": "GCH-037",
+      "stage": "F",
+      "title": "Generación de texto e imagen completa",
+      "work": "Completar arranque independiente del trabajador, configuración de modelos y recorrido navegador-HTTP-trabajador; corregir los tipos ERP que lo bloqueen.",
+      "deliverable_and_evidence": "Resultados persistentes o error explícito, cuotas/coste/origen trazables y sin éxito simulado.",
+      "responsible_role": "Backend IA, frontend y operación",
+      "task_dependencies": [
+        "GC-012"
+      ],
+      "original_acceptance": "Texto/imagen reales o error explícito; origen/modelo/derechos trazables; no exponer API keys al navegador ni sustituir falta de proveedor por dato ficticio.",
+      "external_requirements": [
+        "Modelo local/hardware o proveedor aprobado; presupuesto y datos de evaluación."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 19,
+      "task_id": "GC-013",
+      "milestone_id": "GCH-038",
+      "stage": "T",
+      "title": "Pruebas de generación",
+      "work": "Probar cola, permisos, cancelación, reintento, pérdida de trabajador, resultados inválidos y recuperación sin duplicación.",
+      "deliverable_and_evidence": "Regresión reproducible en los tres sistemas; transporte controlado identificado como laboratorio.",
+      "responsible_role": "QA e IA",
+      "task_dependencies": [
+        "GC-012"
+      ],
+      "original_acceptance": "Texto/imagen reales o error explícito; origen/modelo/derechos trazables; no exponer API keys al navegador ni sustituir falta de proveedor por dato ficticio.",
+      "external_requirements": [
+        "Modelo local/hardware o proveedor aprobado; presupuesto y datos de evaluación."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 20,
+      "task_id": "GC-013",
+      "milestone_id": "GCH-039",
+      "stage": "A",
+      "title": "Aceptación de generación",
+      "work": "Validar inferencia auténtica de texto con Ollama y un motor de imágenes disponible, además de calidad, licencias, privacidad y coste.",
+      "deliverable_and_evidence": "Modelo/hardware o proveedor aprobado y resultados reales revisados; catálogo no equivale a disponibilidad.",
+      "responsible_role": "Responsable de modelos y revisor de contenido",
+      "task_dependencies": [
+        "GC-012"
+      ],
+      "original_acceptance": "Texto/imagen reales o error explícito; origen/modelo/derechos trazables; no exponer API keys al navegador ni sustituir falta de proveedor por dato ficticio.",
+      "external_requirements": [
+        "Modelo local/hardware o proveedor aprobado; presupuesto y datos de evaluación."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 21,
+      "task_id": "GC-014",
+      "milestone_id": "GCH-040",
+      "stage": "F",
+      "title": "Vídeos, Reels, voz y subtítulos completos",
+      "work": "Completar trabajador independiente, adaptador generativo de vídeo y recorrido integral; conservar composición/render como capacidad diferenciada.",
+      "deliverable_and_evidence": "MP4 revisable, subtítulos temporizados, voz autorizada y estados de trabajo recuperables.",
+      "responsible_role": "División creativa bajo Jarvi, backend y frontend",
+      "task_dependencies": [
+        "GC-012",
+        "GC-013"
+      ],
+      "original_acceptance": "MP4 reproducible y revisable; composición identificada como tal; voz autorizada; SOUP conserva optimización de agentes y no se convierte en productor.",
+      "external_requirements": [
+        "GPU/modelos/proveedores y derechos de voz/audio para generación real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 22,
+      "task_id": "GC-014",
+      "milestone_id": "GCH-041",
+      "stage": "T",
+      "title": "Pruebas de producción multimedia",
+      "work": "Verificar reproducción, dimensiones, audio/subtítulos, permisos, límites, cuotas, cancelación y caída del trabajador.",
+      "deliverable_and_evidence": "Artefactos reales y regresión de navegador-HTTP-trabajador en el entorno de prueba.",
+      "responsible_role": "QA multimedia y operación",
+      "task_dependencies": [
+        "GC-012",
+        "GC-013"
+      ],
+      "original_acceptance": "MP4 reproducible y revisable; composición identificada como tal; voz autorizada; SOUP conserva optimización de agentes y no se convierte en productor.",
+      "external_requirements": [
+        "GPU/modelos/proveedores y derechos de voz/audio para generación real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 23,
+      "task_id": "GC-014",
+      "milestone_id": "GCH-042",
+      "stage": "A",
+      "title": "Aceptación multimedia",
+      "work": "Validar modelos/hardware, contenido y derechos de voz/audio con el responsable autorizado.",
+      "deliverable_and_evidence": "Resultados aceptados y composición identificada; SOUP mantiene optimización de agentes.",
+      "responsible_role": "Titular de derechos y responsable creativo",
+      "task_dependencies": [
+        "GC-012",
+        "GC-013"
+      ],
+      "original_acceptance": "MP4 reproducible y revisable; composición identificada como tal; voz autorizada; SOUP conserva optimización de agentes y no se convierte en productor.",
+      "external_requirements": [
+        "GPU/modelos/proveedores y derechos de voz/audio para generación real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 24,
+      "task_id": "GC-015",
+      "milestone_id": "GCH-045",
+      "stage": "A",
+      "title": "Aceptación de tamaños y formatos",
+      "work": "Comprobar perfiles vigentes por red, calidad, dimensiones, límites y rendimiento en hardware objetivo.",
+      "deliverable_and_evidence": "Original intacto y perfiles aceptados; reescalar no se declara generación 4K/8K ni reencuadre neuronal.",
+      "responsible_role": "Responsable multimedia y QA",
+      "task_dependencies": [
+        "GC-012"
+      ],
+      "original_acceptance": "Se prueban dimensiones, calidad y límites reales; original intacto; no anunciar 4K/8K/inferencia/reencuadre neuronal por reescalar una fuente.",
+      "external_requirements": [
+        "Perfiles vigentes de cada red; hardware objetivo para rendimiento."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 25,
+      "task_id": "GC-016",
+      "milestone_id": "GCH-048",
+      "stage": "A",
+      "title": "Aceptación de correo masivo",
+      "work": "Validar remitente/dominio, proveedor/OAuth o relay autorizado, bajas, consentimientos, cuotas y recibos auténticos.",
+      "deliverable_and_evidence": "Guardar no envía; no duplicación; separar aceptado, enviado, entregado y abierto.",
+      "responsible_role": "Administrador del canal y revisión de consentimiento",
+      "task_dependencies": [
+        "GC-003",
+        "GC-012",
+        "GC-015"
+      ],
+      "original_acceptance": "Nunca enviar al guardar; baja bloquea pendiente; no duplicar por reintento; separar aceptado/enviado/entregado/abierto y no inventar aperturas.",
+      "external_requirements": [
+        "Remitente/dominio autorizado, proveedor/OAuth, cuotas y reputación de envío."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 26,
+      "task_id": "GC-017",
+      "milestone_id": "GCH-051",
+      "stage": "A",
+      "title": "Aceptación SMS/MMS/WhatsApp",
+      "work": "Validar por separado cada canal y proveedor, MMS en Colombia, plantillas WhatsApp, firmas, costes y destinatarios autorizados.",
+      "deliverable_and_evidence": "Solo se acredita la capacidad real; SMS no se presenta como envío de vídeo/imagen.",
+      "responsible_role": "Administrador de canales y proveedor autorizado",
+      "task_dependencies": [
+        "GC-003",
+        "GC-012",
+        "GC-015"
+      ],
+      "original_acceptance": "Probar cada capacidad soportada por su proveedor; video/imagen no se afirma enviado por SMS; alternativa por enlace/canal solo bajo política y autorización explícitas.",
+      "external_requirements": [
+        "Proveedor telefónico y soporte MMS en Colombia; cuenta/plantillas WhatsApp y destinatarios autorizados."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 27,
+      "task_id": "GC-018",
+      "milestone_id": "GCH-054",
+      "stage": "A",
+      "title": "Aceptación de publicación orgánica",
+      "work": "Validar cuentas propias, OAuth/permisos, formatos, visibilidad, calendario, estados inciertos y recibos por red.",
+      "deliverable_and_evidence": "Publicación auténtica autorizada y sin duplicados; borradores no se publican.",
+      "responsible_role": "Administrador de redes y QA",
+      "task_dependencies": [
+        "GC-012",
+        "GC-015"
+      ],
+      "original_acceptance": "No publicar un borrador; cuenta y activos propios; no duplicar envíos; mostrar estado remoto real sin inferir éxito de HTTP 200 genérico.",
+      "external_requirements": [
+        "OAuth, cuentas propias, aprobación de aplicaciones y permisos de publicación."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 28,
+      "task_id": "GC-019",
+      "milestone_id": "GCH-057",
+      "stage": "A",
+      "title": "Aceptación de bandeja omnicanal",
+      "work": "Validar recepción auténtica, firmas/webhooks, empresa/hilo/destinatario, asignación y respuesta autorizada.",
+      "deliverable_and_evidence": "Eventos y respuestas reales; limitaciones de Gmail/Meta/YouTube/TikTok visibles y derivación donde no haya capacidad.",
+      "responsible_role": "Administrador de canales y seguridad",
+      "task_dependencies": [
+        "GC-003",
+        "GC-016",
+        "GC-017",
+        "GC-018"
+      ],
+      "original_acceptance": "Evento auténtico llega a empresa/lead correctos; respuesta al hilo correcto; sin acceso cruzado ni responder por canal no autorizado; YouTube/TikTok según capacidad real de sus APIs.",
+      "external_requirements": [
+        "Permisos/webhooks y alcance de recepción/respuesta de cada proveedor."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 29,
+      "task_id": "GC-020",
+      "milestone_id": "GCH-058",
+      "stage": "F",
+      "title": "Ejecución supervisada de pauta",
+      "work": "Completar provisión de campañas/conjuntos/creativos, ejecución y recuperación con adaptadores o dispositivo real y control Open Duet/agent-desktop.",
+      "deliverable_and_evidence": "Límites por empresa, dos autorizaciones separadas y revisión de impacto; recibos/estado remoto y sin gasto por mera lectura.",
+      "responsible_role": "Jarvi, backend de canales y control supervisado",
+      "task_dependencies": [
+        "GC-012",
+        "GC-018"
+      ],
+      "original_acceptance": "Leer no concede gastar; presupuesto/cambio/publicación requieren aprobaciones y recibo; límites por empresa y resultados inciertos visibles.",
+      "external_requirements": [
+        "Cuentas Ads, permisos, facturación y autorización explícita antes de gasto real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 30,
+      "task_id": "GC-020",
+      "milestone_id": "GCH-059",
+      "stage": "T",
+      "title": "Pruebas de pauta",
+      "work": "Verificar presupuesto agregado, reservas concurrentes, cambio de cuenta, permisos, rechazo, duplicación, timeout y recuperación remota.",
+      "deliverable_and_evidence": "Regresión de creación/modificación y resultados inciertos sin autoaprobar ni gastar en laboratorio.",
+      "responsible_role": "QA, seguridad y backend de canales",
+      "task_dependencies": [
+        "GC-012",
+        "GC-018"
+      ],
+      "original_acceptance": "Leer no concede gastar; presupuesto/cambio/publicación requieren aprobaciones y recibo; límites por empresa y resultados inciertos visibles.",
+      "external_requirements": [
+        "Cuentas Ads, permisos, facturación y autorización explícita antes de gasto real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 31,
+      "task_id": "GC-020",
+      "milestone_id": "GCH-060",
+      "stage": "A",
+      "title": "Aceptación de pauta",
+      "work": "Validar cuentas Ads, permisos, facturación, objetivos y recibos auténticos bajo autorización explícita de cada acción real.",
+      "deliverable_and_evidence": "Gasto/cambio/publicación aceptados por el administrador; transporte simulado no acredita ejecución.",
+      "responsible_role": "Administrador de cuentas y responsable financiero",
+      "task_dependencies": [
+        "GC-012",
+        "GC-018"
+      ],
+      "original_acceptance": "Leer no concede gastar; presupuesto/cambio/publicación requieren aprobaciones y recibo; límites por empresa y resultados inciertos visibles.",
+      "external_requirements": [
+        "Cuentas Ads, permisos, facturación y autorización explícita antes de gasto real."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 32,
+      "task_id": "GC-021",
+      "milestone_id": "GCH-063",
+      "stage": "A",
+      "title": "Aceptación de agentes y motores",
+      "work": "Cualificar motores/modelos y herramientas en equipos objetivo, cadena de mando, privacidad y agente de voz fluida separado.",
+      "deliverable_and_evidence": "Jarvi operativo, Neko conversacional y SOUP optimizador; resultado real o bloqueo, sin autoaprobación ni firma por voz.",
+      "responsible_role": "Arquitectura, administrador y evaluación de modelos",
+      "task_dependencies": [
+        "GC-001",
+        "GC-002"
+      ],
+      "original_acceptance": "Un agente devuelve resultado/evidencia real o bloqueo; sin autoaprobación, SQL/shell libre, gasto o cambio de política por SOUP; voz fluida separada y sin valor de firma.",
+      "external_requirements": [
+        "Motores/modelos configurados, equipo objetivo y evaluación de calidad/privacidad."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 33,
+      "task_id": "GC-022",
+      "milestone_id": "GCH-066",
+      "stage": "A",
+      "title": "Aceptación de indicadores y predicción",
+      "work": "Validar fuentes de CRM/ledger/campañas, series consentidas, atribución, CAC/LTV, supuestos y evaluación temporal.",
+      "deliverable_and_evidence": "Métricas trazables, sin ceros ficticios ni rentabilidad garantizada; previsión calibrada con datos autorizados.",
+      "responsible_role": "Responsable comercial/financiero y revisión de datos",
+      "task_dependencies": [
+        "GC-004",
+        "GC-007",
+        "GC-016",
+        "GC-018",
+        "GC-020"
+      ],
+      "original_acceptance": "Ceros y sin datos correctos; borrador no cuenta como venta; métricas trazables al CRM/ledger/proveedor; pronóstico con supuestos y evaluación.",
+      "external_requirements": [
+        "Series consentidas y datos auténticos de campañas/operación para calibración."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 34,
+      "task_id": "GC-023",
+      "milestone_id": "GCH-069",
+      "stage": "A",
+      "title": "Aceptación de los tres frontends",
+      "work": "Resolver fallos de ciclo de vida restantes y validar recorridos, roles propios, accesibilidad, dispositivos y preparación de release.",
+      "deliverable_and_evidence": "Mismos casos desde cada interfaz a su backend, paleta azul/blanco preservada y sin fusionar carpetas.",
+      "responsible_role": "Usuarios autorizados, frontend y QA",
+      "task_dependencies": [
+        "GC-003",
+        "GC-006",
+        "GC-010",
+        "GC-016",
+        "GC-018",
+        "GC-019",
+        "GC-021"
+      ],
+      "original_acceptance": "Mismos casos de aceptación desde cada frontend a su backend propio; ninguna pantalla funcional se reemplaza sin justificación ni se fusionan carpetas.",
+      "external_requirements": [
+        "Aceptación de usuarios/roles y dispositivos objetivo."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 35,
+      "task_id": "GC-024",
+      "milestone_id": "GCH-070",
+      "stage": "F",
+      "title": "Operación y calidad completas",
+      "work": "Corregir compilación y contratos API/DTO, completar instalación repetible, sincronización offline por dominio, observabilidad, respaldo y reversión integrales.",
+      "deliverable_and_evidence": "Arranque verificable, borradores cifrados/conflictos visibles, referencias/medios/custodia recuperables; sin liquidar dinero offline.",
+      "responsible_role": "Arquitectura, backend, frontend y operación",
+      "task_dependencies": [
+        "GC-001",
+        "GC-002",
+        "GC-003",
+        "GC-004",
+        "GC-005",
+        "GC-006",
+        "GC-007",
+        "GC-008",
+        "GC-009",
+        "GC-010",
+        "GC-011",
+        "GC-012",
+        "GC-013",
+        "GC-014",
+        "GC-015",
+        "GC-016",
+        "GC-017",
+        "GC-018",
+        "GC-019",
+        "GC-020",
+        "GC-021",
+        "GC-022",
+        "GC-023"
+      ],
+      "original_acceptance": "72 hitos con evidencia; instalación repetible; cero cierres ficticios; objetivos 1,2 s/3 s/60 s y consistencia solo aceptados con mediciones/hardware/proveedores reales.",
+      "external_requirements": [
+        "Infraestructura objetivo, proveedores, restauración real y aceptación profesional/productiva."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 36,
+      "task_id": "GC-024",
+      "milestone_id": "GCH-071",
+      "stage": "T",
+      "title": "Pruebas finales de seguridad y operación",
+      "work": "Ejecutar regresión integral sobre fuentes estables, instalación limpia, concurrencia, carga, fallo de red, restauración y reversión.",
+      "deliverable_and_evidence": "Logs/hashes, mediciones reproducibles y pruebas de objetivos1,2s/3s/60s con alcance y hardware declarados.",
+      "responsible_role": "QA, seguridad y operación",
+      "task_dependencies": [
+        "GC-001",
+        "GC-002",
+        "GC-003",
+        "GC-004",
+        "GC-005",
+        "GC-006",
+        "GC-007",
+        "GC-008",
+        "GC-009",
+        "GC-010",
+        "GC-011",
+        "GC-012",
+        "GC-013",
+        "GC-014",
+        "GC-015",
+        "GC-016",
+        "GC-017",
+        "GC-018",
+        "GC-019",
+        "GC-020",
+        "GC-021",
+        "GC-022",
+        "GC-023"
+      ],
+      "original_acceptance": "72 hitos con evidencia; instalación repetible; cero cierres ficticios; objetivos 1,2 s/3 s/60 s y consistencia solo aceptados con mediciones/hardware/proveedores reales.",
+      "external_requirements": [
+        "Infraestructura objetivo, proveedores, restauración real y aceptación profesional/productiva."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    },
+    {
+      "step": 37,
+      "task_id": "GC-024",
+      "milestone_id": "GCH-072",
+      "stage": "A",
+      "title": "Aceptación integral del motor comercial",
+      "work": "Cerrar dependencias y requisitos externos, verificar los72 hitos, restauración completa y objetivos medidos en infraestructura objetivo.",
+      "deliverable_and_evidence": "Acta/evidencia revisable de aceptación; despliegue productivo y acciones sobre cuentas reales con su autorización correspondiente.",
+      "responsible_role": "Administradores titulares, revisores y operación",
+      "task_dependencies": [
+        "GC-001",
+        "GC-002",
+        "GC-003",
+        "GC-004",
+        "GC-005",
+        "GC-006",
+        "GC-007",
+        "GC-008",
+        "GC-009",
+        "GC-010",
+        "GC-011",
+        "GC-012",
+        "GC-013",
+        "GC-014",
+        "GC-015",
+        "GC-016",
+        "GC-017",
+        "GC-018",
+        "GC-019",
+        "GC-020",
+        "GC-021",
+        "GC-022",
+        "GC-023"
+      ],
+      "original_acceptance": "72 hitos con evidencia; instalación repetible; cero cierres ficticios; objetivos 1,2 s/3 s/60 s y consistencia solo aceptados con mediciones/hardware/proveedores reales.",
+      "external_requirements": [
+        "Infraestructura objetivo, proveedores, restauración real y aceptación profesional/productiva."
+      ],
+      "state": "PENDIENTE",
+      "execution_started": false
+    }
+  ],
+  "quality": {
+    "provided": true,
+    "current_regression_qualified": true,
+    "historical_artifact_failures": [],
+    "current_sources_match": true,
+    "source_stable": true,
+    "local_checks_complete": true,
+    "missing_mapped_tests": [],
+    "non_passed": []
+  },
+  "new_progress_credit": 0,
+  "production_enabled": false,
+  "limitations": [
+    "Test mapping identifies related executions, not complete acceptance or all business cases.",
+    "Source files and passing laboratory tests never establish provider, hardware or professional acceptance.",
+    "Historical state remains historical; current source compatibility is reported separately."
+  ]
+}

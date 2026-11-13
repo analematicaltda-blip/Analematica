@@ -1,0 +1,11 @@
+test_authority_context_invalid_payloads_and_private_responses (__main__.AccessAdminHTTPChecks.test_authority_context_invalid_payloads_and_private_responses) ... ok
+test_consent_revocation_changes_source_crm (__main__.AccessAdminHTTPChecks.test_consent_revocation_changes_source_crm) ... ok
+test_current_contact_consent_is_required_and_revocable (__main__.AccessAdminHTTPChecks.test_current_contact_consent_is_required_and_revocable) ... ok
+test_delegation_is_live_scoped_and_never_delegates_wallet (__main__.AccessAdminHTTPChecks.test_delegation_is_live_scoped_and_never_delegates_wallet) ... ok
+test_explicit_alias_replay_revoke_and_receipt (__main__.AccessAdminHTTPChecks.test_explicit_alias_replay_revoke_and_receipt) ... ok
+test_malformed_json_and_provider_context_are_bounded (__main__.AccessAdminHTTPChecks.test_malformed_json_and_provider_context_are_bounded) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 22.078s
+
+OK

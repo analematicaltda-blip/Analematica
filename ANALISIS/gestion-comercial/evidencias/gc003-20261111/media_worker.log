@@ -1,0 +1,27 @@
+test_facebook_video_upload_and_processing_status (test_campaign_adapters.AdapterTests.test_facebook_video_upload_and_processing_status) ... ok
+test_gmail_has_individual_to_and_video_mime_attachment (test_campaign_adapters.AdapterTests.test_gmail_has_individual_to_and_video_mime_attachment) ... ok
+test_instagram_create_poll_publish_uses_public_url_and_header_auth (test_campaign_adapters.AdapterTests.test_instagram_create_poll_publish_uses_public_url_and_header_auth) ... ok
+test_node_journal_prevents_duplicate_phase_and_never_saves_credentials (test_campaign_adapters.AdapterTests.test_node_journal_prevents_duplicate_phase_and_never_saves_credentials) ... ok
+test_oauth1_matches_published_reference_vector (test_campaign_adapters.AdapterTests.test_oauth1_matches_published_reference_vector) ... ok
+test_preview_node_rejects_delivery_even_with_valid_operator_auth (test_campaign_adapters.AdapterTests.test_preview_node_rejects_delivery_even_with_valid_operator_auth) ... ok
+test_rate_limits_wait_but_uncertain_network_failures_do_not_auto_resend (test_campaign_adapters.AdapterTests.test_rate_limits_wait_but_uncertain_network_failures_do_not_auto_resend) ... ok
+test_real_adaptations_preserve_original_and_match_each_frame (test_campaign_adapters.AdapterTests.test_real_adaptations_preserve_original_and_match_each_frame) ... ok
+test_tiktok_queries_creator_privacy_then_uploads_and_polls (test_campaign_adapters.AdapterTests.test_tiktok_queries_creator_privacy_then_uploads_and_polls) ... ok
+test_tiktok_refuses_unapproved_privacy_and_foreign_upload_host (test_campaign_adapters.AdapterTests.test_tiktok_refuses_unapproved_privacy_and_foreign_upload_host) ... ok
+test_whatsapp_uses_approved_video_template_and_single_recipient (test_campaign_adapters.AdapterTests.test_whatsapp_uses_approved_video_template_and_single_recipient) ... ok
+test_x_chunked_upload_is_finalized_before_tweet (test_campaign_adapters.AdapterTests.test_x_chunked_upload_is_finalized_before_tweet) ... ok
+test_auth_health_and_secret_redaction (test_node6.NodeTests.test_auth_health_and_secret_redaction) ... ok
+test_colibri_uses_the_advertised_model (test_node6.NodeTests.test_colibri_uses_the_advertised_model) ... ok
+test_company_upload_uses_company_credentials_and_private_only (test_node6.NodeTests.test_company_upload_uses_company_credentials_and_private_only) ... ok
+test_gemini_text_image_and_errors (test_node6.NodeTests.test_gemini_text_image_and_errors) ... ok
+test_mcp_and_disabled_colibri (test_node6.NodeTests.test_mcp_and_disabled_colibri) ... ok
+test_provider_secret_is_persisted_privately_and_not_reflected (test_node6.NodeTests.test_provider_secret_is_persisted_privately_and_not_reflected) ... ok
+test_real_reel_and_draft (test_node6.NodeTests.test_real_reel_and_draft) ... ok
+test_youtube_is_private_and_duplicate_prevented (test_node6.NodeTests.test_youtube_is_private_and_duplicate_prevented) ... ok
+test_youtube_rejects_foreign_upload_location (test_node6.NodeTests.test_youtube_rejects_foreign_upload_location) ... ok
+test_preserve_demo_and_credentials (test_setup.SetupTests.test_preserve_demo_and_credentials) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 5.138s
+
+OK

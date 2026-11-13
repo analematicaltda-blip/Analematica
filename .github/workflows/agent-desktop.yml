@@ -16,5 +16,5 @@ jobs:
           node-version: '24'
       - run: node DESKTOP/agent-desktop-sgacd/verify-source.mjs
       - run: node --test DESKTOP/agent-desktop-sgacd/tests/runtime.test.mjs
-      - run: node --test tests/npm/*.test.js tests/release/*.test.js
+      - run: node --test BACKEND/tests/npm/*.test.js BACKEND/tests/release/*.test.js
         working-directory: DESKTOP/agent-desktop

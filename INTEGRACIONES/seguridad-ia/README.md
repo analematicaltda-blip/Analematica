@@ -4,8 +4,8 @@ Se incorporan archivos reales de ambos proyectos, sin submódulos ni dependencia
 
 | Copia | Revisión fijada | Licencia |
 |---|---|---|
-| `SEGURIDAD/AiSOC` | `010a3981bfc791266d62aaa31531f05798531efd` | MIT; conservar copyright, licencia y avisos; respetar `TRADEMARK.md`. |
-| `llm/free-ai-apis` | `0c78ad5ccc6a2658e434e465c53fa2bea83605b7` | CC0-1.0, según su archivo LICENSE. |
+| `BACKEND/SEGURIDAD/AiSOC` | `010a3981bfc791266d62aaa31531f05798531efd` | MIT; conservar copyright, licencia y avisos; respetar `TRADEMARK.md`. |
+| `BACKEND/IA/llm/free-ai-apis` | `0c78ad5ccc6a2658e434e465c53fa2bea83605b7` | CC0-1.0, según su archivo LICENSE. |
 
 Los manifiestos `*-upstream.json` registran cada archivo, blob Git, modo y SHA-256. Las copias mantienen todos los archivos versionados, incluso documentación, tests, reglas y ruedas de dependencias presentes en AiSOC. No se instalaron esas ruedas: varias son para macOS y no corresponden a este host Linux. Las carpetas `.git` de origen no se copiaron. Copiar permite mantener nuestra distribución y adaptar el código bajo sus licencias; no transfiere autoría ni acceso a las API listadas.
 
@@ -62,22 +62,22 @@ El catálogo no reemplaza ni modifica silenciosamente `app/services/ai_router.py
 
 La documentación upstream indica para CORE unos **16 servicios, 8 GiB RAM y 20 GiB de disco libres**, más la descarga del modelo local. No iniciamos el stack: este entorno tiene menos de 1 GiB libre. La existencia de código no constituye protección activa y los números upstream no son mediciones realizadas en nuestros servidores.
 
-En un host de pruebas dedicado con capacidad suficiente, revisar primero `SEGURIDAD/AiSOC/AGENTS.md`, `README.md`, `SECURITY.md`, `.env.example` y la guía de instalación. Luego usar los comandos upstream (`make up`, `make doctor`, `make smoke`) con su aislamiento y secretos generados. No compartir el secreto de sesión, usuarios o bases transaccionales de SGA-CD con el SOC. No publicar bases, Kafka, Ollama o MCP sin una configuración de acceso revisada. El Compose upstream enlaza los puertos al loopback de forma predeterminada.
+En un host de pruebas dedicado con capacidad suficiente, revisar primero `BACKEND/SEGURIDAD/AiSOC/AGENTS.md`, `README.md`, `SECURITY.md`, `.env.example` y la guía de instalación. Luego usar los comandos upstream (`make up`, `make doctor`, `make smoke`) con su aislamiento y secretos generados. No compartir el secreto de sesión, usuarios o bases transaccionales de SGA-CD con el SOC. No publicar bases, Kafka, Ollama o MCP sin una configuración de acceso revisada. El Compose upstream enlaza los puertos al loopback de forma predeterminada.
 
 Antes de enviar una exportación, establecer el mapeo del tenant SGA-CD al tenant AiSOC y generar una credencial de ingestión específica de destino. El tenant receptor lo determina la credencial AiSOC, no el número incluido en nuestra firma. Una firma de origen válida no autoriza a enviar a cualquier tenant. No se suministró una credencial ni se habilitó un emisor automático.
 
 ## Verificación y uso local
 
 ```bash
-python INTEGRACIONES/seguridad-ia/verify_vendor.py
-python INTEGRACIONES/seguridad-ia/sync_catalog.py --check
+python BACKEND/INTEGRACIONES/seguridad-ia/verify_vendor.py
+python BACKEND/INTEGRACIONES/seguridad-ia/sync_catalog.py --check
 PYTHONPATH=BACKEND/SGA-CD-BACKEND python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_resources.py -v
 ```
 
 Verificar una descarga usando la clave pública Ed25519 del servidor obtenida por un canal confiable, no simplemente la que viene dentro del archivo:
 
 ```bash
-python INTEGRACIONES/seguridad-ia/audit_bundle.py --bundle exportacion.json --trusted-key clave-publica-servidor.pem --source-tenant 123 --output ingest-batch.json
+python BACKEND/INTEGRACIONES/seguridad-ia/audit_bundle.py --bundle exportacion.json --trusted-key clave-publica-servidor.pem --source-tenant 123 --output ingest-batch.json
 ```
 
 No sobrescribe archivos existentes y no transmite nada. Guardar el archivo de auditoría con acceso privado; la clave privada del servidor nunca se exporta.

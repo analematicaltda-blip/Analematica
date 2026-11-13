@@ -1,0 +1,9 @@
+test_application_code_has_a_layer_owner (test_application_layout.ApplicationLayout.test_application_code_has_a_layer_owner) ... ok
+test_legacy_application_roots_are_empty (test_application_layout.ApplicationLayout.test_legacy_application_roots_are_empty) ... ok
+test_reports_and_single_tracking_record_remain_in_place (test_application_layout.ApplicationLayout.test_reports_and_single_tracking_record_remain_in_place) ... ok
+test_submodule_paths_follow_their_layers (test_application_layout.ApplicationLayout.test_submodule_paths_follow_their_layers) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.003s
+
+OK

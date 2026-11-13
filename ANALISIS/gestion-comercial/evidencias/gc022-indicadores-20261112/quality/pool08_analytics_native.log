@@ -1,0 +1,200 @@
+INFO Suscriptor registrado para el evento: RESERVATION_CREATED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: RESERVATION_CANCELLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECEIVED
+INFO Suscriptor registrado para el evento: SALE_COMPLETED
+INFO Suscriptor registrado para el evento: PURCHASE_ORDER_POSTED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED
+INFO Suscriptor registrado para el evento: INVENTORY_ADJUSTED
+INFO Suscriptor registrado para el evento: ASSET_DEPRECIATED
+INFO Suscriptor registrado para el evento: LIQUIDATION
+INFO Suscriptor registrado para el evento: SALE_CREATED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED_V2
+INFO Suscriptor registrado para el evento: SaaS_INVOICE_GENERATED
+INFO Suscriptor registrado para el evento: BANK_FEE_REGISTERED
+INFO Standard Accounting Handlers registered.
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: FINANCIAL_PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: SUBSIDIARY_CREATED
+INFO EOS CONSOLIDATION: Event handlers registered.
+INFO Suscriptor registrado para el evento: TENANT_PROVISIONING_REQUESTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_EXPIRED
+INFO TENANT LIFECYCLE ENGINE: Listening for lifecycle events.
+INFO Suscriptor registrado para el evento: FINANCIAL_IMPACT_REQUESTED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: PAYMENT_FAILED
+INFO Control Tower Monitoring Handlers registered.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: ANOMALY_DETECTED
+INFO CONTROL TOWER: Metric Listener active.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Enterprise Policy Engine registered.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Global Holding Orchestrator registered.
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Capital Markets Orchestrator registered.
+INFO Suscriptor registrado para el evento: EQUITY_BUYBACK_TRIGGERED
+INFO Tokenization Orchestrator registered.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: LEAD_CONVERTED
+INFO COMMERCIAL ENGINE: Suscriptores de eventos registrados.
+INFO Suscriptor registrado para el evento: USAGE_CYCLE_CLOSED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO TREASURY AUTOMATION: Orquestación de eventos configurada.
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_CANCELLED
+INFO Suscriptor registrado para el evento: PLAN_UPGRADED
+INFO Suscriptor registrado para el evento: PLAN_DOWNGRADED
+INFO Suscriptor registrado para el evento: USAGE_BILLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO Suscriptor registrado para el evento: INVOICE_CREATED
+INFO Suscriptor registrado para el evento: USAGE_RECORDED
+INFO OPERATIONAL INTELLIGENCE: DataCollector initialized.
+/workspace/.integration-venv/lib/python3.12/site-packages/django/db/backends/utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+INFO KERNEL: Intención 'PLATFORM_CREATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_SUSPEND_USER' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ERP_CONFIRM_SALE' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_GENERATE_BALANCE' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'OPTIMIZE_TENANT_RETENTION' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ADAPTIVE_PRICING_ADJUSTMENT' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'SYSTEMIC_EVOLUTION_STEP' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'MANAGE_WORKSHOP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'REGISTER_PRODUCTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'UPDATE_ARTISAN_INVENTORY' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'PROCESS_COMMAND' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'VOID_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CREATE_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CANCEL_PACKAGE_COMPONENT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_AGENCY_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'SCHEDULE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_TRANSPORT_SEAT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'ASSIGN_GUIDE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_GUIDE_COMMISSION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BILL_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'NIGHT_CASH_CLOSE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'WALLET_DEPOSIT' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_PAY' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_REFUND' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_LIQUIDATE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_FREEZE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'DELIVERY_REQUEST' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_ASSIGN' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_COMPLETE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_RATE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'VEHICLE_REGISTER' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'GENERATE_LEGACY_BUNDLE' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PLATFORM_TRANSFER_OWNERSHIP' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'SYSTEM_EVOLUTION_HARDENING' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'QUERY_META_STANDARD' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PUBLIC_BUDGET_OPTIMIZATION' registrada en el dominio 'hacienda'.
+INFO KERNEL: Intención 'TERRITORIAL_IMPACT_SIMULATION' registrada en el dominio 'planeacion'.
+INFO KERNEL: Intención 'CIVIL_DEFENSE_ALERT' registrada en el dominio 'seguridad_civil'.
+INFO KERNEL: Intención 'LAND_USE_AUDIT' registrada en el dominio 'gestion_territorial'.
+INFO KERNEL: Intención 'ERP_CREATE_VOUCHER' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'ERP_VIEW_SALES_STATS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'PRIORITIZE_CRITICAL_LEADS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'OPTIMIZE_MARKETING_BUDGET' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_VIEW_CASH_FLOW' registrada en el dominio 'financiero'.
+INFO KERNEL: Intención 'ERP_MANAGE_RESOURCES' registrada en el dominio 'operativo'.
+INFO KERNEL: Intención 'ERP_SEARCH_DOCUMENT' registrada en el dominio 'archivistico'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_OPTIMIZE_RESOURCES' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_WEB_CMS' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_LEGAL' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ONBOARDING_PRESTADOR' registrada en el dominio 'prestadores'.
+INFO KERNEL: Intención 'AUDITORIA_GLOBAL' registrada en el dominio 'administrador_general'.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO EOS DECISION ENGINE: Metric Listener active.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO SAAS ORCHESTRATOR: Listening for onboarding signals.
+INFO Suscriptor registrado para el evento: WALLET_PAYMENT_REQUESTED
+INFO Wallet event boundary registered; payment execution requires explicit approvals.
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_FROM_TURISMO
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_DIRECT
+INFO Delivery Event Handlers registrados.
+test_corrupt_audit_blocks_report (__main__.Checks.test_corrupt_audit_blocks_report) ... ok
+test_current_crm_and_real_capture_adapter_are_available_for_empty_scope (__main__.Checks.test_current_crm_and_real_capture_adapter_are_available_for_empty_scope) ... ok
+test_dates_scope_and_confirmation_are_required_before_collection (__main__.Checks.test_dates_scope_and_confirmation_are_required_before_collection) ... ok
+test_drafts_do_not_count_as_revenue_and_uncertain_sales_block_metrics (__main__.Checks.test_drafts_do_not_count_as_revenue_and_uncertain_sales_block_metrics) ... ok
+test_duplicate_provider_account_aliases_cannot_double_costs (__main__.Checks.test_duplicate_provider_account_aliases_cannot_double_costs) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100 "HTTP/1.1 200 OK"
+ok
+test_forecast_does_not_use_test_period_for_model_selection (__main__.Checks.test_forecast_does_not_use_test_period_for_model_selection) ... ok
+test_google_and_tiktok_cost_protocols_keep_exact_precision (__main__.Checks.test_google_and_tiktok_cost_protocols_keep_exact_precision) ... INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/advertiser/info/?advertiser_ids=%5B%22123%22%5D&fields=%5B%22advertiser_id%22%2C+%22currency%22%5D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/report/integrated/get/?advertiser_id=123&service_type=AUCTION&report_type=BASIC&data_level=AUCTION_CAMPAIGN&dimensions=%5B%22campaign_id%22%2C+%22stat_time_day%22%5D&metrics=%5B%22spend%22%2C+%22impressions%22%2C+%22clicks%22%5D&start_date=2026-10-01&end_date=2026-10-31&page=1&page_size=100 "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://googleads.googleapis.com/v20/customers/123/googleAds:search "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://googleads.googleapis.com/v20/customers/123/googleAds:search "HTTP/1.1 200 OK"
+ok
+test_incomplete_tiktok_report_is_not_a_zero_cost_source (__main__.Checks.test_incomplete_tiktok_report_is_not_a_zero_cost_source) ... INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/advertiser/info/?advertiser_ids=%5B%22123%22%5D&fields=%5B%22advertiser_id%22%2C+%22currency%22%5D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/report/integrated/get/?advertiser_id=123&service_type=AUCTION&report_type=BASIC&data_level=AUCTION_CAMPAIGN&dimensions=%5B%22campaign_id%22%2C+%22stat_time_day%22%5D&metrics=%5B%22spend%22%2C+%22impressions%22%2C+%22clicks%22%5D&start_date=2026-10-01&end_date=2026-10-31&page=1&page_size=100 "HTTP/1.1 200 OK"
+ok
+test_interrupted_collection_can_only_recover_after_timeout (__main__.Checks.test_interrupted_collection_can_only_recover_after_timeout) ... ok
+test_ltv_requires_reviewed_policy_and_never_substitutes_arpu (__main__.Checks.test_ltv_requires_reviewed_policy_and_never_substitutes_arpu) ... ok
+test_meta_costs_require_correct_account_and_currency (__main__.Checks.test_meta_costs_require_correct_account_and_currency) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100 "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+ok
+test_meta_pagination_never_follows_provider_supplied_url (__main__.Checks.test_meta_pagination_never_follows_provider_supplied_url) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100 "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100&after=same-cursor "HTTP/1.1 200 OK"
+ok
+test_persisted_report_zero_is_distinct_from_unavailable_and_does_not_write_ledger (__main__.Checks.test_persisted_report_zero_is_distinct_from_unavailable_and_does_not_write_ledger) ... ok
+test_provider_reads_disabled_before_any_network (__main__.Checks.test_provider_reads_disabled_before_any_network) ... ok
+test_remote_income_requires_fresh_bound_reader (__main__.Checks.test_remote_income_requires_fresh_bound_reader) ... ok
+test_report_replay_returns_existing_reservation_without_repeating_reads (__main__.Checks.test_report_replay_returns_existing_reservation_without_repeating_reads) ... ok
+test_revoked_role_blocks_report_and_receipt (__main__.Checks.test_revoked_role_blocks_report_and_receipt) ... ok
+test_source_failure_does_not_fabricate_zero_sales (__main__.Checks.test_source_failure_does_not_fabricate_zero_sales) ... ok
+test_temporal_forecast_uses_explicit_history_and_independent_holdout (__main__.Checks.test_temporal_forecast_uses_explicit_history_and_independent_holdout) ... ok
+test_corrupt_audit_blocks_report (__main__.Checks.test_corrupt_audit_blocks_report) ... ok
+test_current_crm_and_real_capture_adapter_are_available_for_empty_scope (__main__.Checks.test_current_crm_and_real_capture_adapter_are_available_for_empty_scope) ... ok
+test_dates_scope_and_confirmation_are_required_before_collection (__main__.Checks.test_dates_scope_and_confirmation_are_required_before_collection) ... ok
+test_drafts_do_not_count_as_revenue_and_uncertain_sales_block_metrics (__main__.Checks.test_drafts_do_not_count_as_revenue_and_uncertain_sales_block_metrics) ... ok
+test_duplicate_provider_account_aliases_cannot_double_costs (__main__.Checks.test_duplicate_provider_account_aliases_cannot_double_costs) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100 "HTTP/1.1 200 OK"
+ok
+test_forecast_does_not_use_test_period_for_model_selection (__main__.Checks.test_forecast_does_not_use_test_period_for_model_selection) ... ok
+test_google_and_tiktok_cost_protocols_keep_exact_precision (__main__.Checks.test_google_and_tiktok_cost_protocols_keep_exact_precision) ... INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/advertiser/info/?advertiser_ids=%5B%22123%22%5D&fields=%5B%22advertiser_id%22%2C+%22currency%22%5D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/report/integrated/get/?advertiser_id=123&service_type=AUCTION&report_type=BASIC&data_level=AUCTION_CAMPAIGN&dimensions=%5B%22campaign_id%22%2C+%22stat_time_day%22%5D&metrics=%5B%22spend%22%2C+%22impressions%22%2C+%22clicks%22%5D&start_date=2026-10-01&end_date=2026-10-31&page=1&page_size=100 "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://googleads.googleapis.com/v20/customers/123/googleAds:search "HTTP/1.1 200 OK"
+INFO HTTP Request: POST https://googleads.googleapis.com/v20/customers/123/googleAds:search "HTTP/1.1 200 OK"
+ok
+test_incomplete_tiktok_report_is_not_a_zero_cost_source (__main__.Checks.test_incomplete_tiktok_report_is_not_a_zero_cost_source) ... INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/advertiser/info/?advertiser_ids=%5B%22123%22%5D&fields=%5B%22advertiser_id%22%2C+%22currency%22%5D "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://business-api.tiktok.com/open_api/v1.3/report/integrated/get/?advertiser_id=123&service_type=AUCTION&report_type=BASIC&data_level=AUCTION_CAMPAIGN&dimensions=%5B%22campaign_id%22%2C+%22stat_time_day%22%5D&metrics=%5B%22spend%22%2C+%22impressions%22%2C+%22clicks%22%5D&start_date=2026-10-01&end_date=2026-10-31&page=1&page_size=100 "HTTP/1.1 200 OK"
+ok
+test_interrupted_collection_can_only_recover_after_timeout (__main__.Checks.test_interrupted_collection_can_only_recover_after_timeout) ... ok
+test_ltv_requires_reviewed_policy_and_never_substitutes_arpu (__main__.Checks.test_ltv_requires_reviewed_policy_and_never_substitutes_arpu) ... ok
+test_meta_costs_require_correct_account_and_currency (__main__.Checks.test_meta_costs_require_correct_account_and_currency) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100 "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+ok
+test_meta_pagination_never_follows_provider_supplied_url (__main__.Checks.test_meta_pagination_never_follows_provider_supplied_url) ... INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123?fields=id%2Caccount_id%2Ccurrency "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100 "HTTP/1.1 200 OK"
+INFO HTTP Request: GET https://graph.facebook.com/v22.0/act_123/insights?fields=account_id%2Ccampaign_id%2Cdate_start%2Cdate_stop%2Cspend%2Cimpressions%2Cclicks&level=campaign&time_increment=1&time_range=%7B%22since%22%3A+%222026-10-01%22%2C+%22until%22%3A+%222026-10-31%22%7D&limit=100&after=same-cursor "HTTP/1.1 200 OK"
+ok
+test_persisted_report_zero_is_distinct_from_unavailable_and_does_not_write_ledger (__main__.Checks.test_persisted_report_zero_is_distinct_from_unavailable_and_does_not_write_ledger) ... ok
+test_provider_reads_disabled_before_any_network (__main__.Checks.test_provider_reads_disabled_before_any_network) ... ok
+test_remote_income_requires_fresh_bound_reader (__main__.Checks.test_remote_income_requires_fresh_bound_reader) ... ok
+test_report_replay_returns_existing_reservation_without_repeating_reads (__main__.Checks.test_report_replay_returns_existing_reservation_without_repeating_reads) ... ok
+test_revoked_role_blocks_report_and_receipt (__main__.Checks.test_revoked_role_blocks_report_and_receipt) ... ok
+test_source_failure_does_not_fabricate_zero_sales (__main__.Checks.test_source_failure_does_not_fabricate_zero_sales) ... ok
+test_temporal_forecast_uses_explicit_history_and_independent_holdout (__main__.Checks.test_temporal_forecast_uses_explicit_history_and_independent_holdout) ... ok
+
+----------------------------------------------------------------------
+Ran 38 tests in 3.282s
+
+OK

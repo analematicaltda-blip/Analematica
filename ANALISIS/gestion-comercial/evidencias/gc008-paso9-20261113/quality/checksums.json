@@ -1,0 +1,11 @@
+{
+  "pool08_payments_gateway.log": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371",
+  "pool08_payments_http.log": "6fcf1cc72b51243bda72085490ef84b95570c24673f4370df7f1b9a775aec923",
+  "source-manifest.json": "aa2472c87d40219e1368c77521dd4066542094f82774aa4adb85d14bed5d7d09",
+  "pool08_payments_sga.log": "068f2c305de2aad1dba0b40e569ce989ba18d41b8bd16b8f9c6935ce2d62af28",
+  "pool08_payments_lifecycle.log": "b5c0a3f802bbe6f8be91ae1421efb5703e3ec2422b7771df150a8306191bf3d3",
+  "pool08_payments_browser.log": "e48bc659b8a9d3dab6d038cae7f3c2638c0bba950ffed331cb7efdf6125e7d6a",
+  "report.json": "6bcb919f40a8ce18558119fc9d4abfd6dd16b16fce443e6023b08cd179a011ff",
+  "pool08_payments_native.log": "a52a33fc8adc880d3f01408345682b7ab44c4d9150eb8ed21af4cb4d97d88f44",
+  "pool08_payments_legacy.log": "dec5673ee7ead0e86a249ea046dba60aab31a8206a43fedeb035ab8449b4e26d"
+}

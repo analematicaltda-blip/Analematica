@@ -1,0 +1,77 @@
+{
+  "task": "GC-024",
+  "state": "EN_EJECUCION",
+  "functional_scope_complete": false,
+  "tests_complete": false,
+  "acceptance_complete": false,
+  "new_progress_credit": 0,
+  "production_enabled": false,
+  "focused_regression": {
+    "suites": 8,
+    "python_tests": 24,
+    "passed": true,
+    "source_stable": true
+  },
+  "offline_browser_checks": 75,
+  "pagehide_before_after_checks": 12,
+  "nginx_checks": 21,
+  "runner_unit_tests": 21,
+  "broad_regression": {
+    "suites": 109,
+    "passed": 108,
+    "python_tests_in_passed_suites": 943,
+    "non_passed": [
+      {
+        "id": "pool08_payments_browser",
+        "status": "FAILED"
+      }
+    ],
+    "source_stable": false,
+    "digest": "5cbe2377a0abfcb2ab6c4ee50af8ef434140529f2475616709431e35a71622e1",
+    "narrow_offline_delta_reverified": true,
+    "delta_files": 10
+  },
+  "full_build": {
+    "erp": {
+      "diagnostics": 966,
+      "files": 257,
+      "status": "FAILED"
+    },
+    "turismo": {
+      "diagnostics": 938,
+      "files": 249,
+      "status": "FAILED"
+    }
+  },
+  "implemented": [
+    "Own read-only scoped event-chain traces and bounded operational probes",
+    "Own encrypted offline text draft queue and verified warm offline startup for three clients",
+    "New-database encrypted SQLite recovery rehearsal",
+    "Read-only72-milestone release gate",
+    "Narrow static Nginx carveouts; private APIs remain protected",
+    "Broken ERP runtime imports/UI aliases and specific runtime defects corrected without disabling strict types"
+  ],
+  "local_pending": [
+    "Strict full builds and existing DTO/service/type inconsistencies",
+    "Complete offline domain synchronization with conflict review",
+    "Full rollback/restore of media, references, custody and permissions",
+    "All task dependencies and full security/load/telemetry qualification"
+  ],
+  "external_requirements": [
+    "Real provider acceptance and hardware/load target",
+    "Physical mobile/desktop qualification where applicable",
+    "Legitimate data, custody, grants and professional/productive acceptance"
+  ],
+  "scope_limits": [
+    "Offline queue never sends messages, authorizes payments or restores credentials",
+    "Hash integrity is not source authenticity or provider acceptance",
+    "Local SQLite fixtures are not production restoration or accepted RPO/RTO",
+    "Loopback probe measurements are not contractual latency qualification",
+    "An interrupted109-suite attempt and a source-changing attempt are not accepted as final regression"
+  ],
+  "corrected_payment_browser_retest": {
+    "passed": true,
+    "scope": "Actual menu navigation returns to Sales before filling reversal review; verifies Payments hidden. Synthetic financial records; no provider call.",
+    "checks": 150
+  }
+}

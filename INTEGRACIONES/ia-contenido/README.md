@@ -55,7 +55,7 @@ Los límites gratuitos de `free-ai-apis` son referencias que requieren comprobac
 Para comparar modelos locales habilitados sobre el mismo brief público sintético:
 
 ```bash
-PYTHONPATH=BACKEND/SGA-CD-BACKEND python INTEGRACIONES/ia-contenido/benchmark_local.py --model llama3.2:3b --authorize-local-inference --output /tmp/comparacion-ollama.json
+PYTHONPATH=BACKEND/SGA-CD-BACKEND python BACKEND/INTEGRACIONES/ia-contenido/benchmark_local.py --model llama3.2:3b --authorize-local-inference --output /tmp/comparacion-ollama.json
 ```
 
 Repetir `--model` compara modelos secuencialmente. Registra latencia, longitud y hash, no texto ni credenciales. Sale con error si alguno no genera. La calidad queda sin puntuar: un humano debe evaluar exactitud, español, claridad, derechos y uso de datos antes de recomendar un modelo. No ejecutar con datos reales de clientes como benchmark.

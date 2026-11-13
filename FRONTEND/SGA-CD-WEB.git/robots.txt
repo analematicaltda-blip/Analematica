@@ -9,6 +9,7 @@ Allow: /terms.html
 
 # Disallow private/admin endpoints and application core
 Disallow: /app.html
+Allow: /api/v1/commercial-unified/landing-pages/
 Disallow: /api/
 Disallow: /js/
 Disallow: /admin/

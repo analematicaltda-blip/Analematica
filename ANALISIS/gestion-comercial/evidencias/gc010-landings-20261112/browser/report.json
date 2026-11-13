@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": 128,
+  "widths": [
+    1280,
+    390
+  ],
+  "actual_http": true,
+  "synthetic_data": true,
+  "custom_domain_configured": false,
+  "production_ready": false
+}

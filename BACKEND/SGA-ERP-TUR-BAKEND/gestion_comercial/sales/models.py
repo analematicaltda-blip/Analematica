@@ -8,7 +8,7 @@ class Opportunity(TenantAwareModel):
     name = models.CharField(max_length=255)
     # Etapas del pipeline: New, Contacted, Proposal, Negotiation, Won, Lost
     stage = models.CharField(max_length=50, default='New')
-    value = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    value = models.DecimalField(max_digits=18, decimal_places=2, default=0.0)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='opportunities')
 
     def __str__(self):

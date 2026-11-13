@@ -1,0 +1,767 @@
+[
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landing_capture.py",
+    "syntax": "PASS",
+    "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/library_models.py",
+    "syntax": "PASS",
+    "sha256": "5d2c7bda3a08e134db0e3136a8d577dbd762f87a6e442832986b1187504e2893"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotation_store.py",
+    "syntax": "PASS",
+    "sha256": "c6fe78f1ab4d630aca9b21d7609b16d2e26e1b679567848d9b59b856c81f1c66"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm_store.py",
+    "syntax": "PASS",
+    "sha256": "ae1bc76ece738d176309d8b654905be81f9a35a1db24575911fab26b6def84cf"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/opportunities.py",
+    "syntax": "PASS",
+    "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/media_library.py",
+    "syntax": "PASS",
+    "sha256": "f8beaca94d8a330cc5d62d4b38ec114a98d78e578acd94a44b3954adb635e3bd"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/library_sanitize.py",
+    "syntax": "PASS",
+    "sha256": "2926bacd94f843638fdbc85b66390b7022804a4b3e97eec8279d32c723a649c7"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_operations.py",
+    "syntax": "PASS",
+    "sha256": "d0057ec40ca13f4f17107e0eb6c38a0f4185178f54b9ffea3ef330a810799440"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/state_integrity.py",
+    "syntax": "PASS",
+    "sha256": "cc9907b6f03ac595ae15bd75420c994263ea1234853c8caaa30972dee2f68ebb"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotation_capacity.py",
+    "syntax": "PASS",
+    "sha256": "27b61b7fdc29de9753b3d723129298553785f6d0dff8f98d0315278f61c86a7a"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_saga.py",
+    "syntax": "PASS",
+    "sha256": "2f98ea8048213573be8d3246bbe50824c56fce3ab0ff5c1ee4a1b328e315fd84"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/bold_gateway.py",
+    "syntax": "PASS",
+    "sha256": "d638f8a8d90065ba37ee22b4c7fad2c0126531bde44c020a6b07271ab70e6122"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm_api.py",
+    "syntax": "PASS",
+    "sha256": "c867b2e9394c13475f0c43d4298f9f4ae7afb1f6405221ab8d25efe5eb8476af"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landing_store.py",
+    "syntax": "PASS",
+    "sha256": "82658ea032bff1b6fff5b6ed7d63855fa7cae70c52ab18614c943cb5cf772d02"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/access_service.py",
+    "syntax": "PASS",
+    "sha256": "9f362012155c1c55e484f4f063df4c8b4a422685fe7236f17144a5a041b87663"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotation_models.py",
+    "syntax": "PASS",
+    "sha256": "0c560c8c6c621edf33e901449b9570100be385d24f3fdb951c4184bfee75c4f3"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landing_models.py",
+    "syntax": "PASS",
+    "sha256": "f975c92b4d6d206f585bd4a36caa9eb821117239cc1c83e913b70c936c905376"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/pricing_models.py",
+    "syntax": "PASS",
+    "sha256": "c65931d5896000c18f8eabf738029ac14a22f46674e707d49eeaef49bc5ddd98"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/opportunity_store.py",
+    "syntax": "PASS",
+    "sha256": "431e8217a1e56564a2298252a33f59ccf9814e473693eb93a56f6930af15d451"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales.py",
+    "syntax": "PASS",
+    "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/source_protocol.py",
+    "syntax": "PASS",
+    "sha256": "873eeee77a11b479a7549699ddcf6da0158775b9ff10200a84310d48fea93aeb"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/capture_models.py",
+    "syntax": "PASS",
+    "sha256": "a2daa21bc045d6f3974f2509aa0db982b443344d1f70f4146193f1157527f977"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_space_guards.py",
+    "syntax": "PASS",
+    "sha256": "84c276eab1a6e873c1de38221270b884d0dcdcbf7044efeca60710166c8d178f"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/identity_models.py",
+    "syntax": "PASS",
+    "sha256": "caf8e3b71ad320e565078937c18c87f687abfa762b630d8513846fb412758f4a"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/contract.py",
+    "syntax": "PASS",
+    "sha256": "4e7c15929e65398d45b00c64632af17bf91afe5f92e58dfba47e2be638a9a6b3"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_models.py",
+    "syntax": "PASS",
+    "sha256": "6fac3ff91a0a8c99a60fe1c7fce166b623c62155f00f28ca983f3cd7a4aa3bf3"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/library_store.py",
+    "syntax": "PASS",
+    "sha256": "d76768291410e7b16eaf6a2ef305b9f49401eba0a390f3d034c00f53b77efbea"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/library_api.py",
+    "syntax": "PASS",
+    "sha256": "e6251cf9aa7a16aeb41bd91ae30826f79fc20252ddecb7512b8386f204a6b87c"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landing_capture_api.py",
+    "syntax": "PASS",
+    "sha256": "237cc371d23aa78e8f5bddbba8a028cd4c6297274ef60e7dd3296e18f5de2fe8"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm_models.py",
+    "syntax": "PASS",
+    "sha256": "7b740143faee4a2f510cf892ebb24fb783b58806b21d0623577a26f533f018de"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/access_protocol.py",
+    "syntax": "PASS",
+    "sha256": "b06a4495f596309b3965addafc07a17fe7e6abbb23637effe22f29fcb5ee9653"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotations.py",
+    "syntax": "PASS",
+    "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/landings.py",
+    "syntax": "PASS",
+    "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/install_crm.py",
+    "syntax": "PASS",
+    "sha256": "ae54ea16d36c7e5a17c52309f824e124012ee5e7fbcc6ab1457d88e1e61fcc2f"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/payment_store.py",
+    "syntax": "PASS",
+    "sha256": "eab8f376c4394dd18d59ddca26c1b9bcba7c07693a8e4fa630eac32835dec7ec"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/api.py",
+    "syntax": "PASS",
+    "sha256": "29ebb6a9508da3f0bed2c48f7202f7d816f15bbce6a8a71f3d2d403657ec3ac4"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_store.py",
+    "syntax": "PASS",
+    "sha256": "508fceb2ad5d4a6c5b545f51579606c938a1eb82563ab4221362ec6e788b4467"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/sales_bridge.py",
+    "syntax": "PASS",
+    "sha256": "b1676c90c01bc1b353c6230832a7e0feb1687906e485f26e098a334d84ec6689"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/opportunity_models.py",
+    "syntax": "PASS",
+    "sha256": "596d335a09ecaf2f912a8862e29485ae0cde1b4c645ea0b200708ef20da45b56"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/payments.py",
+    "syntax": "PASS",
+    "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/payment_models.py",
+    "syntax": "PASS",
+    "sha256": "9e4515b5fc526b859693b42dde5a5e9066ae14677720b8a8bc854a34e9393f73"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/identity_store.py",
+    "syntax": "PASS",
+    "sha256": "0cff5cecae6854fdb3372bebf302094970f1cd730318070273d7fdea5375885d"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/capture_store.py",
+    "syntax": "PASS",
+    "sha256": "98697d93bd58e0647e14e3122f385411faceeb9ed75012d54b7ae880999bc322"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/quotation_media.py",
+    "syntax": "PASS",
+    "sha256": "3dbcc36f965ec95898edb5f8f0fa426a3b70e92ab5344d0aa3e702d43f1724c6"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/__init__.py",
+    "syntax": "PASS",
+    "sha256": "a62eae7443b1b94e1c15dd9d52a6ca975351d9e5297dcb6f547875e597868594"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm.py",
+    "syntax": "PASS",
+    "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm_delivery_guard.py",
+    "syntax": "PASS",
+    "sha256": "a415e1ccecd3832161cfd4f709e92c3ddf9c470ca9f21ed3f3c703ecad63da38"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/pricing_store.py",
+    "syntax": "PASS",
+    "sha256": "875a229ff0a5ff48783b58799e498816ea55991376010c664e85d90afc2abd87"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/pricing.py",
+    "syntax": "PASS",
+    "sha256": "727c6b46196bb7e17dc6893ca5d43e31238e55a8e250580b53a98cf118faeda7"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/identity.py",
+    "syntax": "PASS",
+    "sha256": "79eb71a6d8c8c7e5059aefce854c402efc8167de71d7fc657b98b0a08f209cdb"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landing_capture.py",
+    "syntax": "PASS",
+    "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/library_models.py",
+    "syntax": "PASS",
+    "sha256": "ee423a5de2701c2e23a5d30f149334e2c36badd23f6a2b5d8025436bc1ef1e4b"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotation_store.py",
+    "syntax": "PASS",
+    "sha256": "7765694279dd7f9bd1675a0c8363dff887b2723f4bdd7ca319d8f339e9ba8b58"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm_store.py",
+    "syntax": "PASS",
+    "sha256": "7b8724258c86575e3ed648738a5edf0b97f3e1b11dac26fa72793d193518f35d"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/opportunities.py",
+    "syntax": "PASS",
+    "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/media_library.py",
+    "syntax": "PASS",
+    "sha256": "f8beaca94d8a330cc5d62d4b38ec114a98d78e578acd94a44b3954adb635e3bd"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/library_sanitize.py",
+    "syntax": "PASS",
+    "sha256": "2926bacd94f843638fdbc85b66390b7022804a4b3e97eec8279d32c723a649c7"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales_operations.py",
+    "syntax": "PASS",
+    "sha256": "fd46bbf78aa95c70d41a7c64867ca4bba51c61f8fcedbf37195bbefae0ea8969"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/state_integrity.py",
+    "syntax": "PASS",
+    "sha256": "cc9907b6f03ac595ae15bd75420c994263ea1234853c8caaa30972dee2f68ebb"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotation_capacity.py",
+    "syntax": "PASS",
+    "sha256": "f634c7fec0f4e1deaa9869683fa572d34e20f1b320a3f46092c9417079e9e719"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/bold_gateway.py",
+    "syntax": "PASS",
+    "sha256": "d638f8a8d90065ba37ee22b4c7fad2c0126531bde44c020a6b07271ab70e6122"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm_api.py",
+    "syntax": "PASS",
+    "sha256": "0aa27a1b5ca714d1ea6bc533ce88f26b7f6587bd7eb84d801d8d0664c8748bf5"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landing_store.py",
+    "syntax": "PASS",
+    "sha256": "31a7fa345461e4f813207ce502dea7ece386c8640b531f68a1ec92c03d144516"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/access_service.py",
+    "syntax": "PASS",
+    "sha256": "9f362012155c1c55e484f4f063df4c8b4a422685fe7236f17144a5a041b87663"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotation_models.py",
+    "syntax": "PASS",
+    "sha256": "96814c1001d95c9bf7abd48afe0109d6725eb5a41361f1241eb3534e5eb02ea3"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landing_models.py",
+    "syntax": "PASS",
+    "sha256": "5f55858253c99d3101f876fec6b9f4ec8a01f9c82e82b5734906ab212646f1fd"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/pricing_models.py",
+    "syntax": "PASS",
+    "sha256": "8930c6abb297c24dba2efc24b4e7c33a22566de70d663ff9ce1d8bc4d30283bf"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/opportunity_store.py",
+    "syntax": "PASS",
+    "sha256": "4a1fa3942f35014f8434f1af0e6f37bce208718de27fa9cac2fb86e8e5787052"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales.py",
+    "syntax": "PASS",
+    "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/source_protocol.py",
+    "syntax": "PASS",
+    "sha256": "873eeee77a11b479a7549699ddcf6da0158775b9ff10200a84310d48fea93aeb"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/capture_models.py",
+    "syntax": "PASS",
+    "sha256": "5f8c8da3eb292aa18cf624204fd71bd046cf7f126fb8b5dc9b84d6836e0244c0"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/identity_models.py",
+    "syntax": "PASS",
+    "sha256": "9474ef2a8648d803fed0a10c9fe85e3b95861458af4d560bca7fc1e19dd4805b"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/contract.py",
+    "syntax": "PASS",
+    "sha256": "72e8943a59b98dea5de21a864c19df3145b5d585cd8cf114b14bb8664b67094a"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales_models.py",
+    "syntax": "PASS",
+    "sha256": "82be1e69576029448e69fde43d6c0ab771059428fe2a5b499b0a44111d8edffe"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/library_store.py",
+    "syntax": "PASS",
+    "sha256": "58bb4ae506ffc0d3c34a16dfc44d0a8c5136778f32fc2fee9f83e530210de772"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/library_api.py",
+    "syntax": "PASS",
+    "sha256": "bd31a63899b3f7e3a3bb176d94a66f6681e6d34cf946fc3baba9394807767a96"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landing_capture_api.py",
+    "syntax": "PASS",
+    "sha256": "5ed0a6097ad7a12bdbe191f5515ea30984b869795dac5b5cf72c5bc5a7f0895f"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm_models.py",
+    "syntax": "PASS",
+    "sha256": "1ac46675d65a5a51c7508ea70bad5e1b2eba4e99fc41bd37b21fa400b69d7056"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/source_api.py",
+    "syntax": "PASS",
+    "sha256": "1b0a6b5e719322d3f4ed7d019b6967de23383c0bd64a9de16b69186cdd07be0d"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/access_protocol.py",
+    "syntax": "PASS",
+    "sha256": "b06a4495f596309b3965addafc07a17fe7e6abbb23637effe22f29fcb5ee9653"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotations.py",
+    "syntax": "PASS",
+    "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/urls.py",
+    "syntax": "PASS",
+    "sha256": "fe56b1579fd3038768f167a0b74690391d07d1240c20d7be59c8678d49188663"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/landings.py",
+    "syntax": "PASS",
+    "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/payment_store.py",
+    "syntax": "PASS",
+    "sha256": "38e4381f64117baa5354d3f34e3073e64709a9f094410fb7560a399f693455f3"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/api.py",
+    "syntax": "PASS",
+    "sha256": "8ddf378d6b528c7f2ad831852a422d99619100888759be35b67c456f5b815b4d"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales_store.py",
+    "syntax": "PASS",
+    "sha256": "8d66b9e4e02eb961be5f0bb0664227fd0102c293e3185f423b056cc86e555b13"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/opportunity_models.py",
+    "syntax": "PASS",
+    "sha256": "5c4d6f183671c825befb4b0546e16cfe86b388a68be7504735bc6ac8993cc05c"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/payments.py",
+    "syntax": "PASS",
+    "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/payment_models.py",
+    "syntax": "PASS",
+    "sha256": "635683364dd687f3983a2ae032f1ebe71af110af197e80c4f6d575b36b04f005"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/identity_store.py",
+    "syntax": "PASS",
+    "sha256": "608aa301eee05b2aafa549b0fc5d3cc8aca7f418ba20a36700bd7d52487f52ca"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/source_binding.py",
+    "syntax": "PASS",
+    "sha256": "453ad26ab2ceb800e6820b05a200db1229234ad9f8aba8d8397a5265f01372d7"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/capture_store.py",
+    "syntax": "PASS",
+    "sha256": "abffb8ecab46fe8ca4f404dc8ff19cdc86ad0d4598b006740686191d4500c252"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/quotation_media.py",
+    "syntax": "PASS",
+    "sha256": "3dbcc36f965ec95898edb5f8f0fa426a3b70e92ab5344d0aa3e702d43f1724c6"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/__init__.py",
+    "syntax": "PASS",
+    "sha256": "a62eae7443b1b94e1c15dd9d52a6ca975351d9e5297dcb6f547875e597868594"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm.py",
+    "syntax": "PASS",
+    "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/after_sales.py",
+    "syntax": "PASS",
+    "sha256": "2e35c59eaa33a5d535e0eec207c73da7338470fb99bcf5cb8e2fd8bc04762e9e"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/pricing_store.py",
+    "syntax": "PASS",
+    "sha256": "ea64b64937d5c7a185f906b7c68a6ea9514ec802a59c16f0b295cc0862da7627"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/pricing.py",
+    "syntax": "PASS",
+    "sha256": "727c6b46196bb7e17dc6893ca5d43e31238e55a8e250580b53a98cf118faeda7"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/sales_ledger.py",
+    "syntax": "PASS",
+    "sha256": "ee0d817aeb43b7b8fa6c08e3b584b6f2c507d8a86228a965c17c739cca206926"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/identity.py",
+    "syntax": "PASS",
+    "sha256": "83ccdd92328f51f0e3b8a074106f0a089e2a721ac377b96b49c507359c6cf020"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landing_capture.py",
+    "syntax": "PASS",
+    "sha256": "2ceef54884fddc716b14e176f3fb9bfd87c2b2b10069e6bbfc41ce5c3eeb76db"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/library_models.py",
+    "syntax": "PASS",
+    "sha256": "3423cc1c84c75b4cfe94963c93d79893ec77572e1292454ea629f4c946a8c758"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotation_store.py",
+    "syntax": "PASS",
+    "sha256": "7765694279dd7f9bd1675a0c8363dff887b2723f4bdd7ca319d8f339e9ba8b58"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm_store.py",
+    "syntax": "PASS",
+    "sha256": "7b8724258c86575e3ed648738a5edf0b97f3e1b11dac26fa72793d193518f35d"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/opportunities.py",
+    "syntax": "PASS",
+    "sha256": "e021817bb2ce445c122befdc79e2ca44b9cdfabb3635f4ec4fd0210bf159048e"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/media_library.py",
+    "syntax": "PASS",
+    "sha256": "f8beaca94d8a330cc5d62d4b38ec114a98d78e578acd94a44b3954adb635e3bd"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/library_sanitize.py",
+    "syntax": "PASS",
+    "sha256": "2926bacd94f843638fdbc85b66390b7022804a4b3e97eec8279d32c723a649c7"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales_operations.py",
+    "syntax": "PASS",
+    "sha256": "fd46bbf78aa95c70d41a7c64867ca4bba51c61f8fcedbf37195bbefae0ea8969"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/state_integrity.py",
+    "syntax": "PASS",
+    "sha256": "cc9907b6f03ac595ae15bd75420c994263ea1234853c8caaa30972dee2f68ebb"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotation_capacity.py",
+    "syntax": "PASS",
+    "sha256": "f634c7fec0f4e1deaa9869683fa572d34e20f1b320a3f46092c9417079e9e719"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/bold_gateway.py",
+    "syntax": "PASS",
+    "sha256": "d638f8a8d90065ba37ee22b4c7fad2c0126531bde44c020a6b07271ab70e6122"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm_api.py",
+    "syntax": "PASS",
+    "sha256": "0aa27a1b5ca714d1ea6bc533ce88f26b7f6587bd7eb84d801d8d0664c8748bf5"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landing_store.py",
+    "syntax": "PASS",
+    "sha256": "31a7fa345461e4f813207ce502dea7ece386c8640b531f68a1ec92c03d144516"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/access_service.py",
+    "syntax": "PASS",
+    "sha256": "9f362012155c1c55e484f4f063df4c8b4a422685fe7236f17144a5a041b87663"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotation_models.py",
+    "syntax": "PASS",
+    "sha256": "8fbc40aba81aa897f8cfc4d44853582e125e640ef77a90942bc422d803636b36"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landing_models.py",
+    "syntax": "PASS",
+    "sha256": "42d3be958f355abb2fa1152bbb74fc28a6e00d47dec7dd18fa8e113a3200eaba"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/pricing_models.py",
+    "syntax": "PASS",
+    "sha256": "0951359afe7eae0fe4945008f1245d222830f09e586f09fe0c480f1e963dfd96"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/opportunity_store.py",
+    "syntax": "PASS",
+    "sha256": "4a1fa3942f35014f8434f1af0e6f37bce208718de27fa9cac2fb86e8e5787052"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales.py",
+    "syntax": "PASS",
+    "sha256": "7acc1685a84647625f6445a6a346ba4adcfeaa3e4f0edc64acca6a8937ce1230"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/source_protocol.py",
+    "syntax": "PASS",
+    "sha256": "873eeee77a11b479a7549699ddcf6da0158775b9ff10200a84310d48fea93aeb"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/capture_models.py",
+    "syntax": "PASS",
+    "sha256": "5769eca355f6a5facdee92fa7ce1465f947152cd8351cba04232d68aa448b3e1"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/identity_models.py",
+    "syntax": "PASS",
+    "sha256": "83605fa7784bcfe8d23f7f5c44888a6eeea3e85445b26044c6d213a841b3d450"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/contract.py",
+    "syntax": "PASS",
+    "sha256": "6dd706b1ac106872856206352f6e050957bdbc107dadbe12404ec57a8148b49c"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales_models.py",
+    "syntax": "PASS",
+    "sha256": "7d5f2786f1e711fc3187b79b8362a0c9e3bff885a6de7fc4948ebb4c965a21f5"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/library_store.py",
+    "syntax": "PASS",
+    "sha256": "58bb4ae506ffc0d3c34a16dfc44d0a8c5136778f32fc2fee9f83e530210de772"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/library_api.py",
+    "syntax": "PASS",
+    "sha256": "bd31a63899b3f7e3a3bb176d94a66f6681e6d34cf946fc3baba9394807767a96"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landing_capture_api.py",
+    "syntax": "PASS",
+    "sha256": "5ed0a6097ad7a12bdbe191f5515ea30984b869795dac5b5cf72c5bc5a7f0895f"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm_models.py",
+    "syntax": "PASS",
+    "sha256": "812bc9c5fb718991efe36fa2e94af724f9105a1b9b155f42d523752555a23e20"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/source_api.py",
+    "syntax": "PASS",
+    "sha256": "1b0a6b5e719322d3f4ed7d019b6967de23383c0bd64a9de16b69186cdd07be0d"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/access_protocol.py",
+    "syntax": "PASS",
+    "sha256": "b06a4495f596309b3965addafc07a17fe7e6abbb23637effe22f29fcb5ee9653"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotations.py",
+    "syntax": "PASS",
+    "sha256": "b330aa86d3a47ae11e0945abe3ad78a0ba53389c5ff92f4fe0459eb11d658f01"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/urls.py",
+    "syntax": "PASS",
+    "sha256": "fe56b1579fd3038768f167a0b74690391d07d1240c20d7be59c8678d49188663"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/landings.py",
+    "syntax": "PASS",
+    "sha256": "dd7022edea4ce8f294077c6299a580778154b1d0942a08e28df4b8f42d41981b"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/payment_store.py",
+    "syntax": "PASS",
+    "sha256": "38e4381f64117baa5354d3f34e3073e64709a9f094410fb7560a399f693455f3"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/api.py",
+    "syntax": "PASS",
+    "sha256": "836fabc6feea0258e2cc3b9cca120abfa5ee6e620238310f03c84848cb64809c"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales_store.py",
+    "syntax": "PASS",
+    "sha256": "8d66b9e4e02eb961be5f0bb0664227fd0102c293e3185f423b056cc86e555b13"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/opportunity_models.py",
+    "syntax": "PASS",
+    "sha256": "62e79b671f7050ed485651ccb3eaf7f2a0917cdaf5484ecdf19514969a7c8d6b"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/payments.py",
+    "syntax": "PASS",
+    "sha256": "00d666df82243529870cb52c21796e186ef314da8cbbf6ed7b024b074c831ab2"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/payment_models.py",
+    "syntax": "PASS",
+    "sha256": "78f4a184b911fe2ba36099cedd601ebe27d2ab54257e46ae46d0f16864d6ffca"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/identity_store.py",
+    "syntax": "PASS",
+    "sha256": "608aa301eee05b2aafa549b0fc5d3cc8aca7f418ba20a36700bd7d52487f52ca"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/source_binding.py",
+    "syntax": "PASS",
+    "sha256": "453ad26ab2ceb800e6820b05a200db1229234ad9f8aba8d8397a5265f01372d7"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/capture_store.py",
+    "syntax": "PASS",
+    "sha256": "abffb8ecab46fe8ca4f404dc8ff19cdc86ad0d4598b006740686191d4500c252"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/quotation_media.py",
+    "syntax": "PASS",
+    "sha256": "3dbcc36f965ec95898edb5f8f0fa426a3b70e92ab5344d0aa3e702d43f1724c6"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/__init__.py",
+    "syntax": "PASS",
+    "sha256": "a62eae7443b1b94e1c15dd9d52a6ca975351d9e5297dcb6f547875e597868594"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm.py",
+    "syntax": "PASS",
+    "sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/after_sales.py",
+    "syntax": "PASS",
+    "sha256": "2e35c59eaa33a5d535e0eec207c73da7338470fb99bcf5cb8e2fd8bc04762e9e"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/pricing_store.py",
+    "syntax": "PASS",
+    "sha256": "ea64b64937d5c7a185f906b7c68a6ea9514ec802a59c16f0b295cc0862da7627"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/pricing.py",
+    "syntax": "PASS",
+    "sha256": "727c6b46196bb7e17dc6893ca5d43e31238e55a8e250580b53a98cf118faeda7"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/sales_ledger.py",
+    "syntax": "PASS",
+    "sha256": "ee0d817aeb43b7b8fa6c08e3b584b6f2c507d8a86228a965c17c739cca206926"
+  },
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/identity.py",
+    "syntax": "PASS",
+    "sha256": "83ccdd92328f51f0e3b8a074106f0a089e2a721ac377b96b49c507359c6cf020"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-landings.js",
+    "syntax": "PASS",
+    "sha256": "fae36fe6a3f0a86afb4fb659592727e33a2de5d1639fbfdb6db85930506e0e06"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-landings.js",
+    "syntax": "PASS",
+    "sha256": "fae36fe6a3f0a86afb4fb659592727e33a2de5d1639fbfdb6db85930506e0e06"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-landings.js",
+    "syntax": "PASS",
+    "sha256": "fae36fe6a3f0a86afb4fb659592727e33a2de5d1639fbfdb6db85930506e0e06"
+  }
+]

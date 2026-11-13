@@ -1,0 +1,22 @@
+Sales browser sga-cd 1280
+Sales browser sga-cd 390
+Sales browser erp-tur 1280
+locator.fill: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-sale-reverse-review]').locator('[name=reason]')[22m
+[2m    - locator resolved to <input required="" name="reason" maxlength="500"/>[22m
+[2m    - fill("Anulación revisada navegador")[22m
+[2m  - attempting fill action[22m
+[2m    2 × waiting for element to be visible, enabled and editable[22m
+[2m      - element is not visible[22m
+[2m    - retrying fill action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and editable[22m
+[2m      - element is not visible[22m
+[2m    - retrying fill action[22m
+[2m      - waiting 100ms[22m
+[2m    60 × waiting for element to be visible, enabled and editable[22m
+[2m       - element is not visible[22m
+[2m     - retrying fill action[22m
+[2m       - waiting 500ms[22m
+

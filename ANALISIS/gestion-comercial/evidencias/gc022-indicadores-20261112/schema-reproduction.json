@@ -1,0 +1,22 @@
+{
+  "initialize": [
+    "PYTHONDONTWRITEBYTECODE=1",
+    "/workspace/.integration-venv/bin/python",
+    "BACKEND/deployment/fresh_local.py",
+    "--directory",
+    "NEW_PRIVATE_DIRECTORY",
+    "--service",
+    "erp-tur"
+  ],
+  "then": [
+    "configure NEW_PRIVATE_DIRECTORY with BACKEND/deployment/fresh_local.configure",
+    "django.setup(); call_command migrate; call_command makemigrations(check=True,dry_run=True)"
+  ],
+  "assertions": [
+    "erp_analytics_job, erp_analytics_event, ana_analytics_job, ana_analytics_event exist",
+    "erp_analytics_scope_code and ana_analytics_scope_code are unique",
+    "No changes detected"
+  ],
+  "historical_database_used": false,
+  "log": "schema.log"
+}

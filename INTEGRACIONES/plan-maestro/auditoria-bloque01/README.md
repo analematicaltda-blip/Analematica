@@ -40,9 +40,9 @@ adjunto corresponde a esa ejecución aprobada, no se oculta un fallo del product
 ## Reproducir sin sobrescribir evidencia anterior
 
 ```bash
-python INTEGRACIONES/plan-maestro/audit_block01.py --directory /tmp/nueva-auditoria
-python INTEGRACIONES/plan-maestro/verify_local.py --output /tmp/nueva-evidencia.json
-python INTEGRACIONES/plan-maestro/reconcile_block01.py --directory /tmp/nueva-auditoria --runtime /tmp/nueva-evidencia.json
+python BACKEND/INTEGRACIONES/plan-maestro/audit_block01.py --directory /tmp/nueva-auditoria
+python BACKEND/INTEGRACIONES/plan-maestro/verify_local.py --output /tmp/nueva-evidencia.json
+python BACKEND/INTEGRACIONES/plan-maestro/reconcile_block01.py --directory /tmp/nueva-auditoria --runtime /tmp/nueva-evidencia.json
 ```
 
 Requiere las dependencias de prueba preparadas. Ningún comando inicia producción,

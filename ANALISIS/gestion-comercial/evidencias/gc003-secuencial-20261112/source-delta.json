@@ -1,0 +1,42 @@
+[
+  {
+    "path": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm.py",
+    "before": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914",
+    "after": "3a2d2d84964e35a03045d82ed6c28e89fd91d038d5309ca273d1832d6cb45041"
+  },
+  {
+    "path": "BACKEND/INTEGRACIONES/operacion/verify_local.py",
+    "before": "49421ee9d3900f416d32567b26be098950e694e7f2427be1c004f60754aef5ae",
+    "after": "c94adc44e23b54ea45dc4d541822007ab828a91a9cd16699eb499320cca8b2d3"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm.py",
+    "before": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914",
+    "after": "3a2d2d84964e35a03045d82ed6c28e89fd91d038d5309ca273d1832d6cb45041"
+  },
+  {
+    "path": "BACKEND/SGA-CD-BACKEND/tests/test_pool08_crm.py",
+    "before": "333c8d7339b0fb04e090883c5a8368262900c48fe20461c46ce6e2f7f801029f",
+    "after": "2a28a346d08eec0a738086d2c82dfff15268af718ec62f73f11c3c45d394d0a8"
+  },
+  {
+    "path": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm.py",
+    "before": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914",
+    "after": "3a2d2d84964e35a03045d82ed6c28e89fd91d038d5309ca273d1832d6cb45041"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_crm_check.py",
+    "before": "fe5b2fc28d2ccaf8a6b14733b7bc35ae4717f8a99293e73398b4bb378adb8271",
+    "after": "525af9afdfb24d37e079b43cbe13fc77c44c61d7c5bb2635b4baea5530f2aec3"
+  },
+  {
+    "path": "BACKEND/deployment/tests/pool08_crm_native_check.py",
+    "before": "6749b59f3c090efc2f1e23c06fe9d2f5c2a293b6a0f7ebdc1b10be43a4170cd2",
+    "after": "d32c85de44843f765f49982e5107a98ce89731503c97e11594839d4752823ae8"
+  },
+  {
+    "path": "AGENTS.md",
+    "before": "a8213dab9367af42645cb89fa642ecfc2b3b44e65e15061cff508b1a9ca07035",
+    "after": "22518a55e30bbf4674a2ccd5544d255144f3a2d4355e064fabd661616b137d6a"
+  }
+]

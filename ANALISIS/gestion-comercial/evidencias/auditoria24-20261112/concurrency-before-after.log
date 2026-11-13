@@ -1,0 +1,6 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+{"passed": true, "before_false_corruption_reproduced": true, "after_revision_change_retried_and_verified": true, "actual_orm_committed_revision": true, "old_source_sha256": "76bc6c216d49dd4ca839d53a3eb6f6865454b481e170c75122e6eb1c5339990f", "new_source_sha256": "11b5af4be9c3f3c291e999d72c697a11d6cb0f7754e13433846d6ac0be7822da", "not_a_parallel_database_load_test": true, "provider_or_ledger_actions": false}

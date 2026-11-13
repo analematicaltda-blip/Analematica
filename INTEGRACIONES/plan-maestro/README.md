@@ -36,7 +36,7 @@ CHECK_SERVICE=erp-tur python BACKEND/deployment/tests/tourism_runtime_check.py -
 CHECK_SERVICE=turismo python BACKEND/deployment/tests/tourism_runtime_check.py -v
 PYTHONPATH=BACKEND/SGA-CD-BACKEND python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p 'test_assistance*.py' -v
 PYTHONPATH=BACKEND/SGA-CD-BACKEND python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_resources.py -v
-python INTEGRACIONES/turismo-erp/inventory.py --output /tmp/inventario-tecnico.json
+python BACKEND/INTEGRACIONES/turismo-erp/inventory.py --output /tmp/inventario-tecnico.json
 ```
 
 Las pruebas Django generan claves temporales y usan SQLite en memoria. No deben apuntar a producción. No ejecutan migraciones, pagos, campañas ni proveedores. No se arrancaron Docker ni servidores en el portátil del usuario. Un chequeo Django exitoso no elimina los errores sintácticos de módulos que no se cargan en ese recorrido.

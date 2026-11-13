@@ -32,6 +32,7 @@ export const ViewState: React.FC<ViewStateProps> = ({
   isLoading,
   loadingMessage = "Cargando información estratégica...",
   isSilentLoading = false,
+  isDegraded = false,
   isEmpty,
   emptyMessage = 'No se encontraron registros en este dominio.',
   emptyAction,

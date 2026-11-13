@@ -1,0 +1,9 @@
+Sales browser sga-cd 1280
+Sales browser sga-cd 390
+Sales browser erp-tur 1280
+Sales browser erp-tur 390
+Sales browser analematica 1280
+Sales browser analematica 390
+Sales browser gateway 1280
+Sales browser gateway 390
+{"passed":true,"checks":112}

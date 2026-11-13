@@ -1,0 +1,29 @@
+{
+  "policy_version": "sgacd-control-v2",
+  "reference_sha256": "b79b8f882ae2796aac95a3c4aa555760f9d64bd0df83feb080b235c6fa4b3db8",
+  "provenance": "SGA-CD assistance control_policy.json; reference contract copied, no runtime dependency",
+  "platforms": {
+    "META": {
+      "platform": "meta",
+      "workflow": "meta.campaign",
+      "url": "https://adsmanager.facebook.com/"
+    },
+    "TIKTOK": {
+      "platform": "tiktok",
+      "workflow": "tiktok.campaign",
+      "url": "https://ads.tiktok.com/"
+    },
+    "GOOGLE_YOUTUBE": {
+      "platform": "youtube",
+      "workflow": "youtube.ads",
+      "url": "https://ads.google.com/"
+    }
+  },
+  "authorizations": {
+    "browser_open": 2,
+    "browser_snapshot": 2,
+    "browser_click": 3,
+    "browser_fill": 3,
+    "browser_upload": 3
+  }
+}

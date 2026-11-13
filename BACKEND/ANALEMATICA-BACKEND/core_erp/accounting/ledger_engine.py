@@ -147,6 +147,8 @@ class LedgerEngine:
         if idempotency_key.startswith('opening-chunks:'):
             from .chunked_opening import authorize
             authorize(tenant_id,user.pk,idempotency_key)
+        from .commercial_sales_guard import require
+        require(tenant_id,idempotency_key)
         normalized=validate_lines(lines_data)
         contract={'schema':'manual-journal-v2','tenant_id':str(tenant_id),'actor_id':user.pk,
                   'date':entry_date.isoformat(),'description':description,'period_id':str(period_id) if period_id else None,
@@ -183,6 +185,9 @@ class LedgerEngine:
                 raise FiscalPeriodClosedError('Exactly one current open period must cover the draft company/date.')
             period=candidates[0]
         entry=JournalEntry.plain_objects.select_for_update().get(pk=identifier,tenant_id=tenant_id)
+        if not entry.is_posted:
+            from .commercial_sales_guard import require
+            require(tenant_id,entry.financial_event_id)
         from . import reviewed_fx
         fx_reserved=bool(entry.financial_event_id and entry.financial_event_id.startswith('reviewed-fx-pending:'))
         fx_review=reviewed_fx.latest(company,str(entry.pk)) if entry.currency!=entry.base_currency or fx_reserved else None
@@ -289,6 +294,8 @@ class LedgerEngine:
         if original.financial_event_id and original.financial_event_id.startswith('opening-chunks:'):
             from .chunked_opening import verify_posted_origin
             verify_posted_origin(company,original)
+        from .commercial_sales_guard import require_reversal
+        require_reversal(tenant_id,original)
         if not original.is_posted:raise AccountingError('Only posted journals can be reversed.')
         if original.is_reversal or JournalEntry.plain_objects.filter(tenant_id=tenant_id,reversed_entry_id=original.pk).exists():
             raise DuplicateReversalError('Journal already reversed or itself a reversal.')

@@ -29,13 +29,13 @@ Entra requieren otra configuración y política de emisores.
 Para el Codespace actual, el preparador detecta el dominio y usa el puerto web 8080:
 
 ```sh
-python3 scripts/setup_sso.py
+python3 BACKEND/tools/setup_sso.py
 ```
 
 Si no reconoce Codespaces:
 
 ```sh
-python3 scripts/setup_sso.py --public-origin https://TU-DIRECCION-REENVIADA-8080.app.github.dev
+python3 BACKEND/tools/setup_sso.py --public-origin https://TU-DIRECCION-REENVIADA-8080.app.github.dev
 ```
 
 Imprime estas dos rutas sobre ese origen:
@@ -69,8 +69,8 @@ por el mero hecho de tener una cuenta de Google o Microsoft.
 Para construir el backend ampliado e iniciar solo backend y vistas Flet:
 
 ```sh
-python3 scripts/setup_sso.py --start
-python3 scripts/update_demo_web.py
+python3 BACKEND/tools/setup_sso.py --start
+python3 FRONTEND/tools/update_demo_web.py
 ```
 
 El preparador respalda Compose, conserva las credenciales existentes, crea una
@@ -97,12 +97,12 @@ nativas.
 
 Pruebas:
 
-- `tests/sso/test_broker.py`: firmas e identidades inválidas, emisor/audiencia,
+- `BACKEND/tests/sso/test_broker.py`: firmas e identidades inválidas, emisor/audiencia,
   correo verificado, PKCE/cookie/state, expiración y consumo único.
-- `tests/sso/test_routes.py`: cookies seguras, proveedores deshabilitados, emisión
+- `BACKEND/tests/sso/test_routes.py`: cookies seguras, proveedores deshabilitados, emisión
   de JWT con los roles existentes y rechazo de comprobantes incorrectos/repetidos.
   Se ejecuta dentro de la imagen de backend con `/tmp/sso_routes.py` preparado.
-- `tests/frontend/oauth.cjs`: botones deshabilitados y sesión de navegador simulada.
+- `FRONTEND/tests/oauth.cjs`: botones deshabilitados y sesión de navegador simulada.
 
 La prueba con cuentas reales queda pendiente del registro y la configuración de
 las aplicaciones por su propietario. No se afirma una auditoría de seguridad ni

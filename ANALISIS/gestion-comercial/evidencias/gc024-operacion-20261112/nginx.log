@@ -1,0 +1,1 @@
+{"passed": true, "disposable": true, "nginx": "alpine", "sites": [{"site": "sgacd", "checks": 7, "passed": true}, {"site": "analematica", "checks": 7, "passed": true}, {"site": "erp", "checks": 7, "passed": true}], "checks": 21, "scope": "exact generated capture locations with isolated Basic-auth fixture; not full deployment/TLS/production", "production_ready": false}

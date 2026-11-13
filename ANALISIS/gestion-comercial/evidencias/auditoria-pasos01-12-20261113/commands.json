@@ -1,0 +1,515 @@
+[
+  {
+    "id": "pool08_opportunity_recovery_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_opportunity_recovery_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "pool08_after_followup_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/SGA-CD-BACKEND/tests/test_pool08_after_followup.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_after_sales_lifecycle",
+    "argv": [
+      "node",
+      "FRONTEND/deployment/tests/pool08_after_sales_lifecycle.cjs"
+    ],
+    "kind": "command",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "pool08_after_sales_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_after_sales_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_after_sales_wallet",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_after_sales_wallet_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_after_sales_sga_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_after_sales_sga_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "cancellation_timing",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/cancellation_timing_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_after_sales_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_after_sales_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 360
+  },
+  {
+    "id": "runner",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "BACKEND/INTEGRACIONES/operacion/tests",
+      "-p",
+      "test_verify_local.py",
+      "-v"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_lifecycle",
+    "argv": [
+      "node",
+      "FRONTEND/deployment/tests/pool08_sales_lifecycle.cjs"
+    ],
+    "kind": "command",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "pool08_sales_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_source",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_source_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_saga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_saga_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_saga_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_saga_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_bridge",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_bridge_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_labor",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_labor_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_sales_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_sales_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 360
+  },
+  {
+    "id": "pool08_pricing_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_pricing_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_pricing_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/SGA-CD-BACKEND/tests/test_pool08_pricing.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_pricing_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_pricing_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_pricing_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_pricing_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 300
+  },
+  {
+    "id": "pool08_quote_delivery",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "FRONTEND/deployment/tests",
+      "-p",
+      "test_quote_delivery.py",
+      "-v"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_opportunities_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_opportunities_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_opportunities_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/SGA-CD-BACKEND/tests/test_pool08_opportunities.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_opportunities_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_opportunities_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_opportunities_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_opportunities_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 300
+  },
+  {
+    "id": "pool08_crm_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_crm_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 300
+  },
+  {
+    "id": "pool08_quotation_lifecycle",
+    "argv": [
+      "node",
+      "FRONTEND/deployment/tests/pool08_quotation_lifecycle.cjs"
+    ],
+    "kind": "command",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "pool08_quotation_busy_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_quotation_busy_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 120
+  },
+  {
+    "id": "pool08_quotations_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_quotations_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_quotations_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/SGA-CD-BACKEND/tests/test_pool08_quotations.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_quotations_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_quotations_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_quotations_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_quotations_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 360
+  },
+  {
+    "id": "pool08_identity_acceptance_contract",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "BACKEND/INTEGRACIONES/operacion/tests",
+      "-p",
+      "test_identity_acceptance.py",
+      "-v"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_identity_acceptance_readiness",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/INTEGRACIONES/operacion/commercial_identity_acceptance.py",
+      "--output",
+      "/workspace/SGA-CD-conectado/.runtime/auditoria-pasos01-12-20261113/identity-acceptance.json"
+    ],
+    "kind": "command",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_crm_acceptance_readiness",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/INTEGRACIONES/operacion/commercial_identity_acceptance.py",
+      "--task",
+      "GC-003",
+      "--output",
+      "/workspace/SGA-CD-conectado/.runtime/auditoria-pasos01-12-20261113/crm-acceptance.json"
+    ],
+    "kind": "command",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_access_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/SGA-CD-BACKEND/tests/test_pool08_access_admin.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_access_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_access_admin_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_access_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_access_admin_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_access_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_access_admin_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 360
+  },
+  {
+    "id": "pool08_crm_domain",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_crm_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_crm_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/SGA-CD-BACKEND/tests/test_pool08_crm.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_crm_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_crm_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_crm_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_crm_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_event_binding_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_event_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_event_binding_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/SGA-CD-BACKEND/tests/test_pool08_event_integrity.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_payments_lifecycle",
+    "argv": [
+      "node",
+      "FRONTEND/deployment/tests/pool08_payments_lifecycle.cjs"
+    ],
+    "kind": "command",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_payments_gateway",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_payments_gateway_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_payments_native",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_payments_native_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_payments_sga",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_payments_sga_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_payments_legacy",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_payments_legacy_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_payments_http",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_payments_http_check.py"
+    ],
+    "kind": "unittest",
+    "timeout_seconds": 180
+  },
+  {
+    "id": "pool08_payments_browser",
+    "argv": [
+      "/workspace/.integration-venv/bin/python",
+      "BACKEND/deployment/tests/pool08_payments_browser_check.py"
+    ],
+    "kind": "command",
+    "timeout_seconds": 360
+  }
+]

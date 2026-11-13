@@ -1,0 +1,22 @@
+{
+  "pool08_crm_sga.log": "f944494ef858e8b45bad751ca992ebba80bba4cfcfe0296af2d8da28e5ee63ae",
+  "pool08_pricing_native.log": "17eb1986e9eebed02a988f117ae417935629e433498c162dd81b4f032375941b",
+  "pool08_crm_http.log": "72612cf670f3cba99f855fde80a35c92f7146ac5122f6b2345e75bbd4a6e8adc",
+  "pool08_pricing_http.log": "7547f32aeaedd33eecf64bc537e533d9d750c81168ce6a5b6946603c9e96533f",
+  "source-manifest.json": "5f822261fe7485815bad4d3f9155c30a161d6316de4299341654dbdff3a2db6e",
+  "application_layout.log": "3f95db979e0abe60634148e5b6ae3802f7a399eaf09a5bedf5e5275b0aec4901",
+  "pool08_pricing_browser.log": "39b528169a81ad02e507200628ab61f717b391aaf6fcd2c7f8178112dae37bc1",
+  "pool08_native_http.log": "2bdd841aa243d93cea5f1d45f469940d273c8bd1b8d78714cfe45efc8767c973",
+  "pool08_crm_native.log": "a63018cd3dc0ebf56e41bef03c75940152f2af30edf983775ff521c71e2c9c7f",
+  "pool08_contract.log": "27dac8bbcf8410469723864f2f6804065732652e246a6a4dccdcff45003a4de0",
+  "pool08_crm_browser.log": "e8e169decf8043debe96d8da0dc9dd1710878be10ceb87137b25789ff0232e9e",
+  "pool08_sga.log": "62cfe5f88d1a6e0b8f73fe0f89a8a4630116c347d942ac5ee317203920e6fc98",
+  "pool08_crm_domain.log": "1f82c56643a77ef9e7045f4e772ef692e6a8f07c865bdf3c5e66f4f515ef96d2",
+  "report.json": "69cbdfff707ede2a4e89410bc803faa217aab8102d91fad5f251be5f53b5b5b4",
+  "pool08_opportunities_sga.log": "b21c154477b8685484b569b03191589abb22ffc470e8307f8290d101a7eac208",
+  "pool08_pricing_sga.log": "a8672c406c310df1a29ca7c7863084d47c54b0cb0f17ac72b78fdd2197fe18d1",
+  "pool08_plan_registry.log": "816ed1e203e1e5ef200138cd977b027d969b34c4e2a6e503711cb28a64b40fdf",
+  "pool08_opportunities_http.log": "9e5300973fb3c2c723327d88ef77371e7926666a617f4b099458bbca4e3dd918",
+  "pool08_opportunities_native.log": "4f9ae78d0d88a2d3551b8f42a36a8d13154b0468eb78b6137182ab5f2319024e",
+  "pool08_opportunities_browser.log": "1ca2dfe07cc3f8a354bd6f20badd53fd1cb365d30e17585fb3e99d3f42f33103"
+}

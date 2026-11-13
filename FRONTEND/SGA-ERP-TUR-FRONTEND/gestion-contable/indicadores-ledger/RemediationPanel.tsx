@@ -1,11 +1,11 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/fiscal-envelope-runtime.js';
-import '../../../ANALEMATICA-FRONTEND/js/accounting-fiscal-package.js';
-import '../../../ANALEMATICA-FRONTEND/js/accounting-customer-store.js';
-import '../../../ANALEMATICA-FRONTEND/js/accounting-ubl-draft.js';
-import '../../../ANALEMATICA-FRONTEND/js/accounting-offline.js';
-import '../../../ANALEMATICA-FRONTEND/js/accounting-remediation.js';
+import '../runtime/fiscal-envelope-runtime.js';
+import '../runtime/accounting-fiscal-package.js';
+import '../runtime/accounting-customer-store.js';
+import '../runtime/accounting-ubl-draft.js';
+import '../runtime/accounting-offline.js';
+import '../runtime/accounting-remediation.js';
 declare global {interface Window {SGACDRemediationPanel:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>|null,signal:AbortSignal)=>Promise<unknown>;onPosted:()=>void})=>{destroy:()=>void;clear:()=>void}}}}
 const actions:Record<string,string>={correct_native_payroll_novelty:'corregir-novedad-nativa',record_native_payroll_novelty:'registrar-novedad-nativa',lookup_native_payroll_novelty:'consultar-novedad-nativa',fx_revaluation_catalog:'catalogo-revaluacion-divisas',review_fx_revaluation:'revisar-revaluacion-divisas',post_fx_revaluation:'contabilizar-revaluacion-divisas',fx_revaluation_state:'estado-revaluacion-divisas',foreign_journal_sources:'borradores-asiento-divisas',review_foreign_journal:'revisar-asiento-divisas',post_foreign_journal:'contabilizar-asiento-divisas',foreign_journal_state:'estado-asiento-divisas',crm_ubl_source:'fuente-borrador-ubl-crm',ubl_source:'fuente-borrador-ubl',review_environmental:'revisar-medicion-ambiental',record_environmental:'registrar-medicion-ambiental',environmental_state:'estado-medicion-ambiental',estimate_environmental:'estimar-impacto-ambiental',hotel_sources:'fuentes-indicadores-hoteleros',hotel_metrics:'indicadores-hoteleros',review_hotel_capacity:'revisar-capacidad-hotelera',record_hotel_capacity:'registrar-capacidad-hotelera',bank_sources:'fuentes-conciliacion-bancaria',bank_reconciliation_state:'estado-conciliacion-bancaria',compare_bank_statement:'comparar-extracto',review_bank_reconciliation:'revisar-conciliacion-bancaria',confirm_bank_reconciliation:'confirmar-conciliacion-bancaria',review_bank_release:'revisar-liberacion-bancaria',confirm_bank_release:'confirmar-liberacion-bancaria',payroll_sources:'fuentes-nomina-revisada',payroll_status:'estado-nomina-revisada',review_payroll:'revisar-nomina',post_payroll:'contabilizar-nomina-revisada',opening_state:'estado-apertura',review_opening:'revisar-apertura',apply_opening:'aplicar-apertura',tax_policy_history:'politicas-tributarias',review_tax_policy:'revisar-politica-tributaria',record_tax_policy:'registrar-politica-tributaria',quote_tax_policy:'calcular-politica-tributaria'};
 export function RemediationPanel({identity,providerId,request,onPosted}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>;onPosted:()=>void}){

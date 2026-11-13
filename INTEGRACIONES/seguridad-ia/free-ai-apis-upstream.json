@@ -2,7 +2,7 @@
   "source": "https://github.com/OuterSpacee/free-ai-apis",
   "commit": "0c78ad5ccc6a2658e434e465c53fa2bea83605b7",
   "license": "CC0-1.0",
-  "destination": "llm/free-ai-apis",
+  "destination": "BACKEND/IA/llm/free-ai-apis",
   "files": [
     {
       "path": ".gitignore",

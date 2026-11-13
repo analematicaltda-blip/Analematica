@@ -1,0 +1,8 @@
+test_all_four_http_paths_complete_stages_without_financial_effect (__main__.OpportunityHTTP.test_all_four_http_paths_complete_stages_without_financial_effect) ... ok
+test_errors_are_private_and_strict_on_all_backends (__main__.OpportunityHTTP.test_errors_are_private_and_strict_on_all_backends) ... ok
+test_tourism_has_no_enterprise_pipeline (__main__.OpportunityHTTP.test_tourism_has_no_enterprise_pipeline) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 16.177s
+
+OK

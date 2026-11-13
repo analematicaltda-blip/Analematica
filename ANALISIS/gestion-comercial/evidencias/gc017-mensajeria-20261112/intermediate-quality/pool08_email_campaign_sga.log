@@ -1,0 +1,27 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_audit_rollback_and_schedule_bounds (__main__.Checks.test_audit_rollback_and_schedule_bounds) ... ok
+test_bounce_report_suppresses_other_pending_campaigns (__main__.Checks.test_bounce_report_suppresses_other_pending_campaigns) ... ok
+test_changed_consent_and_sender_policy_block_dispatch (__main__.Checks.test_changed_consent_and_sender_policy_block_dispatch) ... ok
+test_interrupted_dispatch_recovers_as_uncertain_without_resending (__main__.Checks.test_interrupted_dispatch_recovers_as_uncertain_without_resending) ... ok
+test_legacy_customer_alias_keeps_native_consent_and_company_scope (__main__.Checks.test_legacy_customer_alias_keeps_native_consent_and_company_scope) ... ok
+test_malformed_audience_headers_and_untrusted_worker_options_rejected (__main__.Checks.test_malformed_audience_headers_and_untrusted_worker_options_rejected) ... ok
+test_no_consent_exclusion_and_unsubscribe_prevent_pending_dispatch (__main__.Checks.test_no_consent_exclusion_and_unsubscribe_prevent_pending_dispatch) ... ok
+test_private_personalization_escaped_html_and_unknown_variables (__main__.Checks.test_private_personalization_escaped_html_and_unknown_variables) ... ok
+test_public_unsubscribe_survives_owner_revocation (__main__.Checks.test_public_unsubscribe_survives_owner_revocation) ... ok
+test_quota_and_recovery_do_not_repeat_a_dispatch (__main__.Checks.test_quota_and_recovery_do_not_repeat_a_dispatch) ... ok
+test_real_loopback_smtp_accepts_one_private_recipient (__main__.Checks.test_real_loopback_smtp_accepts_one_private_recipient) ... ok
+test_save_review_never_send_and_exact_replay (__main__.Checks.test_save_review_never_send_and_exact_replay) ... ok
+test_signed_receipts_separate_delivery_and_do_not_invent_opening (__main__.Checks.test_signed_receipts_separate_delivery_and_do_not_invent_opening) ... ok
+test_smtp_acceptance_is_not_delivery_opening_or_automatic_retry (__main__.Checks.test_smtp_acceptance_is_not_delivery_opening_or_automatic_retry) ... ok
+test_unsubscribe_proof_rejects_forgery_and_foreign_recipient (__main__.Checks.test_unsubscribe_proof_rejects_forgery_and_foreign_recipient) ... ok
+test_worker_candidates_exclude_future_campaigns (__main__.Checks.test_worker_candidates_exclude_future_campaigns) ... ok
+test_worker_disabled_uncertain_timeout_and_no_second_attempt (__main__.Checks.test_worker_disabled_uncertain_timeout_and_no_second_attempt) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 16.078s
+
+OK

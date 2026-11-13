@@ -1,0 +1,35 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_cancelled_job_is_not_due_and_cannot_reschedule (__main__.Checks.test_cancelled_job_is_not_due_and_cannot_reschedule) ... ok
+test_daily_limit_and_poll_delay_prevent_unbounded_dispatch (__main__.Checks.test_daily_limit_and_poll_delay_prevent_unbounded_dispatch) ... ok
+test_different_administrator_cannot_authorize_original_job (__main__.Checks.test_different_administrator_cannot_authorize_original_job) ... ok
+test_draft_replay_and_conflicting_request (__main__.Checks.test_draft_replay_and_conflicting_request) ... ok
+test_due_calendar_normalizes_timezone_and_filters_before_limit (__main__.Checks.test_due_calendar_normalizes_timezone_and_filters_before_limit) ... ok
+test_history_chain_detects_tampered_event (__main__.Checks.test_history_chain_detects_tampered_event) ... ok
+test_instagram_container_completion_is_not_publication (__main__.Checks.test_instagram_container_completion_is_not_publication) ... ok
+test_interrupted_mutation_recovers_uncertain_without_retry (__main__.Checks.test_interrupted_mutation_recovers_uncertain_without_retry) ... ok
+test_invalid_asset_or_format_or_visibility_rejected (__main__.Checks.test_invalid_asset_or_format_or_visibility_rejected) ... ok
+test_invalid_unicode_and_oversized_batch_are_validation_errors (__main__.Checks.test_invalid_unicode_and_oversized_batch_are_validation_errors) ... ok
+test_owned_video_jobs_use_real_sanitized_library_for_all_video_formats (__main__.Checks.test_owned_video_jobs_use_real_sanitized_library_for_all_video_formats) ... ok
+test_past_far_future_and_naive_times_rejected (__main__.Checks.test_past_far_future_and_naive_times_rejected) ... ok
+test_policy_change_or_disabled_worker_prevents_claim (__main__.Checks.test_policy_change_or_disabled_worker_prevents_claim) ... ok
+test_post_ack_database_failure_keeps_durable_claim_without_reupload (__main__.Checks.test_post_ack_database_failure_keeps_durable_claim_without_reupload) ... ok
+test_provider_redirect_does_not_leak_or_follow_token (__main__.Checks.test_provider_redirect_does_not_leak_or_follow_token) ... ok
+test_role_revocation_blocks_get_command_history_and_receipt (__main__.Checks.test_role_revocation_blocks_get_command_history_and_receipt) ... ok
+test_stale_revision_and_false_confirmation_do_not_mutate (__main__.Checks.test_stale_revision_and_false_confirmation_do_not_mutate) ... ok
+test_tiktok_init_is_not_completion_and_public_ids_required (__main__.Checks.test_tiktok_init_is_not_completion_and_public_ids_required) ... ok
+test_timeout_or_generic_200_never_reuploads (__main__.Checks.test_timeout_or_generic_200_never_reuploads) ... ok
+test_two_reviews_and_schedule_do_not_publish (__main__.Checks.test_two_reviews_and_schedule_do_not_publish) ... ok
+test_unconfirmed_remote_read_does_not_report_published (__main__.Checks.test_unconfirmed_remote_read_does_not_report_published) ... ok
+test_upload_ack_is_not_publication_and_second_step_reads_only (__main__.Checks.test_upload_ack_is_not_publication_and_second_step_reads_only) ... ok
+test_withdrawn_media_cannot_be_scheduled (__main__.Checks.test_withdrawn_media_cannot_be_scheduled) ... ok
+test_wrong_owner_and_generic_remote_200_never_publish (__main__.Checks.test_wrong_owner_and_generic_remote_200_never_publish) ... ok
+test_youtube_upload_requires_processing_and_owned_channel_proof (__main__.Checks.test_youtube_upload_requires_processing_and_owned_channel_proof) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 33.347s
+
+OK

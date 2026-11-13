@@ -4,7 +4,7 @@ Estado: herramienta de verificación, instalación aislada, evidencias y procedi
 
 ## Implementación
 
-- `INTEGRACIONES/operacion/verify_local.py`: una entrada para perfiles core, instalación nueva, navegador, dispositivos, PostgreSQL y builds web estrictos. No instala dependencias automáticamente, despliega ni modifica Git.
+- `BACKEND/INTEGRACIONES/operacion/verify_local.py`: una entrada para perfiles core, instalación nueva, navegador, dispositivos, PostgreSQL y builds web estrictos. No instala dependencias automáticamente, despliega ni modifica Git.
 - Procesos independientes, límites de tiempo, registros privados de hasta 8 MiB, cancelación que termina el hijo y detiene grupos siguientes. Un comando que no descubre pruebas unittest no puede aprobar el grupo.
 - Estados explícitos `PASSED`, `PASSED_WITH_SKIPS`, `FAILED`, `BLOCKED`, `TIMEOUT` y `CANCELLED`. Las omisiones impiden un resultado agregado completo; no se convierten en pruebas aprobadas.
 - Informes JSON con versiones, tiempos, grupos y huellas; inventario de fuentes seleccionadas al principio y al final. Si cambia el código seleccionado durante la batería, no se declara completa.
@@ -18,11 +18,11 @@ Estado: herramienta de verificación, instalación aislada, evidencias y procedi
 ## Uso
 
 ```bash
-python INTEGRACIONES/operacion/verify_local.py --profile core --output /tmp/sgacd-core-nuevo
-python INTEGRACIONES/operacion/verify_local.py --profile fresh --output /tmp/sgacd-fresh-nuevo
-python INTEGRACIONES/operacion/verify_local.py --profile browser --profile devices --profile postgres --output /tmp/sgacd-integracion-nueva
-python INTEGRACIONES/operacion/verify_local.py --profile web-build --web-dependencies /ruta/node_modules --output /tmp/sgacd-build-nuevo
-python INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-core-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile core --output /tmp/sgacd-core-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile fresh --output /tmp/sgacd-fresh-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile browser --profile devices --profile postgres --output /tmp/sgacd-integracion-nueva
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile web-build --web-dependencies /ruta/node_modules --output /tmp/sgacd-build-nuevo
+python BACKEND/INTEGRACIONES/operacion/verify_local.py --verify /tmp/sgacd-core-nuevo
 ```
 
 Salida 0 significa únicamente que los perfiles seleccionados pasaron sin omisiones y con fuentes estables. Salida 2 conserva cualquier fallo, omisión, bloqueo, cancelación o cambio de fuentes. `production_ready=false` no se eleva por aprobar una batería.

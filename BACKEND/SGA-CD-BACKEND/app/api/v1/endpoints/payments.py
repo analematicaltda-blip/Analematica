@@ -44,25 +44,9 @@ def obtener_planes():
 
 @router.post("/checkout")
 def crear_checkout_pago(pedido: CheckoutRequest):
-    plan = next((p for p in PLANES_CATALOGO if p["id"] == pedido.plan_id), None)
-    if not plan:
-        raise HTTPException(status_code=404, detail="Plan no encontrado")
-
-    referencia = f"SGA-{pedido.plan_id.upper()}-{pedido.email_cliente[:5]}-101"
-    cliente_info = {
-        "nombre": pedido.nombre_cliente,
-        "email": pedido.email_cliente,
-        "telefono": pedido.telefono_cliente
-    }
-
-    resultado = payment_gateway.generar_link_pago(
-        monto=plan["precio"],
-        moneda=plan["moneda"],
-        referencia=referencia,
-        cliente_info=cliente_info,
-        concepto=f"Suscripcion {plan['nombre']}"
-    )
-    return {"status": "success", "checkout": resultado}
+    # The former anonymous route had no durable intent and reused references.
+    # Keep its catalogue readable, but direct writes to the company-owned flow.
+    raise HTTPException(status_code=409,detail={"code":"PERSISTED_PAYMENT_INTENT_REQUIRED","workflow":"commercial-unified/crm/payment-commands"},headers={"Cache-Control":"no-store"})
 
 @router.get("/config")
 def obtener_configuracion_pasarela():

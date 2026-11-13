@@ -1,0 +1,51 @@
+{
+  "measurements": [
+    {
+      "system": "erp-tur",
+      "samples": 8,
+      "concurrency": 4,
+      "p50_ms": 1032.5059999999999,
+      "p95_ms": 1165.343,
+      "max_ms": 1165.343,
+      "scope": "LOOPBACK_OPERATIONAL_READ_PROBE",
+      "production_sla_qualified": false,
+      "provider_latency_measured": false
+    },
+    {
+      "system": "analematica",
+      "samples": 8,
+      "concurrency": 4,
+      "p50_ms": 817.3335,
+      "p95_ms": 822.284,
+      "max_ms": 822.284,
+      "scope": "LOOPBACK_OPERATIONAL_READ_PROBE",
+      "production_sla_qualified": false,
+      "provider_latency_measured": false
+    },
+    {
+      "system": "sga-cd",
+      "samples": 8,
+      "concurrency": 4,
+      "p50_ms": 622.9225,
+      "p95_ms": 785.475,
+      "max_ms": 785.475,
+      "scope": "LOOPBACK_OPERATIONAL_READ_PROBE",
+      "production_sla_qualified": false,
+      "provider_latency_measured": false
+    },
+    {
+      "system": "analematica",
+      "samples": 8,
+      "concurrency": 4,
+      "p50_ms": 870.377,
+      "p95_ms": 897.907,
+      "max_ms": 897.907,
+      "scope": "LOOPBACK_OPERATIONAL_READ_PROBE",
+      "production_sla_qualified": false,
+      "provider_latency_measured": false
+    }
+  ],
+  "hardware_target": false,
+  "data": "synthetic disposable scoped records",
+  "sla_accepted": false
+}

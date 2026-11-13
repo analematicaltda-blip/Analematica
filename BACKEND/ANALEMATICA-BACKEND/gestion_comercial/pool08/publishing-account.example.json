@@ -1,0 +1,15 @@
+{
+  "SYSTEM:SCOPE:PROVIDER_OR_DASH": {
+    "owned-page": {
+      "version": "configure-after-review",
+      "format": "FACEBOOK_PHOTO",
+      "account_id": "REPLACE_WITH_OWNED_PAGE",
+      "page_id": "",
+      "credential_env": "COMMERCIAL_PUBLISH_SECRET_OWNED_PAGE",
+      "public_base_url": "https://media.example.invalid",
+      "allow_publish": false,
+      "ownership_support_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+      "daily_limit": 5
+    }
+  }
+}

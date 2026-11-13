@@ -1,0 +1,176 @@
+INFO Suscriptor registrado para el evento: RESERVATION_CREATED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: RESERVATION_CANCELLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECEIVED
+INFO Suscriptor registrado para el evento: SALE_COMPLETED
+INFO Suscriptor registrado para el evento: PURCHASE_ORDER_POSTED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED
+INFO Suscriptor registrado para el evento: INVENTORY_ADJUSTED
+INFO Suscriptor registrado para el evento: ASSET_DEPRECIATED
+INFO Suscriptor registrado para el evento: LIQUIDATION
+INFO Suscriptor registrado para el evento: SALE_CREATED
+INFO Suscriptor registrado para el evento: PAYROLL_LIQUIDATED_V2
+INFO Suscriptor registrado para el evento: SaaS_INVOICE_GENERATED
+INFO Suscriptor registrado para el evento: BANK_FEE_REGISTERED
+INFO Standard Accounting Handlers registered.
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: FINANCIAL_PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: SUBSIDIARY_CREATED
+INFO EOS CONSOLIDATION: Event handlers registered.
+INFO Suscriptor registrado para el evento: TENANT_PROVISIONING_REQUESTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_EXPIRED
+INFO TENANT LIFECYCLE ENGINE: Listening for lifecycle events.
+INFO Suscriptor registrado para el evento: FINANCIAL_IMPACT_REQUESTED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: RESERVATION_CONFIRMED
+INFO Suscriptor registrado para el evento: PAYMENT_FAILED
+INFO Control Tower Monitoring Handlers registered.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: ANOMALY_DETECTED
+INFO CONTROL TOWER: Metric Listener active.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Enterprise Policy Engine registered.
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: JOURNAL_POSTED
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Suscriptor registrado para el evento: KPI_UPDATED
+INFO Global Holding Orchestrator registered.
+INFO Suscriptor registrado para el evento: PERIOD_CLOSED
+INFO Capital Markets Orchestrator registered.
+INFO Suscriptor registrado para el evento: EQUITY_BUYBACK_TRIGGERED
+INFO Tokenization Orchestrator registered.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: LEAD_CONVERTED
+INFO COMMERCIAL ENGINE: Suscriptores de eventos registrados.
+INFO Suscriptor registrado para el evento: USAGE_CYCLE_CLOSED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: BANK_TRANSACTION_IMPORTED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO TREASURY AUTOMATION: Orquestación de eventos configurada.
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_CANCELLED
+INFO Suscriptor registrado para el evento: PLAN_UPGRADED
+INFO Suscriptor registrado para el evento: PLAN_DOWNGRADED
+INFO Suscriptor registrado para el evento: USAGE_BILLED
+INFO Suscriptor registrado para el evento: PAYMENT_RECONCILED
+INFO Suscriptor registrado para el evento: INVOICE_CREATED
+INFO Suscriptor registrado para el evento: USAGE_RECORDED
+INFO OPERATIONAL INTELLIGENCE: DataCollector initialized.
+/workspace/.integration-venv/lib/python3.12/site-packages/django/db/backends/utils.py:98: RuntimeWarning: Accessing the database during app initialization is discouraged. To fix this warning, avoid executing queries in AppConfig.ready() or when your app modules are imported.
+  warnings.warn(self.APPS_NOT_READY_WARNING_MSG, category=RuntimeWarning)
+INFO KERNEL: Intención 'PLATFORM_CREATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_SUSPEND_USER' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ERP_CONFIRM_SALE' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_GENERATE_BALANCE' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'OPTIMIZE_TENANT_RETENTION' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ADAPTIVE_PRICING_ADJUSTMENT' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'SYSTEMIC_EVOLUTION_STEP' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'MANAGE_WORKSHOP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'REGISTER_PRODUCTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'UPDATE_ARTISAN_INVENTORY' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'PROCESS_COMMAND' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'VOID_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CREATE_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'CANCEL_PACKAGE_COMPONENT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_AGENCY_PACKAGE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'SCHEDULE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BOOK_TRANSPORT_SEAT' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_TRANSPORT_TRIP' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'ASSIGN_GUIDE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'LIQUIDATE_GUIDE_COMMISSION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'BILL_CONSUMPTION' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'NIGHT_CASH_CLOSE' registrada en el dominio 'operativa_turistica'.
+INFO KERNEL: Intención 'WALLET_DEPOSIT' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_PAY' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_REFUND' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_LIQUIDATE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'WALLET_FREEZE' registrada en el dominio 'wallet'.
+INFO KERNEL: Intención 'DELIVERY_REQUEST' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_ASSIGN' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_COMPLETE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'DELIVERY_RATE' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'VEHICLE_REGISTER' registrada en el dominio 'delivery'.
+INFO KERNEL: Intención 'GENERATE_LEGACY_BUNDLE' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PLATFORM_TRANSFER_OWNERSHIP' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'SYSTEM_EVOLUTION_HARDENING' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'QUERY_META_STANDARD' registrada en el dominio 'governance'.
+INFO KERNEL: Intención 'PUBLIC_BUDGET_OPTIMIZATION' registrada en el dominio 'hacienda'.
+INFO KERNEL: Intención 'TERRITORIAL_IMPACT_SIMULATION' registrada en el dominio 'planeacion'.
+INFO KERNEL: Intención 'CIVIL_DEFENSE_ALERT' registrada en el dominio 'seguridad_civil'.
+INFO KERNEL: Intención 'LAND_USE_AUDIT' registrada en el dominio 'gestion_territorial'.
+INFO KERNEL: Intención 'ERP_CREATE_VOUCHER' registrada en el dominio 'contable'.
+INFO KERNEL: Intención 'ERP_VIEW_SALES_STATS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'PRIORITIZE_CRITICAL_LEADS' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'OPTIMIZE_MARKETING_BUDGET' registrada en el dominio 'comercial'.
+INFO KERNEL: Intención 'ERP_VIEW_CASH_FLOW' registrada en el dominio 'financiero'.
+INFO KERNEL: Intención 'ERP_MANAGE_RESOURCES' registrada en el dominio 'operativo'.
+INFO KERNEL: Intención 'ERP_SEARCH_DOCUMENT' registrada en el dominio 'archivistico'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_PLAN' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_OPTIMIZE_RESOURCES' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_WEB_CMS' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'PLATFORM_UPDATE_LEGAL' registrada en el dominio 'plataforma'.
+INFO KERNEL: Intención 'ONBOARDING_PRESTADOR' registrada en el dominio 'prestadores'.
+INFO KERNEL: Intención 'AUDITORIA_GLOBAL' registrada en el dominio 'administrador_general'.
+INFO Suscriptor registrado para el evento: METRIC_COLLECTED
+INFO Suscriptor registrado para el evento: JOURNAL_ENTRY_POSTED
+INFO Suscriptor registrado para el evento: SUBSCRIPTION_ACTIVATED
+INFO EOS DECISION ENGINE: Metric Listener active.
+INFO Suscriptor registrado para el evento: LEAD_QUALIFIED
+INFO SAAS ORCHESTRATOR: Listening for onboarding signals.
+INFO Suscriptor registrado para el evento: WALLET_PAYMENT_REQUESTED
+INFO Wallet event boundary registered; payment execution requires explicit approvals.
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_FROM_TURISMO
+INFO Suscriptor registrado para el evento: DELIVERY_REQUESTED_DIRECT
+INFO Delivery Event Handlers registrados.
+INFO Journal Entry created: 1714743d-5944-41f0-990d-8dd7bc7357c3 (Previously posted customer receipt)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tempfile.py:940: ResourceWarning: Implicitly cleaning up <TemporaryDirectory '/tmp/tmpmkmo_rak'>
+  _warnings.warn(warn_message, ResourceWarning)
+INFO Journal Entry created: f5e66e9e-e0fe-4388-9777-b87801150d34 (Servicio prestado reserva 2e2e9e3d-458d-46cd-bdfd-375284503385)
+..INFO Journal Entry created: f18f38fb-a5bf-4118-9111-0543f4156557 (Previously posted customer receipt)
+INFO Journal Entry created: 69476c53-c446-438c-a2e2-8f98dfa1674e (Servicio prestado reserva 23e7740b-03d8-4df1-a660-341d30606907)
+INFO Journal Entry created: ae2405dd-baa7-4c63-aa63-a509d41dd889 (Servicio anulado por revisión del titular)
+INFO Journal Entry created: bfb1b840-61c3-4b3e-8cdb-70f1acc97e61 (Receipt released after recognition reversal)
+.INFO Journal Entry created: 6a38ec41-2ec8-4f6f-a3a7-240d94e9a70b (Previously posted customer receipt)
+INFO Journal Entry created: d1ed1f2d-8cae-4767-859f-27fb23cb9da4 (Servicio prestado reserva f6dbaac0-a553-4ec3-84a3-5715e656a33b)
+INFO Journal Entry created: f6cf9c49-009b-4a19-adec-3aa6765d483e (Servicio prestado reserva f6dbaac0-a553-4ec3-84a3-5715e656a33b)
+.INFO Journal Entry created: 32eba321-f4f3-463b-8d9d-85fd4b0365f2 (Servicio prestado reserva 6f61f58d-935b-470c-b0ad-0babbe43373a)
+INFO Journal Entry created: a8a55e7e-c2a3-4e32-99bc-f7397f335862 (Servicio anulado por revisión del titular)
+.INFO Journal Entry created: dbd51bdc-6041-455e-9b11-3458d21f849d (Previously posted customer receipt)
+...INFO Journal Entry created: 14022aaa-9796-4802-ace1-01b9de79b71f (Servicio prestado reserva b3013cc1-9ad8-4eab-964a-ce157642e257)
+INFO Journal Entry created: b9b0e533-ba7d-4ece-acd7-a373ccfb6cba (Servicio anulado por revisión del titular)
+...INFO Journal Entry created: 5e324180-0039-403a-8a34-fd892560b437 (Previously posted customer receipt)
+INFO Journal Entry created: c442b641-4353-4591-896d-a99635445d62 (Servicio prestado reserva ada55b89-7ee9-49cb-976f-a02ec4f6c242)
+...INFO Journal Entry created: 924bcb3b-13bd-4702-8ec3-984fde35439c (Previously posted customer receipt)
+INFO Journal Entry created: 8ead6291-0e49-4a35-9865-dabde0c9d85e (Servicio prestado reserva 1ebaeda1-3011-42e0-9b48-8b936c72dff5)
+.INFO Journal Entry created: 897f1c46-e389-40fa-aa04-8a75c544ef4f (Servicio prestado reserva 09d2411a-28bc-4576-b6b5-d8f95fbecd64)
+.INFO Journal Entry created: e1b30338-6eea-4f7f-beec-15223020d1ec (Servicio prestado reserva 98df8f69-d4cb-423f-957d-4955c8d7e1b2)
+.INFO Journal Entry created: 5a7c5472-7187-4750-a52f-cfae3e195a4a (Previously posted customer receipt)
+INFO Journal Entry created: 108dddfc-f52e-484a-81a8-f22c4a6ad4bc (Servicio prestado reserva d057d949-e4dc-4b0f-a2a7-fd6061111847)
+INFO Journal Entry created: ca38a4b5-e5a9-450c-bcc7-71bb4c9a9e3a (Servicio anulado por revisión del titular)
+.INFO Journal Entry created: cbc2a801-5396-4078-b5e1-bead11e194b4 (Servicio prestado reserva 98f27b4f-620b-425f-8abe-f4ccdfc5d9fc)
+INFO Journal Entry created: f739bc96-7bfa-443c-a5b3-0d240a79b629 (Servicio anulado por revisión del titular)
+.INFO Journal Entry created: 02a2e781-b257-44de-b1f1-fe4d5c5f4b70 (Servicio prestado reserva 0817f0eb-0c01-46fa-93a6-123eddb377af)
+.INFO Journal Entry created: 5b89c05e-f682-4302-80d1-28c291ae78eb (Servicio prestado reserva 424e214c-908e-409a-9e70-f256fbce0973)
+.INFO Journal Entry created: 50119292-3981-4cfb-9e64-a4e61ab496eb (Previously posted customer receipt)
+INFO Journal Entry created: 3e8f6b07-475c-4b54-afa6-f8229b3d1d2d (Servicio prestado reserva e1ce0e1e-e5bc-477f-8cb7-b51aa0e2bb07)
+.INFO Journal Entry created: ba8ba97c-11eb-4fd8-a813-cb01a1cc1889 (Servicio prestado reserva 5ab9936f-04c0-4b01-800b-dd6dba632381)
+INFO Journal Entry created: cd726aa8-3746-446a-a8b5-c4a43d62235e (Servicio anulado por revisión del titular)
+.INFO Journal Entry created: 8c1a7c12-0861-4ddb-a922-df4043ae03ab (Servicio prestado reserva f575b078-fe38-436f-a588-37d09e66a312)
+INFO Journal Entry created: b37b6a45-1bfd-4f43-ac28-11d740d2f917 (Servicio anulado por revisión del titular)
+INFO Journal Entry created: 108f90a7-53b0-42af-96c6-cfacedd7e042 (Servicio anulado por revisión del titular)
+.INFO Journal Entry created: 0b76cc9f-3ca7-4043-ac2e-48af6b718f53 (Previously posted customer receipt)
+INFO Journal Entry created: 5eccbcf4-c26f-4e65-a417-9f8c57e2bcd7 (Receipt reversed after review)
+...INFO Journal Entry created: 01c43a05-3d34-47b5-add1-a2bcc906dd57 (Servicio prestado reserva b345b0b0-8f5a-4f58-b675-ce32186b8319)
+...INFO Journal Entry created: 5718b72e-c0a8-4684-b324-910fba7040aa (Servicio prestado reserva 1a162c9d-8f17-42fd-b5a8-fcbb1e325459)
+.INFO Journal Entry created: 185d6121-12ed-4ee5-af5f-938f5b4ae1f7 (Servicio prestado reserva f6912f26-7a87-4402-a6c1-943f4ffede90)
+.INFO Journal Entry created: 14605c28-8884-4802-aeb0-db2b4c6c049c (Previously posted customer receipt)
+.
+----------------------------------------------------------------------
+Ran 33 tests in 4.707s
+
+OK

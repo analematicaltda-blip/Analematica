@@ -1,0 +1,32 @@
+[
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-opportunities.js",
+    "sha256": "bafa99c4fff932e6a6063670b000db00557dd30cd5b28c4142d19d731aa10a35",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-opportunities.js",
+    "sha256": "bafa99c4fff932e6a6063670b000db00557dd30cd5b28c4142d19d731aa10a35",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-opportunities.js",
+    "sha256": "bafa99c4fff932e6a6063670b000db00557dd30cd5b28c4142d19d731aa10a35",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/ANALEMATICA-FRONTEND/js/commercial-crm.js",
+    "sha256": "ef0c6aa3bca2192afc3e63386c6eb783e5f3391af54d4afec6a1eacf54b69e2a",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-CD-WEB.git/js/commercial-crm.js",
+    "sha256": "ef0c6aa3bca2192afc3e63386c6eb783e5f3391af54d4afec6a1eacf54b69e2a",
+    "syntax": "PASS"
+  },
+  {
+    "path": "FRONTEND/SGA-ERP-TUR-FRONTEND/public/js/commercial-crm.js",
+    "sha256": "ef0c6aa3bca2192afc3e63386c6eb783e5f3391af54d4afec6a1eacf54b69e2a",
+    "syntax": "PASS"
+  }
+]

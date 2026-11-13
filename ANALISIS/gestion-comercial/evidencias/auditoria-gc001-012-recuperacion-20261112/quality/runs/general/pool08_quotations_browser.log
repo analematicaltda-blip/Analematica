@@ -1,0 +1,7 @@
+Quotation browser sga-cd 1280
+Quotation browser sga-cd 390
+Quotation browser erp-tur 1280
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-quote-share] a') to be visible[22m
+

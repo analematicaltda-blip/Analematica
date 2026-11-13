@@ -1,0 +1,1 @@
+{"passed":true,"checks":27,"mode":"corrected_lifecycle","systems":[{"system":"sga-cd","initial_controls_blocked":true,"controlled_protocol_only":true},{"system":"erp-tur","initial_controls_blocked":true,"controlled_protocol_only":true},{"system":"analematica","initial_controls_blocked":true,"controlled_protocol_only":true}],"provider_calls":0,"bank_actions":0}

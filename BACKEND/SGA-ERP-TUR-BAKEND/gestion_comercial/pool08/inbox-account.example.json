@@ -1,0 +1,14 @@
+{
+  "SYSTEM:SCOPE:PROVIDER_OR_DASH": {
+    "owned": {
+      "version": "configure-after-review",
+      "channel": "FB_DM",
+      "account_id": "REPLACE_WITH_OWNED_ACCOUNT_ID",
+      "page_id": "",
+      "credential_env": "COMMERCIAL_INBOX_SECRET_OWNED",
+      "ingress_key_env": "COMMERCIAL_INBOX_INGRESS_OWNED",
+      "allow_reply": false,
+      "ownership_support_digest": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  }
+}

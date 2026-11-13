@@ -1,9 +1,9 @@
 name: Shared foundation and tourism audit
 on:
   push:
-    paths: ['DESKTOP/asistencia-sgacd/**', 'FRONTEND/ANALEMATICA-FRONTEND/js/admin.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ledger.js', 'FRONTEND/ANALEMATICA-FRONTEND/admin.html', 'BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger.py', 'BACKEND/SGA-CD-BACKEND/app/models/corporate.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/corporate.py', 'BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger*.py', 'BACKEND/SGA-CD-BACKEND/tools/review_corporate_ledger.py', 'FRONTEND/ANALEMATICA-FRONTEND/js/control.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/content.js', 'FRONTEND/ANALEMATICA-FRONTEND/content.html', 'FRONTEND/ANALEMATICA-FRONTEND/css/content.css', 'FRONTEND/ANALEMATICA-FRONTEND/tests/content.cjs', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_content.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_control.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/**', 'FRONTEND/deployment/**', 'FRONTEND/shared/**', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/**', 'WALLET-BACKEND/**', 'ANALISIS/**', 'BACKEND/ANALEMATICA-BACKEND/core_erp/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+    paths: ['BACKEND/INTEGRACIONES/**', 'FRONTEND/SGA-CD-WEB.git/js/commercial-*.js', 'FRONTEND/SGA-CD-WEB.git/css/commercial-crm.css', 'FRONTEND/ANALEMATICA-FRONTEND/js/commercial-*.js', 'FRONTEND/ANALEMATICA-FRONTEND/css/commercial-crm.css', 'FRONTEND/SGA-ERP-TUR-FRONTEND/public/**', 'FRONTEND/**/commercial-offline/**', 'FRONTEND/SGA-TUR-FRONTEND/src/components/shared-ui/**', '.github/workflows/local-operation-audit.yml', 'BACKEND/SGA-CD-BACKEND/app/commercial/**', 'BACKEND/ANALEMATICA-BACKEND/gestion_comercial/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'DESKTOP/asistencia-sgacd/**', 'FRONTEND/ANALEMATICA-FRONTEND/js/admin.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ledger.js', 'FRONTEND/ANALEMATICA-FRONTEND/admin.html', 'BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger.py', 'BACKEND/SGA-CD-BACKEND/app/models/corporate.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/corporate.py', 'BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger*.py', 'BACKEND/SGA-CD-BACKEND/tools/review_corporate_ledger.py', 'FRONTEND/ANALEMATICA-FRONTEND/js/control.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/content.js', 'FRONTEND/ANALEMATICA-FRONTEND/content.html', 'FRONTEND/ANALEMATICA-FRONTEND/css/content.css', 'FRONTEND/ANALEMATICA-FRONTEND/tests/content.cjs', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_content.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_control.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/**', 'FRONTEND/deployment/**', 'FRONTEND/shared/**', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/**', 'BACKEND/WALLET-BACKEND/**', 'ANALISIS/**', 'BACKEND/ANALEMATICA-BACKEND/core_erp/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
   pull_request:
-    paths: ['DESKTOP/asistencia-sgacd/**', 'FRONTEND/ANALEMATICA-FRONTEND/js/admin.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ledger.js', 'FRONTEND/ANALEMATICA-FRONTEND/admin.html', 'BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger.py', 'BACKEND/SGA-CD-BACKEND/app/models/corporate.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/corporate.py', 'BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger*.py', 'BACKEND/SGA-CD-BACKEND/tools/review_corporate_ledger.py', 'FRONTEND/ANALEMATICA-FRONTEND/js/control.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/content.js', 'FRONTEND/ANALEMATICA-FRONTEND/content.html', 'FRONTEND/ANALEMATICA-FRONTEND/css/content.css', 'FRONTEND/ANALEMATICA-FRONTEND/tests/content.cjs', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_content.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_control.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/**', 'FRONTEND/deployment/**', 'FRONTEND/shared/**', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/**', 'WALLET-BACKEND/**', 'ANALISIS/**', 'BACKEND/ANALEMATICA-BACKEND/core_erp/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
+    paths: ['BACKEND/INTEGRACIONES/**', 'FRONTEND/SGA-CD-WEB.git/js/commercial-*.js', 'FRONTEND/SGA-CD-WEB.git/css/commercial-crm.css', 'FRONTEND/ANALEMATICA-FRONTEND/js/commercial-*.js', 'FRONTEND/ANALEMATICA-FRONTEND/css/commercial-crm.css', 'FRONTEND/SGA-ERP-TUR-FRONTEND/public/**', 'FRONTEND/**/commercial-offline/**', 'FRONTEND/SGA-TUR-FRONTEND/src/components/shared-ui/**', '.github/workflows/local-operation-audit.yml', 'BACKEND/SGA-CD-BACKEND/app/commercial/**', 'BACKEND/ANALEMATICA-BACKEND/gestion_comercial/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'DESKTOP/asistencia-sgacd/**', 'FRONTEND/ANALEMATICA-FRONTEND/js/admin.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/accounting-ledger.js', 'FRONTEND/ANALEMATICA-FRONTEND/admin.html', 'BACKEND/SGA-CD-BACKEND/app/services/corporate_ledger.py', 'BACKEND/SGA-CD-BACKEND/app/models/corporate.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/corporate.py', 'BACKEND/SGA-CD-BACKEND/tests/test_corporate_ledger*.py', 'BACKEND/SGA-CD-BACKEND/tools/review_corporate_ledger.py', 'FRONTEND/ANALEMATICA-FRONTEND/js/control.js', 'FRONTEND/ANALEMATICA-FRONTEND/js/content.js', 'FRONTEND/ANALEMATICA-FRONTEND/content.html', 'FRONTEND/ANALEMATICA-FRONTEND/css/content.css', 'FRONTEND/ANALEMATICA-FRONTEND/tests/content.cjs', 'BACKEND/ANALEMATICA-BACKEND/deployment/start.py', 'BACKEND/SGA-CD-BACKEND/app/models/assistance.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_content.py', 'BACKEND/SGA-CD-BACKEND/app/api/v1/api.py', 'BACKEND/SGA-CD-BACKEND/app/services/assistance/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/assistance_control.py', 'BACKEND/SGA-CD-BACKEND/tests/test_assistance*.py', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-comercial/**', 'FRONTEND/deployment/**', 'FRONTEND/shared/**', 'FRONTEND/SGA-ERP-TUR-FRONTEND/gestion-contable/**', 'BACKEND/WALLET-BACKEND/**', 'ANALISIS/**', 'BACKEND/ANALEMATICA-BACKEND/core_erp/**', 'BACKEND/deployment/**', 'BACKEND/SGA-ERP-TUR-BAKEND/**', 'BACKEND/SGA-TUR-BAKEND/**', 'BACKEND/SGA-CD-BACKEND/app/services/platform/**', 'BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints/platform.py', 'BACKEND/SGA-CD-BACKEND/tests/test_platform.py', 'INTEGRACIONES/plan-maestro/**', 'INTEGRACIONES/turismo-erp/**', '.github/workflows/master-integration.yml']
 permissions:
   contents: read
 jobs:
@@ -49,10 +49,32 @@ jobs:
       - run: python BACKEND/deployment/tests/erp_session_check.py -v
       - run: python BACKEND/deployment/tests/password_recovery_check.py -v
       - run: python BACKEND/deployment/tests/mfa_postgres_check.py
-      - run: python WALLET-BACKEND/tests/wallet_security_check.py -v
-      - run: python WALLET-BACKEND/tests/access_policy_check.py -v
-      - run: python WALLET-BACKEND/tests/attestation_security_check.py -v
-      - run: python WALLET-BACKEND/tests/device_approval_check.py -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install local commercial media tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: npm ci --prefix FRONTEND/deployment --include=dev --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+        working-directory: FRONTEND/deployment
+      - name: Prepare isolated commercial test runtime
+        run: |
+          mkdir -p /tmp/sgacd-full-web-deps
+          test ! -e /tmp/sgacd-full-web-deps/node_modules
+          test ! -L /tmp/sgacd-full-web-deps/node_modules
+          ln -s "$PWD/FRONTEND/deployment/node_modules" /tmp/sgacd-full-web-deps/node_modules
+          chromium_bin=$(node -e "process.stdout.write(require('./FRONTEND/deployment/node_modules/playwright').chromium.executablePath())")
+          test -x "$chromium_bin"
+          if [ ! -e /usr/bin/chromium ] && [ ! -L /usr/bin/chromium ]; then
+            sudo ln -s "$chromium_bin" /usr/bin/chromium
+          fi
+      - run: python BACKEND/INTEGRACIONES/operacion/verify_local.py --profile commercial-audit --output "$RUNNER_TEMP/pool08-quality"
+      - run: python BACKEND/WALLET-BACKEND/tests/wallet_security_check.py -v
+      - run: python BACKEND/WALLET-BACKEND/tests/access_policy_check.py -v
+      - run: python BACKEND/WALLET-BACKEND/tests/attestation_security_check.py -v
+      - run: python BACKEND/WALLET-BACKEND/tests/device_approval_check.py -v
       - run: python BACKEND/deployment/fresh_local.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur
       - run: python BACKEND/deployment/tests/fresh_database_check.py --directory "$RUNNER_TEMP/sgacd-fresh-erp" --service erp-tur -v
       - run: python BACKEND/deployment/fresh_local.py --directory "$RUNNER_TEMP/sgacd-fresh-tourism" --service turismo
@@ -62,9 +84,9 @@ jobs:
       - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_platform.py -v
       - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p 'test_assistance*.py' -v
       - run: python -m unittest discover -s BACKEND/SGA-CD-BACKEND/tests -p test_resources.py -v
-      - run: python INTEGRACIONES/turismo-erp/inventory.py --output /tmp/inventario.json
+      - run: python BACKEND/INTEGRACIONES/turismo-erp/inventory.py --output /tmp/inventario.json
       - run: python -m unittest discover -s BACKEND/deployment/tests -v
-      - run: python INTEGRACIONES/seguridad-ia/verify_vendor.py
+      - run: python BACKEND/INTEGRACIONES/seguridad-ia/verify_vendor.py
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

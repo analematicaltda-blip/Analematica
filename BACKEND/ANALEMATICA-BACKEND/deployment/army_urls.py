@@ -12,3 +12,5 @@ def readiness(request):
     return JsonResponse({**report,'service':'analematica-army'},status=200 if report['status']=='ready' else 503,headers={'Cache-Control':'no-store'})
 urlpatterns=[path('healthz',health),path('readyz',readiness),
  path('api/v1/accounting-army/',include('apps.admin_plataforma.gestion_contable.contabilidad.agent_army.urls'))]
+
+urlpatterns += [path("api/v1/commercial-unified/", include("apps.admin_plataforma.gestion_comercial.pool08.urls"))]

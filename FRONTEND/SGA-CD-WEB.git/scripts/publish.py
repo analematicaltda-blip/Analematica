@@ -67,12 +67,19 @@ if args.check:
     raise SystemExit(0)
 
 stamp = datetime.now(timezone.utc).strftime('%Y-%m-%d/respaldo-web-%H%M%S-%f')
-backup = repo / 'FRONTEND/SGA-CD-WEB.git' / 'deployment' / 'backups' / stamp
+backup_root = args.demo_dir.resolve() / 'private-backups'
+if backup_root.is_symlink():
+    raise SystemExit('El destino de respaldo no puede ser un enlace simbólico.')
+if changes:
+    backup_root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    backup_root.chmod(0o700)
+backup = backup_root / stamp
 for payload, target, name in changes:
     if target.exists():
         saved = backup / name
         saved.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(target, saved)
+        saved.chmod(0o600)
 for payload, target, name in changes:
     target.parent.mkdir(parents=True, exist_ok=True)
     for parent in target.parents:

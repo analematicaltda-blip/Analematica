@@ -1,0 +1,8 @@
+test_private_strict_json_no_scope_forgery (__main__.PricingHTTP.test_private_strict_json_no_scope_forgery) ... ok
+test_server_totals_replay_updates_and_history_all_paths (__main__.PricingHTTP.test_server_totals_replay_updates_and_history_all_paths) ... ok
+test_tourism_has_no_company_price_catalog (__main__.PricingHTTP.test_tourism_has_no_company_price_catalog) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 12.240s
+
+OK

@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-13",
+  "base_commit": "363f4120ad97be5d86232ba1cb6218b8f4011d53",
+  "authorized_action": "One consolidated commit and normal push to main; no force or history rewrite",
+  "remote_main_before": "363f4120ad97be5d86232ba1cb6218b8f4011d53",
+  "repository_url": "https://github.com/analematicaltda-blip/Analematica",
+  "relocations": 37647,
+  "exact_relocation_blob_matches": 37578,
+  "unresolved_deletions": 0,
+  "new_high_confidence_secret_findings": 0,
+  "new_private_runtime_paths": 0,
+  "other_worktree_files_accounted_for": 124,
+  "originals_and_backups_preserved": true,
+  "commercial_credit": {
+    "completed": 37,
+    "total": 72,
+    "percent": "51.39",
+    "accepted_tasks": 1,
+    "global_implementation_percent": null
+  },
+  "accounting_credit": {
+    "completed": 57,
+    "total": 72,
+    "percent": "79.17",
+    "accepted_tasks": 9
+  },
+  "production_enabled": false,
+  "historical_commercial_regression": {
+    "suites": 136,
+    "python_tests": 1410,
+    "browser_checks": 3837,
+    "artifact": "ANALISIS/gestion-comercial/evidencias/auditoria-creditos01-37-20261113/quality/report.json",
+    "not_reexecuted_during_publication": true
+  },
+  "post_audit_source_delta": [
+    "BACKEND/INTEGRACIONES/operacion/entrega_segura.py"
+  ],
+  "delivery_fix": {
+    "path": "BACKEND/INTEGRACIONES/operacion/entrega_segura.py",
+    "before": "11 of 12 delivery tests errored while building the runner after its relocation",
+    "after": "Use Path(__file__).read_bytes(); 12 tests pass, including executable ZIP, apply, conflicts, rollback and replay"
+  },
+  "additional_checks": {
+    "delivery_tests": 12,
+    "runner_tests": 21,
+    "layout_tests": 4,
+    "commercial_plan_consistent": true,
+    "accounting_plan_consistent": true,
+    "wallet_pending_document_consistent": true
+  },
+  "current_source_digest": "ab03be3e7ffe36a817ecf0052c81a98f1e978f4ceb1a74e83a2dadb82289819f",
+  "limits": [
+    "No production deployment or live banking/social actions",
+    "Historical 136-suite source cut remains unchanged; subsequent isolated delivery-helper fix is covered by targeted delivery and runner tests",
+    "External acceptance, authentic providers, real samples and hardware remain pending"
+  ]
+}

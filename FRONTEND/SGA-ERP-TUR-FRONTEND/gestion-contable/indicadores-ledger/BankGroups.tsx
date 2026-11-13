@@ -1,6 +1,6 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/bank-groups.js';
+import '../runtime/bank-groups.js';
 declare global {interface Window {SGACDBankGroups:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>,signal:AbortSignal)=>Promise<unknown>})=>{destroy:()=>void;clear:()=>void}}}}
 const actions:Record<string,string>={bank_rollup_sources:'fuentes-consolidacion-bancaria',review_bank_rollup:'revisar-consolidacion-bancaria',confirm_bank_rollup:'confirmar-consolidacion-bancaria',bank_rollup_state:'estado-consolidacion-bancaria',bank_sources:'fuentes-conciliacion-bancaria',bank_group_sources:'fuentes-agrupacion-bancaria',review_bank_groups:'revisar-agrupacion-bancaria',confirm_bank_groups:'confirmar-agrupacion-bancaria',bank_group_state:'estado-agrupacion-bancaria',review_bank_group_release:'revisar-liberacion-agrupacion-bancaria',confirm_bank_group_release:'liberar-agrupacion-bancaria'};
 export function BankGroups({identity,providerId,request}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>}){

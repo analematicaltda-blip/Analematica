@@ -1,0 +1,26 @@
+/workspace/SGA-CD-conectado/BACKEND/SGA-CD-BACKEND/app/models/dropdowns.py:11: SAWarning: This declarative base already contains a class with the same class name and module name as app.models.dropdowns.DropdownModel, and will be replaced in the string-lookup table.
+  class DropdownModel(Base):
+/workspace/.integration-venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:408: UserWarning: Valid config keys have changed in V2:
+* 'orm_mode' has been renamed to 'from_attributes'
+  warnings.warn(message, UserWarning)
+test_audit_failure_rolls_back_draft (__main__.Checks.test_audit_failure_rolls_back_draft) ... ok
+test_consent_is_per_channel_and_no_implicit_fallback (__main__.Checks.test_consent_is_per_channel_and_no_implicit_fallback) ... ok
+test_daily_quota_lease_recovery_and_provider_rejection (__main__.Checks.test_daily_quota_lease_recovery_and_provider_rejection) ... ok
+test_draft_has_no_network_and_exact_idempotent_receipt (__main__.Checks.test_draft_has_no_network_and_exact_idempotent_receipt) ... ok
+test_legacy_customer_alias_and_revoked_identity (__main__.Checks.test_legacy_customer_alias_and_revoked_identity) ... ok
+test_limits_template_binding_and_malformed_text_rejected (__main__.Checks.test_limits_template_binding_and_malformed_text_rejected) ... ok
+test_network_and_worker_disabled_without_provider_calls (__main__.Checks.test_network_and_worker_disabled_without_provider_calls) ... ok
+test_separate_mms_and_whatsapp_contracts_use_reviewed_media (__main__.Checks.test_separate_mms_and_whatsapp_contracts_use_reviewed_media) ... ok
+test_signed_receipt_and_opt_out_block_pending_jobs (__main__.Checks.test_signed_receipt_and_opt_out_block_pending_jobs) ... ok
+test_sms_encoding_length_and_cost_are_estimates (__main__.Checks.test_sms_encoding_length_and_cost_are_estimates) ... ok
+test_sms_link_alternative_needs_policy_and_explicit_authorization (__main__.Checks.test_sms_link_alternative_needs_policy_and_explicit_authorization) ... ok
+test_sms_request_contains_no_attachment_and_acceptance_is_not_delivery (__main__.Checks.test_sms_request_contains_no_attachment_and_acceptance_is_not_delivery) ... ok
+test_timeout_redirect_and_malformed_ack_never_infer_success (__main__.Checks.test_timeout_redirect_and_malformed_ack_never_infer_success) ... ok
+test_video_media_uses_distinct_mms_and_whatsapp_video_payloads (__main__.Checks.test_video_media_uses_distinct_mms_and_whatsapp_video_payloads) ... ok
+test_whatsapp_read_requires_signed_provider_report_sms_read_rejected (__main__.Checks.test_whatsapp_read_requires_signed_provider_report_sms_read_rejected) ... ok
+test_withdrawn_media_or_consent_blocks_dispatch (__main__.Checks.test_withdrawn_media_or_consent_blocks_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 21.785s
+
+OK

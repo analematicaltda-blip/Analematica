@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "checks": 60,
+  "systems": 3,
+  "controlled_transport": true,
+  "backend_acceptance": false
+}

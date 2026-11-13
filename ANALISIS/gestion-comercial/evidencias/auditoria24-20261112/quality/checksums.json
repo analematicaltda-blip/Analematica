@@ -1,0 +1,19 @@
+{
+  "pool08_payments_gateway.log": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371",
+  "pool08_payments_http.log": "7ffc3b7cb0ad920ed7f2c167df3bcdf11568e2a345cb507d841499d9755944b9",
+  "source-manifest.json": "cfc581b1a016db143f39b990525fcfe2d9aa58a220a18a50a46c7573cfa46316",
+  "commercial_gate.log": "0e0ce5e5b88016b4f122902cb722e2398b958cb0b2cfdbab2e7c2cf27b6db347",
+  "pool08_payments_sga.log": "bc811a155f895e0e3c445ec5c351c15c49e99871794d1343b4136a51436274b9",
+  "pool08_payments_lifecycle.log": "b5c0a3f802bbe6f8be91ae1421efb5703e3ec2422b7771df150a8306191bf3d3",
+  "pool08_payments_browser.log": "e48bc659b8a9d3dab6d038cae7f3c2638c0bba950ffed331cb7efdf6125e7d6a",
+  "offline_asset_regression.log": "ae30afcc2d35a42113977c3a32df236624c327f6601e1bf6af3699d2e55b2f46",
+  "pool08_operations_http.log": "11561c836d322db9211f8d30a19782ac340596c8b037847b4257116b186c5336",
+  "report.json": "f6663dad78157d167cf739791de0d4fc37c1c9ac709895d79c0495daac82946d",
+  "pool08_payments_native.log": "1ece4ce476261174bb0c0f06b41a3a1bf906682f8112e29a68b68c4d8274812d",
+  "pool08_payments_legacy.log": "ad61be9b74efb8a4b8ae7d0427622d79c722d44dc55c2f4aeb51140568dfc278",
+  "pool08_operations_native.log": "c011a79f2507df951a307f90c5579c40aa1d9177e2799f345c7bc1b3c31b12f0",
+  "pool08_recovery_native.log": "ec2427232b634c93e853cb4497782ad8b62fd737755ec5181e858313a3679eb5",
+  "pool08_offline_browser.log": "c0bc1ab67d9bd1649e14348e75fa009b41373890eae00d5c22e25eaee3045f4d",
+  "pool08_operations_sga.log": "98e6005f16b80ea1fdd264aab674142541df04bf9eb5ae46419fa40649b95191",
+  "pool08_recovery_sga.log": "9dcb4495d7fb1267f17c7a02d5cc5c048393e6b9e2216178c80d216e99ebe0d2"
+}

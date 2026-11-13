@@ -1,0 +1,90 @@
+{
+  "schema": "sgacd-local-quality-v1",
+  "created_at": "2026-11-13T05:20:14.141351+00:00",
+  "profiles": [
+    "commercial-identity-acceptance"
+  ],
+  "local_checks_complete": true,
+  "production_ready": false,
+  "source_digest_before": "7c17083cfb0b874477a88d70af0b411d7efb3c3a3081931d0d65ac70bd0405a7",
+  "source_digest_after": "7c17083cfb0b874477a88d70af0b411d7efb3c3a3081931d0d65ac70bd0405a7",
+  "source_stable": true,
+  "source_scope": [
+    "BACKEND/ANALEMATICA-BACKEND/management",
+    "BACKEND/ANALEMATICA-BACKEND/migrations",
+    "ANALISIS/gestion-comercial/tools",
+    "BACKEND/SGA-CD-BACKEND/app/commercial",
+    "BACKEND/ANALEMATICA-BACKEND/gestion_comercial",
+    "BACKEND/ANALEMATICA-BACKEND/core_erp",
+    "BACKEND/ANALEMATICA-BACKEND/deployment",
+    "BACKEND/deployment",
+    "BACKEND/SGA-CD-BACKEND/app/services",
+    "BACKEND/SGA-CD-BACKEND/app/api/v1/endpoints",
+    "BACKEND/SGA-CD-BACKEND/app/models",
+    "BACKEND/SGA-CD-BACKEND/tests",
+    "BACKEND/SGA-CD-BACKEND/tools",
+    "BACKEND/SGA-ERP-TUR-BAKEND",
+    "BACKEND/SGA-TUR-BAKEND",
+    "FRONTEND/deployment",
+    "FRONTEND/shared",
+    "FRONTEND/SGA-CD-WEB.git",
+    "FRONTEND/SGA-ERP-TUR-FRONTEND",
+    "FRONTEND/SGA-TUR-FRONTEND/src",
+    "FRONTEND/ANALEMATICA-FRONTEND",
+    "BACKEND/INTEGRACIONES",
+    "BACKEND/tools",
+    "BACKEND/tests",
+    "FRONTEND/tools",
+    "FRONTEND/tests",
+    "DESKTOP/tools",
+    "DESKTOP/tests",
+    "DESKTOP/asistencia-sgacd",
+    "DESKTOP/fiscal-signer",
+    "BACKEND/WALLET-BACKEND",
+    "FRONTEND/WALLET-FRONTEND",
+    "DESKTOP/WALLET-DESKTOP",
+    "MOVILES/WALLET-MOVIL",
+    "ANALISIS/contabilidad/tools",
+    "BACKEND/ANALEMATICA-BACKEND/gestion_contable/contabilidad/agent_army"
+  ],
+  "python": "3.12.14",
+  "packages": {
+    "Django": "5.2.19",
+    "fastapi": "0.162.0",
+    "SQLAlchemy": "2.1.8",
+    "cryptography": "50.0.2",
+    "httpx": "0.28.1",
+    "psycopg2-binary": "2.9.13"
+  },
+  "results": [
+    {
+      "id": "pool08_identity_acceptance_contract",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 4.127,
+      "tests": 8,
+      "skipped": 0,
+      "log": "pool08_identity_acceptance_contract.log",
+      "log_sha256": "66bdbd7dd815f204716cf820e6e794ba1efc511b99adf753a79cc3f364bd8bc1",
+      "log_truncated": false,
+      "log_write_error": false
+    },
+    {
+      "id": "pool08_identity_acceptance_readiness",
+      "status": "PASSED",
+      "returncode": 0,
+      "duration_seconds": 1.368,
+      "tests": null,
+      "skipped": null,
+      "log": "pool08_identity_acceptance_readiness.log",
+      "log_sha256": "22beb6545b7b3ff9bcc33c3fab282583fc26aaf0da05b2542a472033478720ec",
+      "log_truncated": false,
+      "log_write_error": false
+    }
+  ],
+  "limits": [
+    "Scoped source hashes, not a full release image attestation",
+    "No production deployment, hardware qualification or live account actions",
+    "Passing a profile does not complete unselected profiles or the master plan"
+  ]
+}

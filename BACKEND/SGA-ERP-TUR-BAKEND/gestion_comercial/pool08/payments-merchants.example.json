@@ -1,0 +1,10 @@
+{
+  "REPLACE_OWNING_SCOPE": {
+    "enabled": false,
+    "environment": "SANDBOX",
+    "merchant_ref": "REPLACE_REVIEWED_MERCHANT",
+    "identity_env": "BOLD_CUSTOMER_IDENTITY_KEY",
+    "secret_env": "BOLD_CUSTOMER_SECRET_KEY",
+    "contract_digest": "REPLACE_WITH_REVIEWED_SHA256"
+  }
+}

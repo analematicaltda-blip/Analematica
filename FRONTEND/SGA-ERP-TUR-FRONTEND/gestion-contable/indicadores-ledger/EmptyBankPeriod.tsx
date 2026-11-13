@@ -1,6 +1,6 @@
 'use client';
 import React,{useEffect,useRef} from 'react';
-import '../../../ANALEMATICA-FRONTEND/js/bank-empty-period.js';
+import '../runtime/bank-empty-period.js';
 declare global {interface Window {SGACDEmptyBankPeriod:{mount:(root:HTMLElement,options:{request:(action:string,payload:Record<string,unknown>,signal:AbortSignal)=>Promise<unknown>})=>{destroy:()=>void;clear:()=>void}}}}
 const actions:Record<string,string>={bank_sources:'fuentes-conciliacion-bancaria',review_empty_bank_period:'revisar-periodo-bancario-vacio',confirm_empty_bank_period:'confirmar-periodo-bancario-vacio',empty_bank_period_state:'estado-periodo-bancario-vacio'};
 export function EmptyBankPeriod({identity,providerId,request}:{identity:string|null;providerId:string;request:(path:string,init?:RequestInit)=>Promise<Response>}){

@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "systems": 3,
+  "scope": "Domain comparison of original archived bytes versus current CRM; API responses are verified separately",
+  "results": [
+    {
+      "source": "BACKEND/SGA-CD-BACKEND/app/commercial/pool08/crm.py",
+      "original_sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914",
+      "corrected_sha256": "3a2d2d84964e35a03045d82ed6c28e89fd91d038d5309ca273d1832d6cb45041",
+      "unhandled_encoding_error_before": true,
+      "controlled_domain_rejection_after": true
+    },
+    {
+      "source": "BACKEND/SGA-ERP-TUR-BAKEND/gestion_comercial/pool08/crm.py",
+      "original_sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914",
+      "corrected_sha256": "3a2d2d84964e35a03045d82ed6c28e89fd91d038d5309ca273d1832d6cb45041",
+      "unhandled_encoding_error_before": true,
+      "controlled_domain_rejection_after": true
+    },
+    {
+      "source": "BACKEND/ANALEMATICA-BACKEND/gestion_comercial/pool08/crm.py",
+      "original_sha256": "d43bba33b5217d85d0e270b2127f30c34601e0c66cf4f6d58945f5597ca70914",
+      "corrected_sha256": "3a2d2d84964e35a03045d82ed6c28e89fd91d038d5309ca273d1832d6cb45041",
+      "unhandled_encoding_error_before": true,
+      "controlled_domain_rejection_after": true
+    }
+  ]
+}
